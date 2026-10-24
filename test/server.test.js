@@ -7,13 +7,13 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { io } from 'socket.io-client';
 
-const PORT = 3990 + Math.floor(Math.random() * 9);
+const PORT = 4000 + Math.floor(Math.random() * 50); // eigener Bereich: 4000–4049
 const URL = `http://localhost:${PORT}`;
 let server;
 
 before(async () => {
   const dataDir = mkdtempSync(join(tmpdir(), 'poker-'));
-  server = spawn(process.execPath, ['server/index.js'], { env: { ...process.env, PORT: String(PORT), DATA_DIR: dataDir, POKER_NO_DOTENV: '1', DISCORD_CLIENT_ID: '' }, stdio: 'pipe' });
+  server = spawn(process.execPath, ['server/index.js'], { env: { ...process.env, PORT: String(PORT), DATA_DIR: dataDir, POKER_NO_DOTENV: '1' }, stdio: 'pipe' });
   await new Promise((res, rej) => {
     server.stdout.on('data', (d) => { if (String(d).includes('läuft')) res(); });
     server.on('exit', (c) => rej(new Error('Server beendet: ' + c)));

@@ -10,18 +10,20 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <!-- Lobby -->
+  <!-- Startseite: Spiel wählen, dann Lobby beitreten oder Spiel hosten -->
   <main id="lobby" class="lobby" hidden>
     <div class="lobby-felt">
       <h1 class="wordmark">Pokerabend</h1>
-      <p class="lobby-sub">Texas Hold'em für eure Runde. Einer macht den Tisch auf, die anderen kommen per Link dazu.</p>
+      <p class="lobby-sub">Spieleabend für eure Runde. Einer hostet, die anderen kommen per Link oder Code dazu.</p>
 
-      <!-- Mit Discord-Login: wer angemeldet ist, statt Name und Avatar -->
-      <div id="me-box" class="me-box" hidden></div>
+      <nav class="games-pick" aria-labelledby="games-title">
+        <h2 id="games-title" class="pick-title">Spiele</h2>
+        <div id="game-list" class="game-list" role="radiogroup" aria-labelledby="games-title"></div>
+      </nav>
 
       <div class="tabs" role="tablist">
-        <button role="tab" class="tab" data-tab="join" aria-selected="false">Beitreten</button>
-        <button role="tab" class="tab" data-tab="create" aria-selected="true">Tisch erstellen</button>
+        <button role="tab" class="tab" data-tab="join" aria-selected="false">Lobby beitreten (Code)</button>
+        <button role="tab" class="tab" data-tab="create" aria-selected="true">Spiel hosten</button>
       </div>
 
       <form id="lobby-form" class="lobby-form" autocomplete="off">
@@ -36,82 +38,28 @@
 
         <div data-for="join" hidden>
           <label class="field">
-            <span>Tisch-Code</span>
+            <span>Code</span>
             <input id="f-code" maxlength="5" placeholder="ABCDE" class="code-input">
           </label>
+          <p class="hint">Der Code bestimmt das Spiel – du landest direkt im richtigen Raum.</p>
         </div>
 
         <div data-for="create">
-          <div class="row3">
-            <label class="field"><span>Startchips</span><input id="f-stack" type="number" min="100" step="100" value="10000"></label>
-            <label class="field"><span>Small Blind</span><input id="f-sb" type="number" min="1" value="50"></label>
-            <label class="field"><span>Big Blind</span><input id="f-bb" type="number" min="2" value="100"></label>
-          </div>
-          <p class="hint">Alles andere stellst du am Tisch unter „Host“ ein.</p>
+          <!-- Felder kommen vom gewählten Spiel (games/<id>/index.js → createFields) -->
+          <div class="row3" id="create-fields"></div>
+          <p class="hint" id="create-hint"></p>
         </div>
 
-        <button class="btn btn-brass btn-big" type="submit" id="f-submit">Tisch erstellen</button>
+        <button class="btn btn-brass btn-big" type="submit" id="f-submit">Spiel hosten</button>
         <p id="lobby-error" class="error" role="alert"></p>
       </form>
     </div>
     <p class="lobby-foot" id="lobby-foot">Nur Spielgeld. Keine Anmeldung, kein Echtgeld.</p>
   </main>
 
-  <!-- Spiel -->
-  <div id="game" class="game" hidden>
-    <header class="topbar">
-      <div class="top-left">
-        <button class="code-chip" id="copy-link" title="Einladungslink kopieren" aria-label="Einladungslink kopieren">
-          <span class="code-label">Tisch</span> <b id="room-code">-----</b>
-          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
-        </button>
-      </div>
-      <div class="meta" id="meta" aria-live="polite"></div>
-      <div class="top-right">
-        <button class="btn btn-sm freeze-btn" id="freeze-btn" data-do="freeze" hidden></button>
-        <nav class="topnav" aria-label="Seitenleisten">
-          <button class="nav-btn" data-panel="log">Verlauf</button>
-          <button class="nav-btn" data-panel="stand">Stand</button>
-          <button class="nav-btn" data-panel="me">Ich</button>
-          <button class="nav-btn" data-panel="host" id="nav-host" hidden>Host</button>
-        </nav>
-      </div>
-    </header>
+  <!-- Hier zeichnet das gewählte Spiel seine Oberfläche hinein (z. B. /games/poker/poker.js) -->
+  <div id="game-root" hidden></div>
 
-    <section class="table-wrap">
-      <div class="table" id="table">
-        <div class="rail"></div>
-        <div class="felt">
-          <div class="pot" id="pot"></div>
-          <div class="board" id="board"></div>
-          <div class="felt-msg" id="felt-msg"></div>
-        </div>
-        <div id="seats"></div>
-        <div class="dealer" id="dealer" hidden aria-label="Dealer-Button">D</div>
-      </div>
-    </section>
-
-    <section class="dock" id="dock"></section>
-
-    <div class="hands-pop" id="hands-pop" hidden>
-      <div class="panel-head">
-        <h2>Pokerhände</h2>
-        <button class="icon-btn" data-hands aria-label="Schließen"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-      </div>
-      <div class="hands-body" id="hands-body"></div>
-    </div>
-
-    <aside class="panel" id="panel" hidden aria-labelledby="panel-title">
-      <button class="grip" id="panel-grip" aria-label="Schließen"></button>
-      <div class="panel-head">
-        <h2 id="panel-title">Verlauf</h2>
-        <button class="icon-btn" id="panel-close" aria-label="Schließen"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-      </div>
-      <div class="panel-body" id="panel-body"></div>
-    </aside>
-  </div>
-
-  <aside id="seb" class="seb-card" hidden></aside>
   <!-- Eigene Bestätigungsdialoge statt confirm()/prompt() -->
   <dialog class="dlg" id="dlg" aria-labelledby="dlg-title">
     <form method="dialog">
@@ -128,6 +76,6 @@
   <div id="offline" class="offline" hidden>Verbindung weg – verbinde neu …</div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/app.js" type="module"></script>
+  <script src="/core.js"></script>
 </body>
 </html>

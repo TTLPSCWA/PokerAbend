@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { bestHand, compareScores, newDeck, shuffle, category, outlook } from '../engine/cards.js';
-import { Table } from '../engine/table.js';
+import { bestHand, compareScores, newDeck, shuffle, category, outlook } from '../games/poker/engine/cards.js';
+import { Table } from '../games/poker/engine/table.js';
 
 // ---------- Hilfen ----------
 function table(stacks, { sb = 50, bb = 100 } = {}) {

@@ -7,14 +7,14 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { io } from 'socket.io-client';
 
-const PORT = 4300 + Math.floor(Math.random() * 50);
+const PORT = 4150 + Math.floor(Math.random() * 50); // eigener Bereich: 4150–4199
 const URL = `http://localhost:${PORT}`;
 let server;
 
 before(async () => {
   const dataDir = mkdtempSync(join(tmpdir(), 'poker-away-'));
   server = spawn(process.execPath, ['server/index.js'], {
-    env: { ...process.env, PORT: String(PORT), DATA_DIR: dataDir, POKER_NO_DOTENV: '1', DISCORD_CLIENT_ID: '', SITE_PASSWORD: '', PLAYER_TIMEOUT_MIN: '0.02' },
+    env: { ...process.env, PORT: String(PORT), DATA_DIR: dataDir, POKER_NO_DOTENV: '1', SITE_PASSWORD: '', PLAYER_TIMEOUT_MIN: '0.02' },
     stdio: 'pipe',
   });
   await new Promise((res, rej) => {

@@ -161,3 +161,83 @@ export function outlook(hole, board, { samples = 20000, rng = Math.random } = {}
   }
   return counts.map((c) => c / n);
 }
+
+// ---------- Schnelle Bewertung ganzer Hände (für Gewinnchancen) ----------
+// Wie bestHand, aber als eine Zahl: größer = besser, gleich = Split. Kategorie × 16⁵ + bis zu 5 Tiebreaker.
+const pack = (cat, vals) => { let n = cat; for (let i = 0; i < 5; i++) n = n * 16 + (vals[i] || 0); return n; };
+const topBits = (mask, k, skip = 0) => {
+  const out = [];
+  for (let v = 14; v >= 2 && out.length < k; v--) if ((mask >> v) & 1 && v !== skip) out.push(v);
+  return out;
+};
+export function score7(cards) {
+  const counts = new Array(15).fill(0);
+  const suitMask = { s: 0, h: 0, d: 0, c: 0 };
+  const suitCount = { s: 0, h: 0, d: 0, c: 0 };
+  let mask = 0;
+  for (const c of cards) {
+    const v = value(c);
+    counts[v]++; mask |= 1 << v;
+    suitMask[c[1]] |= 1 << v; suitCount[c[1]]++;
+  }
+  const fs = SUITS.split('').find((x) => suitCount[x] >= 5);
+  if (fs) {
+    const top = straightTop(suitMask[fs]);
+    if (top) return pack(top === 14 ? 9 : 8, [top]);
+  }
+  const quads = [], trips = [], pairs = [];
+  for (let v = 14; v >= 2; v--) {
+    if (counts[v] === 4) quads.push(v);
+    else if (counts[v] === 3) trips.push(v);
+    else if (counts[v] === 2) pairs.push(v);
+  }
+  if (quads.length) return pack(7, [quads[0], topBits(mask, 1, quads[0])[0]]);
+  if (trips.length && (trips.length > 1 || pairs.length)) {
+    const pair = Math.max(trips[1] || 0, pairs[0] || 0);
+    return pack(6, [trips[0], pair]);
+  }
+  if (fs) return pack(5, topBits(suitMask[fs], 5));
+  const st = straightTop(mask);
+  if (st) return pack(4, [st]);
+  if (trips.length) return pack(3, [trips[0], ...topBits(mask & ~(1 << trips[0]), 2)]);
+  if (pairs.length >= 2) {
+    const [a, b] = pairs;
+    return pack(2, [a, b, topBits(mask & ~(1 << a) & ~(1 << b), 1)[0]]);
+  }
+  if (pairs.length) return pack(1, [pairs[0], ...topBits(mask & ~(1 << pairs[0]), 3)]);
+  return pack(0, topBits(mask, 5));
+}
+
+// Gewinnchancen bekannter Hände gegeneinander (z. B. nach dem Showdown). Split zählt anteilig.
+// Ergebnis: Anteil je Hand (Summe 1). Flop/Turn/River: alles durchrechnen, Pre-Flop: Stichprobe.
+export function equity(hands, board = [], { samples = 20000, rng = Math.random } = {}) {
+  const known = new Set([...hands.flat(), ...board]);
+  const rest = newDeck().filter((c) => !known.has(c));
+  const need = 5 - board.length;
+  const share = hands.map(() => 0);
+  let n = 0;
+  const run = (extra) => {
+    const full = [...board, ...extra];
+    let best = -1, winners = [];
+    hands.forEach((h, i) => {
+      const s = score7([...h, ...full]);
+      if (s > best) { best = s; winners = [i]; } else if (s === best) winners.push(i);
+    });
+    for (const w of winners) share[w] += 1 / winners.length;
+    n++;
+  };
+  if (need === 0) run([]);
+  else if (need <= 2) for (const combo of combinations(rest, need)) run(combo);
+  else {
+    const pool = rest.slice();
+    for (let k = 0; k < samples; k++) {
+      // Teil-Fisher-Yates: nur die benötigten Karten nach vorne holen
+      for (let j = 0; j < need; j++) {
+        const r = j + Math.floor(rng() * (pool.length - j));
+        [pool[j], pool[r]] = [pool[r], pool[j]];
+      }
+      run(pool.slice(0, need));
+    }
+  }
+  return share.map((x) => x / n);
+}

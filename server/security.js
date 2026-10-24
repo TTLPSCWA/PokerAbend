@@ -1,5 +1,4 @@
 // Zugangsschutz und Missbrauchsschutz.
-// - Mit Discord-Login (siehe discord.js) gilt das Seitenpasswort nicht.
 // - Seitenpasswort (SITE_PASSWORD): ohne Passwort keine Seite und keine Socket-Verbindung.
 // - Nach dem Login merkt sich der Browser das per signiertem Cookie (180 Tage, verlängert sich bei jedem Besuch).
 // - Rate-Limits gegen Passwort-Raten, Code-Raten, Tisch-Spam und Event-Fluten.
@@ -110,7 +109,7 @@ export function bucket({ capacity, perSecond }) {
 export function securityHeaders(_req, res, next) {
   res.setHeader('Content-Security-Policy', [
     "default-src 'self'", "script-src 'self'", "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: https://cdn.discordapp.com", "font-src 'self'", "connect-src 'self'",
+    "img-src 'self' data:", "font-src 'self'", "connect-src 'self'",
     "frame-ancestors 'none'", "base-uri 'none'", "form-action 'self'", "object-src 'none'",
   ].join('; '));
   res.setHeader('X-Frame-Options', 'DENY');
@@ -143,12 +142,8 @@ export function safeNext(next) {
   return n.startsWith('/') && !n.startsWith('//') && !n.startsWith('/\\') ? n : '/';
 }
 
-// Namen ohne Steuerzeichen und unsichtbare Tricks
-export function cleanName(name) {
-  return String(name || '').replace(/[\u0000-\u001f\u007f-\u009f​-‏‪-‮⁠-⁯﻿]/g, '').trim().slice(0, 16);
+// Text ohne Steuerzeichen und unsichtbare Tricks (Zeilenumbrüche fliegen auch raus)
+export function cleanText(text, max) {
+  return String(text ?? '').replace(/[\u0000-\u001f\u007f-\u009f​-‏‪-‮⁠-⁯﻿]/g, '').trim().slice(0, max);
 }
-
-// Profilbilder nur vom Discord-CDN, ohne Zeichen, die aus einem Attribut ausbrechen könnten
-export function safeAvatarUrl(url) {
-  return typeof url === 'string' && url.length <= 300 && url.startsWith('https://cdn.discordapp.com/') && !/["'<>\s\\]/.test(url) ? url : null;
-}
+export const cleanName = (name) => cleanText(name, 16);

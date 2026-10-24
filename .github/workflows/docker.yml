@@ -1,7 +1,4 @@
 
-# Baut bei jedem Push auf main das Docker-Image,
-# führt Tests aus und veröffentlicht es auf GHCR.
-
 name: Docker-Image
 
 on:

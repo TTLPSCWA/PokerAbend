@@ -6,7 +6,7 @@ ENV NODE_ENV=production PORT=3000 DATA_DIR=/app/data
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
-COPY engine ./engine
+COPY games ./games
 COPY server ./server
 COPY public ./public
 

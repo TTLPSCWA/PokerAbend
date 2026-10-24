@@ -45,7 +45,7 @@ Voraussetzung ist Node.js 20 oder neuer.
 
 //3. **Update einspielen:** neues Image pushen, auf dem Server wieder `pull` und `up -d`.
 
-**Anmeldung:** Die Discord-Anmeldung ist vorerst ausgeklammert (`DISCORD_ENABLED = false` in `server/index.js`). Solange gilt: auf dem Server ist `SITE_PASSWORD` in der `.env` Pflicht (Gruppenpasswort), lokal ohne `SITE_PASSWORD` ist die Seite offen.
+**Anmeldung:** Über das Gruppenpasswort `SITE_PASSWORD`. Auf dem Server ist es in der `.env` Pflicht, ohne startet nichts. Lokal ohne `SITE_PASSWORD` ist die Seite offen (nur zum Testen).
 
 Tische und Chipstände liegen im Docker-Volume `poker-data` und überleben Neustarts. Gespeichert wird immer zwischen zwei Händen. Nach einem Neustart drückt der Host einmal auf „Spiel starten“.
 
@@ -55,58 +55,27 @@ Tische und Chipstände liegen im Docker-Volume `poker-data` und überleben Neust
 | --- | --- |
 | Lobby | Tisch erstellen, Einladungslink mit Code, Name + Avatar, keine Anmeldung |
 | Spiel | Automatisches Mischen (Krypto-Zufall) und Austeilen, Blinds, Button wandert, Heads-up-Regeln, Big-Blind-Option |
-| Aktionen | Fold, Check, Call, Bet, Raise, All-in, Slider + ½ Pot / ¾ Pot / Pot / All-in, Tastenkürzel F / C / R |
+| Aktionen | Fold, Check, Call, Bet, Raise, All-in, Slider + ½ Pot / ¾ Pot / Pot / All-in, Tastenkürzel F / C / R, Controller (A / B / X, LB / RB, Start) |
+| Am Zug | „Du bist dran“ über der Aktionsleiste, große Restzeit (letzte 8 s rot), Ton, blinkender Tab-Titel, auf Wunsch Browser-Benachrichtigung |
+| Vorab-Aktionen | Check/Fold, Check, Call beliebig, Fold – nur für die laufende Hand, auf dem Server ausgeführt (greift auch bei kurzem Verbindungsabbruch) |
+| Blinds | Fest oder steigend: alle X Minuten oder alle X Hände, Vorlagen Schnell / Normal / Lang oder eigene Liste. Anzeige oben „Nächstes Level in 4:32 – 100/200“, neues Level erst ab der nächsten Hand, Uhr steht vor dem Start, beim Anhalten und in der Pause |
+| Gewinnchancen | Host wählt: aus, nur eigene (während der Hand, nur aus eigenen Karten und Board) oder nach der Hand (für alle gezeigten Hände, pro Straße). Persönlich abschaltbar |
+| Chips verschenken | Mit Nachricht, der andere muss zustimmen, nur zwischen zwei Händen, gilt 60 s, Host kann es abschalten. Am Plus/Minus ändert es nichts |
+| Anstupsen | Nach 10 s automatisch, außerdem per 👉 am Panel (höchstens alle 10 s), Sprüche im Host-Menü editierbar, Host-Schalter |
 | Chips | Einsätze vor jedem Spieler, fliegen nach der Setzrunde in den Pot, Main + Side Pots, Rückgabe nicht gecallter Chips, Split Pot mit Rest-Chip-Regel |
 | Showdown | Handauswertung mit Kicker, Siegerkarten markiert, „Karten zeigen“ nach Gewinn ohne Showdown |
 | Verbindung | Reconnect mit gleichem Platz und Chips, zweiter Tab verdrängt den ersten, doppelte Aktionen werden ignoriert, Timeout checkt oder foldet |
-| Host | Start, Pause, nächste Hand, Blinds, Startchips, Nachkaufen (aus / max. X / unbegrenzt), Zeit pro Zug, Pause zwischen Händen, Handanzeige erlauben, Spieler entfernen, Host weitergeben, Chips korrigieren (wird im Verlauf vermerkt) |
-| Spieler | Pause / zurück, Aufstehen, Nachkaufen, Vier-Farben-Deck, Handanzeige, Beträge in BB, Töne, Animationen aus, grüner oder blauer Tisch |
-| Extras | Rundenverlauf, Reaktionen (👍 😂 GG …), Abendstand mit Plus/Minus, größter Pot, beste Hand |
+| Host | Start, Pause, nächste Hand, Blinds, Startchips, Nachkaufen (aus / max. X / unbegrenzt), neues Spiel (alle auf Startchips, alter Abendstand bleibt im Verlauf), Zeit pro Zug, Pause zwischen Händen, Handanzeige erlauben, Spieler entfernen, Host weitergeben, Chips korrigieren (wird im Verlauf vermerkt) |
+| Spieler | Pause / zurück, Aufstehen nach der Hand (danach eine Hand aussetzen), Nachkaufen, eigene Karten nach dem Fold weiter sichtbar, Kartengröße, eigene Karten auch am Platz, freche Sprüche beim Folden statt Checken, Vier-Farben-Deck, Handanzeige, Beträge in BB, Töne, Animationen aus, grüner oder blauer Tisch |
+| Verlauf | Ganzer Abend (die letzten 500 Hände, übersteht Neustarts), nach Händen gruppiert und einklappbar, neueste oben. Filter: Aktionen, Gewinne, Karten, System, Reaktionen; Suche nach Spielername. Liegt pro Tisch in `data/history-CODE.json` |
+| Extras | Gewinnmoment mit Chip-Regen und großem Betrag (stärker ab 50 BB oder Full House), Reaktionen (👍 😂 GG …), Abendstand mit Plus/Minus, größter Pot, beste Hand |
 | Handy | Eigene Hochformat-Ansicht mit großen Buttons |
-
-## Anmeldung mit Discord
-
-> **Vorerst ausgeklammert.** Zum Einschalten in `server/index.js` `DISCORD_ENABLED = true` setzen, die `DISCORD_…`-Zeilen in `.env`, `docker-compose.yml` und `docker-compose.prod.yml` wieder einkommentieren und die Tests in `test/discord.test.js` wieder aktivieren.
-
-Rein kommt nur, wer auf unserem Discord-Server ist. Es gibt kein Gruppenpasswort mehr, Name und Profilbild am Tisch kommen von Discord.
-
-### Einrichten
-
-1. Im [Discord Developer Portal](https://discord.com/developers/applications) die Anwendung öffnen → **OAuth2**.
-2. Unter **Redirects** beide Adressen eintragen und speichern:
-   - `http://localhost:3000/auth/discord/callback`
-   - `https://tobiasthomasprojektap2.de/auth/discord/callback`
-3. **Client Secret** zurücksetzen bzw. kopieren und in die `.env` als `DISCORD_CLIENT_SECRET` eintragen. Nie weitergeben, nie committen.
-4. In Discord unter *Einstellungen → Erweitert* den **Entwicklermodus** einschalten, dann Rechtsklick auf unseren Server → **Server-ID kopieren** → `DISCORD_GUILD_ID`.
-5. Optional: Rechtsklick auf eine Rolle → **Rollen-ID kopieren** → `DISCORD_ROLE_ID`. Dann kommen nur Mitglieder mit dieser Rolle rein.
-6. `PUBLIC_URL` lokal auf `http://localhost:3000` lassen. Auf dem Server setzt `docker-compose.prod.yml` sie automatisch auf `https://DOMAIN`.
-
-Ein Bot ist nicht nötig. Die Seite fragt bei Discord nur `identify` (Name, Bild) und `guilds.members.read` (Mitglied auf unserem Server?) ab.
-
-### Verhalten
-
-| Situation | Was passiert |
-| --- | --- |
-| Nicht angemeldet | Nur die Seite mit „Mit Discord anmelden“. Seite, Dateien und Echtzeit-Verbindung sind gesperrt. |
-| Mitglied auf dem Server | Kommt rein und landet direkt am Tisch aus dem Einladungslink. |
-| Nicht auf dem Server / Rolle fehlt | Zurück zur Login-Seite mit Hinweis, was fehlt. |
-| Auf Discord „Abbrechen“ geklickt | Hinweis „Anmeldung abgebrochen“, neuer Versuch jederzeit. |
-| Name am Tisch | Server-Nickname, sonst Discord-Anzeigename, sonst Benutzername. Nicht änderbar. Gleicher Name zweimal → „Anna 2“. |
-| Profilbild | Von Discord. Lädt es nicht, steht der Anfangsbuchstabe im Kreis. |
-| Anderes Gerät | Gleiches Discord-Konto = derselbe Spieler mit gleichem Platz und gleichen Chips, das alte Gerät wird abgelöst. |
-| Angemeldet bleiben | 180 Tage, verlängert sich bei jedem Besuch. Abmelden in der Lobby oder unter „Ich“. |
-| Server verlassen / Rolle weg | Wird alle 24 h geprüft. Danach ist die Sitzung weg, offene Tabs landen innerhalb von 15 Minuten auf der Login-Seite. |
-| Discord nicht erreichbar | Niemand wird ausgesperrt, die Prüfung wird nach 1 h wiederholt. |
-| Halb eingerichtet | Fehlt Secret oder Server-ID, startet der Server nicht und sagt, welcher Wert fehlt. |
-
-Sitzungen liegen in `data/sessions.json` (nur für den Server lesbar), im Browser steckt nur eine signierte Sitzungs-ID (`HttpOnly`, `SameSite=Lax`, `Secure` unter HTTPS). Getestet wird das in `test/discord.test.js` gegen einen nachgebauten Discord-Server.
 
 ## Zugangsschutz
 
 | Schutz | Wie |
 | --- | --- |
-| Discord-Login | Siehe oben. Mit Discord-Werten in der `.env` gilt kein Passwort. |
-| Seitenpasswort (ohne Discord) | Ohne Passwort gibt es nur die Passwort-Seite. Seite, Dateien und die Echtzeit-Verbindung sind gesperrt. |
+| Seitenpasswort | Ohne Passwort gibt es nur die Passwort-Seite. Seite, Dateien und die Echtzeit-Verbindung sind gesperrt. |
 | Browser merkt es sich | Signiertes Cookie (`HttpOnly`, `SameSite=Lax`, `Secure` unter HTTPS), 180 Tage gültig und bei jedem Besuch verlängert. Abmelden geht unter „Ich“. |
 | Rausfliegen ohne Folgen | Bei Verbindungsabbruch oder Server-Neustart verbindet die Seite sich selbst neu: kein Passwort, gleicher Platz, gleiche Chips – solange man innerhalb von 5 Minuten zurück ist. |
 | Wer wegbleibt | Nach 5 Minuten offline fliegt der Spieler mit allen Daten raus (Platz frei, Chips weg). In einer laufenden Hand foldet er und verschwindet nach der Hand. Ist es der Host, übernimmt ein anderer – das passiert schon nach 30 Sekunden. Ist niemand mehr da, wird der Tisch gelöscht. Frist änderbar über `PLAYER_TIMEOUT_MIN`. |
@@ -123,24 +92,99 @@ Getestet wird das in `test/security.test.js`.
 
 ## Aufbau
 
+Die Seite ist eine Plattform für mehrere Spiele. Gemeinsam sind Passwort-Login, Startseite und Lobby, Raumcodes, Spielerverwaltung, Reconnect, Speichern, Verlauf und Sicherheit. Jedes Spiel bringt seine eigene Engine und Oberfläche mit.
+
 ```
-engine/     Poker-Regeln, ohne Netzwerk und ohne Oberfläche
-  cards.js    Deck, Mischen, Handauswertung
-  table.js    Setzrunden, Pots, Auszahlung
-server/     Express + Socket.IO
-  room.js     Spieler, Timer, Host-Rechte, Ansicht pro Spieler
-  index.js    Verbindungen, Anmeldung, Speichern, Aufräumen
-  env.js      liest die .env ein (ohne Zusatzpaket)
-  discord.js  Discord-Login: OAuth2, Mitgliedschaft prüfen, Sitzungen
-  security.js Passwort-Cookie, Rate-Limits, Header
-  sebastian.js  Easter Egg „Waiting for Sebastian“
-  login.html  Passwort-Seite (ohne Discord)
-  login-discord.html  Seite „Mit Discord anmelden“
-public/     Browser-Seite (HTML, CSS, JavaScript, Schrift)
-test/       Engine-Tests inkl. 100.000 Zufallshänden, Server-, Sicherheits- und Discord-Tests
+server/            Plattform (für alle Spiele gleich)
+  index.js           Express + Socket.IO: Anmeldung, Lobby, Ereignisse, Speichern, Aufräumen
+  base-room.js       Grundlage jedes Raums: Spieler, Host, Wegbleiben, Verlauf
+  codes.js           Raumcodes, zentral für alle Spiele (nie doppelt)
+  security.js        Passwort-Cookie, Rate-Limits, Header, Texte säubern
+  env.js             liest die .env ein (ohne Zusatzpaket)
+  login.html         Passwort-Seite
+games/             Spiele (Server-Teil)
+  index.js           Liste aller Spiele
+  poker/
+    index.js           Beschreibung fürs Menü, Ereignisse, Raum erstellen/laden
+    room.js            Pokertisch: Timer, Hände, Blinds, Geschenke, Ansicht pro Spieler
+    blinds.js          steigende Blinds
+    sebastian.js       Easter Egg „Waiting for Sebastian“
+    engine/            Poker-Regeln ohne Netzwerk: cards.js (Deck, Bewertung, Chancen), table.js (Setzrunden, Pots)
+public/            Browser
+  index.html         Startseite mit Spielauswahl, Dialoge
+  core.js            Startseite, Lobby, Verbindung, Dialoge, Hilfen – lädt das gewählte Spiel nach
+  style.css          gemeinsames Aussehen (Tokens, Buttons, Leisten, Seitenleiste, Verlauf)
+  games/poker/       poker.js (Tisch-Oberfläche) und poker.css
+test/              node:test – Engine inkl. 100.000 Zufallshänden, Räume, Server, Sicherheit, Plattform
 ```
 
-**Wichtig für die Fairness:** Der Browser bekommt nur seine eigenen Karten. Gegnerkarten verlassen den Server erst beim Showdown. Das prüft `test/server.test.js`.
+Jede Testdatei mit eigenem Server hat einen eigenen Portbereich, weil `npm test` die Dateien parallel ausführt: `server` 4000–4049, `security` 4050–4099, `sebastian` 4100–4149, `away` 4150–4199, `codes` 4200–4249, `history` 4250–4299, `platform` 4300–4349. Neue Dateien bekommen den nächsten freien Fünfziger-Block.
+
+## Ein neues Spiel hinzufügen
+
+Beispiel Mau-Mau mit der ID `maumau` (nur Kleinbuchstaben, Ziffern und Bindestrich):
+
+1. **Server:** `games/maumau/index.js` anlegen und in `games/index.js` eintragen.
+
+   ```js
+   import { Room } from './room.js';
+   export default {
+     id: 'maumau', name: 'Mau-Mau', description: 'Ablegen, aussetzen, Farbe wünschen.', players: '2–6 Spieler',
+     createFields: [{ key: 'cards', label: 'Karten pro Spieler', type: 'number', min: 3, value: 6 }],
+     createHint: 'Alles andere stellst du im Raum ein.',
+     create: (code, settings, onChange) => new Room(code, settings, onChange),
+     restore: (data, onChange) => Room.restore(data, onChange),
+     events: { play: (room, p, { card }) => room.play(p.id, card), draw: (room, p) => room.draw(p.id) },
+   };
+   ```
+
+2. **Raum:** `games/maumau/room.js` mit `class Room extends BaseRoom` (aus `server/base-room.js`). Spieler, Host, Wegbleiben und Verlauf sind damit schon da. Das Spiel füllt die Haken:
+
+   | Haken | Wofür |
+   | --- | --- |
+   | `view(playerId)` | Was dieser Spieler sehen darf – **nur das**. Fremde Karten nie mitschicken. |
+   | `snapshot()` / `static restore(data, onChange)` | Speichern und nach einem Neustart laden. |
+   | `get round()` | Nummer der laufenden Runde (der Verlauf gruppiert danach). |
+   | `get busy()` | Läuft gerade eine Runde? Dann wird nicht gespeichert. |
+   | `playerFields()` | Spielfelder für neue Spieler (z. B. Handkarten). |
+   | `leaveGame(p)` | Beim Entfernen aufräumen; `true` = erst nach der Runde entfernen. |
+   | `afterChange()` | Läuft nach jedem Ereignis (Timer, automatische Züge). |
+   | `dispose()` | Timer stoppen, wenn der Raum gelöscht wird. |
+
+   Mit `this.say(text, kind, cat)` kommt etwas in den Verlauf. Die Kategorien für die Filter sind `action`, `win`, `cards`, `system` und `react`. `this.onChange('state')` zeichnet alle neu, `this.onChange('ereignis', { to: spielerId, … })` geht nur an einen Spieler. Die Plattform-Ereignisse `create`, `join`, `kick`, `makeHost`, `history` und `react` darf ein Spiel nicht belegen; der Server bricht sonst beim Start ab.
+
+3. **Browser:** `public/games/maumau/maumau.js` und `maumau.css`. Das Skript zeichnet seine Oberfläche in `#game-root` und meldet sich an:
+
+   ```js
+   'use strict';
+   $('#game-root').innerHTML = `<div id="game">…</div>`;
+   registerGame('maumau', {
+     show() { /* einblenden, zeichnen */ },
+     onState(state) { /* neuer Stand vom Server */ },
+     onPrefs() { /* persönliche Einstellungen geändert */ },
+   });
+   ```
+
+   Aus `core.js` stehen bereit: `$`, `$$`, `esc`, `send(ereignis, daten)`, `toast`, `ask` (Dialog), `beep`, `store`, `prefs` mit `usePrefs({ … })` und `savePrefs()`, `socket` und `ICON`. Das Aussehen baut auf `style.css` auf. Inline-Skripte und `onclick=""` gehen wegen der CSP nicht.
+
+4. **Tests:** `test/maumau.test.js` für die Regeln (Raum direkt, ohne Server). Mit Server: einen freien Portbereich nehmen (siehe oben).
+
+5. **Docker:** nichts zu tun, `games/` und `public/` werden komplett kopiert.
+
+### Geplante Spiele
+
+Eigene Namen und eigenes Design, denn Uno, Skip-Bo, Phase 10 und Mensch ärgere Dich nicht sind geschützte Marken. Die Regeln stimmen wir vor jedem Spiel ab.
+
+1. **Mau-Mau** (frei nutzbar): erster Testfall für die Modul-Architektur
+2. **Farbenchaos** (Uno-ähnlich, Arbeitstitel): baut auf Mau-Mau auf (gleiche Ablage- und Zieh-Logik, eigene Karten)
+3. **Mäxchen** und **Schocken**: Würfelspiele, schnell und gesellig
+4. **Hütchenrennen** (Mensch-ärgere-dich-ähnlich, Arbeitstitel): braucht eine Spielbrett-Oberfläche
+5. **Zehn Etappen** (Phase-10-ähnlich, Arbeitstitel)
+6. **Stapelrennen** (Skip-Bo-ähnlich, Arbeitstitel)
+
+Weitere Ideen: Schwimmen/31, Blackjack mit unseren Chips, Würfelpoker mit Punkteblatt, Werwolf, Montagsmaler.
+
+**Wichtig für die Fairness:** Der Browser bekommt nur seine eigenen Karten. Gegnerkarten verlassen den Server erst beim Showdown. Das prüft `test/server.test.js`. Das gilt für jedes Spiel: Was ein Spieler nicht sehen darf, gehört nicht in `view()`.
 
 ## Abweichungen vom Pflichtenheft
 
@@ -151,4 +195,4 @@ test/       Engine-Tests inkl. 100.000 Zufallshänden, Server-, Sicherheits- und
 
 ## Als Nächstes (V1.1)
 
-Turniermodus mit steigenden Blinds, Time Bank, Pre-Actions (Check/Fold, Call Any), Straddle, Bomb Pot, Run It Twice, 7-2-Bonus, Hand-Replay, Discord-Webhook.
+Time Bank, Straddle, Bomb Pot, Run It Twice, 7-2-Bonus, Hand-Replay.

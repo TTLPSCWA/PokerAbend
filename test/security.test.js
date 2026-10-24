@@ -6,15 +6,16 @@ import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { io } from 'socket.io-client';
+import { createAuth } from '../server/security.js';
 
-const PORT = 4100 + Math.floor(Math.random() * 50);
+const PORT = 4050 + Math.floor(Math.random() * 50); // eigener Bereich: 4050–4099
 const URL = `http://localhost:${PORT}`;
 let server;
 
 before(async () => {
   const dataDir = mkdtempSync(join(tmpdir(), 'poker-sec-'));
   server = spawn(process.execPath, ['server/index.js'], {
-    env: { ...process.env, PORT: String(PORT), DATA_DIR: dataDir, SITE_PASSWORD: 'Flush2026', POKER_NO_DOTENV: '1', DISCORD_CLIENT_ID: '' },
+    env: { ...process.env, PORT: String(PORT), DATA_DIR: dataDir, SITE_PASSWORD: 'Flush2026', POKER_NO_DOTENV: '1' },
     stdio: 'pipe',
   });
   await new Promise((res, rej) => {
@@ -42,7 +43,7 @@ test('Ohne Passwort: Seite leitet zur Passwort-Seite, Dateien und API sind gespe
   const r = await get('/?t=ABCDE');
   assert.equal(r.status, 302);
   assert.match(r.headers.get('location'), /^\/login\?next=/);
-  assert.equal((await get('/app.js')).status, 401);
+  assert.equal((await get('/core.js')).status, 401);
   assert.equal((await get('/index.html')).status, 401);
   assert.equal((await get('/me')).status, 401);
   // Login-Seite selbst und ihr Stylesheet sind erreichbar
@@ -74,7 +75,9 @@ test('Mit Cookie: Seite, Dateien und Socket funktionieren, Cookie wird verlänge
   const r = await get('/', cookie);
   assert.equal(r.status, 200);
   assert.match(r.headers.get('set-cookie') || '', /pa_auth=/);
-  assert.equal((await get('/app.js', cookie)).status, 200);
+  assert.equal((await get('/core.js', cookie)).status, 200);
+  assert.equal((await get('/games/poker/poker.js', cookie)).status, 200);
+  assert.equal((await get('/games/poker/poker.css')).status, 401, 'Spieldateien nur angemeldet');
   const c = await connect({ extraHeaders: { cookie } });
   assert.equal(c.ok, true);
   c.s.close();
@@ -106,11 +109,32 @@ test('Kein Open Redirect nach dem Login', async () => {
   assert.equal(r.headers.get('location'), '/');
 });
 
-test('Sicherheits-Header sind gesetzt', async () => {
+test('Sicherheits-Header sind gesetzt, Bilder nur von der eigenen Seite', async () => {
   const r = await get('/login');
-  assert.match(r.headers.get('content-security-policy'), /frame-ancestors 'none'/);
+  const csp = r.headers.get('content-security-policy');
+  assert.match(csp, /frame-ancestors 'none'/);
+  assert.match(csp, /script-src 'self'(;|$)/);
+  assert.match(csp, /img-src 'self' data:(;|$)/, 'keine fremden Bildquellen');
   assert.equal(r.headers.get('x-frame-options'), 'DENY');
   assert.equal(r.headers.get('x-content-type-options'), 'nosniff');
+});
+
+test('Login-Seite hat ein Passwortfeld, /me meldet Modus und Spiele', async () => {
+  const html = await (await get('/login?next=/?t=ABCDE')).text();
+  assert.match(html, /type="password"/);
+  assert.match(html, /name="next" value="\/\?t=ABCDE"/);
+  const me = await (await get('/me', cookie)).json();
+  assert.equal(me.mode, 'password');
+  assert.deepEqual(me.games.map((g) => g.id), ['poker'], 'Spielauswahl für die Startseite');
+  assert.ok(me.games[0].createFields.some((f) => f.key === 'bigBlind'));
+  assert.equal('events' in me.games[0], false, 'keine Server-Interna');
+});
+
+test('Abmelden löscht das Cookie und führt zur Passwort-Seite', async () => {
+  const r = await fetch(URL + '/logout', { method: 'POST', redirect: 'manual', headers: { cookie } });
+  assert.equal(r.status, 303);
+  assert.equal(r.headers.get('location'), '/login');
+  assert.match(r.headers.get('set-cookie'), /pa_auth=;.*Max-Age=0/);
 });
 
 test('Tisch-Codes raten wird gebremst', async () => {
@@ -141,4 +165,15 @@ test('Passwort raten wird nach 8 Fehlversuchen gesperrt', async () => {
   assert.ok(r.headers.get('retry-after'));
   // Auch das richtige Passwort hilft während der Sperre nicht
   assert.equal((await login('Flush2026')).status, 429);
+});
+
+test('Passwort ändern macht alte Cookies ungültig', () => {
+  const a = createAuth({ password: 'alt', secret: 'geheim' });
+  const b = createAuth({ password: 'neu', secret: 'geheim' });
+  const token = a.issue();
+  assert.equal(a.valid(token), true);
+  assert.equal(b.valid(token), false);
+  assert.equal(a.checkPassword('alt'), true);
+  assert.equal(a.checkPassword('Alt'), false);
+  assert.equal(a.checkPassword(undefined), false);
 });

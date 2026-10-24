@@ -1,10 +1,63 @@
-// Pokerabend – Browser-Seite. Zeigt nur an, was der Server schickt, und sendet Wünsche zurück.
-/* global io */
-const $ = (sel, el = document) => el.querySelector(sel);
-const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
-const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+// Texas Hold'em im Browser. Zeigt nur an, was der Server schickt, und sendet Wünsche zurück.
+// Läuft nach /core.js (Startseite, Verbindung, Dialoge, Hilfen) und meldet sich am Ende mit registerGame('poker', …) an.
+'use strict';
 
-const AVATARS = ['🦊', '🐻', '🐼', '🐸', '🦉', '🐯', '🐙', '🦄', '🐺', '🐧', '🦁', '🐢'];
+// Oberfläche des Tisches – jedes Spiel bringt seine eigene mit
+$('#game-root').innerHTML = `<div id="game" class="game" hidden>
+  <header class="topbar">
+    <div class="top-left">
+      <button class="code-chip" id="copy-link" title="Einladungslink kopieren" aria-label="Einladungslink kopieren">
+        <span class="code-label">Tisch</span> <b id="room-code">-----</b>
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+      </button>
+    </div>
+    <div class="meta" id="meta" aria-live="polite"></div>
+    <div class="top-right">
+      <button class="btn btn-sm freeze-btn" id="freeze-btn" data-do="freeze" hidden></button>
+      <nav class="topnav" aria-label="Seitenleisten">
+        <button class="nav-btn" data-panel="log"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>Verlauf</span></button>
+        <button class="nav-btn" data-panel="stand"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M12 20V5M19 20v-6"/></svg><span>Stand</span></button>
+        <button class="nav-btn" data-panel="me"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg><span>Ich</span></button>
+        <button class="nav-btn" data-panel="host" id="nav-host" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/></svg><span>Host</span></button>
+      </nav>
+    </div>
+  </header>
+
+  <section class="table-wrap">
+    <div class="table" id="table">
+      <div class="rail"></div>
+      <div class="felt">
+        <div class="pot" id="pot"></div>
+        <div class="board" id="board"></div>
+        <div class="felt-msg" id="felt-msg"></div>
+      </div>
+      <div id="seats"></div>
+      <div class="dealer" id="dealer" hidden aria-label="Dealer-Button">D</div>
+    </div>
+  </section>
+
+  <section class="dock" id="dock"></section>
+
+  <div class="hands-pop" id="hands-pop" hidden>
+    <div class="panel-head">
+      <h2>Pokerhände</h2>
+      <button class="icon-btn" data-hands aria-label="Schließen"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="hands-body" id="hands-body"></div>
+  </div>
+
+  <aside class="panel" id="panel" hidden aria-labelledby="panel-title">
+    <button class="grip" id="panel-grip" aria-label="Schließen"></button>
+    <div class="panel-head">
+      <h2 id="panel-title">Verlauf</h2>
+      <button class="icon-btn" id="panel-close" aria-label="Schließen"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="panel-body" id="panel-body"></div>
+  </aside>
+</div>
+
+<aside id="seb" class="seb-card" hidden></aside>`;
+
 const REACTIONS = ['👍', '😂', '😮', '😬', '🔥', '🙈', 'GG', 'Nice Hand', 'Glück gehabt', 'Respekt'];
 const SUIT = { s: '♠', h: '♥', d: '♦', c: '♣' };
 const STREET = { preflop: 'Pre-Flop', flop: 'Flop', turn: 'Turn', river: 'River', done: 'Hand vorbei' };
@@ -25,16 +78,24 @@ const HAND_NAME = Object.fromEntries(HANDS.map(([cat, name]) => [cat, name]));
 function pct(p) { return p >= 99.95 ? 'sicher' : p < 1 ? '< 1 %' : Math.round(p) + ' %'; }
 
 // ---------- Persönliche Einstellungen (nur in diesem Browser) ----------
-const PREF_DEFAULTS = { fourColor: false, strength: true, bb: false, sound: true, calm: false, theme: 'classic', keys: true };
-const store = {
-  get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
-  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* privater Modus */ } },
+const PREF_DEFAULTS = {
+  fourColor: false, strength: true, bb: false, sound: true, calm: false, theme: 'classic', keys: true,
+  notify: false,      // Browser-Benachrichtigung, wenn man im Hintergrund dran ist
+  foldJokes: true,    // freche Sprüche beim Folden statt Checken
+  seatCards: false,   // eigene Karten zusätzlich am eigenen Platz
+  cardSize: 'normal', // normal | large | xl
+  odds: true,         // eigene Gewinnchancen anzeigen (wenn der Host sie erlaubt)
 };
-let prefs = { ...PREF_DEFAULTS, ...store.get('poker:prefs', {}) };
-function savePrefs() { store.set('poker:prefs', prefs); applyPrefs(); render(); }
+// Standard-Abstände der Blind-Vorlagen – wie BLIND_PRESETS in games/poker/blinds.js
+const BLIND_DEFAULTS = { fast: { minutes: 6, hands: 8 }, normal: { minutes: 12, hands: 15 }, long: { minutes: 20, hands: 25 }, custom: { minutes: 12, hands: 15 } };
+const mmss = (ms) => { const s = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+const pctText = (p) => String(p).replace('.', ',') + ' %';
+usePrefs(PREF_DEFAULTS);
 function applyPrefs() {
   document.body.classList.toggle('four', prefs.fourColor);
   document.body.classList.toggle('calm', prefs.calm);
+  document.body.classList.toggle('cards-l', prefs.cardSize === 'large');
+  document.body.classList.toggle('cards-xl', prefs.cardSize === 'xl');
   document.documentElement.dataset.theme = prefs.theme;
 }
 applyPrefs();
@@ -42,16 +103,12 @@ applyPrefs();
 // ---------- Zustand ----------
 let S = null;            // letzter Zustand vom Server
 let prevS = null;
-let session = null;      // { code, token }
-let account = { mode: 'open', user: null }; // aus /me: Discord, Passwort oder offen
 let clockOffset = 0;     // Server-Uhr minus Browser-Uhr
 let raiseValue = null;
 let raiseKey = null;
 let panel = null;
 let handsOpen = false;
 let actionSeq = 0;
-
-const socket = io({ transports: ['websocket', 'polling'] });
 
 // ---------- Hilfen ----------
 function amt(n) {
@@ -68,49 +125,11 @@ function cardHTML(c, extra = '') {
   const red = s === 'h' || s === 'd' ? 'red' : '';
   return `<div class="card ${red} ${s} ${extra}" aria-label="${r}${SUIT[s]}"><span class="r">${r}</span><span class="s">${SUIT[s]}</span></div>`;
 }
-const brokenAvatars = new Set();
-function avatarHTML(p) {
-  if (p?.avatarUrl && !brokenAvatars.has(p.avatarUrl)) {
-    return `<img class="av-img" src="${esc(p.avatarUrl)}" alt="" data-initial="${esc(initial(p.name))}" referrerpolicy="no-referrer" loading="lazy">`;
-  }
-  if (p?.avatarUrl) return `<span class="av-initial">${esc(initial(p.name))}</span>`;
-  return esc(p?.avatar || '🙂');
-}
-const initial = (name) => (String(name || '?').trim()[0] || '?').toUpperCase();
-// Kein Inline-onerror (CSP): Fehler beim Laden fangen wir global ab
-document.addEventListener('error', (e) => {
-  const img = e.target;
-  if (!(img instanceof HTMLImageElement) || !img.classList.contains('av-img')) return;
-  brokenAvatars.add(img.getAttribute('src'));
-  const span = document.createElement('span');
-  span.className = 'av-initial';
-  span.textContent = img.dataset.initial || '?';
-  img.replaceWith(span);
-}, true);
 function chipClass(n) {
   const bb = S?.settings?.bigBlind || 100;
   const x = n / bb;
   return x >= 50 ? 'c5' : x >= 20 ? 'c4' : x >= 5 ? 'c3' : x >= 2 ? 'c2' : 'c1';
 }
-let toastTimer;
-function toast(text, bad = false) {
-  const t = $('#toast');
-  t.textContent = text; t.classList.toggle('bad', bad); t.classList.add('show');
-  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
-}
-function send(event, data = {}) {
-  return new Promise((res) => socket.emit(event, data, (r) => { if (!r?.ok) toast(r?.error || 'Das hat nicht geklappt', true); res(r); }));
-}
-
-// Kleine Symbole als Inline-SVG – nur wo sie Bedeutung tragen
-const svg = (d, cls = '') => `<svg class="ico ${cls}" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
-const ICON = {
-  pause: svg('<path d="M9 5v14M15 5v14"/>'),
-  play: svg('<path d="M7 5l12 7-12 7z"/>', 'fill'),
-  offline: svg('<path d="M3 3l18 18"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M5 12.6a10 10 0 0 1 4.3-2.4M14.7 10.2A10 10 0 0 1 19 12.6"/><path d="M12 20h.01"/>'),
-  crown: svg('<path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/>', 'crown fill'),
-  more: svg('<circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/>', 'fill'),
-};
 // Chip-Stapel: 1–3 Chips je nach Höhe (in Big Blinds)
 function chipStack(n, max = 3) {
   const x = n / (S?.settings?.bigBlind || 100);
@@ -118,170 +137,19 @@ function chipStack(n, max = 3) {
   return `<span class="stack" aria-hidden="true">${`<span class="chip ${chipClass(n)}"></span>`.repeat(count)}</span>`;
 }
 
-// Eigener Bestätigungsdialog (statt confirm/prompt): Titel, ein Satz, Abbrechen links, Aktion rechts.
-// <dialog> hält den Fokus im Dialog, Esc schließt. Ergebnis: false, true oder der eingegebene Wert.
-function ask({ title, text = '', ok = 'OK', danger = false, input = null }) {
-  const d = $('#dlg');
-  if (d.open) d.close();
-  $('#dlg-title').textContent = title;
-  $('#dlg-text').textContent = text;
-  const extra = $('#dlg-extra');
-  extra.innerHTML = '';
-  extra.hidden = !input;
-  let field = null;
-  if (input) {
-    field = document.createElement('input');
-    field.className = 'input';
-    field.type = input.type || 'text';
-    field.value = input.value ?? '';
-    field.readOnly = !!input.readOnly;
-    field.setAttribute('aria-label', input.label || title);
-    // Enter = Aktion (sonst würde das Formular den ersten Knopf, also „Abbrechen“, auslösen)
-    field.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); d.close('ok'); } });
-    extra.append(field);
-  }
-  const okBtn = $('#dlg-ok');
-  okBtn.textContent = ok;
-  okBtn.className = 'btn ' + (danger ? 'btn-danger' : 'btn-brass');
-  $('#dlg-cancel').hidden = !!input?.noCancel;
-  return new Promise((res) => {
-    d.returnValue = '';
-    d.addEventListener('close', () => res(d.returnValue === 'ok' ? (field && !field.readOnly ? field.value : true) : false), { once: true });
-    d.showModal();
-    if (field && !field.readOnly) { field.focus(); field.select(); }
-    else if (field) { okBtn.focus(); field.select(); }
-    else (danger ? $('#dlg-cancel') : okBtn).focus();
-  });
-}
 
 // ---------- Töne ----------
-let audio;
-function beep(freq = 660, ms = 120, vol = 0.05, type = 'sine') {
-  if (!prefs.sound) return;
-  try {
-    audio = audio || new AudioContext();
-    const o = audio.createOscillator(); const g = audio.createGain();
-    o.type = type; o.frequency.value = freq; g.gain.value = vol;
-    o.connect(g); g.connect(audio.destination);
-    g.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + ms / 1000);
-    o.start(); o.stop(audio.currentTime + ms / 1000);
-  } catch { /* kein Ton */ }
-}
 const sounds = {
   turn: () => { beep(740, 140, 0.06); setTimeout(() => beep(988, 160, 0.05), 140); },
   chips: () => { beep(2200, 40, 0.03, 'triangle'); setTimeout(() => beep(1800, 50, 0.025, 'triangle'), 50); },
   win: () => { [523, 659, 784].forEach((f, i) => setTimeout(() => beep(f, 180, 0.05), i * 110)); },
+  bigWin: () => { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 220, 0.055), i * 120)); },
+  nudge: () => { [880, 660, 880].forEach((f, i) => setTimeout(() => beep(f, 110, 0.07, 'square'), i * 150)); },
 };
 
-// ---------- Lobby ----------
-const params = new URLSearchParams(location.search);
-let lobbyTab = params.get('t') ? 'join' : 'create';
-let avatar = store.get('poker:avatar', AVATARS[Math.floor(Math.random() * AVATARS.length)]);
-
-function applyAccount() {
-  const discord = account.mode === 'discord' && account.user;
-  $('#f-name-field').hidden = !!discord;
-  $('#f-avatar-field').hidden = !!discord;
-  $('#f-name').required = !discord;
-  const box = $('#me-box');
-  box.hidden = !discord;
-  if (discord) {
-    box.innerHTML = `<span class="me-who">Angemeldet mit Discord als ${avatarHTML({ name: account.user.name, avatarUrl: account.user.avatar })} <b>${esc(account.user.name)}</b></span>
-      <form method="post" action="/logout"><button class="btn btn-sm" type="submit">Abmelden</button></form>`;
-    $('#lobby-foot').textContent = 'Nur Spielgeld, kein Echtgeld.';
-  }
-}
-function showLobby(error = '') {
-  $('#game').hidden = true;
-  $('#lobby').hidden = false;
-  applyAccount();
-  $('#lobby-error').textContent = error;
-  $('#f-name').value = store.get('poker:name', '');
-  if (params.get('t')) $('#f-code').value = params.get('t').toUpperCase();
-  $('#avatars').innerHTML = AVATARS.map((a) => `<button type="button" class="avatar-opt" data-a="${a}" aria-pressed="${a === avatar}" aria-label="Avatar ${a}">${a}</button>`).join('');
-  setTab(lobbyTab);
-}
-function setTab(tab) {
-  lobbyTab = tab;
-  $$('.tab').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === tab)));
-  $$('[data-for]').forEach((el) => { el.hidden = el.dataset.for !== tab; });
-  $('#f-submit').textContent = tab === 'join' ? 'Platz nehmen' : 'Tisch erstellen';
-  $('#f-code').required = tab === 'join';
-}
-$$('.tab').forEach((b) => b.addEventListener('click', () => setTab(b.dataset.tab)));
-$('#avatars').addEventListener('click', (e) => {
-  const b = e.target.closest('.avatar-opt'); if (!b) return;
-  avatar = b.dataset.a; store.set('poker:avatar', avatar);
-  $$('.avatar-opt').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-});
-$('#lobby-form').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const name = $('#f-name').value.trim();
-  store.set('poker:name', name);
-  $('#lobby-error').textContent = '';
-  const done = (r) => {
-    if (!r?.ok) { $('#lobby-error').textContent = r?.error || 'Verbindung fehlgeschlagen'; return; }
-    session = { code: r.code, token: r.token };
-    store.set('poker:session:' + r.code, r.token);
-    store.set('poker:last', r.code);
-    history.replaceState(null, '', '?t=' + r.code);
-    showGame();
-  };
-  if (lobbyTab === 'create') {
-    socket.emit('create', { name, avatar, settings: { startStack: $('#f-stack').value, smallBlind: $('#f-sb').value, bigBlind: $('#f-bb').value } }, done);
-  } else {
-    const code = $('#f-code').value.trim().toUpperCase();
-    socket.emit('join', { code, name, avatar, token: store.get('poker:session:' + code, null) }, done);
-  }
-});
-
-// Automatisch wieder an den Tisch, wenn wir schon ein Token haben
-function tryResume() {
-  const code = (params.get('t') || '').toUpperCase();
-  const token = code && store.get('poker:session:' + code, null);
-  if (code && account.mode === 'discord') {
-    socket.emit('join', { code }, (r) => {
-      if (r?.ok) { session = { code: r.code, token: r.token }; store.set('poker:last', r.code); showGame(); }
-      else showLobby(r?.error || '');
-    });
-    return;
-  }
-  if (!token) { showLobby(); return; }
-  socket.emit('join', { code, token }, (r) => {
-    if (r?.ok) { session = { code: r.code, token: r.token }; showGame(); }
-    else { store.set('poker:session:' + code, null); showLobby(); }
-  });
-}
-
-// ---------- Socket ----------
-socket.on('connect', () => {
-  $('#offline').hidden = true;
-  if (session) socket.emit('join', { code: session.code, token: session.token }, (r) => { if (!r?.ok) { toast(r?.error, true); session = null; showLobby(); } });
-});
-socket.on('disconnect', () => { if (session) $('#offline').hidden = false; });
-// Verbindung abgelehnt? Dann ist meist das Passwort-Cookie abgelaufen → zur Passwort-Seite
-socket.on('connect_error', async () => {
-  try {
-    const r = await fetch('/me', { credentials: 'same-origin' });
-    if (r.status === 401) location.href = '/login?next=' + encodeURIComponent(location.pathname + location.search);
-  } catch { /* Server nicht erreichbar – Socket.IO versucht es weiter */ }
-});
-socket.on('replaced', () => { session = null; document.body.innerHTML = '<main class="lobby"><div class="lobby-felt"><h1 class="wordmark">Pokerabend</h1><p class="lobby-sub">Du spielst gerade in einem anderen Tab weiter. Diesen Tab kannst du schließen.</p></div></main>'; });
-// Sitzung ungültig (abgemeldet, nicht mehr auf dem Discord-Server) → zur Login-Seite
-socket.on('loggedOut', () => { location.href = '/login?error=expired&next=' + encodeURIComponent(location.pathname + location.search); });
-socket.on('kicked', () => { if (session) store.set('poker:session:' + session.code, null); session = null; toast('Der Host hat dich vom Tisch genommen', true); showLobby(); });
-socket.on('state', (st) => {
-  prevS = S; S = st;
-  clockOffset = st.now - Date.now();
-  if (session) { animateChips(prevS, S); render(); cues(prevS, S); }
-});
 socket.on('reaction', ({ seat, id, text }) => showReaction(seat, id, text));
+socket.on('nudge', (n) => { if (session) showNudge(n); });
 
-function showGame() {
-  $('#lobby').hidden = true;
-  $('#game').hidden = false;
-  render();
-}
 
 // ---------- Darstellung ----------
 // Hochformat (Handy, Tablet hochkant): hoher Tisch. Muss zu den Media-Queries in style.css passen.
@@ -412,8 +280,10 @@ function render() {
   $('#nav-host').hidden = !S.you?.isHost;
   const h = S.hand;
   const st = S.settings;
-  $('#meta').innerHTML = `<div class="blinds"><small>Blinds</small>${amt(st.smallBlind)} / ${amt(st.bigBlind)}</div>
-    <div class="meta-sub">${h ? `Hand #${h.no} · ${STREET[h.street]}` : 'Noch keine Hand'}${S.frozen ? ' · <b>Angehalten</b>' : S.paused ? ' · <b>Pause</b>' : ''}</div>`;
+  const b = S.blinds;
+  const levels = b.mode !== 'off';
+  $('#meta').innerHTML = `<div class="blinds"><small>Blinds${levels ? ` · Level ${b.level}` : ''}</small>${amt(b.sb)} / ${amt(b.bb)}</div>
+    <div class="meta-sub">${h ? `Hand #${h.no} · ${STREET[h.street]}` : 'Noch keine Hand'}${S.frozen ? ' · <b>Angehalten</b>' : S.paused ? ' · <b>Pause</b>' : ''}${levels ? blindNote(b) : ''}</div>`;
   const fb = $('#freeze-btn');
   fb.hidden = !S.you?.isHost || !S.started;
   fb.classList.toggle('btn-brass', !!S.frozen);
@@ -429,6 +299,25 @@ function render() {
   if (panel) renderPanel();
   if (handsOpen) renderHands();
   renderSeb();
+  checkGifts();
+}
+
+// Nach dem Showdown: wie die Chancen auf jeder Straße standen (nur gezeigte Hände)
+function afterOddsHTML(h) {
+  if (!h.afterOdds || !prefs.odds) return '';
+  const seats = Object.keys(h.afterOdds[0].odds);
+  const streets = h.afterOdds.map((r) => STREET[r.street]).join(' → ');
+  const rows = seats.map((s) => `<span>${esc(S.seats[s]?.name ?? '?')} ${h.afterOdds.map((r) => String(r.odds[s]).replace('.', ',')).join(' → ')} %</span>`).join(' · ');
+  return `<div class="sub after-odds"><small>Chancen ${streets}:</small> ${rows}</div>`;
+}
+// „Nächstes Level in 4:32 – 100/200“ (die Uhr zählt in tick() weiter)
+function blindNote(b) {
+  if (b.pending) return ` · <b>Ab nächster Hand ${amt(b.pending.sb)}/${amt(b.pending.bb)}</b>`;
+  if (!b.next) return ' · höchstes Level';
+  const n = b.next;
+  const when = n.handsLeft !== null ? `in ${n.handsLeft} ${n.handsLeft === 1 ? 'Hand' : 'Händen'}`
+    : `in <span data-blindclock>${mmss(n.msLeft)}</span>${b.running ? '' : ' (Uhr steht)'}`;
+  return ` · Nächstes Level ${when} – ${amt(n.sb)}/${amt(n.bb)}`;
 }
 
 function renderTable() {
@@ -443,6 +332,7 @@ function renderTable() {
     }
   }
   const justDone = !!(h?.done && !(prevS?.hand?.done && prevS.hand.no === h.no));
+  const big = bigWin(h);
 
   // Pot: Main Pot und Side Pots als eigene Panels
   const pots = h && !h.done ? h.pots : [];
@@ -479,7 +369,7 @@ function renderTable() {
     else if (next !== null) sub = `Nächste Hand in <span data-countdown>${next}</span> s`;
     else if (S.you?.isHost) sub = '<button class="btn btn-brass btn-sm" data-do="nextHand">Nächste Hand</button>';
     else if (!S.settings.autoNext) sub = 'Der Host startet die nächste Hand';
-    msg = lines.join('') + (sub ? `<div class="sub" style="margin-top:6px">${sub}</div>` : '');
+    msg = lines.join('') + afterOddsHTML(h) + (sub ? `<div class="sub" style="margin-top:6px">${sub}</div>` : '');
   } else if (!h.done && S.paused) {
     msg = '<div class="sub">Pause nach dieser Hand</div>';
   }
@@ -495,7 +385,7 @@ function renderTable() {
     const s = S.seats[i];
     const style = `left:${p.x}%;top:${p.y}%`;
     if (!s) {
-      seatsHTML += `<div class="empty-seat" style="${style}">${!iAmSeated && seatedCount < S.settings.maxPlayers ? `<button class="sit-btn" data-sit="${i}" aria-label="Hier sitzen"><span class="plus" aria-hidden="true">+</span><span class="long">Hier sitzen</span></button>` : '<div class="empty-dot"></div>'}</div>`;
+      seatsHTML += `<div class="empty-seat" style="${style}">${!iAmSeated && seatedCount < S.settings.maxPlayers ? `<button class="sit-btn" data-sit="${i}" aria-label="Hier sitzen" ${S.you?.sitLocked ? 'disabled title="Du setzt noch eine Hand aus"' : ''}><span class="plus" aria-hidden="true">+</span><span class="long">Hier sitzen</span></button>` : '<div class="empty-dot"></div>'}</div>`;
       continue;
     }
     const turn = h && !h.done && h.toAct === i;
@@ -505,9 +395,15 @@ function renderTable() {
     const fx = (k) => (prev && prev.id === s.id && prev[k] !== s[k] ? 'fx' : '');
     const cls = ['seat', showing && 'showing', turn && 'turn', i === mySeat && 'me', s.folded && 'folded',
       (s.sittingOut || s.busted) && !s.inHand && 'out', s.sittingOut && 'break', !s.connected && 'is-offline',
-      s.allIn && 'allin', won && 'winner', won && justDone && 'shine'].filter(Boolean).join(' ');
+      s.allIn && 'allin', won && 'winner', won && justDone && 'shine', won && big && 'big-win'].filter(Boolean).join(' ');
     let cards = '';
-    if (s.cards && i !== mySeat) cards = s.cards.map((c) => cardHTML(c, h.done && winning.size ? (winning.has(c) ? 'win' : '') : '')).join('');
+    // Eigene Karten am eigenen Platz nur auf Wunsch (unter „Ich“) – sonst stehen sie unten in der Aktionsleiste
+    if (s.cards && (i !== mySeat || prefs.seatCards)) {
+      cards = s.cards.map((c) => cardHTML(c, s.folded ? 'dim' : h.done && winning.size ? (winning.has(c) ? 'win' : '') : '')).join('');
+    }
+    // Anstupsen: am Panel dessen, der gerade dran ist
+    const nudge = turn && iAmSeated && i !== mySeat && S.settings.nudge && !S.frozen
+      ? `<button class="nudge-btn" data-nudge="${s.id}" title="${esc(s.name)} anstupsen" aria-label="${esc(s.name)} anstupsen">👉</button>` : '';
     // Status: immer Symbol bzw. Text, nie nur Farbe
     let status = '';
     if (won) status = '<span class="plaque status gold">★ Gewinnt</span>';
@@ -531,8 +427,8 @@ function renderTable() {
           <div class="p-stack"><span class="chip c5" aria-hidden="true"></span>${amt(s.stack)}</div>
           ${handName}
         </div>
-        ${act}${status}
-        ${won ? `<span class="p-win ${justDone ? 'pop' : ''}">+${amt(won)}</span>` : ''}
+        ${act}${status}${nudge}
+        ${won ? `<span class="p-win ${justDone ? 'pop' : ''} ${big ? 'big' : ''}">+${amt(won)}</span>` : ''}
       </div>
     </div>`;
     if (s.bet > 0) seatsHTML += `<div class="bet" style="visibility:hidden" data-bet="${i}">${chipStack(s.bet, 3)}${amt(s.bet)}</div>`;
@@ -549,23 +445,38 @@ function renderDock() {
   const h = S.hand;
   const mySeat = S.you?.seat;
   if (mySeat === null || mySeat === undefined) {
-    dock.innerHTML = `<div class="mine">${handsBtn()}<div class="waiting">Du schaust zu. Klick auf <b>Hier sitzen</b>, um mitzuspielen.</div></div><div></div>`;
+    const you = S.you;
+    let right = '<div></div>';
+    let note = 'Du schaust zu. Klick auf <b>Hier sitzen</b>, um mitzuspielen.';
+    if (you?.lastSeat !== null && you?.lastSeat !== undefined) {
+      // Nach dem Aufstehen: eine Hand aussetzen, dann wieder rein
+      const free = S.seats.filter(Boolean).length < S.settings.maxPlayers;
+      note = you.sitLocked ? 'Du setzt eine Hand aus. Sobald die nächste Hand läuft, kannst du wieder einsteigen.' : 'Du schaust zu.';
+      if (free) {
+        const label = you.sitLocked || (h && !h.done) ? 'Wieder einsteigen ab nächster Hand' : 'Wieder einsteigen';
+        right = `<div class="actions"><div class="act-row"><button class="btn btn-brass" data-do="rejoin" ${you.sitLocked ? 'disabled aria-describedby="lock-note"' : ''}>${label}</button></div></div>`;
+      }
+    }
+    dock.innerHTML = `<div class="mine">${handsBtn()}<div class="waiting" id="lock-note">${note}</div></div>${right}`;
     return;
   }
   const me = S.seats[mySeat];
   const myCards = me.cards && me.cards[0] !== '??' ? me.cards : null;
+  const foldedMine = !!(myCards && me.folded); // nach dem Fold weiter sichtbar, abgedunkelt
   const winning = new Set();
   if (h?.done) h.result?.pots.forEach((p) => (p.cards || []).forEach((c) => winning.add(c)));
   const fresh = prevS?.hand?.no !== h?.no;
-  const cardsHTML = myCards ? myCards.map((c) => cardHTML(c, `${fresh ? 'deal' : ''} ${winning.has(c) ? 'win' : ''}`)).join('') : '';
+  const cardsHTML = myCards ? myCards.map((c) => cardHTML(c, `${fresh ? 'deal' : ''} ${winning.has(c) ? 'win' : ''} ${foldedMine ? 'dim' : ''}`)).join('')
+    + (foldedMine ? '<span class="folded-tag">gefoldet</span>' : '') : '';
   let chances = '';
-  if (S.odds && S.strengthCat !== null && h && !h.done && h.street !== 'river') {
+  if (prefs.odds && S.odds && S.strengthCat !== null && h && !h.done && h.street !== 'river') {
     const better = HANDS.filter(([cat]) => cat > S.strengthCat && S.odds[cat] >= 1).sort((a, b) => S.odds[b[0]] - S.odds[a[0]]).slice(0, 2);
     if (better.length) chances = `<small class="chances">Chance: ${better.map(([cat, name]) => `${name} ${pct(S.odds[cat])}`).join(' · ')}</small>`;
   }
-  const strength = myCards && prefs.strength && S.strength ? `<button class="strength" data-hands title="Alle Pokerhände und deine Chancen"><span>${esc(S.strength)}</span><small>${STREET[h.street]}</small>${chances}</button>` : '';
-  const myChips = `<span class="me-chips"><span class="chip c5" aria-hidden="true"></span>${amt(me.stack)}${S.legal ? ' · <b>Du bist dran</b>' : ''}</span>`;
-  const left = `<div class="mine">${handsBtn()}<div class="cards">${cardsHTML}</div><div class="mine-info">${strength}${myChips}</div></div>`;
+  const showName = prefs.strength && S.strength;
+  const strength = myCards && !foldedMine && (showName || chances) ? `<button class="strength" data-hands title="Alle Pokerhände und deine Chancen"><span>${showName ? esc(S.strength) : 'Deine Chancen'}</span><small>${STREET[h.street]}</small>${chances}</button>` : '';
+  const myChips = `<span class="me-chips"><span class="chip c5" aria-hidden="true"></span>${amt(me.stack)}</span>`;
+  const left = `<div class="mine">${handsBtn()}<div class="cards ${foldedMine ? 'is-folded' : ''}">${cardsHTML}</div><div class="mine-info">${strength}${myChips}</div></div>`;
 
   let right = '';
   const L = S.legal;
@@ -577,7 +488,9 @@ function renderDock() {
     const callInner = L.canCheck
       ? `<span class="amt">Check</span><small>kostet nichts ${kb('C')}</small>`
       : `<small>${L.toCall >= me.stack ? 'All-in' : 'Call'} ${kb('C')}</small><span class="amt">${amt(L.toCall)}</span>`;
-    right = `<div class="actions">
+    const clock = S.hand.turnTime ? '<div class="my-clock" data-myclock><b>–</b><small>Sek.</small></div>' : '';
+    right = `<div class="turn-banner" role="status">Du bist dran</div>
+    <div class="actions">
       ${L.canRaise && L.maxTo > L.minTo ? `<div class="raise-box">
         <div class="presets">
           <button class="btn btn-sm" data-preset="0.5">½ Pot</button>
@@ -591,6 +504,7 @@ function renderDock() {
         </div>
       </div>` : ''}
       <div class="act-row act-main">
+        ${clock}
         <button class="btn btn-outline-red" data-act="fold" ${L.canCheck ? 'title="Du könntest auch checken"' : ''}><span class="amt">Fold</span><small>${L.canCheck ? 'statt Check' : 'aussteigen'} ${kb('F')}</small></button>
         <button class="btn" data-act="${L.canCheck ? 'check' : 'call'}">${callInner}</button>
         ${L.canRaise ? `<button class="btn btn-brass" data-act="raise" id="raise-btn">${raiseInner(raiseValue)}</button>` : ''}
@@ -611,10 +525,27 @@ function renderDock() {
       parts.push(S.settings.rebuy === 'off' ? '<span class="waiting">Keine Chips mehr</span>' : `<button class="btn btn-brass" data-do="rebuy">Nachkaufen (${amt(S.settings.startStack)})</button>`);
     }
     parts.push(me.sittingOut ? '<button class="btn btn-brass" data-do="back">Bin wieder da</button>' : `<button class="btn" data-do="sitout" title="Du bekommst keine Karten, bis du zurück bist">${ICON.pause}<span><span class="long">Ich mache </span>Pause</span></button>`);
-    parts.push(`<button class="btn btn-ghost" data-do="stand">${me.leaving ? 'Stehe nach der Hand auf' : 'Aufstehen'}</button>`);
-    right = `<div class="actions"><div class="act-row">${parts.join('')}</div></div>`;
+    if (me.leaving) parts.push('<span class="waiting">Du stehst nach der Hand auf</span>', '<button class="btn btn-ghost" data-do="stand">Doch sitzen bleiben</button>');
+    else parts.push(`<button class="btn btn-ghost" data-do="stand">${h && !h.done && me.inHand ? 'Nach der Hand aufstehen' : 'Aufstehen'}</button>`);
+    right = `<div class="actions">${preActionsHTML(me)}<div class="act-row">${parts.join('')}</div></div>`;
   }
   dock.innerHTML = left + right;
+}
+// Vorab-Aktionen: gelten nur für die Karten, die man gerade hält – mit der nächsten Hand ist alles zurückgesetzt
+const PRE = [['checkfold', 'Check/Fold'], ['check', 'Check'], ['callany', 'Call beliebig'], ['fold', 'Fold']];
+function preActionsHTML(me) {
+  const h = S.hand;
+  if (!h || h.done || S.frozen || !me.inHand || me.folded || me.allIn) return '';
+  const pre = S.you.pre;
+  const canCheck = h.currentBet <= me.bet;
+  const btns = PRE.map(([k, l]) => {
+    const off = k === 'check' && !canCheck && pre !== 'check';
+    return `<button class="btn btn-sm pre-btn" data-pre="${k}" aria-pressed="${pre === k}" ${off ? 'disabled title="Es wurde gesetzt – Check geht nicht"' : ''}>${l}</button>`;
+  }).join('');
+  const label = PRE.find(([k]) => k === pre)?.[1];
+  const info = pre ? `<span class="pre-active">Automatisch: <b>${label}</b></span>`
+    : S.you.preNote ? `<span class="pre-note" role="status">${esc(S.you.preNote)}</span>` : '<span class="pre-hint">Vorab für diese Hand:</span>';
+  return `<div class="pre-row ${pre ? 'on' : ''}" role="group" aria-label="Vorab-Aktion für diese Hand">${info}${btns}</div>`;
 }
 function raiseInner(v) {
   const L = S.legal;
@@ -636,6 +567,23 @@ function tick() {
       seat.classList.toggle('low', left < 8000);
     } else fg.style.strokeDashoffset = '0'; // ohne Zeitlimit: voller Ring
   }
+  const bc = $('[data-blindclock]');
+  const nb = S?.blinds?.next;
+  if (bc && nb?.msLeft != null && S.blinds.running) {
+    const t = mmss(nb.msLeft - (Date.now() + clockOffset - S.now));
+    if (bc.textContent !== t) bc.textContent = t;
+  }
+  const mc = $('[data-myclock]');
+  if (mc && S?.hand && S.legal) {
+    const frozenLeft = S.frozen ? S.hand.frozenLeft : null;
+    const left = frozenLeft != null ? frozenLeft : S.hand.deadline ? S.hand.deadline - (Date.now() + clockOffset) : null;
+    if (left !== null) {
+      const secs = String(Math.max(0, Math.ceil(left / 1000)));
+      const b = mc.firstChild;
+      if (b.textContent !== secs) b.textContent = secs;
+      mc.classList.toggle('low', left < 8000);
+    }
+  }
   const cd = $('[data-countdown]');
   if (cd && S?.nextAt) cd.textContent = Math.max(0, Math.ceil((S.nextAt - (Date.now() + clockOffset)) / 1000));
   requestAnimationFrame(tick);
@@ -647,13 +595,118 @@ function cues(a, b) {
   if (!b?.hand) return;
   const mine = b.you?.seat;
   const wasMyTurn = a?.hand && !a.hand.done && a.hand.toAct === mine && a.hand.no === b.hand.no && a.hand.street === b.hand.street && a.hand.currentBet === b.hand.currentBet;
-  if (b.legal && !wasMyTurn) { sounds.turn(); if (document.hidden) document.title = '● Du bist dran – Pokerabend'; }
-  if (!b.legal) document.title = 'Pokerabend';
+  if (b.legal && !wasMyTurn) {
+    sounds.turn();
+    if (document.hidden) { blinkTitle(true); notifyTurn(); }
+  }
+  if (!b.legal) blinkTitle(false);
   const betsBefore = a?.hand && !a.hand.done ? a.hand.bets : 0;
   if (b.hand.bets > betsBefore) sounds.chips();
   if (b.hand.done && !(a?.hand?.done && a.hand.no === b.hand.no)) {
-    if (b.hand.result?.pots.some((p) => p.winners.includes(mine))) sounds.win(); else sounds.chips();
+    const big = bigWin(b.hand);
+    if (b.hand.result?.pots.some((p) => p.winners.includes(mine))) (big ? sounds.bigWin : sounds.win)(); else sounds.chips();
+    const winners = [...new Set(b.hand.result?.pots.flatMap((p) => p.winners) || [])];
+    // Erst nachdem die Chips in der Mitte angekommen sind
+    setTimeout(() => winners.forEach((w) => chipRain(w, big)), 450);
   }
+}
+
+// Tab-Titel blinkt, solange man im Hintergrund dran ist
+let blinkTimer = null;
+function blinkTitle(on) {
+  clearInterval(blinkTimer); blinkTimer = null;
+  document.title = 'Pokerabend';
+  if (!on) return;
+  let k = 0;
+  blinkTimer = setInterval(() => { document.title = k++ % 2 ? 'Pokerabend' : '● Du bist dran!'; }, 900);
+}
+function notifyTurn() {
+  if (!prefs.notify || !('Notification' in window) || Notification.permission !== 'granted') return;
+  try {
+    const n = new Notification('Pokerabend', { body: 'Du bist dran!', tag: 'poker-turn', silent: true });
+    n.onclick = () => { window.focus(); n.close(); };
+  } catch { /* manche Handys erlauben das nur mit Service Worker */ }
+}
+
+// Großer Gewinn: Pot ab 50 Big Blinds oder Hand ab Full House
+const FULL_HOUSE = 6;
+function bigWin(h) {
+  if (!h?.done || !h.result) return false;
+  const bb = S?.settings?.bigBlind || 100;
+  return h.result.pots.some((p) => p.amount >= 50 * bb || (HANDS.find(([, name]) => name === p.hand)?.[0] ?? -1) >= FULL_HOUSE);
+}
+// Chips regnen auf das Gewinner-Panel (nur CSS-Animation, nichts Externes)
+function chipRain(seat, big) {
+  if (motionOff()) return;
+  let plate = $(`.seat[data-seat="${seat}"] .plate`);
+  if (!plate?.offsetParent) plate = seat === S?.you?.seat ? $('#dock .cards') : null; // eigener Platz am Handy ausgeblendet
+  if (!plate) return;
+  const r = plate.getBoundingClientRect();
+  const box = document.createElement('div');
+  box.className = 'chip-rain' + (big ? ' big' : '');
+  box.style.left = r.left + 'px'; box.style.top = r.top + 'px'; box.style.width = r.width + 'px'; box.style.height = r.height + 'px';
+  const colors = ['c1', 'c2', 'c3', 'c4', 'c5'];
+  const n = big ? 26 : 12;
+  for (let k = 0; k < n; k++) {
+    const c = document.createElement('span');
+    c.className = 'chip ' + colors[k % colors.length];
+    c.style.left = Math.round(Math.random() * 100) + '%';
+    c.style.animationDelay = Math.round(Math.random() * (big ? 700 : 350)) + 'ms';
+    box.appendChild(c);
+  }
+  document.body.appendChild(box);
+  setTimeout(() => box.remove(), big ? 2000 : 1500);
+}
+
+// ---------- Chips verschenken ----------
+const seenGifts = new Set();
+async function giftDialog(id) {
+  const name = playerName(id);
+  const amount = await ask({
+    title: `${name} Chips schenken`, text: `Nur Spielgeld. ${name} muss zustimmen, das Angebot gilt 60 Sekunden.`, ok: 'Weiter',
+    input: { type: 'number', value: Math.min(1000, S.standings.find((p) => p.id === S.you?.id)?.chips || 0), label: 'Wie viele Chips?' },
+  });
+  if (amount === false) return;
+  const message = await ask({
+    title: 'Nachricht dazu?', text: 'Optional, höchstens 100 Zeichen.', ok: 'Senden', cancel: 'Ohne Nachricht', cancelValue: '',
+    input: { value: '', label: 'Nachricht', maxLength: 100, placeholder: 'z. B. Für die nächste Runde' },
+  });
+  if (message === false) return;
+  send('gift', { id, amount: Number(amount), message }).then((r) => r?.ok && toast(`Angebot an ${name} geschickt`));
+}
+// Neues Angebot für mich: einmal als Dialog zeigen (Esc = später, bleibt unter „Stand“ sichtbar)
+async function checkGifts() {
+  const g = (S.you?.giftsIn || []).find((x) => !seenGifts.has(x.id));
+  if (!g || $('#dlg').open) return;
+  seenGifts.add(g.id);
+  const r = await ask({
+    title: `${g.from} möchte dir ${amt(g.amount)} Chips schenken`, text: g.message ? `„${g.message}“` : 'Ohne Nachricht.',
+    ok: 'Annehmen', cancel: 'Ablehnen', cancelValue: 'no',
+  });
+  if (r === true) send('giftAnswer', { id: g.id, accept: true }).then((x) => x?.ok && toast('Angenommen 🎁'));
+  else if (r === 'no') send('giftAnswer', { id: g.id, accept: false });
+  else if (!panel) toast('Das Angebot findest du unter „Stand“');
+}
+
+// ---------- Anstupsen ----------
+let nudgeTimer = null;
+function showNudge({ from, text }) {
+  let el = $('#nudge');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'nudge'; el.className = 'nudge-pop'; el.setAttribute('role', 'alert');
+    el.addEventListener('click', () => { el.hidden = true; });
+    document.body.appendChild(el);
+  }
+  el.innerHTML = '<span class="nudge-hand" aria-hidden="true">👉</span><b></b><small></small>';
+  el.querySelector('b').textContent = text;
+  el.querySelector('small').textContent = from ? `${from} stupst dich an` : 'Du bist dran';
+  el.hidden = false;
+  el.classList.remove('go'); void el.offsetWidth; el.classList.add('go');
+  sounds.nudge();
+  try { navigator.vibrate?.([120, 80, 120]); } catch { /* egal */ }
+  if (document.hidden) { blinkTitle(true); notifyTurn(); }
+  clearTimeout(nudgeTimer); nudgeTimer = setTimeout(() => { el.hidden = true; }, 3500);
 }
 
 // Einsätze fliegen in die Mitte, Pots fliegen zum Gewinner
@@ -804,7 +857,7 @@ function toggleHands(open = !handsOpen) {
   if (open) { renderHands(); $('.hrank.now')?.scrollIntoView({ block: 'center' }); }
 }
 function renderHands() {
-  const odds = S.odds;
+  const odds = prefs.odds ? S.odds : null;
   const mine = S.strengthCat;
   $('#hands-body').innerHTML = `<p class="hint" style="margin:0;color:var(--muted)">${odds
     ? 'Prozent = so wahrscheinlich ist das am River deine Hand. Die Karten der anderen kennt keiner, die zählen nicht mit.'
@@ -841,23 +894,126 @@ function miniCards(text) {
   return text.replace(/(^|[\s:(])(10|[2-9JQKA])([♠♥♦♣])/g, (_, pre, r, s) => `${pre}<span class="mc ${s === '♥' || s === '♦' ? 'red' : ''} ${SUIT_KEY[s]}">${r}${s}</span>`);
 }
 
+// Host: Blinds erhöhen – Modus, Abstand, Vorlage oder eigene Liste, dazu die Level als Vorschau
+function blindsHost(s) {
+  const unit = s.blindMode === 'hands' ? 'Hände' : 'Minuten';
+  const lv = S.blinds.levels;
+  const preview = lv.map((l, i) => `<li class="${s.blindMode !== 'off' && i === S.blinds.level - 1 ? 'now' : ''}"><small>${i + 1}</small> ${amt(l.sb)}/${amt(l.bb)}</li>`).join('');
+  return `<div class="host-grid">
+      <label class="field"><span>Blinds erhöhen</span><select data-blind="blindMode">
+        ${[['off', 'aus'], ['minutes', 'alle X Minuten'], ['hands', 'alle X Hände']].map(([v, l]) => `<option value="${v}" ${s.blindMode === v ? 'selected' : ''}>${l}</option>`).join('')}
+      </select></label>
+      <label class="field"><span>Alle wie viele ${unit}?</span><input type="number" min="1" max="240" data-blind="blindEvery" value="${s.blindEvery}" ${s.blindMode === 'off' ? 'disabled' : ''}></label>
+      <label class="field" style="grid-column:1/-1"><span>Vorlage</span><select data-blind="blindPreset">
+        ${[['fast', 'Schnell'], ['normal', 'Normal'], ['long', 'Lang'], ['custom', 'Eigene Liste']].map(([v, l]) => `<option value="${v}" ${s.blindPreset === v ? 'selected' : ''}>${l}</option>`).join('')}
+      </select></label>
+    </div>
+    ${s.blindPreset === 'custom' ? `<label class="field"><span>Eigene Liste</span>
+      <textarea class="input" data-set="blindList" rows="6" placeholder="50/100&#10;100/200&#10;200/400">${esc(s.blindList.join('\n'))}</textarea>
+      <small class="hint">Ein Level pro Zeile, Small/Big Blind, z. B. 100/200. Höchstens 40 Level.</small></label>` : ''}
+    <p class="hint" style="margin:0">Ein neues Level greift immer erst mit der nächsten Hand. Die Uhr steht vor dem Start, bei „Sofort anhalten“ und in der Pause.</p>
+    <ol class="levels">${preview}</ol>`;
+}
+
+// ---------- Verlauf: ganzer Abend, nach Händen gruppiert, mit Filtern ----------
+// Der Server schickt mit jedem Zustand die letzten 40 Einträge; den Rest holt „history“ einmal, wenn der Verlauf aufgeht.
+const LOG_FILTERS = [['action', 'Aktionen'], ['win', 'Gewinne'], ['cards', 'Karten'], ['system', 'System'], ['react', 'Reaktionen']];
+const hist = { code: null, entries: [], loaded: false, loading: false, cats: new Set(LOG_FILTERS.map(([k]) => k)), q: '', toggled: new Map(), key: '' };
+function syncHistory(fetchAll = false) {
+  if (!S) return;
+  const lastN = hist.entries.at(-1)?.n || 0;
+  // Anderer Tisch oder Server neu gestartet (Nummern beginnen neu): von vorn
+  if (hist.code !== S.code || (S.logSeq ?? 0) < lastN) {
+    hist.code = S.code; hist.entries = []; hist.loaded = false; hist.toggled.clear();
+    return syncHistory(fetchAll);
+  }
+  const tail = S.log || [];
+  const gap = !hist.loaded || (tail.length && tail[0].n > lastN + 1);
+  if (gap) {
+    if (!(fetchAll || panel === 'log') || hist.loading) return;
+    hist.loading = true;
+    socket.emit('history', { after: lastN }, (r) => {
+      hist.loading = false;
+      if (!r?.ok) return;
+      mergeHistory(r.entries);
+      hist.loaded = true;
+      if (panel === 'log') renderLog();
+    });
+    return;
+  }
+  mergeHistory(tail);
+}
+function mergeHistory(list) {
+  let last = hist.entries.at(-1)?.n || 0;
+  for (const e of list) if (e.n > last) { hist.entries.push(e); last = e.n; }
+}
+const logShown = (e) => e.cat !== 'hand' && hist.cats.has(e.cat) && (!hist.q || e.text.toLowerCase().includes(hist.q));
+const logItems = (list) => list.filter(logShown).map((l) => `<li class="${l.kind}">${miniCards(esc(l.text))}</li>`).join('');
+function logGroups() {
+  const groups = new Map();
+  for (const e of hist.entries) { if (!groups.has(e.hand)) groups.set(e.hand, []); groups.get(e.hand).push(e); }
+  return groups;
+}
+function renderLog(force = false) {
+  const body = $('#panel-body');
+  if (force || !$('#log-groups', body)) {
+    body.innerHTML = `<div class="reacts">${REACTIONS.map((r) => `<button class="btn btn-sm" data-react="${esc(r)}">${esc(r)}</button>`).join('')}</div>
+      <div class="log-tools">
+        <div class="log-filters" role="group" aria-label="Verlauf filtern">${LOG_FILTERS.map(([k, l]) => `<button class="chip-btn" data-logcat="${k}" aria-pressed="${hist.cats.has(k)}">${l}</button>`).join('')}</div>
+        <input type="search" id="log-search" class="input" placeholder="Spieler suchen" aria-label="Im Verlauf nach Spielername suchen" value="${esc(hist.q)}">
+      </div>
+      <div id="log-groups" aria-live="off"></div>`;
+    hist.key = '';
+    if (!hist.loaded) syncHistory(true);
+  }
+  const key = `${hist.entries.at(-1)?.n || 0}|${[...hist.cats].join()}|${hist.q}|${hist.loaded}`;
+  if (key === hist.key) return;
+  hist.key = key;
+  const box = $('#log-groups');
+  const groups = logGroups();
+  const newest = Math.max(0, ...groups.keys());
+  const filtering = !!hist.q || hist.cats.size < LOG_FILTERS.length;
+  let html = '';
+  // Neueste Hand oben; eingeklappte Hände werden erst beim Aufklappen gefüllt
+  for (const h of [...groups.keys()].sort((a, b) => b - a)) {
+    const list = groups.get(h);
+    const shown = list.filter(logShown);
+    if (filtering && !shown.length) continue;
+    const open = hist.q ? true : hist.toggled.has(h) ? hist.toggled.get(h) : h === newest;
+    const win = list.find((e) => e.cat === 'win' && / (gewinnt|teilen sich) /.test(e.text));
+    html += `<details class="lg" data-hand="${h}" ${open ? 'open' : ''}>
+      <summary><b>${h ? `Hand #${h}` : 'Vor der ersten Hand'}</b>${win ? `<small>${miniCards(esc(win.text))}</small>` : ''}<span class="lg-n">${shown.length}</span></summary>
+      <ul class="log">${open ? logItems(list) : ''}</ul>
+    </details>`;
+  }
+  const top = box.scrollTop;
+  box.innerHTML = html || `<p class="hint">${hist.loaded ? 'Nichts gefunden – Filter oder Suche ändern.' : 'Lade den Verlauf …'}</p>`;
+  box.scrollTop = top;
+}
+
 function renderPanel(force = false) {
   const body = $('#panel-body');
   // Formulare nicht neu zeichnen, während jemand tippt oder ein Menü offen ist
-  if (!force && (panel === 'host' || panel === 'me') && body.contains(document.activeElement) && document.activeElement.matches('input, select')) return;
+  if (!force && (panel === 'host' || panel === 'me') && body.contains(document.activeElement) && document.activeElement.matches('input, select, textarea')) return;
   if (!force && panel === 'host' && openMenu) return;
   if (panel === 'log') {
-    const atBottom = body.scrollTop + body.clientHeight >= body.scrollHeight - 30;
-    body.innerHTML = `<div class="reacts">${REACTIONS.map((r) => `<button class="btn btn-sm" data-react="${esc(r)}">${esc(r)}</button>`).join('')}</div>
-      <ul class="log">${S.log.map((l) => `<li class="${l.kind}">${miniCards(esc(l.text))}</li>`).join('')}</ul>`;
-    if (atBottom || force) body.scrollTop = body.scrollHeight;
+    renderLog(force);
   } else if (panel === 'stand') {
     const st = S.stats;
-    body.innerHTML = `<table class="standings"><tbody>${S.standings.map((p, k) => `<tr>
+    const canGift = S.settings.gifts;
+    const giftIn = (S.you?.giftsIn || []).map((g) => `<div class="notice gift" role="note">
+        <b>${esc(g.from)}</b> möchte dir ${amt(g.amount)} Chips schenken${g.message ? ` – „${esc(g.message)}“` : ''}
+        <div class="gift-acts"><button class="btn btn-sm" data-gift-answer="${g.id}" data-accept="0">Ablehnen</button><button class="btn btn-sm btn-brass" data-gift-answer="${g.id}" data-accept="1">Annehmen</button></div>
+      </div>`).join('');
+    const go = S.you?.giftOut;
+    const giftOut = go ? `<div class="notice" role="note">Dein Geschenk an <b>${esc(go.to)}</b> (${amt(go.amount)} Chips) wartet auf eine Antwort.</div>` : '';
+    body.innerHTML = giftIn + giftOut + `<table class="standings"><tbody>${S.standings.map((p, k) => `<tr>
         <td><span class="rank ${k < 3 ? 'r' + (k + 1) : ''}" aria-label="Platz ${k + 1}">${k + 1}</span></td>
         <td><span class="mini-av">${avatarHTML(p)}</span> ${esc(p.name)}${p.connected ? '' : ` <small style="color:var(--text-2)">${ICON.offline} offline</small>`}${p.rebuys ? `<br><small style="color:var(--text-2)">${p.rebuys}× nachgekauft</small>` : ''}</td>
         <td class="num">${amt(p.chips)}</td>
-        <td class="num ${p.net > 0 ? 'pos' : p.net < 0 ? 'neg' : ''}">${p.net > 0 ? '+' : p.net < 0 ? '−' : '±'}${amt(Math.abs(p.net))}</td></tr>`).join('')}</tbody></table>
+        <td class="num ${p.net > 0 ? 'pos' : p.net < 0 ? 'neg' : ''}">${p.net > 0 ? '+' : p.net < 0 ? '−' : '±'}${amt(Math.abs(p.net))}</td>
+        <td class="gift-cell">${canGift && p.id !== S.you?.id ? `<button class="icon-btn" data-gift="${p.id}" title="${esc(p.name)} Chips schenken" aria-label="${esc(p.name)} Chips schenken">🎁</button>` : ''}</td></tr>`).join('')}</tbody></table>
+      ${canGift ? '<p class="hint">🎁 = Chips verschenken. Geht nur zwischen zwei Händen, der andere muss zustimmen. Am Plus/Minus ändert das nichts.</p>' : ''}
       <div class="facts">
         <div class="fact"><small>Gespielte Hände</small>${st.hands}</div>
         ${st.biggestPot ? `<div class="fact"><small>Größter Pot</small>${amt(st.biggestPot.amount)} – ${esc(st.biggestPot.name)}${st.biggestPot.hand ? ` mit ${esc(st.biggestPot.hand)}` : ''}</div>` : ''}
@@ -868,22 +1024,30 @@ function renderPanel(force = false) {
     body.innerHTML = `<div>
       ${t('fourColor', 'Vier-Farben-Deck', 'Karo blau, Kreuz grün')}
       ${t('strength', 'Meine Hand anzeigen', S.settings.handStrength ? 'z. B. „Zwei Paare“ neben deinen Karten' : 'Der Host hat das an diesem Tisch ausgeschaltet')}
+      ${t('odds', 'Gewinnchancen anzeigen', { off: 'Der Host hat die Chancen an diesem Tisch ausgeschaltet', own: 'Wie wahrscheinlich deine Hand bis zum River besser wird', after: 'An diesem Tisch erst nach dem Showdown, für alle gezeigten Hände' }[S.settings.oddsMode])}
       ${t('bb', 'Beträge in Big Blinds')}
       ${t('sound', 'Töne', 'Signal, wenn du dran bist')}
       ${t('keys', 'Tastenkürzel', 'F = Fold, C = Check/Call, R = Raise')}
       ${t('calm', 'Animationen aus')}
+      ${t('notify', 'Benachrichtigung, wenn ich dran bin', 'Nur wenn der Tab im Hintergrund ist. Der Browser fragt einmal nach Erlaubnis.')}
+      ${t('foldJokes', 'Freche Sprüche beim Folden', 'Wenn du foldest, obwohl du checken könntest')}
+      ${t('seatCards', 'Eigene Karten auch am eigenen Platz', 'Zusätzlich zur Aktionsleiste. Am Handy wird der eigene Platz nicht gezeigt.')}
       </div>
+      <label class="field"><span>Kartengröße (deine Karten)</span>
+        <select data-pref="cardSize">${[['normal', 'normal'], ['large', 'groß'], ['xl', 'sehr groß']].map(([v, l]) => `<option value="${v}" ${prefs.cardSize === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+      </label>
+      ${padOn ? `<div class="notice" role="note"><b>Controller erkannt</b><br>A = Check/Call · B = Fold · X = Raise · LB/RB = Betrag − / + · Start = dieses Menü. Im Dialog: A = OK, B = Abbrechen.</div>` : ''}
       <label class="field"><span>Tisch</span>
         <select data-pref="theme"><option value="classic" ${prefs.theme === 'classic' ? 'selected' : ''}>Klassisch – grüner Filz</option><option value="night" ${prefs.theme === 'night' ? 'selected' : ''}>Nacht – blauer Filz</option></select>
       </label>
-      <form method="post" action="/logout" class="logout-form"><button class="btn btn-ghost" type="submit">Von dieser Seite abmelden</button></form>`;
+      ${account.mode === 'password' ? '<form method="post" action="/logout" class="logout-form"><button class="btn btn-ghost" type="submit">Von dieser Seite abmelden</button></form>' : ''}`;
   } else if (panel === 'host') {
     if (!S.you?.isHost) { openPanel(null); return; }
     const s = S.settings;
     const num = (k, label, min, step = 1) => `<label class="field"><span>${label}</span><input type="number" data-set="${k}" min="${min}" step="${step}" value="${s[k]}"></label>`;
     const sw = (k, label, sub = '') => `<label class="toggle"><span>${label}${sub ? `<small>${sub}</small>` : ''}</span><input type="checkbox" role="switch" data-set="${k}" ${s[k] ? 'checked' : ''}></label>`;
     const group = (id, title, inner) => `<details class="group" data-group="${id}" ${openGroups.has(id) ? 'open' : ''}><summary>${title}</summary><div class="group-body">${inner}</div></details>`;
-    const tabs = [['spiel', 'Spiel'], ['regeln', 'Regeln'], ['spieler', 'Spieler']]
+    const tabs = [['spiel', 'Spiel'], ['regeln', 'Regeln'], ['spieler', 'Spieler'], ['sprueche', 'Sprüche']]
       .map(([id, l]) => `<button role="tab" aria-selected="${hostTab === id}" data-host-tab="${id}">${l}</button>`).join('');
     let inner = '';
     if (hostTab === 'spiel') {
@@ -892,6 +1056,10 @@ function renderPanel(force = false) {
           <button class="btn ${S.frozen ? 'btn-brass' : ''}" data-do="freeze">${S.frozen ? `${ICON.play} Weiterspielen` : `${ICON.pause} Sofort für alle anhalten`}</button>
           <button class="btn" data-do="pause">${S.paused ? `${ICON.play} Weiterspielen` : 'Pause nach dieser Hand'}</button>`}
         ${S.hand?.done ? '<button class="btn" data-do="nextHand">Nächste Hand</button>' : ''}
+      </div>
+      <div class="danger-zone">
+        <button class="btn btn-outline-red" data-new-game ${S.hand && !S.hand.done ? 'disabled title="Geht nur zwischen zwei Händen"' : ''}>Neues Spiel starten</button>
+        <p class="hint" style="margin:0">Alle wieder auf Startchips, Blinds auf Level 1, Nachkäufe auf 0. Spieler und Plätze bleiben, der alte Abendstand steht im Verlauf.</p>
       </div>
       <p class="hint" style="margin:0">„Sofort anhalten“ friert alles ein, auch den Zug-Timer. „Pause nach dieser Hand“ lässt die laufende Hand zu Ende spielen.</p>`;
     } else if (hostTab === 'regeln') {
@@ -910,7 +1078,19 @@ function renderPanel(force = false) {
           </select></label>
           ${num('nextDelay', 'Pause zwischen Händen (s)', 2)}</div>
           ${sw('autoNext', 'Nächste Hand automatisch starten')}`)}
-        ${group('komfort', 'Komfort', sw('handStrength', 'Handanzeige erlauben', 'Spieler sehen, was sie gerade haben, und ihre Chancen'))}`;
+        ${group('levels', 'Blinds erhöhen', blindsHost(s))}
+        ${group('komfort', 'Komfort', sw('handStrength', 'Handanzeige erlauben', 'Spieler sehen, was sie gerade haben')
+          + `<label class="field"><span>Gewinnchancen</span><select data-set="oddsMode">
+              ${[['own', 'nur eigene, während der Hand'], ['after', 'nach der Hand, für gezeigte Hände'], ['off', 'aus']].map(([v, l]) => `<option value="${v}" ${s.oddsMode === v ? 'selected' : ''}>${l}</option>`).join('')}
+            </select></label>`
+          + sw('gifts', 'Chips verschenken erlauben', 'Nur zwischen zwei Händen, der andere muss zustimmen')
+          + sw('nudge', 'Anstupsen erlauben', 'Nach 10 s automatisch, außerdem per 👉 am Panel – höchstens alle 10 s'))}`;
+    } else if (hostTab === 'sprueche') {
+      const area = (k, label, sub) => `<label class="field"><span>${label}</span>
+        <textarea class="input" data-set="${k}" rows="7" spellcheck="true">${esc(s[k].join('\n'))}</textarea><small class="hint">${sub}</small></label>`;
+      inner = `<p class="hint" style="margin:0">Ein Spruch pro Zeile, höchstens 30 Sprüche mit je 80 Zeichen. Leer lassen = Standardsprüche. Gespeichert wird beim Verlassen des Feldes.</p>
+        ${area('nudgeLines', 'Anstupsen', 'Zufällig einer, wenn jemand trödelt.')}
+        ${area('foldLines', 'Fold statt Check', 'Zufällig einer im Dialog „Trotzdem folden / Doch checken“.')}`;
     } else {
       const others = S.standings.filter((p) => p.id !== S.you.id);
       inner = `<div class="plist">${others.map((p) => `<div class="prow">
@@ -934,8 +1114,14 @@ function newId() { return Date.now().toString(36) + (actionSeq++).toString(36); 
 async function doAction(type) {
   const L = S?.legal; if (!L) return;
   if (type === 'fold' && L.canCheck) {
-    const ok = await ask({ title: 'Wirklich folden?', text: 'Du könntest kostenlos checken und bleibst trotzdem in der Hand.', ok: 'Trotzdem folden', danger: true });
-    if (!ok || !S?.legal) return;
+    const lines = S.settings.foldLines || [];
+    const choice = await ask({
+      title: prefs.foldJokes && lines.length ? pick(lines) : 'Wirklich folden?',
+      text: 'Du könntest kostenlos checken und bleibst trotzdem in der Hand.',
+      ok: 'Trotzdem folden', danger: true, cancel: 'Doch checken', cancelValue: 'check',
+    });
+    if (!S?.legal || !choice) return;
+    if (choice === 'check') type = 'check';
   }
   const payload = { type, id: newId() };
   if (type === 'raise') payload.amount = raiseValue;
@@ -956,6 +1142,21 @@ document.addEventListener('click', async (e) => {
   const t = e.target.closest('button, [data-pref], [data-set]');
   if (!t) return;
   if (t.dataset.act) doAction(t.dataset.act);
+  else if (t.dataset.pre) send('preAction', { type: S.you?.pre === t.dataset.pre ? null : t.dataset.pre });
+  else if (t.dataset.logcat) {
+    const k = t.dataset.logcat;
+    if (hist.cats.has(k)) hist.cats.delete(k); else hist.cats.add(k);
+    t.setAttribute('aria-pressed', String(hist.cats.has(k)));
+    renderLog();
+  }
+  else if (t.dataset.nudge) send('nudge', { id: t.dataset.nudge }).then((r) => r?.ok && toast('Angestupst 👉'));
+  else if (t.dataset.gift) giftDialog(t.dataset.gift);
+  else if (t.dataset.giftAnswer) { seenGifts.add(t.dataset.giftAnswer); send('giftAnswer', { id: t.dataset.giftAnswer, accept: t.dataset.accept === '1' }); }
+  else if (t.dataset.newGame !== undefined) {
+    if (await ask({ title: 'Neues Spiel starten?', text: 'Alle bekommen wieder die Startchips, die Blinds gehen auf Level 1 und Nachkäufe auf 0. Der jetzige Abendstand wird im Verlauf gespeichert.', ok: 'Neues Spiel', danger: true })) {
+      send('newGame').then((r) => r?.ok && toast('Neues Spiel – viel Glück!'));
+    }
+  }
   else if (t.dataset.sit !== undefined) send('sit', { seat: Number(t.dataset.sit) });
   else if (t.dataset.preset) {
     const L = S.legal; const h = S.hand;
@@ -989,29 +1190,33 @@ document.addEventListener('click', async (e) => {
   } else if (t.dataset.do) {
     const map = { start: 'start', nextHand: 'nextHand', pause: 'pause', freeze: 'freeze', show: 'show', rebuy: 'rebuy', stand: 'stand' };
     if (t.dataset.do === 'sitout') send('sitOut', { value: true });
+    else if (t.dataset.do === 'rejoin') {
+      // Am liebsten wieder auf den alten Platz, sonst auf den ersten freien
+      const last = S.you?.lastSeat;
+      const seat = last !== null && last !== undefined && !S.seats[last] ? last : S.seats.findIndex((x) => !x);
+      if (seat >= 0) send('sit', { seat });
+    }
     else if (t.dataset.do === 'back') send('sitOut', { value: false });
     else send(map[t.dataset.do]);
   }
 });
 
-// Abmelden immer erst bestätigen
-document.addEventListener('submit', async (e) => {
-  const form = e.target;
-  if (!form.matches('form[action="/logout"]') || form.dataset.confirmed) return;
-  e.preventDefault();
-  if (await ask({ title: 'Abmelden?', text: 'Du musst dich danach neu anmelden. Am Tisch bleibt dein Platz 5 Minuten frei.', ok: 'Abmelden', danger: true })) {
-    form.dataset.confirmed = '1';
-    form.submit();
-  }
-});
 $('#panel-grip').addEventListener('click', () => openPanel(null));
 document.addEventListener('toggle', (e) => {
   const g = e.target.closest?.('details[data-group]');
   if (g) { if (g.open) openGroups.add(g.dataset.group); else openGroups.delete(g.dataset.group); }
+  const lg = e.target.matches?.('details[data-hand]') ? e.target : null;
+  if (lg) {
+    const h = Number(lg.dataset.hand);
+    hist.toggled.set(h, lg.open);
+    const ul = lg.querySelector('ul');
+    if (lg.open && !ul.children.length) ul.innerHTML = logItems(logGroups().get(h) || []);
+  }
 }, true);
 
 document.addEventListener('input', (e) => {
   const t = e.target;
+  if (t.id === 'log-search') { hist.q = t.value.trim().toLowerCase(); renderLog(); return; }
   if (t.id === 'raise-range' || t.id === 'raise-num') {
     raiseValue = Number(t.value) || 0;
     const other = t.id === 'raise-range' ? $('#raise-num') : $('#raise-range');
@@ -1026,10 +1231,25 @@ document.addEventListener('input', (e) => {
 document.addEventListener('change', (e) => {
   const t = e.target;
   if (t.id === 'raise-num') { const L = S.legal; raiseValue = Math.min(L.maxTo, Math.max(L.minTo, Number(t.value) || L.minTo)); renderDock(); }
-  if (t.dataset.pref) { prefs[t.dataset.pref] = t.type === 'checkbox' ? t.checked : t.value; savePrefs(); }
+  if (t.dataset.pref) {
+    prefs[t.dataset.pref] = t.type === 'checkbox' ? t.checked : t.value;
+    if (t.dataset.pref === 'notify' && t.checked) askNotify();
+    savePrefs();
+  }
+  if (t.dataset.blind) {
+    const s = S.settings;
+    const k = t.dataset.blind;
+    const payload = { [k]: k === 'blindEvery' ? Number(t.value) : t.value };
+    // Modus oder Vorlage gewechselt: passenden Abstand gleich mitschicken
+    const mode = k === 'blindMode' ? t.value : s.blindMode;
+    const preset = k === 'blindPreset' ? t.value : s.blindPreset;
+    if (k !== 'blindEvery' && mode !== 'off') payload.blindEvery = BLIND_DEFAULTS[preset][mode];
+    send('settings', payload).then((r) => r?.ok && toast('Gespeichert – gilt ab der nächsten Hand'));
+  }
   if (t.dataset.set) {
     const v = t.type === 'checkbox' ? t.checked : t.tagName === 'SELECT' && t.dataset.set === 'turnTime' ? Number(t.value) : t.value;
-    send('settings', { [t.dataset.set]: v }).then((r) => r?.ok && toast('Gespeichert – gilt ab der nächsten Hand'));
+    const fun = ['nudge', 'nudgeLines', 'foldLines', 'gifts', 'oddsMode'].includes(t.dataset.set);
+    send('settings', { [t.dataset.set]: v }).then((r) => r?.ok && toast(fun ? 'Gespeichert' : 'Gespeichert – gilt ab der nächsten Hand'));
   }
 });
 
@@ -1046,7 +1266,53 @@ document.addEventListener('keydown', (e) => {
   else if (k === 'c') doAction(S.legal.canCheck ? 'check' : 'call');
   else if (k === 'r' && S.legal.canRaise) doAction('raise');
 });
-document.addEventListener('visibilitychange', () => { if (!document.hidden) document.title = 'Pokerabend'; });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) blinkTitle(false); });
+// Erlaubnis für Benachrichtigungen erst, wenn jemand den Schalter umlegt
+async function askNotify() {
+  if (!('Notification' in window)) { prefs.notify = false; savePrefs(); toast('Dein Browser kann keine Benachrichtigungen', true); return; }
+  let p = Notification.permission;
+  if (p === 'default') { try { p = await Notification.requestPermission(); } catch { p = 'denied'; } }
+  if (p !== 'granted') { prefs.notify = false; savePrefs(); toast('Benachrichtigungen sind im Browser blockiert', true); }
+}
+
+// ---------- Controller (Gamepad-API) – nur aktiv, wenn einer erkannt wird ----------
+let padOn = false;
+const padPrev = {};
+window.addEventListener('gamepadconnected', () => {
+  if (!padOn) { padOn = true; requestAnimationFrame(pollPad); toast('Controller erkannt – Hilfe unter „Ich“'); }
+  if (panel === 'me') renderPanel(true);
+});
+window.addEventListener('gamepaddisconnected', () => {
+  padOn = [...(navigator.getGamepads?.() || [])].some(Boolean);
+  if (panel === 'me') renderPanel(true);
+});
+function pollPad() {
+  if (!padOn) return;
+  for (const gp of navigator.getGamepads?.() || []) {
+    if (!gp) continue;
+    gp.buttons.forEach((b, i) => {
+      const k = gp.index + ':' + i;
+      if (b.pressed && !padPrev[k]) padPress(i);
+      padPrev[k] = b.pressed;
+    });
+  }
+  requestAnimationFrame(pollPad);
+}
+// Standard-Belegung: 0 = A, 1 = B, 2 = X, 4 = LB, 5 = RB, 9 = Start
+function padPress(i) {
+  const dlg = $('#dlg');
+  if (dlg.open) { if (i === 0) $('#dlg-ok').click(); else if (i === 1) dlg.close(''); return; }
+  if (i === 9) { openPanel('me'); return; }
+  const L = S?.legal; if (!L) return;
+  if (i === 0) doAction(L.canCheck ? 'check' : 'call');
+  else if (i === 1) doAction('fold');
+  else if (i === 2 && L.canRaise) doAction('raise');
+  else if ((i === 4 || i === 5) && L.canRaise) {
+    const step = S.settings.bigBlind;
+    raiseValue = Math.min(L.maxTo, Math.max(L.minTo, (raiseValue ?? L.minTo) + (i === 5 ? step : -step)));
+    renderDock();
+  }
+}
 window.addEventListener('resize', () => render());
 
 $('#copy-link').addEventListener('click', async () => {
@@ -1055,13 +1321,13 @@ $('#copy-link').addEventListener('click', async () => {
   catch { ask({ title: 'Einladungslink', text: 'Kopieren hat nicht geklappt. Markier den Link und kopier ihn selbst.', ok: 'Fertig', input: { value: link, readOnly: true, noCancel: true, label: 'Einladungslink' } }); }
 });
 
-async function boot() {
-  try {
-    const r = await fetch('/me', { credentials: 'same-origin' });
-    if (r.status === 401) { location.href = '/login?next=' + encodeURIComponent(location.pathname + location.search); return; }
-    if (r.ok) account = await r.json();
-  } catch { /* offline – Socket.IO versucht es weiter */ }
-  applyAccount();
-  tryResume();
-}
-boot();
+// ---------- Anmelden bei core.js ----------
+registerGame('poker', {
+  show() { $('#game').hidden = false; render(); },
+  onState(st) {
+    prevS = S; S = st;
+    clockOffset = st.now - Date.now();
+    animateChips(prevS, S); syncHistory(); render(); cues(prevS, S);
+  },
+  onPrefs() { applyPrefs(); render(); },
+});
