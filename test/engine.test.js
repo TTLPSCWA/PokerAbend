@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { bestHand, compareScores, newDeck } from '../engine/cards.js';
+import { bestHand, compareScores, newDeck, shuffle, category, outlook } from '../engine/cards.js';
 import { Table } from '../engine/table.js';
 
 // ---------- Hilfen ----------
@@ -122,33 +122,46 @@ test('Unvollständiges All-in-Raise eröffnet die Runde nicht neu', () => {
   assert.equal(L.canRaise, false, 'Spieler 0 darf nur callen oder folden');
 });
 
-test('River: höchstens Bet + 2 Raises, danach nur Call oder Fold', () => {
+test('Pro Setzrunde höchstens Bet + 3 Raises, danach nur Call oder Fold', () => {
   const t = table([100000, 100000]);
   t.startHand();
-  while (t.hand.street !== 'river') t.act(t.hand.toAct, { type: t.legal(t.hand.toAct).canCheck ? 'check' : 'call' });
-  let seat = t.hand.toAct;
-  t.act(seat, { type: 'raise', amount: 100 });  // Bet
-  seat = t.hand.toAct;
-  t.act(seat, { type: 'raise', amount: 300 });  // Raise 1
-  seat = t.hand.toAct;
-  t.act(seat, { type: 'raise', amount: 900 });  // Raise 2
-  seat = t.hand.toAct;
-  const L = t.legal(seat);
-  assert.equal(L.canRaise, false);
-  assert.throws(() => t.act(seat, { type: 'raise', amount: 2000 }));
+  t.act(t.hand.toAct, { type: 'call' });
+  t.act(t.hand.toAct, { type: 'check' });
+  assert.equal(t.hand.street, 'flop');
+  t.act(t.hand.toAct, { type: 'raise', amount: 100 });  // Bet
+  t.act(t.hand.toAct, { type: 'raise', amount: 300 });  // Raise 1
+  t.act(t.hand.toAct, { type: 'raise', amount: 900 });  // Raise 2
+  t.act(t.hand.toAct, { type: 'raise', amount: 2700 }); // Raise 3
+  const seat = t.hand.toAct;
+  assert.equal(t.legal(seat).canRaise, false);
+  assert.throws(() => t.act(seat, { type: 'raise', amount: 9000 }));
   t.act(seat, { type: 'allin' }); // wird zum Call
-  assert.equal(t.hand.done, true);
+  assert.equal(t.hand.street, 'turn');
+  assert.equal(t.legal(t.hand.toAct).canRaise, true, 'Neue Runde, neues Limit');
 });
 
-test('Vor dem River bleibt Raisen unbegrenzt', () => {
+test('Pre-flop zählt der Big Blind als Bet: 3 Raises, dann Schluss', () => {
   const t = table([100000, 100000]);
   t.startHand();
-  for (let k = 0; k < 6; k++) {
-    const L = t.legal(t.hand.toAct);
-    assert.equal(L.canRaise, true);
-    t.act(t.hand.toAct, { type: 'raise', amount: L.minTo });
+  t.act(t.hand.toAct, { type: 'raise', amount: 300 });
+  t.act(t.hand.toAct, { type: 'raise', amount: 900 });
+  t.act(t.hand.toAct, { type: 'raise', amount: 2700 });
+  assert.equal(t.legal(t.hand.toAct).canRaise, false);
+});
+
+test('Schnelle Kategorie stimmt mit der vollen Auswertung überein', () => {
+  for (let i = 0; i < 20000; i++) {
+    const cards = shuffle(newDeck()).slice(0, 5 + (i % 3));
+    assert.equal(category(cards), bestHand(cards).category, cards.join(' '));
   }
-  assert.equal(t.hand.street, 'preflop');
+});
+
+test('Chancen: Flush-Draw auf dem Flop ≈ 35 %, River = sicher', () => {
+  const o = outlook(['Ah', 'Kh'], ['Qh', '7h', '2c']);
+  assert.ok(Math.abs(o[5] - 0.35) < 0.01, 'Flush ' + o[5]);
+  assert.ok(Math.abs(o.reduce((a, b) => a + b, 0) - 1) < 1e-9);
+  const r = outlook(['Ah', 'Kh'], ['Qh', '7h', '2c', '3d', '9h']);
+  assert.equal(r[5], 1);
 });
 
 test('Big Blind bekommt Pre-Flop seine Option', () => {

@@ -4,8 +4,8 @@ import { newDeck, shuffle, bestHand, compareScores } from './cards.js';
 
 export const SEATS = 9;
 const STREETS = ['preflop', 'flop', 'turn', 'river'];
-// Hausregel: Am River (alle 5 Karten liegen) höchstens Bet + 2 Raises, danach nur noch Call/Fold
-export const MAX_RIVER_RAISES = 2;
+// Hausregel: pro Setzrunde höchstens Bet + 3 Raises (pre-flop zählt der Big Blind als Bet), danach nur noch Call/Fold
+export const MAX_RAISES = 3;
 
 export class Table {
   constructor({ smallBlind = 50, bigBlind = 100, rng } = {}) {
@@ -81,7 +81,7 @@ export class Table {
     this.handNo++;
     this.hand = {
       no: this.handNo, deck, board: [], street: 'preflop', button: this.button, sb, bb, headsUp,
-      seats, players, currentBet: 0, lastRaise: this.bigBlind, fullRaises: 0, raises: 0,
+      seats, players, currentBet: 0, lastRaise: this.bigBlind, fullRaises: 0, raises: 1,
       toAct: -1, lastAggressor: -1, done: false, result: null, shown: new Set(),
     };
     this.log({ type: 'hand', no: this.handNo });
@@ -127,8 +127,7 @@ export class Table {
     const toCall = Math.min(h.currentBet - p.bet, stack);
     const othersCanAct = h.seats.some((i) => i !== seat && this.canAct(i));
     const reopened = !p.acted || p.actedAt < h.fullRaises;
-    const capped = h.street === 'river' && h.raises > MAX_RIVER_RAISES;
-    const canRaise = maxTo > h.currentBet && othersCanAct && reopened && !capped;
+    const canRaise = maxTo > h.currentBet && othersCanAct && reopened && h.raises <= MAX_RAISES;
     const minTo = h.currentBet === 0 ? this.bigBlind : h.currentBet + h.lastRaise;
     return {
       canCheck: p.bet >= h.currentBet,

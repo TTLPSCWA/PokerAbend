@@ -13,7 +13,7 @@ let server;
 
 before(async () => {
   const dataDir = mkdtempSync(join(tmpdir(), 'poker-'));
-  server = spawn(process.execPath, ['server/index.js'], { env: { ...process.env, PORT: String(PORT), DATA_DIR: dataDir }, stdio: 'pipe' });
+  server = spawn(process.execPath, ['server/index.js'], { env: { ...process.env, PORT: String(PORT), DATA_DIR: dataDir, POKER_NO_DOTENV: '1', DISCORD_CLIENT_ID: '' }, stdio: 'pipe' });
   await new Promise((res, rej) => {
     server.stdout.on('data', (d) => { if (String(d).includes('läuft')) res(); });
     server.on('exit', (c) => rej(new Error('Server beendet: ' + c)));
@@ -128,3 +128,27 @@ test('Timeout: wer nicht handelt, checkt oder foldet automatisch', async () => {
   assert.ok(a.state.log.some((l) => l.text.includes('Zeit abgelaufen')));
   a.disconnect(); b.disconnect();
 });
+
+test('Host hält an: Timer steht, niemand kann handeln, danach geht es weiter', async () => {
+  const a = client(); const b = client();
+  const { code } = await a.ask('create', { name: 'Anna', settings: { turnTime: 1, autoNext: false } });
+  await b.ask('join', { code, name: 'Ben' });
+  await a.ask('sit', { seat: 0 }); await b.ask('sit', { seat: 1 });
+  await a.ask('start');
+  await until(() => a.state?.hand);
+  assert.equal((await b.ask('freeze')).ok, false, 'Nur der Host hält an');
+  assert.ok((await a.ask('freeze')).ok);
+  await until(() => a.state.frozen);
+  const actor = a.state.hand.toAct === 0 ? a : b;
+  const r = await actor.ask('action', { type: 'call' });
+  assert.equal(r.ok, false, 'Während der Pause geht keine Aktion');
+  await wait(1500); // länger als die Zugzeit
+  assert.equal(a.state.hand.done, false, 'Timer läuft nicht ab');
+  assert.ok(!a.state.log.some((l) => l.text.includes('Zeit abgelaufen')));
+  assert.ok((await a.ask('freeze')).ok);
+  await until(() => !a.state.frozen);
+  await until(() => a.state.hand.done, 4000);
+  assert.ok(a.state.log.some((l) => l.text.includes('Zeit abgelaufen')));
+  a.disconnect(); b.disconnect();
+});
+

@@ -2,8 +2,9 @@
 // Die Regeln selbst stecken in engine/table.js – hier geht es um Menschen und Zeit.
 import { randomBytes } from 'node:crypto';
 import { Table, SEATS } from '../engine/table.js';
-import { bestHand, compareScores } from '../engine/cards.js';
-import { cleanName } from './security.js';
+import { bestHand, compareScores, outlook } from '../engine/cards.js';
+import { cleanName, safeAvatarUrl } from './security.js';
+import { isSebastian } from './sebastian.js';
 
 export const DEFAULT_SETTINGS = {
   smallBlind: 50,
@@ -49,6 +50,7 @@ export class Room {
     this.hostId = null;
     this.started = false;
     this.paused = false;
+    this.frozen = null; // Host hat sofort angehalten: { turnLeft, turnKey, nextLeft } in ms
     this.log = [];
     this.stats = { hands: 0, biggestPot: null, bestHand: null };
     this.onChange = onChange || (() => {});
@@ -62,12 +64,16 @@ export class Room {
   }
 
   // ---------- Spieler ----------
-  addPlayer(name, avatar) {
+  // Mit Discord-Login kommen Name und Bild von Discord (identity), sonst aus der Lobby
+  addPlayer(name, avatar, { discordId = null, avatarUrl = null } = {}) {
     name = cleanName(name);
     if (!name) throw new Error('Bitte gib einen Namen ein');
-    for (const p of this.players.values()) {
-      if (p.name.toLowerCase() === name.toLowerCase()) throw new Error('Der Name ist schon vergeben');
-    }
+    const taken = (n) => [...this.players.values()].some((p) => p.name.toLowerCase() === n.toLowerCase());
+    if (discordId) {
+      // Discord-Namen sind fest: bei Gleichstand bekommt der Zweite eine Nummer („Anna 2“)
+      const base = name;
+      for (let i = 2; taken(name); i++) name = base.slice(0, 16 - String(i).length - 1).trim() + ' ' + i;
+    } else if (taken(name)) throw new Error('Der Name ist schon vergeben');
     if (this.players.size >= 30) throw new Error('Der Raum ist voll');
     const id = randomBytes(6).toString('hex');
     const p = {
@@ -75,6 +81,7 @@ export class Room {
       avatar: AVATARS.includes(avatar) ? avatar : AVATARS[this.players.size % AVATARS.length],
       seat: null, bank: this.settings.startStack, buyIn: this.settings.startStack, rebuys: 0,
       connected: false, socketId: null, missed: 0, leaveAfterHand: false, seen: [],
+      discordId: discordId ? String(discordId) : null, avatarUrl: safeAvatarUrl(avatarUrl),
     };
     this.players.set(id, p);
     if (!this.hostId) this.hostId = id;
@@ -84,6 +91,11 @@ export class Room {
 
   byToken(token) {
     for (const p of this.players.values()) if (p.token === token) return p;
+    return null;
+  }
+
+  byDiscord(discordId) {
+    for (const p of this.players.values()) if (p.discordId && p.discordId === String(discordId)) return p;
     return null;
   }
 
@@ -115,27 +127,46 @@ export class Room {
 
   doStand(p) {
     const s = this.table.leave(p.seat);
-    p.bank = s.stack; p.seat = null; p.leaveAfterHand = false;
+    p.bank = s.stack; p.seat = null; p.leaveAfterHand = false; p.sebPause = false;
     this.say(`${p.name} steht auf`);
   }
 
-  remove(id) {
+  remove(id, message) {
     const p = this.players.get(id);
-    if (!p) return;
+    if (!p || p.kicked) return;
+    this.say(message || `${p.name} wurde vom Tisch entfernt`);
+    if (this.hostId === id) this.transferHost();
     if (p.seat !== null) {
       if (this.handRunning && this.table.hand.players[p.seat]) { this.table.forceFold(p.seat); this.flushEvents(); }
+      // Läuft die Hand noch, verschwindet er erst danach (Chips im Pot bleiben im Pot)
       if (this.handRunning && this.table.hand.players[p.seat]) { p.kicked = true; p.leaveAfterHand = true; return; }
       this.table.leave(p.seat);
     }
     this.players.delete(id);
-    this.say(`${p.name} wurde vom Tisch entfernt`);
-    if (this.hostId === id) this.transferHost();
+  }
+
+  // Wer länger als ms offline ist, fliegt mit allen Daten raus: Platz frei, Chips und Stand weg.
+  // Ist es der Host, übernimmt jemand anderes.
+  dropAway(ms, now = Date.now()) {
+    let dropped = 0;
+    for (const p of [...this.players.values()]) {
+      if (p.connected || p.kicked || now - (p.offlineSince ?? now) < ms) continue;
+      this.remove(p.id, `${p.name} war ${Math.round(ms / 60000) || 'ein paar'} Minuten weg und wurde entfernt`);
+      dropped++;
+    }
+    return dropped;
+  }
+
+  // Niemand mehr da: alle entfernt oder nur noch auf dem Weg raus
+  get abandoned() {
+    return [...this.players.values()].every((p) => p.kicked);
   }
 
   setSittingOut(id, value) {
     const p = this.players.get(id);
     if (p.seat === null) throw new Error('Du sitzt nicht am Tisch');
     this.table.seats[p.seat].sittingOut = value;
+    p.sebPause = value && isSebastian(p.name); // Easter Egg, nur bei Pause per Knopf
     p.missed = 0;
     this.say(value ? `${p.name} macht Pause` : `${p.name} ist wieder dabei`);
     if (!value) this.maybeStart();
@@ -152,14 +183,15 @@ export class Room {
     if (r !== 'unlimited' && p.rebuys >= Number(r)) throw new Error(`Maximal ${r}× nachkaufen`);
     s.stack = this.settings.startStack;
     s.sittingOut = false;
+    p.sebPause = false;
     p.rebuys++; p.buyIn += this.settings.startStack;
     this.say(`${p.name} kauft ${fmt(this.settings.startStack)} Chips nach`);
     this.maybeStart();
   }
 
   transferHost() {
-    const next = [...this.players.values()].find((p) => p.connected && p.id !== this.hostId)
-      || [...this.players.values()].find((p) => p.id !== this.hostId);
+    const next = [...this.players.values()].find((p) => p.connected && !p.kicked && p.id !== this.hostId)
+      || [...this.players.values()].find((p) => !p.kicked && p.id !== this.hostId);
     if (next) { this.hostId = next.id; this.say(`${next.name} ist jetzt Host`); }
   }
 
@@ -206,15 +238,45 @@ export class Room {
     if (!this.paused) this.maybeStart();
   }
 
+  // Sofort-Pause für alle: Timer bleiben stehen, niemand kann handeln, bis der Host weitermacht
+  toggleFreeze(id) {
+    this.requireHost(id);
+    if (this.frozen) {
+      const { turnLeft, turnKey, nextLeft } = this.frozen;
+      this.frozen = null;
+      const h = this.table.hand;
+      // Restzeit nur, wenn noch derselbe Zug läuft – sonst bekommt der Nächste die volle Zeit
+      if (turnLeft !== null && turnKey === this.turnKey && h && !h.done && `${h.no}:${this.seq}:${h.toAct}` === turnKey) {
+        const seat = h.toAct; const key = turnKey;
+        this.deadline = Date.now() + turnLeft;
+        this.turnTimer = setTimeout(() => this.timeout(seat, key), turnLeft);
+      }
+      if (nextLeft !== null) this.scheduleNext(nextLeft);
+      this.say('Weiter geht’s', 'warn');
+      this.afterChange();
+      return;
+    }
+    const now = Date.now();
+    this.frozen = {
+      turnLeft: this.deadline ? Math.max(0, this.deadline - now) : null,
+      turnKey: this.turnKey,
+      nextLeft: this.nextAt ? Math.max(0, this.nextAt - now) : null,
+    };
+    clearTimeout(this.turnTimer); this.turnTimer = null; this.deadline = null;
+    clearTimeout(this.nextTimer); this.nextTimer = null; this.nextAt = null;
+    this.say('Der Host hat das Spiel angehalten', 'warn');
+  }
+
   nextHand(id) {
     this.requireHost(id);
+    if (this.frozen) throw new Error('Das Spiel ist angehalten');
     if (this.handRunning) throw new Error('Die Hand läuft noch');
     this.startNext(true);
   }
 
   // ---------- Spielablauf ----------
   maybeStart() {
-    if (!this.started || this.paused || this.handRunning || this.nextTimer) return this.handRunning;
+    if (!this.started || this.paused || this.frozen || this.handRunning || this.nextTimer) return this.handRunning;
     if (this.table.hand?.done && !this.settings.autoNext) return false;
     return this.startNext();
   }
@@ -244,6 +306,7 @@ export class Room {
   act(id, action) {
     const p = this.players.get(id);
     if (p.seat === null) throw new Error('Du sitzt nicht am Tisch');
+    if (this.frozen) throw new Error('Das Spiel ist gerade angehalten');
     if (action.id) {
       if (p.seen.includes(action.id)) return false; // doppelt gesendet
       p.seen.push(action.id); if (p.seen.length > 50) p.seen.shift();
@@ -268,13 +331,15 @@ export class Room {
     if (h && h.done) {
       clearTimeout(this.turnTimer); this.turnTimer = null; this.turnKey = null; this.deadline = null;
       if (!h.counted) { h.counted = true; this.recordStats(h); this.onChange('handDone'); }
-      if (this.started && !this.paused && this.settings.autoNext && !this.nextTimer) {
-        this.nextAt = Date.now() + this.settings.nextDelay * 1000;
-        this.nextTimer = setTimeout(() => { this.nextTimer = null; this.nextAt = null; this.startNext(); this.onChange('state'); }, this.settings.nextDelay * 1000);
-      }
+      if (this.started && !this.paused && !this.frozen && this.settings.autoNext && !this.nextTimer) this.scheduleNext(this.settings.nextDelay * 1000);
       return;
     }
-    this.scheduleTurn();
+    if (!this.frozen) this.scheduleTurn();
+  }
+
+  scheduleNext(ms) {
+    this.nextAt = Date.now() + ms;
+    this.nextTimer = setTimeout(() => { this.nextTimer = null; this.nextAt = null; this.startNext(); this.onChange('state'); }, ms);
   }
 
   scheduleTurn() {
@@ -387,7 +452,7 @@ export class Room {
         cards = visible ? hp.cards : ['??', '??'];
       }
       return {
-        seat: i, id: s.id, name: s.name, avatar: p?.avatar, stack: s.stack,
+        seat: i, id: s.id, name: s.name, avatar: p?.avatar, avatarUrl: p?.avatarUrl || null, stack: s.stack,
         sittingOut: s.sittingOut, busted: s.stack === 0 && !(hp && !h.done && !hp.folded),
         connected: !!p?.connected, isHost: s.id === this.hostId,
         inHand: !!hp, folded: !!hp?.folded, allIn: !!hp?.allIn && !h?.done,
@@ -411,23 +476,29 @@ export class Room {
         toAct: h.toAct, currentBet: h.currentBet, done: h.done,
         pots: h.done ? [] : t.potsDisplay().map((p) => p.amount),
         bets: h.done ? 0 : h.seats.reduce((a, i) => a + h.players[i].bet, 0),
-        deadline: this.deadline, turnTime: this.settings.turnTime, result,
+        deadline: this.deadline, frozenLeft: this.frozen?.turnLeft ?? null, turnTime: this.settings.turnTime, result,
       };
     }
 
     let legal = null;
     let strength = null;
+    let odds = null;
+    let strengthCat = null;
     if (mySeat !== null && h) {
-      if (!h.done && h.toAct === mySeat) legal = t.legal(mySeat);
+      if (!h.done && !this.frozen && h.toAct === mySeat) legal = t.legal(mySeat);
       const hp = h.players[mySeat];
-      if (hp && !hp.folded && this.settings.handStrength) strength = bestHand([...hp.cards, ...h.board]).name;
+      if (hp && !hp.folded && this.settings.handStrength) {
+        const e = bestHand([...hp.cards, ...h.board]);
+        strength = e.name; strengthCat = e.category;
+        if (!h.done) odds = this.oddsFor(mySeat);
+      }
     }
     const canShow = !!(h && h.done && mySeat !== null && h.players[mySeat] && !h.shown.has(mySeat) && !h.result.showdown);
 
     const standings = [...this.players.values()].map((p) => {
       const chips = p.seat !== null ? t.seats[p.seat].stack : p.bank;
       const inPot = p.seat !== null && h && !h.done && h.players[p.seat] ? h.players[p.seat].total : 0;
-      return { id: p.id, name: p.name, avatar: p.avatar, chips: chips + inPot, net: chips + inPot - p.buyIn, rebuys: p.rebuys, seated: p.seat !== null, connected: p.connected };
+      return { id: p.id, name: p.name, avatar: p.avatar, avatarUrl: p.avatarUrl || null, chips: chips + inPot, net: chips + inPot - p.buyIn, rebuys: p.rebuys, seated: p.seat !== null, connected: p.connected };
     }).sort((a, b) => b.net - a.net);
 
     return {
@@ -435,12 +506,29 @@ export class Room {
       you: me ? { id: me.id, name: me.name, seat: mySeat, isHost: me.id === this.hostId, rebuys: me.rebuys } : null,
       hostId: this.hostId,
       settings: this.settings,
-      started: this.started, paused: this.paused, nextAt: this.nextAt, now: Date.now(),
-      seats, hand, legal, strength, canShow,
+      started: this.started, paused: this.paused, frozen: !!this.frozen, nextAt: this.nextAt, now: Date.now(),
+      seats, hand, legal, strength, strengthCat, odds, canShow,
       log: this.log.slice(-40),
+      // Easter Egg: wer gerade als „Sebastian“ Pause macht (per ID, nur dieser Raum)
+      sebs: [...this.players.values()]
+        .filter((p) => p.sebPause && p.seat !== null && t.seats[p.seat]?.sittingOut)
+        .map((p) => ({ id: p.id, name: p.name })),
       standings,
       stats: { hands: this.stats.hands, biggestPot: this.stats.biggestPot, bestHand: this.stats.bestHand && { name: this.stats.bestHand.name, hand: this.stats.bestHand.hand } },
     };
+  }
+
+  // Chancen je Hand bis zum River – nur einmal pro Straße rechnen, nicht bei jedem Update
+  oddsFor(seat) {
+    const h = this.table.hand;
+    if (this.oddsCache?.no !== h.no) this.oddsCache = { no: h.no, map: new Map() };
+    const key = seat + ':' + h.board.length;
+    let odds = this.oddsCache.map.get(key);
+    if (!odds) {
+      odds = outlook(h.players[seat].cards, h.board).map((p) => Math.round(p * 1000) / 10);
+      this.oddsCache.map.set(key, odds);
+    }
+    return odds;
   }
 
   // ---------- Speichern / Laden ----------
@@ -451,9 +539,10 @@ export class Room {
       log: this.log.slice(-20),
       players: [...this.players.values()].map((p) => ({
         id: p.id, token: p.token, name: p.name, avatar: p.avatar, seat: p.seat,
+        discordId: p.discordId || null, avatarUrl: p.avatarUrl || null,
         chips: p.seat !== null ? this.table.seats[p.seat].stack : p.bank,
         sittingOut: p.seat !== null ? this.table.seats[p.seat].sittingOut : false,
-        buyIn: p.buyIn, rebuys: p.rebuys,
+        buyIn: p.buyIn, rebuys: p.rebuys, sebPause: !!p.sebPause,
       })),
     };
   }
@@ -468,7 +557,10 @@ export class Room {
     for (const d of data.players) {
       const p = {
         id: d.id, token: d.token, name: d.name, avatar: d.avatar, seat: null, bank: d.chips,
+        discordId: d.discordId || null, avatarUrl: safeAvatarUrl(d.avatarUrl),
         buyIn: d.buyIn, rebuys: d.rebuys, connected: false, socketId: null, missed: 0, leaveAfterHand: false, seen: [],
+        offlineSince: Date.now(), // nach einem Neustart bekommt jeder wieder die volle Frist
+        sebPause: !!d.sebPause,
       };
       r.players.set(p.id, p);
       if (d.seat !== null && d.seat !== undefined) {

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Pokerabend</title>
-  <meta name="theme-color" content="#101a18">
+  <meta name="theme-color" content="#0B1513">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='28' fill='%23e8b04a'/><circle cx='32' cy='32' r='18' fill='none' stroke='%23101a18' stroke-width='5' stroke-dasharray='7 6'/></svg>">
   <link rel="preload" href="/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/style.css">
@@ -16,17 +16,20 @@
       <h1 class="wordmark">Pokerabend</h1>
       <p class="lobby-sub">Texas Hold'em für eure Runde. Einer macht den Tisch auf, die anderen kommen per Link dazu.</p>
 
+      <!-- Mit Discord-Login: wer angemeldet ist, statt Name und Avatar -->
+      <div id="me-box" class="me-box" hidden></div>
+
       <div class="tabs" role="tablist">
         <button role="tab" class="tab" data-tab="join" aria-selected="false">Beitreten</button>
         <button role="tab" class="tab" data-tab="create" aria-selected="true">Tisch erstellen</button>
       </div>
 
       <form id="lobby-form" class="lobby-form" autocomplete="off">
-        <label class="field">
+        <label class="field" id="f-name-field">
           <span>Dein Name</span>
           <input id="f-name" maxlength="16" required placeholder="z. B. Tobi">
         </label>
-        <fieldset class="field">
+        <fieldset class="field" id="f-avatar-field">
           <legend>Avatar</legend>
           <div id="avatars" class="avatars"></div>
         </fieldset>
@@ -51,49 +54,76 @@
         <p id="lobby-error" class="error" role="alert"></p>
       </form>
     </div>
-    <p class="lobby-foot">Nur Spielgeld. Keine Anmeldung, kein Echtgeld.</p>
+    <p class="lobby-foot" id="lobby-foot">Nur Spielgeld. Keine Anmeldung, kein Echtgeld.</p>
   </main>
 
   <!-- Spiel -->
   <div id="game" class="game" hidden>
     <header class="topbar">
-      <button class="code-chip" id="copy-link" title="Einladungslink kopieren">
-        <span class="code-label">Tisch</span> <b id="room-code">-----</b>
-        <span class="copy-hint">Link kopieren</span>
-      </button>
-      <div class="meta" id="meta"></div>
-      <nav class="topnav">
-        <button class="nav-btn" data-panel="log">Verlauf</button>
-        <button class="nav-btn" data-panel="stand">Stand</button>
-        <button class="nav-btn" data-panel="me">Ich</button>
-        <button class="nav-btn" data-panel="host" id="nav-host" hidden>Host</button>
-      </nav>
+      <div class="top-left">
+        <button class="code-chip" id="copy-link" title="Einladungslink kopieren" aria-label="Einladungslink kopieren">
+          <span class="code-label">Tisch</span> <b id="room-code">-----</b>
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+        </button>
+      </div>
+      <div class="meta" id="meta" aria-live="polite"></div>
+      <div class="top-right">
+        <button class="btn btn-sm freeze-btn" id="freeze-btn" data-do="freeze" hidden></button>
+        <nav class="topnav" aria-label="Seitenleisten">
+          <button class="nav-btn" data-panel="log">Verlauf</button>
+          <button class="nav-btn" data-panel="stand">Stand</button>
+          <button class="nav-btn" data-panel="me">Ich</button>
+          <button class="nav-btn" data-panel="host" id="nav-host" hidden>Host</button>
+        </nav>
+      </div>
     </header>
 
     <section class="table-wrap">
       <div class="table" id="table">
         <div class="rail"></div>
         <div class="felt">
-          <div class="felt-mark">Pokerabend</div>
           <div class="pot" id="pot"></div>
           <div class="board" id="board"></div>
           <div class="felt-msg" id="felt-msg"></div>
         </div>
         <div id="seats"></div>
+        <div class="dealer" id="dealer" hidden aria-label="Dealer-Button">D</div>
       </div>
     </section>
 
     <section class="dock" id="dock"></section>
 
-    <aside class="panel" id="panel" hidden>
+    <div class="hands-pop" id="hands-pop" hidden>
+      <div class="panel-head">
+        <h2>Pokerhände</h2>
+        <button class="icon-btn" data-hands aria-label="Schließen"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      </div>
+      <div class="hands-body" id="hands-body"></div>
+    </div>
+
+    <aside class="panel" id="panel" hidden aria-labelledby="panel-title">
+      <button class="grip" id="panel-grip" aria-label="Schließen"></button>
       <div class="panel-head">
         <h2 id="panel-title">Verlauf</h2>
-        <button class="icon-btn" id="panel-close" aria-label="Schließen">✕</button>
+        <button class="icon-btn" id="panel-close" aria-label="Schließen"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       </div>
       <div class="panel-body" id="panel-body"></div>
     </aside>
   </div>
 
+  <aside id="seb" class="seb-card" hidden></aside>
+  <!-- Eigene Bestätigungsdialoge statt confirm()/prompt() -->
+  <dialog class="dlg" id="dlg" aria-labelledby="dlg-title">
+    <form method="dialog">
+      <h2 id="dlg-title"></h2>
+      <p id="dlg-text"></p>
+      <div id="dlg-extra"></div>
+      <div class="dlg-actions">
+        <button class="btn btn-ghost" value="cancel" id="dlg-cancel">Abbrechen</button>
+        <button class="btn btn-brass" value="ok" id="dlg-ok">OK</button>
+      </div>
+    </form>
+  </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div id="offline" class="offline" hidden>Verbindung weg – verbinde neu …</div>
 

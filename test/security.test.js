@@ -14,7 +14,7 @@ let server;
 before(async () => {
   const dataDir = mkdtempSync(join(tmpdir(), 'poker-sec-'));
   server = spawn(process.execPath, ['server/index.js'], {
-    env: { ...process.env, PORT: String(PORT), DATA_DIR: dataDir, SITE_PASSWORD: 'Flush2026' },
+    env: { ...process.env, PORT: String(PORT), DATA_DIR: dataDir, SITE_PASSWORD: 'Flush2026', POKER_NO_DOTENV: '1', DISCORD_CLIENT_ID: '' },
     stdio: 'pipe',
   });
   await new Promise((res, rej) => {

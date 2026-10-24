@@ -1,8 +1,9 @@
 // Webserver + Echtzeit-Verbindung. Der Server ist Geber und Schiedsrichter.
+import './env.js'; // .env zuerst einlesen – alles danach liest process.env
 import express from 'express';
 import { createServer } from 'node:http';
 import { Server } from 'socket.io';
-import { randomInt } from 'node:crypto';
+import { randomInt, randomBytes } from 'node:crypto';
 import { readFileSync, writeFileSync, renameSync, mkdirSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -11,25 +12,41 @@ import {
   COOKIE, loadSecret, createAuth, parseCookies, cookieHeader, limiter, bucket,
   securityHeaders, sameOrigin, clientIp, safeNext,
 } from './security.js';
+import {
+  SESSION_COOKIE, STATE_COOKIE, SESSION_DAYS, STATE_MINUTES, LOGIN_ERRORS,
+  discordConfig, cookieSigner, setCookie, createSessions, createDiscord,
+} from './discord.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
 const DATA_DIR = process.env.DATA_DIR || join(__dirname, '..', 'data');
 const SAVE_FILE = join(DATA_DIR, 'rooms.json');
 const MAX_ROOMS = Number(process.env.MAX_ROOMS || 50);
-const ROOM_TTL_MIN = 30; // leere Tische werden nach 30 Minuten geschlossen
+const ROOM_TTL_MIN = 30; // Notbremse: Tische ohne Verbindung werden spätestens nach 30 Minuten geschlossen
+const AWAY_MIN = Number(process.env.PLAYER_TIMEOUT_MIN || 5); // wer so lange offline ist, fliegt raus
 
 const PUBLIC_DIR = join(__dirname, '..', 'public');
 const SITE_PASSWORD = process.env.SITE_PASSWORD || '';
 const TRUST_PROXY = ['1', 'true', 'yes'].includes(String(process.env.TRUST_PROXY || '').toLowerCase());
 const MAX_CONN_PER_IP = Number(process.env.MAX_CONN_PER_IP || 30);
 
-const auth = createAuth({ password: SITE_PASSWORD, secret: loadSecret(DATA_DIR) });
-if (!auth.enabled) console.warn('⚠ Kein SITE_PASSWORD gesetzt – jeder mit dem Link kommt auf die Seite. Für den Server unbedingt setzen!');
+// Anmeldung: Discord (wenn eingerichtet), sonst Seitenpasswort, sonst offen (nur lokal zum Testen)
+let DISCORD;
+try { DISCORD = discordConfig(); } catch (e) { console.error('✖ ' + e.message); process.exit(1); }
+const MODE = DISCORD ? 'discord' : SITE_PASSWORD ? 'password' : 'open';
+const SECRET = loadSecret(DATA_DIR);
+const auth = createAuth({ password: SITE_PASSWORD, secret: SECRET });
+const signer = cookieSigner(SECRET);
+const sessions = DISCORD ? createSessions(DATA_DIR) : null;
+const discord = DISCORD ? createDiscord(DISCORD) : null;
+if (MODE === 'discord') console.log(`Anmeldung: nur mit Discord (Server ${DISCORD.guildId.slice(0, 4)}…${DISCORD.roleId ? ', mit Rolle' : ''})`);
+else if (MODE === 'password') console.log('Anmeldung: Seitenpasswort');
+else console.warn('⚠ Weder Discord noch SITE_PASSWORD eingerichtet – jeder mit dem Link kommt auf die Seite. Nur lokal zum Testen!');
 
 // Grenzen gegen Raten und Spam (pro IP)
 const limits = {
   login: limiter({ windowMs: 15 * 60e3, max: 8 }),     // falsche Passwörter
+  oauth: limiter({ windowMs: 10 * 60e3, max: 30 }),    // Discord-Anmeldeversuche
   create: limiter({ windowMs: 10 * 60e3, max: 6 }),    // neue Tische
   badCode: limiter({ windowMs: 10 * 60e3, max: 20 }),  // falsche Tisch-Codes
   newPlayer: limiter({ windowMs: 10 * 60e3, max: 15 }), // neue Namen
@@ -44,19 +61,47 @@ app.get('/health', (_req, res) => res.json({ ok: true }));
 
 const isSecure = (req) => req.secure || (TRUST_PROXY && req.headers['x-forwarded-proto'] === 'https');
 const loggedIn = (req) => auth.valid(parseCookies(req.headers.cookie)[COOKIE]);
-const loginTpl = readFileSync(join(__dirname, 'login.html'), 'utf8');
 const escHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const loginTpl = readFileSync(join(__dirname, MODE === 'discord' ? 'login-discord.html' : 'login.html'), 'utf8');
 function renderLogin(res, status, error, next) {
   res.status(status).type('html').setHeader('Cache-Control', 'no-store');
-  res.send(loginTpl.replace('{{ERROR}}', escHtml(error)).replace('{{NEXT}}', escHtml(safeNext(next))));
+  const n = safeNext(next);
+  res.send(loginTpl.replace('{{ERROR}}', escHtml(error)).replace('{{NEXT}}', escHtml(n))
+    .replace('{{HREF}}', escHtml('/auth/discord?next=' + encodeURIComponent(n))));
 }
 
-app.get('/login', (req, res) => {
-  if (!auth.enabled || loggedIn(req)) return res.redirect(safeNext(req.query.next));
-  renderLogin(res, 200, '', req.query.next);
+// ---------- Discord-Sitzung ----------
+const sessionCookie = (sid, req) => setCookie(SESSION_COOKIE, signer.sign(sid), { secure: isSecure(req), maxAge: SESSION_DAYS * 86400 });
+const clearSession = (req) => setCookie(SESSION_COOKIE, '', { secure: isSecure(req), maxAge: 0 });
+const sessionId = (cookieHeaderValue) => signer.unsign(parseCookies(cookieHeaderValue)[SESSION_COOKIE]);
+
+// Prüft die Sitzung (und alle 24 h die Mitgliedschaft). Gleichzeitige Prüfungen derselben Sitzung teilen sich eine Anfrage.
+const checking = new Map();
+async function validSession(sid) {
+  const s = sid && sessions.get(sid);
+  if (!s) return null;
+  if (Date.now() < (s.nextCheck || 0)) return s;
+  if (!checking.has(sid)) {
+    checking.set(sid, discord.recheck(s).finally(() => checking.delete(sid)));
+  }
+  const ok = await checking.get(sid);
+  if (!ok) { sessions.delete(sid); return null; }
+  sessions.changed();
+  return s;
+}
+
+// ---------- Anmelde-Routen ----------
+app.get('/login', async (req, res) => {
+  if (MODE === 'open') return res.redirect(safeNext(req.query.next));
+  if (MODE === 'password') {
+    if (loggedIn(req)) return res.redirect(safeNext(req.query.next));
+    return renderLogin(res, 200, '', req.query.next);
+  }
+  if (await validSession(sessionId(req.headers.cookie))) return res.redirect(safeNext(req.query.next));
+  renderLogin(res, 200, LOGIN_ERRORS[req.query.error] || '', req.query.next);
 });
 app.post('/login', express.urlencoded({ extended: false, limit: '2kb' }), (req, res) => {
-  if (!auth.enabled) return res.redirect(303, '/');
+  if (MODE !== 'password') return res.redirect(303, MODE === 'discord' ? '/login' : '/');
   const ip = clientIp(req, TRUST_PROXY);
   const next = req.body?.next;
   if (limits.login.blocked(ip)) {
@@ -72,28 +117,89 @@ app.post('/login', express.urlencoded({ extended: false, limit: '2kb' }), (req, 
   res.setHeader('Set-Cookie', cookieHeader(auth.issue(), { secure: isSecure(req) }));
   res.redirect(303, safeNext(next));
 });
+
+// Schritt 1: zu Discord. state + Ziel liegen signiert im Cookie (nur für /auth, 10 Minuten).
+app.get('/auth/discord', (req, res) => {
+  if (MODE !== 'discord') return res.redirect('/login');
+  if (!limits.oauth.hit(clientIp(req, TRUST_PROXY))) return res.redirect('/login?error=unreachable');
+  const state = randomBytes(18).toString('base64url');
+  const payload = Buffer.from(JSON.stringify({ s: state, n: safeNext(req.query.next), e: Date.now() + STATE_MINUTES * 60e3 })).toString('base64url');
+  res.setHeader('Set-Cookie', setCookie(STATE_COOKIE, signer.sign(payload), { secure: isSecure(req), path: '/auth', maxAge: STATE_MINUTES * 60 }));
+  res.setHeader('Cache-Control', 'no-store');
+  res.redirect(discord.authorizeUrl(state));
+});
+
+// Schritt 2: Discord schickt den Nutzer mit code + state zurück
+app.get('/auth/discord/callback', async (req, res) => {
+  if (MODE !== 'discord') return res.redirect('/login');
+  res.setHeader('Cache-Control', 'no-store');
+  const clearState = setCookie(STATE_COOKIE, '', { secure: isSecure(req), path: '/auth', maxAge: 0 });
+  let st = null;
+  try { st = JSON.parse(Buffer.from(signer.unsign(parseCookies(req.headers.cookie)[STATE_COOKIE]) || '', 'base64url').toString()); } catch { /* ungültig */ }
+  const next = st?.n || '/';
+  const back = (error) => {
+    res.setHeader('Set-Cookie', clearState);
+    res.redirect(`/login?error=${error}&next=${encodeURIComponent(next)}`);
+  };
+  if (req.query.error) return back('cancelled'); // z. B. access_denied: auf „Abbrechen“ geklickt
+  if (!st || st.e < Date.now() || typeof req.query.state !== 'string' || req.query.state !== st.s || typeof req.query.code !== 'string') {
+    return back('state');
+  }
+  try {
+    const user = await discord.login(req.query.code);
+    const sid = sessions.create(user);
+    res.setHeader('Set-Cookie', [clearState, sessionCookie(sid, req)]);
+    console.log(`Anmeldung: ${user.name} (Discord)`);
+    res.redirect(safeNext(next));
+  } catch (e) {
+    back(LOGIN_ERRORS[e.code] ? e.code : 'failed');
+  }
+});
+
 app.post('/logout', (req, res) => {
-  res.setHeader('Set-Cookie', cookieHeader('', { secure: isSecure(req), maxAgeDays: 0 }));
+  if (MODE === 'discord') {
+    const sid = sessionId(req.headers.cookie);
+    if (sid) { sessions.delete(sid); kickSession(sid); }
+    res.setHeader('Set-Cookie', clearSession(req));
+  } else {
+    res.setHeader('Set-Cookie', cookieHeader('', { secure: isSecure(req), maxAgeDays: 0 }));
+  }
   res.redirect(303, '/login');
 });
 
-// Alles ab hier nur mit gültigem Cookie. Offen bleibt nur, was die Login-Seite braucht.
+// Alles ab hier nur angemeldet. Offen bleibt nur, was die Login-Seite braucht.
 const OPEN = new Set(['/style.css', '/fonts/bricolage.woff2']);
-app.use((req, res, next) => {
-  if (!auth.enabled || OPEN.has(req.path)) return next();
-  if (loggedIn(req)) {
-    // Bei jedem Besuch verlängern – wer regelmäßig spielt, muss nie wieder ein Passwort eingeben
-    if (req.method === 'GET' && (req.path === '/' || req.path === '/index.html')) {
-      res.setHeader('Set-Cookie', cookieHeader(auth.issue(), { secure: isSecure(req) }));
-    }
-    return next();
+const isPage = (req) => req.method === 'GET' && (req.path === '/' || req.path === '/index.html');
+app.use(async (req, res, next) => {
+  if (MODE === 'open' || OPEN.has(req.path)) return next();
+  let ok = false;
+  if (MODE === 'discord') {
+    try {
+      const sid = sessionId(req.headers.cookie);
+      const s = await validSession(sid);
+      if (s) {
+        ok = true;
+        req.account = s;
+        // Bei jedem Seitenaufruf verlängern – wer regelmäßig spielt, muss sich nie neu anmelden
+        if (isPage(req)) { sessions.touch(sid); res.setHeader('Set-Cookie', sessionCookie(sid, req)); }
+      } else if (sid && isPage(req)) {
+        res.setHeader('Set-Cookie', clearSession(req));
+      }
+    } catch (e) { return next(e); }
+  } else if (loggedIn(req)) {
+    ok = true;
+    if (isPage(req)) res.setHeader('Set-Cookie', cookieHeader(auth.issue(), { secure: isSecure(req) }));
   }
+  if (ok) return next();
   if (req.method === 'GET' && !req.path.includes('.') && req.path !== '/me') {
     return res.redirect(`/login?next=${encodeURIComponent(req.originalUrl)}`);
   }
   res.status(401).json({ error: 'Nicht angemeldet' });
 });
-app.get('/me', (_req, res) => res.json({ ok: true }));
+app.get('/me', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.json({ mode: MODE, user: req.account ? { name: req.account.name, avatar: req.account.avatarUrl } : null });
+});
 app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
 app.use((_req, res) => res.status(404).send('Nicht gefunden'));
 
@@ -104,12 +210,34 @@ const io = new Server(http, {
   maxHttpBufferSize: 16 * 1024, // keine großen Pakete
   allowRequest: (req, cb) => {
     if (!sameOrigin(req)) return cb('Fremde Herkunft', false);
-    if (!auth.valid(parseCookies(req.headers.cookie)[COOKIE])) return cb('Nicht angemeldet', false);
     const ip = clientIp(req, TRUST_PROXY);
     if ((connections.get(ip) || 0) >= MAX_CONN_PER_IP) return cb('Zu viele Verbindungen', false);
+    if (MODE === 'discord') {
+      validSession(sessionId(req.headers.cookie))
+        .then((s) => cb(s ? null : 'Nicht angemeldet', !!s), () => cb('Nicht angemeldet', false));
+      return;
+    }
+    if (!auth.valid(parseCookies(req.headers.cookie)[COOKIE])) return cb('Nicht angemeldet', false);
     cb(null, true);
   },
 });
+
+// Ungültige Sitzung: offene Verbindungen abmelden, der Browser geht zur Login-Seite
+function kickSession(sid) {
+  for (const s of io.sockets.sockets.values()) {
+    if (s.data.sid === sid) { s.emit('loggedOut'); s.disconnect(true); }
+  }
+}
+if (MODE === 'discord') {
+  // Offene Verbindungen alle 15 Minuten prüfen (bei kurzem Recheck-Intervall entsprechend öfter)
+  const every = Math.max(1000, Math.min(15 * 60e3, DISCORD.recheckMs));
+  setInterval(async () => {
+    const sids = new Set([...io.sockets.sockets.values()].map((s) => s.data.sid).filter(Boolean));
+    for (const sid of sids) {
+      try { if (!(await validSession(sid))) kickSession(sid); } catch { /* beim nächsten Mal */ }
+    }
+  }, every).unref();
+}
 
 /** @type {Map<string, Room>} */
 const rooms = new Map();
@@ -183,6 +311,15 @@ function attach(socket, room, player) {
 // ---------- Socket-Ereignisse ----------
 io.on('connection', (socket) => {
   const ip = clientIp(socket.request, TRUST_PROXY);
+  // Discord-Identität hängt an der Verbindung (geprüft in allowRequest)
+  if (MODE === 'discord') {
+    const sid = sessionId(socket.request.headers.cookie);
+    const s = sessions.get(sid);
+    if (!s) { socket.emit('loggedOut'); socket.disconnect(true); return; }
+    socket.data.sid = sid;
+  }
+  const account = () => (socket.data.sid ? sessions.get(socket.data.sid) : null);
+  const identity = (a) => ({ discordId: a.discordId, avatarUrl: a.avatarUrl });
   connections.set(ip, (connections.get(ip) || 0) + 1);
   socket.on('disconnect', () => {
     const n = (connections.get(ip) || 1) - 1;
@@ -226,8 +363,10 @@ io.on('connection', (socket) => {
     if (rooms.size >= MAX_ROOMS) throw new Error('Gerade sind zu viele Tische offen');
     if (!limits.create.hit(ip)) throw new Error('Du hast gerade sehr viele Tische erstellt. Warte ein paar Minuten.');
     const code = newCode();
+    const a = MODE === 'discord' ? account() : null;
+    if (MODE === 'discord' && !a) throw new Error('Bitte melde dich neu an');
     const room = new Room(code, settings, (kind) => onRoomChange(room, kind));
-    const p = room.addPlayer(name, avatar);
+    const p = a ? room.addPlayer(a.name, null, identity(a)) : room.addPlayer(name, avatar);
     rooms.set(code, room);
     attach(socket, room, p);
     return { room, reply: { code, token: p.token } };
@@ -237,11 +376,16 @@ io.on('connection', (socket) => {
     if (limits.badCode.blocked(ip)) throw new Error('Zu viele falsche Codes. Warte ein paar Minuten.');
     let room;
     try { room = getRoom(code); } catch (e) { limits.badCode.hit(ip); throw e; }
-    let p = typeof token === 'string' && token ? room.byToken(token) : null;
-    if (p) room.say(`${p.name} ist wieder online`);
-    else {
+    // Mit Discord: Wiedererkennung über die Discord-ID (anderes Gerät = derselbe Spieler), Tokens zählen nicht.
+    const a = MODE === 'discord' ? account() : null;
+    if (MODE === 'discord' && !a) throw new Error('Bitte melde dich neu an');
+    let p = a ? room.byDiscord(a.discordId) : typeof token === 'string' && token ? room.byToken(token) : null;
+    if (p) {
+      if (a) p.avatarUrl = a.avatarUrl || p.avatarUrl;
+      if (!p.connected) room.say(`${p.name} ist wieder online`);
+    } else {
       if (limits.newPlayer.blocked(ip)) throw new Error('Zu viele neue Namen von deinem Anschluss. Warte ein paar Minuten.');
-      p = room.addPlayer(name, avatar);
+      p = a ? room.addPlayer(a.name, null, identity(a)) : room.addPlayer(name, avatar);
       limits.newPlayer.hit(ip);
     }
     attach(socket, room, p);
@@ -260,6 +404,7 @@ io.on('connection', (socket) => {
   // Host
   on('start', (_d, room, p) => room.start(p.id));
   on('pause', (_d, room, p) => room.togglePause(p.id));
+  on('freeze', (_d, room, p) => room.toggleFreeze(p.id));
   on('nextHand', (_d, room, p) => room.nextHand(p.id));
   on('settings', (s, room, p) => room.updateSettings(p.id, s));
   on('kick', ({ id }, room, p) => { room.requireHost(p.id); if (id === p.id) throw new Error('Du kannst dich nicht selbst entfernen'); const target = room.players.get(id); room.remove(id); if (target?.socketId && !room.players.has(id)) io.to(target.socketId).emit('kicked'); });
@@ -296,18 +441,19 @@ io.on('connection', (socket) => {
   });
 });
 
-// Leere Tische aufräumen
+// Weggebliebene Spieler entfernen, verlassene Tische löschen
 setInterval(() => {
   let changed = false;
   for (const [code, r] of rooms) {
+    if (r.dropAway(AWAY_MIN * 60000)) { r.afterChange(); broadcast(r); changed = true; }
     const anyone = [...r.players.values()].some((p) => p.connected);
-    if (!anyone && Date.now() - r.lastActivity > ROOM_TTL_MIN * 60000) {
+    if (!anyone && (r.abandoned || Date.now() - r.lastActivity > ROOM_TTL_MIN * 60000)) {
       clearTimeout(r.turnTimer); clearTimeout(r.nextTimer);
       rooms.delete(code); changed = true;
     }
   }
   if (changed) save();
-}, 60000).unref();
+}, Math.max(500, Math.min(30000, (AWAY_MIN * 60000) / 4))).unref();
 
 // Ein Fehler in einem Handler soll nicht alle laufenden Tische mitreißen
 process.on('uncaughtException', (e) => console.error('Unerwarteter Fehler:', e));
@@ -318,6 +464,7 @@ http.listen(PORT, () => console.log(`Pokerabend läuft auf http://localhost:${PO
 
 for (const sig of ['SIGINT', 'SIGTERM']) {
   process.on(sig, () => {
+    sessions?.flush();
     for (const r of rooms.values()) if (!r.handRunning) r.lastSnapshot = r.snapshot();
     try {
       mkdirSync(DATA_DIR, { recursive: true });

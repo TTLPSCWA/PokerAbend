@@ -104,3 +104,60 @@ export function bestHand(cards) {
   }
   return { score: best, cards: bestCards, name: describe(best), category: best[0] };
 }
+
+// Nur die Kategorie einer 5–7-Karten-Hand – deutlich schneller als bestHand, für Wahrscheinlichkeiten
+function straightTop(mask) {
+  if ((mask & 0x403c) === 0x403c) mask |= 2; // Ass zählt auch als 1 (A-2-3-4-5)
+  for (let v = 14; v >= 5; v--) if (((mask >> (v - 4)) & 31) === 31) return v;
+  return 0;
+}
+export function category(cards) {
+  const counts = new Array(15).fill(0);
+  const suitMask = { s: 0, h: 0, d: 0, c: 0 };
+  const suitCount = { s: 0, h: 0, d: 0, c: 0 };
+  let mask = 0;
+  for (const c of cards) {
+    const v = value(c);
+    counts[v]++; mask |= 1 << v;
+    suitMask[c[1]] |= 1 << v; suitCount[c[1]]++;
+  }
+  const fs = SUITS.split('').find((x) => suitCount[x] >= 5);
+  if (fs) {
+    const top = straightTop(suitMask[fs]);
+    if (top) return top === 14 ? 9 : 8;
+  }
+  let trips = 0, pairs = 0;
+  for (let v = 2; v <= 14; v++) {
+    if (counts[v] === 4) return 7;
+    if (counts[v] === 3) trips++;
+    else if (counts[v] === 2) pairs++;
+  }
+  if (trips && (pairs || trips > 1)) return 6;
+  if (fs) return 5;
+  if (straightTop(mask)) return 4;
+  if (trips) return 3;
+  if (pairs >= 2) return 2;
+  return pairs ? 1 : 0;
+}
+
+// Welche Hand wird es bis zum River? Anteil je Kategorie (0 = Höchste Karte … 9 = Royal Flush).
+// Gegner bleiben unbekannt. Flop/Turn: alle restlichen Karten durchrechnen, Pre-Flop: Stichprobe.
+export function outlook(hole, board, { samples = 20000, rng = Math.random } = {}) {
+  const known = new Set([...hole, ...board]);
+  const rest = newDeck().filter((c) => !known.has(c));
+  const need = 5 - board.length;
+  const counts = Array(HAND_NAMES.length).fill(0);
+  let n = 0;
+  const add = (extra) => { counts[category([...hole, ...board, ...extra])]++; n++; };
+  if (need === 0) add([]);
+  else if (need <= 2) for (const combo of combinations(rest, need)) add(combo);
+  else {
+    for (let k = 0; k < samples; k++) {
+      const pool = rest.slice();
+      const extra = [];
+      for (let j = 0; j < need; j++) extra.push(pool.splice(Math.floor(rng() * pool.length), 1)[0]);
+      add(extra);
+    }
+  }
+  return counts.map((c) => c / n);
+}
