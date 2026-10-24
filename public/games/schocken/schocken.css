@@ -1,0 +1,10 @@
+/* Schocken: Deckelstapel und Würfelreihen */
+.kg-stack { display: grid; justify-items: center; gap: 2px; }
+.kg-stack i { display: block; width: 74px; height: 8px; margin-top: -3px; border-radius: 50%; background: #C9A26A; box-shadow: 0 2px 0 #8A6B3C; }
+.kg-stack b { font-size: 28px; margin-top: 6px; }
+.kg-rows { display: grid; gap: 8px; width: min(100%, 560px); }
+.kg-row { display: grid; grid-template-columns: minmax(80px, 1fr) auto; gap: 4px 12px; align-items: center; padding: 10px 14px; border-radius: var(--r-m); background: rgba(0,0,0,.25); }
+.kg-row small { grid-column: 1 / -1; }
+.kg-row.active { outline: 2px solid var(--gold); }
+.kg-schocken .kg-main { background: radial-gradient(120% 90% at 50% 25%, #5A4632, #2C2217); }
+.kg-rows .hint { text-align: center; color: #D9CBB5; }

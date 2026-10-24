@@ -102,6 +102,8 @@ test('Ganzer Verlauf per „history“, auch nach einem Neustart', async () => {
   await a.ask('sit', { seat: 0 }); await b.ask('sit', { seat: 1 });
   await a.ask('start');
   for (const s of [a, b]) s.emit('react', { text: 'GG' });
+  // Reaktionen haben keine Antwort – warten, bis beide im Verlauf stehen (sonst zählt der Test unten falsch)
+  await until(() => (a.state?.log || []).filter((l) => l.cat === 'react').length === 2);
   await until(() => a.state?.legal || b.state?.legal);
   const actor = a.state.legal ? a : b;
   await actor.ask('action', { type: 'fold', id: 'x1' });

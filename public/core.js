@@ -112,6 +112,7 @@ function beep(freq = 660, ms = 120, vol = 0.05, type = 'sine') {
 const GAME_MODULES = {};
 const gameLoads = {};
 let current = null;   // laufendes Spielmodul
+let mounted = null;   // dessen Oberfläche gerade in #game-root steckt
 let lastState = null; // letzter Stand vom Server – kommt oft, bevor das Modul geladen ist
 function registerGame(id, mod) { GAME_MODULES[id] = mod; }
 function loadGame(id) {
@@ -144,6 +145,9 @@ async function enterGame(r) {
   history.replaceState(null, '', '?t=' + r.code);
   try { current = await loadGame(session.game); } catch (e) { session = null; showLobby(e.message); return; }
   if (!session) return; // inzwischen rausgeflogen
+  // Ein anderes Spiel war schon geladen: Seite neu laden, damit sich die Oberflächen nicht in die Quere kommen
+  if (mounted && mounted !== session.game) { location.href = '/?t=' + session.code; return; }
+  mounted = session.game;
   $('#lobby').hidden = true;
   $('#game-root').hidden = false;
   current.show();
@@ -175,7 +179,7 @@ function renderGames() {
   const list = account.games;
   $('#game-list').innerHTML = list.map((g) => `<button type="button" class="game-card" role="radio" data-game="${esc(g.id)}" aria-checked="${g.id === gameInfo()?.id}">
       <b>${esc(g.name)}</b><small>${esc(g.players)}</small><span>${esc(g.description)}</span>
-    </button>`).join('') + '<p class="game-soon">Weitere Spiele folgen.</p>';
+    </button>`).join('') ;
   const g = gameInfo();
   $('#create-fields').innerHTML = (g?.createFields || []).map((f) => `<label class="field"><span>${esc(f.label)}</span>
       <input data-cf="${esc(f.key)}" type="${f.type === 'number' ? 'number' : 'text'}" ${f.min !== undefined ? `min="${f.min}"` : ''} ${f.step ? `step="${f.step}"` : ''} value="${esc(f.value)}"></label>`).join('');

@@ -1,0 +1,10 @@
+/* Mäxchen: Becher, Ansage, Aufdecken */
+.kg-announce, .kg-reveal, .kg-cup { display: grid; gap: 10px; justify-items: center; text-align: center; padding: var(--s-5); border-radius: var(--r-l); background: rgba(0,0,0,.28); min-width: min(100%, 360px); }
+.kg-announce b, .kg-reveal b, .kg-cup b { font-size: 26px; }
+.kg-announce > b { font-size: 40px; color: var(--gold-text); }
+.kg-cup { border: 2px dashed var(--gold); }
+.kg-reveal { border: 2px solid var(--gold); }
+.kg-say select { min-width: 140px; }
+.kg-say { display: flex; align-items: center; gap: 8px; }
+.kg-maexchen .kg-main { background: radial-gradient(120% 90% at 50% 25%, #6B3B2A, #3A1E14); }
+.lives { color: #F06A6A; letter-spacing: 1px; font-size: 13px; }

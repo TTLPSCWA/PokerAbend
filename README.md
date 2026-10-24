@@ -49,6 +49,21 @@ Voraussetzung ist Node.js 20 oder neuer.
 
 Tische und Chipstände liegen im Docker-Volume `poker-data` und überleben Neustarts. Gespeichert wird immer zwischen zwei Händen. Nach einem Neustart drückt der Host einmal auf „Spiel starten“.
 
+## Spiele
+
+| Spiel | Spieler | Kurz |
+| --- | --- | --- |
+| Texas Hold'em | 2–9 | No Limit mit Spielgeld, alles unten beschrieben |
+| Mau-Mau | 2–8 | 7 zieht 2 (stapelbar), 8 setzt aus, Bube wünscht (nicht auf Bube). „Mau!“ automatisch. Wertung: Augen der Restkarten, wenig ist gut |
+| Farbenchaos (Uno-ähnlich) | 2–8 | 108 Karten, Aussetzen, Richtungswechsel, +2, Farbwahl (+4). Kein Stapeln. Gewinner kassiert die Punkte der anderen |
+| Mäxchen | 2–10 | Verdeckt würfeln, höher ansagen, anzweifeln. Mäxchen kostet 2 Leben. Der Letzte mit Leben gewinnt |
+| Schocken | 2–8 | Bis zu 3 Würfe, Schock out / Schock / General / Straße / Zahl, 13 Deckel. Wer alle Deckel hat, verliert die Hälfte |
+| Hütchenrennen (Mensch-ärgere-dich-ähnlich) | 2–4 | Raus mit der 6, drei Versuche, schlagen, Ziel passend, nicht überspringen |
+| Zehn Etappen (Phase-10-ähnlich) | 2–6 | Zehn Etappen nacheinander, Joker, Aussetzen, Anlegen. Wer zuerst Etappe 10 schafft, gewinnt |
+| Stapelrennen (Skip-Bo-ähnlich) | 2–6 | Reihen 1–12 bauen, Joker, 4 Ablagen. Wer seinen Stapel zuerst los ist, gewinnt (25 + 5 je Restkarte der anderen) |
+
+Die genauen Regeln stehen im Spiel unter „Regeln“ und oben in `games/<spiel>/room.js`. Die Rundenspiele haben einen gemeinsamen Rahmen: Mitspielen/Zuschauen, der Host startet jede Runde, Punkte und Siege über den Abend unter „Stand“, Verlauf und Host-Menü.
+
 ## Was V1.0 kann
 
 | Bereich | Funktionen |
@@ -98,6 +113,8 @@ Die Seite ist eine Plattform für mehrere Spiele. Gemeinsam sind Passwort-Login,
 server/            Plattform (für alle Spiele gleich)
   index.js           Express + Socket.IO: Anmeldung, Lobby, Ereignisse, Speichern, Aufräumen
   base-room.js       Grundlage jedes Raums: Spieler, Host, Wegbleiben, Verlauf
+  turn-room.js       Grundlage der Rundenspiele: Mitspieler, Reihenfolge, Runden, Punkte des Abends
+  random.js          Mischen und Würfeln (kryptografisch sicherer Zufall)
   codes.js           Raumcodes, zentral für alle Spiele (nie doppelt)
   security.js        Passwort-Cookie, Rate-Limits, Header, Texte säubern
   env.js             liest die .env ein (ohne Zusatzpaket)
@@ -110,11 +127,15 @@ games/             Spiele (Server-Teil)
     blinds.js          steigende Blinds
     sebastian.js       Easter Egg „Waiting for Sebastian“
     engine/            Poker-Regeln ohne Netzwerk: cards.js (Deck, Bewertung, Chancen), table.js (Setzrunden, Pots)
+  maumau/, farbenchaos/, maexchen/, schocken/, huetchen/, zehnetappen/, stapelrennen/
+                     je index.js (Beschreibung, Ereignisse) und room.js (Regeln); Farbenchaos erweitert Mau-Mau
 public/            Browser
   index.html         Startseite mit Spielauswahl, Dialoge
   core.js            Startseite, Lobby, Verbindung, Dialoge, Hilfen – lädt das gewählte Spiel nach
   style.css          gemeinsames Aussehen (Tokens, Buttons, Leisten, Seitenleiste, Verlauf)
   games/poker/       poker.js (Tisch-Oberfläche) und poker.css
+  games/kit.js       gemeinsamer Rahmen der Rundenspiele (Kopfzeile, Spielerleiste, Seitenleiste, Ablegespiel-Bedienung)
+  games/<spiel>/     <spiel>.js und <spiel>.css – nur der eigene Tisch und die Aktionen
 test/              node:test – Engine inkl. 100.000 Zufallshänden, Räume, Server, Sicherheit, Plattform
 ```
 
@@ -138,7 +159,7 @@ Beispiel Mau-Mau mit der ID `maumau` (nur Kleinbuchstaben, Ziffern und Bindestri
    };
    ```
 
-2. **Raum:** `games/maumau/room.js` mit `class Room extends BaseRoom` (aus `server/base-room.js`). Spieler, Host, Wegbleiben und Verlauf sind damit schon da. Das Spiel füllt die Haken:
+2. **Raum:** Für Rundenspiele am einfachsten `class Room extends TurnRoom` (aus `server/turn-room.js`, siehe die vorhandenen Spiele) – Mitspieler, Reihenfolge, Runden und Punkte sind dann schon da, das Spiel füllt `setupRound`, `gameView`, `publicPlayer` und seine Aktionen. Ganz frei geht es mit `class Room extends BaseRoom` (aus `server/base-room.js`). Spieler, Host, Wegbleiben und Verlauf sind damit schon da. Das Spiel füllt die Haken:
 
    | Haken | Wofür |
    | --- | --- |
@@ -171,18 +192,9 @@ Beispiel Mau-Mau mit der ID `maumau` (nur Kleinbuchstaben, Ziffern und Bindestri
 
 5. **Docker:** nichts zu tun, `games/` und `public/` werden komplett kopiert.
 
-### Geplante Spiele
+### Weitere Ideen
 
-Eigene Namen und eigenes Design, denn Uno, Skip-Bo, Phase 10 und Mensch ärgere Dich nicht sind geschützte Marken. Die Regeln stimmen wir vor jedem Spiel ab.
-
-1. **Mau-Mau** (frei nutzbar): erster Testfall für die Modul-Architektur
-2. **Farbenchaos** (Uno-ähnlich, Arbeitstitel): baut auf Mau-Mau auf (gleiche Ablage- und Zieh-Logik, eigene Karten)
-3. **Mäxchen** und **Schocken**: Würfelspiele, schnell und gesellig
-4. **Hütchenrennen** (Mensch-ärgere-dich-ähnlich, Arbeitstitel): braucht eine Spielbrett-Oberfläche
-5. **Zehn Etappen** (Phase-10-ähnlich, Arbeitstitel)
-6. **Stapelrennen** (Skip-Bo-ähnlich, Arbeitstitel)
-
-Weitere Ideen: Schwimmen/31, Blackjack mit unseren Chips, Würfelpoker mit Punkteblatt, Werwolf, Montagsmaler.
+Eigene Namen und eigenes Design – Uno, Skip-Bo, Phase 10 und Mensch ärgere Dich nicht sind geschützte Marken, deshalb heißen unsere Varianten anders. Mögliche nächste Spiele: Schwimmen/31, Blackjack mit unseren Chips, Würfelpoker mit Punkteblatt, Werwolf, Montagsmaler.
 
 **Wichtig für die Fairness:** Der Browser bekommt nur seine eigenen Karten. Gegnerkarten verlassen den Server erst beim Showdown. Das prüft `test/server.test.js`. Das gilt für jedes Spiel: Was ein Spieler nicht sehen darf, gehört nicht in `view()`.
 

@@ -1,0 +1,16 @@
+/* Hütchenrennen: Spielbrett 11 × 11 */
+.hb-wrap { width: min(100%, 560px, calc(100dvh - var(--topbar, 57px) - var(--dock-h, 90px) - 120px)); aspect-ratio: 1; min-width: 260px; }
+.hb-board { position: relative; display: grid; grid-template: repeat(11, minmax(0, 1fr)) / repeat(11, minmax(0, 1fr)); gap: 3px; width: 100%; height: 100%; padding: 10px; border-radius: 20px; background: #E9DFC6; box-shadow: 0 0 0 6px #6B4A2B, var(--shadow-2); }
+.hb-cell { border-radius: 50%; background: #FFF9EA; box-shadow: inset 0 0 0 2px #B9A37A; }
+.hb-cell.start { box-shadow: inset 0 0 0 3px rgba(0,0,0,.35); }
+.hb-cell.goal, .hb-cell.house { opacity: .75; }
+.hc-bg-0 { background: #F1B3AE; } .hc-bg-1 { background: #AFC6EE; } .hc-bg-2 { background: #ABD9B9; } .hc-bg-3 { background: #F3DE95; }
+.hb-piece { z-index: 2; width: 70%; height: 70%; margin: auto; border-radius: 50% 50% 45% 45%; border: 2px solid rgba(0,0,0,.45); box-shadow: 0 3px 4px rgba(0,0,0,.35); padding: 0; }
+.hc-0 { background: #C8322D; } .hc-1 { background: #2D5FB8; } .hc-2 { background: #2E8B4E; } .hc-3 { background: #E0A800; }
+button.hb-piece { cursor: pointer; }
+.hb-piece.can { outline: 3px solid #fff; outline-offset: 2px; animation: hb-pulse 1s ease-in-out infinite; }
+@keyframes hb-pulse { 50% { transform: scale(1.12); } }
+.hb-dice { grid-area: 6 / 6; display: grid; place-items: center; z-index: 3; }
+.hb-dice .die.big { --d: min(44px, 9vw); }
+.hc-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: 0; }
+.kg-huetchen .kg-main { background: radial-gradient(120% 90% at 50% 25%, #35544A, #1B2E28); }

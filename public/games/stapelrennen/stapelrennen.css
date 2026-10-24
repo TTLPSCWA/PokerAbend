@@ -1,0 +1,14 @@
+/* Stapelrennen: Baureihen, eigener Stapel, Ablagen */
+.kc-st { font-size: calc(var(--w) * .46); color: #fff; border: 3px solid #fff; }
+.st-1 { background: #2D5FB8; } .st-2 { background: #2E8B4E; } .st-3 { background: #C8322D; } .kc-st.joker { background: linear-gradient(135deg, #E8B21C, #E06D1C); }
+.kc.drop { box-shadow: 0 0 0 3px var(--gold); }
+.st-builds { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.st-build { display: grid; gap: 6px; justify-items: center; padding: 8px; border-radius: var(--r-m); border: 2px dashed rgba(255,255,255,.3); background: rgba(0,0,0,.2); color: var(--text); }
+.st-build.can { border: 2px solid var(--gold); cursor: pointer; }
+.st-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; justify-content: center; }
+.st-mine, .st-other { display: grid; gap: 6px; justify-items: center; padding: 10px; border-radius: var(--r-m); background: rgba(0,0,0,.22); }
+.st-others { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.st-other .kc { --w: 36px; }
+.st-stock, .st-pile { display: grid; gap: 4px; justify-items: center; }
+.st-stock { margin-right: 10px; }
+.kg-stapelrennen .kg-main { background: radial-gradient(120% 90% at 50% 25%, #4A3A6B, #241B38); place-items: start center; }
