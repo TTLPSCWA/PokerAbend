@@ -4,6 +4,8 @@ import { newDeck, shuffle, bestHand, compareScores } from './cards.js';
 
 export const SEATS = 9;
 const STREETS = ['preflop', 'flop', 'turn', 'river'];
+// Hausregel: Am River (alle 5 Karten liegen) höchstens Bet + 2 Raises, danach nur noch Call/Fold
+export const MAX_RIVER_RAISES = 2;
 
 export class Table {
   constructor({ smallBlind = 50, bigBlind = 100, rng } = {}) {
@@ -79,7 +81,7 @@ export class Table {
     this.handNo++;
     this.hand = {
       no: this.handNo, deck, board: [], street: 'preflop', button: this.button, sb, bb, headsUp,
-      seats, players, currentBet: 0, lastRaise: this.bigBlind, fullRaises: 0,
+      seats, players, currentBet: 0, lastRaise: this.bigBlind, fullRaises: 0, raises: 0,
       toAct: -1, lastAggressor: -1, done: false, result: null, shown: new Set(),
     };
     this.log({ type: 'hand', no: this.handNo });
@@ -125,7 +127,8 @@ export class Table {
     const toCall = Math.min(h.currentBet - p.bet, stack);
     const othersCanAct = h.seats.some((i) => i !== seat && this.canAct(i));
     const reopened = !p.acted || p.actedAt < h.fullRaises;
-    const canRaise = maxTo > h.currentBet && othersCanAct && reopened;
+    const capped = h.street === 'river' && h.raises > MAX_RIVER_RAISES;
+    const canRaise = maxTo > h.currentBet && othersCanAct && reopened && !capped;
     const minTo = h.currentBet === 0 ? this.bigBlind : h.currentBet + h.lastRaise;
     return {
       canCheck: p.bet >= h.currentBet,
@@ -182,6 +185,7 @@ export class Table {
         if (increment >= h.lastRaise) { h.lastRaise = increment; h.fullRaises++; }
         // Unvollständiges All-in: Einsatz steigt, Runde wird aber nicht neu eröffnet
         h.currentBet = to;
+        h.raises++;
         h.lastAggressor = seat;
         p.lastAction = p.allIn ? 'All-in' : wasBet ? 'Bet' : 'Raise';
         this.log({ type: wasBet ? 'bet' : 'raise', seat, to, allIn: p.allIn });
@@ -270,7 +274,7 @@ export class Table {
     const h = this.hand;
     this.refundUncalled();
     for (const i of h.seats) { const p = h.players[i]; p.bet = 0; p.acted = false; p.actedAt = -1; if (!p.folded && !p.allIn) p.lastAction = null; }
-    h.currentBet = 0; h.lastRaise = this.bigBlind; h.fullRaises = 0;
+    h.currentBet = 0; h.lastRaise = this.bigBlind; h.fullRaises = 0; h.raises = 0;
 
     const idx = STREETS.indexOf(h.street);
     if (idx === STREETS.length - 1) { this.finish(); return; }

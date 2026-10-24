@@ -122,6 +122,35 @@ test('Unvollständiges All-in-Raise eröffnet die Runde nicht neu', () => {
   assert.equal(L.canRaise, false, 'Spieler 0 darf nur callen oder folden');
 });
 
+test('River: höchstens Bet + 2 Raises, danach nur Call oder Fold', () => {
+  const t = table([100000, 100000]);
+  t.startHand();
+  while (t.hand.street !== 'river') t.act(t.hand.toAct, { type: t.legal(t.hand.toAct).canCheck ? 'check' : 'call' });
+  let seat = t.hand.toAct;
+  t.act(seat, { type: 'raise', amount: 100 });  // Bet
+  seat = t.hand.toAct;
+  t.act(seat, { type: 'raise', amount: 300 });  // Raise 1
+  seat = t.hand.toAct;
+  t.act(seat, { type: 'raise', amount: 900 });  // Raise 2
+  seat = t.hand.toAct;
+  const L = t.legal(seat);
+  assert.equal(L.canRaise, false);
+  assert.throws(() => t.act(seat, { type: 'raise', amount: 2000 }));
+  t.act(seat, { type: 'allin' }); // wird zum Call
+  assert.equal(t.hand.done, true);
+});
+
+test('Vor dem River bleibt Raisen unbegrenzt', () => {
+  const t = table([100000, 100000]);
+  t.startHand();
+  for (let k = 0; k < 6; k++) {
+    const L = t.legal(t.hand.toAct);
+    assert.equal(L.canRaise, true);
+    t.act(t.hand.toAct, { type: 'raise', amount: L.minTo });
+  }
+  assert.equal(t.hand.street, 'preflop');
+});
+
 test('Big Blind bekommt Pre-Flop seine Option', () => {
   const t = table([1000, 1000, 1000]);
   t.startHand();

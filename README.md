@@ -1,4 +1,5 @@
-# Pokerabend
+# PokerAbend
+PokerWebsite
 
 Texas Hold'em No-Limit für die Freundesgruppe, im Browser und online spielbar. Der Server ist Geber und Schiedsrichter: Er mischt, teilt aus, prüft jede Aktion, bildet Main und Side Pots und zahlt automatisch aus.
 
@@ -24,25 +25,25 @@ Voraussetzung ist Node.js 20 oder neuer.
 
 ## Online stellen
 
-1. **Image bauen und pushen** //müpsste also: docker build -t ghcr.io/DEIN-NAME/pokerabend:latest -> https://github.com/TTLPSCWA/PokerAbend sein? 
-   ```
-   bash
+//1. **Image bauen und pushen**  
+
+   ```bash
    docker build -t ghcr.io/DEIN-NAME/pokerabend:latest . 
    docker push ghcr.io/DEIN-NAME/pokerabend:latest
    ```
-   Alternativ das Repo auf GitHub legen: Der Workflow in `.github/workflows/docker.yml` testet bei jedem Push auf `main` und schiebt das Image automatisch nach `ghcr.io`.
 
-2. **Auf dem Server** (z. B. kleiner VPS bei Hetzner mit Docker):
+   Alternativ das Repo auf GitHub legen (z. B. [https://github.com/TTLPSCWA/PokerAbend](https://github.com/TTLPSCWA/PokerAbend)): Der Workflow in `.github/workflows/docker.yml` testet bei jedem Push auf `main` und schiebt das Image automatisch nach `ghcr.io`.
    Die Dateien `docker-compose.yml`, `docker-compose.prod.yml`, `Caddyfile` und `.env.example` hochladen.
-   ```
-   bash
+
+   ```bash
    cp .env.example .env            # DOMAIN und IMAGE eintragen
    docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
    docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
    ```
+
    Die Domain muss per DNS-A-Record auf den Server zeigen. Caddy holt das HTTPS-Zertifikat dann automatisch.
 
-3. **Update einspielen:** neues Image pushen, auf dem Server wieder `pull` und `up -d`.
+//3. **Update einspielen:** neues Image pushen, auf dem Server wieder `pull` und `up -d`.
 
 **Passwort:** Ohne `SITE_PASSWORD` in der `.env` startet der Server auf dem VPS gar nicht erst. Lokal bleibt die Seite ohne Passwort, außer ihr setzt es: `SITE_PASSWORD=test docker compose up`.
 

@@ -102,7 +102,7 @@ button { cursor: pointer; }
 
 /* ---------- Tisch ---------- */
 .table-wrap { position: relative; display: grid; place-items: center; padding: 56px 120px 64px; min-height: 0; }
-.table { position: relative; width: min(100%, 1100px, calc((100dvh - 330px) * 2.05)); aspect-ratio: 2.05 / 1; }
+.table { position: relative; width: min(100%, 1100px, calc((100dvh - 330px) * 2.05)); aspect-ratio: 2.05 / 1; container-type: inline-size; }
 .rail {
   position: absolute; inset: 0; border-radius: 999px;
   background: linear-gradient(180deg, var(--rail-hi), var(--rail) 40%, #24160d);
@@ -122,7 +122,8 @@ button { cursor: pointer; }
 .pot-chip small { color: var(--muted); font-weight: 400; }
 .pot.pulse .pot-chip:first-child { animation: pulse .5s ease; }
 @keyframes pulse { 50% { transform: scale(1.08); } }
-.board { grid-row: 3; display: flex; gap: 8px; z-index: 1; }
+/* Board-Karten wachsen mit dem Tisch mit – sonst schneidet der Filz sie bei wenig Fensterhöhe ab */
+.board { grid-row: 3; display: flex; gap: 8px; z-index: 1; --card-w: min(54px, 12cqw); }
 .slot { width: var(--card-w); aspect-ratio: 5/7; border-radius: 7px; border: 1px dashed rgba(255,255,255,.12); }
 .felt-msg { grid-row: 4; align-self: start; margin-top: 12px; text-align: center; font-weight: 600; z-index: 1; max-width: 80%; }
 .felt-msg .big { font-size: 18px; color: var(--paper); }
@@ -258,6 +259,7 @@ button { cursor: pointer; }
   .plate { padding-left: 38px; }
   .avatar { width: 26px; height: 26px; font-size: 15px; }
   .copy-hint { display: none; }
+  .board { --card-w: min(42px, 12cqw); }
 }
 @media (max-width: 640px) {
   :root { --seat-w: 86px; --card-w: 34px; }
@@ -270,7 +272,7 @@ button { cursor: pointer; }
   .table { width: min(100%, calc((100dvh - 330px) * .62)); aspect-ratio: .62 / 1; }
   .rail, .felt { border-radius: 200px; }
   .felt { inset: 14px; grid-template-rows: 24% auto auto 1fr; }
-  .board { gap: 5px; }
+  .board { gap: 5px; --card-w: min(34px, 15cqw); }
   .felt-msg { max-width: 62%; margin-top: 8px; }
   .felt-msg .big { font-size: 15px; }
   .felt-msg .sub { font-size: 13px; }
@@ -294,6 +296,11 @@ button { cursor: pointer; }
   .raise-box { justify-content: stretch; }
   .raise-box input[type='range'] { flex: 1; width: auto; }
   .host-grid { grid-template-columns: 1fr; }
+}
+/* Niedrige Bildschirme (Handy quer, kleine Laptops): weniger Rand, damit der Tisch nicht zur Briefmarke wird */
+@media (max-height: 500px) and (min-width: 641px) {
+  .table-wrap { padding-top: 26px; padding-bottom: 30px; }
+  .table { width: min(100%, 1100px, calc((100dvh - 230px) * 2.05)); }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
