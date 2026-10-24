@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Pokerabend – Passwort</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='28' fill='%23e8b04a'/><circle cx='32' cy='32' r='18' fill='none' stroke='%23101a18' stroke-width='5' stroke-dasharray='7 6'/></svg>">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="lobby">
+    <div class="lobby-felt">
+      <h1 class="wordmark">Pokerabend</h1>
+      <p class="lobby-sub">Privater Tisch. Gib das Passwort ein, das ihr in der Gruppe ausgemacht habt. Dein Browser merkt es sich danach.</p>
+      <form class="lobby-form" method="post" action="/login">
+        <input type="hidden" name="next" value="{{NEXT}}">
+        <label class="field">
+          <span>Passwort</span>
+          <input type="password" name="password" required autofocus autocomplete="current-password">
+        </label>
+        <button class="btn btn-brass btn-big" type="submit">Reinkommen</button>
+        <p class="error" role="alert">{{ERROR}}</p>
+      </form>
+    </div>
+  </main>
+</body>
+</html>

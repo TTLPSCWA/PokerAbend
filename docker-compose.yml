@@ -1,0 +1,16 @@
+# Lokal testen:  docker compose up --build   →  http://localhost:3000
+services:
+  poker:
+    build: .
+    image: ${IMAGE:-pokerabend:latest}
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # Lokal leer lassen = ohne Passwort. Auf dem Server Pflicht (siehe docker-compose.prod.yml)
+      SITE_PASSWORD: ${SITE_PASSWORD:-}
+    volumes:
+      - poker-data:/app/data
+
+volumes:
+  poker-data:

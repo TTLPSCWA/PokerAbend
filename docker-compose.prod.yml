@@ -1,0 +1,30 @@
+# Auf dem Server:  docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# Caddy holt automatisch ein HTTPS-Zertifikat für DOMAIN (aus der .env).
+services:
+  poker:
+    build: !reset null
+    ports: !reset []
+    expose:
+      - "3000"
+    environment:
+      SITE_PASSWORD: ${SITE_PASSWORD:?Bitte SITE_PASSWORD in der .env setzen}
+      TRUST_PROXY: "1"   # echte IPs hinter Caddy für die Rate-Limits
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?Bitte DOMAIN in der .env setzen}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - poker
+
+volumes:
+  caddy-data:
+  caddy-config:

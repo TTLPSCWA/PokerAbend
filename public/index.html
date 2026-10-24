@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Pokerabend</title>
+  <meta name="theme-color" content="#101a18">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='28' fill='%23e8b04a'/><circle cx='32' cy='32' r='18' fill='none' stroke='%23101a18' stroke-width='5' stroke-dasharray='7 6'/></svg>">
+  <link rel="preload" href="/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <!-- Lobby -->
+  <main id="lobby" class="lobby" hidden>
+    <div class="lobby-felt">
+      <h1 class="wordmark">Pokerabend</h1>
+      <p class="lobby-sub">Texas Hold'em für eure Runde. Einer macht den Tisch auf, die anderen kommen per Link dazu.</p>
+
+      <div class="tabs" role="tablist">
+        <button role="tab" class="tab" data-tab="join" aria-selected="false">Beitreten</button>
+        <button role="tab" class="tab" data-tab="create" aria-selected="true">Tisch erstellen</button>
+      </div>
+
+      <form id="lobby-form" class="lobby-form" autocomplete="off">
+        <label class="field">
+          <span>Dein Name</span>
+          <input id="f-name" maxlength="16" required placeholder="z. B. Tobi">
+        </label>
+        <fieldset class="field">
+          <legend>Avatar</legend>
+          <div id="avatars" class="avatars"></div>
+        </fieldset>
+
+        <div data-for="join" hidden>
+          <label class="field">
+            <span>Tisch-Code</span>
+            <input id="f-code" maxlength="5" placeholder="ABCDE" class="code-input">
+          </label>
+        </div>
+
+        <div data-for="create">
+          <div class="row3">
+            <label class="field"><span>Startchips</span><input id="f-stack" type="number" min="100" step="100" value="10000"></label>
+            <label class="field"><span>Small Blind</span><input id="f-sb" type="number" min="1" value="50"></label>
+            <label class="field"><span>Big Blind</span><input id="f-bb" type="number" min="2" value="100"></label>
+          </div>
+          <p class="hint">Alles andere stellst du am Tisch unter „Host“ ein.</p>
+        </div>
+
+        <button class="btn btn-brass btn-big" type="submit" id="f-submit">Tisch erstellen</button>
+        <p id="lobby-error" class="error" role="alert"></p>
+      </form>
+    </div>
+    <p class="lobby-foot">Nur Spielgeld. Keine Anmeldung, kein Echtgeld.</p>
+  </main>
+
+  <!-- Spiel -->
+  <div id="game" class="game" hidden>
+    <header class="topbar">
+      <button class="code-chip" id="copy-link" title="Einladungslink kopieren">
+        <span class="code-label">Tisch</span> <b id="room-code">-----</b>
+        <span class="copy-hint">Link kopieren</span>
+      </button>
+      <div class="meta" id="meta"></div>
+      <nav class="topnav">
+        <button class="nav-btn" data-panel="log">Verlauf</button>
+        <button class="nav-btn" data-panel="stand">Stand</button>
+        <button class="nav-btn" data-panel="me">Ich</button>
+        <button class="nav-btn" data-panel="host" id="nav-host" hidden>Host</button>
+      </nav>
+    </header>
+
+    <section class="table-wrap">
+      <div class="table" id="table">
+        <div class="rail"></div>
+        <div class="felt">
+          <div class="felt-mark">Pokerabend</div>
+          <div class="pot" id="pot"></div>
+          <div class="board" id="board"></div>
+          <div class="felt-msg" id="felt-msg"></div>
+        </div>
+        <div id="seats"></div>
+      </div>
+    </section>
+
+    <section class="dock" id="dock"></section>
+
+    <aside class="panel" id="panel" hidden>
+      <div class="panel-head">
+        <h2 id="panel-title">Verlauf</h2>
+        <button class="icon-btn" id="panel-close" aria-label="Schließen">✕</button>
+      </div>
+      <div class="panel-body" id="panel-body"></div>
+    </aside>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="offline" class="offline" hidden>Verbindung weg – verbinde neu …</div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/app.js" type="module"></script>
+</body>
+</html>
