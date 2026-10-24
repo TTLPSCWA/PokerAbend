@@ -9,11 +9,11 @@ services:
     environment:
       # Lokal leer lassen = ohne Passwort. Auf dem Server Pflicht (siehe docker-compose.prod.yml)
       SITE_PASSWORD: ${SITE_PASSWORD:-}
-      # Discord-Login (leer = aus). Werte kommen aus der .env.
-      DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:-}
-      DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:-}
-      DISCORD_GUILD_ID: ${DISCORD_GUILD_ID:-}
-      DISCORD_ROLE_ID: ${DISCORD_ROLE_ID:-}
+      # Discord-Login vorerst ausgeklammert
+      # DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:-}
+      # DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:-}
+      # DISCORD_GUILD_ID: ${DISCORD_GUILD_ID:-}
+      # DISCORD_ROLE_ID: ${DISCORD_ROLE_ID:-}
       PUBLIC_URL: ${PUBLIC_URL:-http://localhost:3000}
     volumes:
       - poker-data:/app/data

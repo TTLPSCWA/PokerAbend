@@ -7,11 +7,12 @@ services:
     expose:
       - "3000"
     environment:
-      # Anmeldung nur mit Discord – ohne diese Werte startet nichts
-      DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:?Bitte DISCORD_CLIENT_ID in der .env setzen}
-      DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:?Bitte DISCORD_CLIENT_SECRET in der .env setzen}
-      DISCORD_GUILD_ID: ${DISCORD_GUILD_ID:?Bitte DISCORD_GUILD_ID in der .env setzen}
-      DISCORD_ROLE_ID: ${DISCORD_ROLE_ID:-}
+      # Discord-Login vorerst ausgeklammert – solange gilt das Seitenpasswort (Pflicht)
+      SITE_PASSWORD: ${SITE_PASSWORD:?Bitte SITE_PASSWORD in der .env setzen}
+      # DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:?Bitte DISCORD_CLIENT_ID in der .env setzen}
+      # DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:?Bitte DISCORD_CLIENT_SECRET in der .env setzen}
+      # DISCORD_GUILD_ID: ${DISCORD_GUILD_ID:?Bitte DISCORD_GUILD_ID in der .env setzen}
+      # DISCORD_ROLE_ID: ${DISCORD_ROLE_ID:-}
       PUBLIC_URL: https://${DOMAIN}
       TRUST_PROXY: "1"   # echte IPs und HTTPS hinter Caddy
 

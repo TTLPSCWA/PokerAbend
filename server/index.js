@@ -31,8 +31,12 @@ const TRUST_PROXY = ['1', 'true', 'yes'].includes(String(process.env.TRUST_PROXY
 const MAX_CONN_PER_IP = Number(process.env.MAX_CONN_PER_IP || 30);
 
 // Anmeldung: Discord (wenn eingerichtet), sonst Seitenpasswort, sonst offen (nur lokal zum Testen)
-let DISCORD;
-try { DISCORD = discordConfig(); } catch (e) { console.error('✖ ' + e.message); process.exit(1); }
+// Discord-Anmeldung ist vorerst ausgeklammert. Zum Einschalten DISCORD_ENABLED auf true setzen.
+const DISCORD_ENABLED = false;
+let DISCORD = null;
+if (DISCORD_ENABLED) {
+  try { DISCORD = discordConfig(); } catch (e) { console.error('✖ ' + e.message); process.exit(1); }
+}
 const MODE = DISCORD ? 'discord' : SITE_PASSWORD ? 'password' : 'open';
 const SECRET = loadSecret(DATA_DIR);
 const auth = createAuth({ password: SITE_PASSWORD, secret: SECRET });
@@ -41,7 +45,7 @@ const sessions = DISCORD ? createSessions(DATA_DIR) : null;
 const discord = DISCORD ? createDiscord(DISCORD) : null;
 if (MODE === 'discord') console.log(`Anmeldung: nur mit Discord (Server ${DISCORD.guildId.slice(0, 4)}…${DISCORD.roleId ? ', mit Rolle' : ''})`);
 else if (MODE === 'password') console.log('Anmeldung: Seitenpasswort');
-else console.warn('⚠ Weder Discord noch SITE_PASSWORD eingerichtet – jeder mit dem Link kommt auf die Seite. Nur lokal zum Testen!');
+else console.warn('⚠ Kein SITE_PASSWORD eingerichtet – jeder mit dem Link kommt auf die Seite. Nur lokal zum Testen!');
 
 // Grenzen gegen Raten und Spam (pro IP)
 const limits = {

@@ -1,5 +1,8 @@
 // Anmeldung mit Discord – gegen einen nachgebauten Discord-Server (kein echtes Discord nötig).
-import { test, before, after } from 'node:test';
+import { test as nodeTest } from 'node:test';
+// Discord-Anmeldung ist vorerst ausgeklammert (DISCORD_ENABLED in server/index.js) – Tests übersprungen
+const test = (name, fn) => nodeTest(name, { skip: 'Discord-Anmeldung ausgeklammert' }, fn);
+const before = () => {}, after = () => {};
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:http';

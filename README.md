@@ -45,7 +45,7 @@ Voraussetzung ist Node.js 20 oder neuer.
 
 //3. **Update einspielen:** neues Image pushen, auf dem Server wieder `pull` und `up -d`.
 
-**Anmeldung:** Auf dem Server geht es nur mit Discord. Ohne `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET` und `DISCORD_GUILD_ID` in der `.env` startet er gar nicht erst (siehe [Anmeldung mit Discord](#anmeldung-mit-discord)). Lokal ohne Discord-Werte ist die Seite offen, mit `SITE_PASSWORD` gibt es stattdessen ein Gruppenpasswort.
+**Anmeldung:** Die Discord-Anmeldung ist vorerst ausgeklammert (`DISCORD_ENABLED = false` in `server/index.js`). Solange gilt: auf dem Server ist `SITE_PASSWORD` in der `.env` Pflicht (Gruppenpasswort), lokal ohne `SITE_PASSWORD` ist die Seite offen.
 
 Tische und Chipstände liegen im Docker-Volume `poker-data` und überleben Neustarts. Gespeichert wird immer zwischen zwei Händen. Nach einem Neustart drückt der Host einmal auf „Spiel starten“.
 
@@ -65,6 +65,8 @@ Tische und Chipstände liegen im Docker-Volume `poker-data` und überleben Neust
 | Handy | Eigene Hochformat-Ansicht mit großen Buttons |
 
 ## Anmeldung mit Discord
+
+> **Vorerst ausgeklammert.** Zum Einschalten in `server/index.js` `DISCORD_ENABLED = true` setzen, die `DISCORD_…`-Zeilen in `.env`, `docker-compose.yml` und `docker-compose.prod.yml` wieder einkommentieren und die Tests in `test/discord.test.js` wieder aktivieren.
 
 Rein kommt nur, wer auf unserem Discord-Server ist. Es gibt kein Gruppenpasswort mehr, Name und Profilbild am Tisch kommen von Discord.
 
