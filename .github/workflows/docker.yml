@@ -1,32 +1,45 @@
 
-services:
-  poker:
-    image: ghcr.io/ttlpscwa/pokerabend:latest
-    restart: unless-stopped
+name: Docker-Image
 
-    ports:
-      - "3000:3000"
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
 
-    environment:
-      PUBLIC_URL: "https://tobiasthomasprojektap2.de"
+permissions:
+  contents: read
+  packages: write
 
-    volumes:
-      - poker-data:/app/data
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-    networks:
-      - default
-      - traefik
+    steps:
+      - name: Repository herunterladen
+        uses: actions/checkout@v4
 
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=jule-finn-wedding_default"
-      - "traefik.http.routers.poker.rule=Host(`tobiasthomasprojektap2.de`)"
-      - "traefik.http.services.poker.loadbalancer.server.port=3000"
+      - name: Node.js einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
 
-volumes:
-  poker-data:
+      - name: Abhängigkeiten installieren
+        run: npm ci
 
-networks:
-  traefik:
-    external: true
-    name: jule-finn-wedding_default
+      - name: Tests ausführen
+        run: npm test
+
+      - name: Bei GitHub Container Registry anmelden
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker-Image bauen und veröffentlichen
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/ttlpscwa/pokerabend:latest
