@@ -79,6 +79,8 @@ Tische und Chipstände liegen im Docker-Volume `poker-data` und überleben Neust
 | Schwimmen (31) | 2–9 | 32 Karten, eine Farbe zählt (31 ist das Höchste), tauschen, schieben, klopfen. Die Niedrigsten verlieren Leben, ohne Leben schwimmt man noch einmal. Der Letzte gewinnt |
 | Blackjack | 1–7 | Gegen den Dealer mit 6 Decks: Karte, Stehen, Verdoppeln, Teilen. Blackjack 3:2, Dealer steht auf Soft 17. Eigene Chips mit Nachkaufen, die Bank zählt mit |
 | Kniffel | 1–6 | Fünf Würfel, drei Würfe, 13 Felder (oben Einser bis Sechser mit Bonus 35 ab 63, unten Pasch, Full House, Straßen, Kniffel, Chance). Die höchste Summe gewinnt |
+| Shut the Box | 1–8 | Würfeln und Klappen 1–9 schließen, die genau die Augensumme ergeben. Offene Klappen zählen (wenig ist gut), Box zu gewinnt die Runde sofort. 5 Runden |
+| Vier gewinnt | 2 (+ Zuschauer) | 7 × 6, Steine fallen nach unten, vier in einer Reihe gewinnt (auch diagonal). Volles Feld = unentschieden, Anfang wechselt. Zeit pro Zug |
 | Schiffe versenken | 2 (+ Zuschauer) | Zwei Meere 10 × 10, Flotte setzen (nicht berühren), abwechselnd schießen: Wasser, Treffer, versenkt. Zeit pro Schuss. Die gegnerischen Schiffe sieht man erst nach Spielende |
 
 Die Startseite zeigt die Spiele nach Kategorien (Karten-, Würfel-, Brettspiele) – festgelegt mit `category` in `games/<spiel>/index.js`.
@@ -104,6 +106,8 @@ Gehen bei Skip-Bo während der Runde die Nachziehkarten aus, darf ein Spieler oh
 | Skip-Bo | Karten im eigenen Stapel (offiziell 30, ab 5 Spielern 20) (20) |
 | Blackjack | Startchips (1000)<br>Mindesteinsatz (10)<br>Höchsteinsatz (500)<br>Dealer zieht auf Soft 17 (aus)<br>Versicherung anbieten, zahlt 2:1 (aus)<br>Verdoppeln nach dem Teilen (an)<br>Nachkaufen: wie oft, 0 = aus, 99 = unbegrenzt (99) |
 | Kniffel | Extra-Kniffel-Bonus: jeder weitere Kniffel +50 (aus)<br>Joker-Regel bei weiterem Kniffel (aus) |
+| Shut the Box | Runden (5)<br>Klappen 1–12 statt 1–9 (aus)<br>Ein-Würfel-Regel, wenn 7 bis zur höchsten Klappe zu sind (an)<br>Wertung: Ziffern hintereinander statt Summe (aus)<br>Zeit pro Zug in Sekunden, 0 = ohne (60) |
+| Vier gewinnt | Zeit pro Zug in Sekunden, 0 = ohne (60) |
 | Schiffe versenken | Klassische Flotte: 1× 5, 2× 4, 3× 3, 4× 2 (aus – Standard 1× 5, 1× 4, 2× 3, 1× 2)<br>Schiffe dürfen sich berühren (aus)<br>Treffer: nochmal schießen (aus)<br>Zeit pro Schuss in Sekunden, 0 = ohne (60) |
 | Schwimmen | Leben pro Spieler (3)<br>Schwimmen: ohne Leben noch einmal mitspielen (an)<br>Schieben erlaubt (an)<br>Feuer: drei Asse = 33, alle anderen verlieren ein Leben (aus) |
 

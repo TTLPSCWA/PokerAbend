@@ -40,6 +40,23 @@ const INVARIANTS = {
     assert.equal(new Set(cards.map((c) => c.id)).size, 108, 'Karte doppelt');
   },
   stapelrennen: (r) => assert.equal(sum([r.deck, r.used, ...r.build, ...Object.values(r.stock), ...Object.values(r.hand), ...Object.values(r.piles).flat()]), 162, 'Karten'),
+  shutthebox: (r) => {
+    const n = r.flaps();
+    for (const id of r.order) {
+      const b = r.boxes[id];
+      assert.equal(new Set(b).size, b.length, 'Klappe doppelt');
+      assert.ok(b.every((f) => f >= 1 && f <= n), 'Klappe außerhalb');
+      assert.ok(r.results[id].length <= r.settings.rounds, 'zu viele Runden');
+    }
+    if (r.pending) assert.ok(r.dice.length >= 1, 'offener Wurf ohne Würfel');
+  },
+  viergewinnt: (r) => {
+    // Schwerkraft: unter jedem Stein liegt ein Stein; Steine wechseln sich ab (Unterschied höchstens 1)
+    for (let i = 0; i < 35; i++) if (r.board[i] !== null) assert.ok(r.board[i + 7] !== null, 'Stein schwebt');
+    const n = r.order.map((id) => r.board.filter((x) => x === id).length);
+    assert.ok(Math.abs(n[0] - (n[1] ?? 0)) <= 1, 'ungleich viele Steine');
+    if (r.phase === 'playing') assert.equal(r.win, null);
+  },
   kniffel: (r) => {
     for (const x of r.dice) assert.ok(x >= 0 && x <= 6, 'Würfel');
     assert.ok(r.rolls >= 0 && r.rolls <= 3, 'mehr als 3 Würfe');
@@ -90,6 +107,8 @@ const PLAN = {
   stapelrennen: { games: 200, players: [2, 6], settings: { stockSize: 10 }, maxSteps: 30000 },
   schwimmen: { games: 1000, players: [2, 9], settings: {}, maxSteps: 20000 },
   schiffe: { games: 1000, players: [2, 2], settings: {}, maxSteps: 400 },
+  shutthebox: { games: 800, players: [1, 8], settings: {}, maxSteps: 3000 },
+  viergewinnt: { games: 2000, players: [2, 2], settings: {}, maxSteps: 50 },
   kniffel: { games: 600, players: [1, 6], settings: {}, maxSteps: 400 },
   blackjack: { games: 300, rounds: 20, players: [1, 7], settings: {}, maxSteps: 400 }, // 20 Hände je Tisch – Chips und Schlitten laufen weiter
 };

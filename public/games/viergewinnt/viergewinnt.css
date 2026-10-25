@@ -1,0 +1,32 @@
+/* Vier gewinnt: blauer Rahmen mit Löchern, rote und gelbe Steine (mit Form für Farbenblinde), Spalten als Knöpfe */
+.kg-viergewinnt .kg-main { background: radial-gradient(120% 90% at 50% 20%, #2C4A6E, #12233A); }
+.vg-wrap { gap: 12px; }
+.vg-board { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; width: min(100%, 540px, calc((100dvh - var(--topbar, 57px) - var(--dock-h, 90px) - 160px) * 7 / 6));
+  padding: 10px; border-radius: 16px; background: linear-gradient(180deg, #2367C9, #164C9C); box-shadow: inset 0 0 0 3px #0E3A7A, 0 8px 18px rgba(0,0,0,.45); overflow: hidden; }
+.kt-content .vg-board { width: min(100cqw, 540px, calc(100cqh * 7 / 6 - 60px)); }
+.vg-col { display: grid; grid-template-rows: repeat(6, auto); gap: 4px; padding: 0; border: 0; border-radius: 10px; background: transparent; }
+button.vg-col { cursor: pointer; }
+button.vg-col:hover, button.vg-col:focus-visible { background: rgba(255,255,255,.12); outline: none; }
+.vg-cell { aspect-ratio: 1; border-radius: 50%; background: #0B2142; box-shadow: inset 0 3px 6px rgba(0,0,0,.6); display: grid; place-items: center; overflow: visible; }
+.vg-disc { width: 88%; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; position: relative;
+  box-shadow: inset 0 -4px 0 rgba(0,0,0,.25), inset 0 3px 0 rgba(255,255,255,.35), 0 2px 3px rgba(0,0,0,.45); }
+.vg-0 { background: radial-gradient(circle at 40% 35%, #FF6B5E, #D32F2F 60%); }
+.vg-1 { background: radial-gradient(circle at 40% 35%, #FFE680, #F2C200 60%); }
+.vg-disc .cm { width: 34%; height: 34%; fill: rgba(255,255,255,.85); stroke: rgba(0,0,0,.35); stroke-width: 2; display: none; }
+.vg-1 .cm { fill: rgba(90,60,0,.55); stroke: none; }
+body.marks .vg-disc .cm { display: block; }
+/* Vorschau: blasser Stein, wo er landen würde (Maus: nur in der Spalte unter dem Zeiger) */
+.vg-disc.ghost { opacity: .32; box-shadow: none; }
+@media (pointer: fine) { .vg-disc.ghost { opacity: 0; } button.vg-col:hover .vg-disc.ghost, button.vg-col:focus-visible .vg-disc.ghost { opacity: .45; } }
+/* Fallen: von oben bis ins Feld (kurz) */
+.vg-disc.drop { animation: vg-fall .32s cubic-bezier(.5, 0, .8, 1); }
+@keyframes vg-fall { from { transform: translateY(calc(-112% * var(--fall))); } }
+/* Gewinn-Reihe */
+.vg-disc.win { box-shadow: 0 0 0 4px #fff, 0 0 16px 6px rgba(255,255,255,.65); z-index: 1; }
+.vg-disc.win::after { content: '★'; position: absolute; font-size: 60%; color: #fff; text-shadow: 0 1px 2px #000; }
+.vg-banner { margin: 0; padding: 6px 14px; border-radius: 999px; background: rgba(0,0,0,.35); font-weight: 700; }
+.vg-dot { display: inline-grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; margin-right: 4px; vertical-align: -2px; }
+.vg-dot.vg-0 { background: #D32F2F; } .vg-dot.vg-1 { background: #F2C200; }
+.vg-dot .cm { width: 9px; height: 9px; display: none; fill: #fff; }
+body.marks .vg-dot .cm { display: block; }
+@media (max-width: 640px) { .vg-board { padding: 6px; gap: 3px; } .vg-col { gap: 3px; } }

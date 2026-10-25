@@ -1,0 +1,36 @@
+/* Shut the Box: Holzbox mit Klappen (offen = aufrecht mit Zahl, zu = umgeklappt), Würfel, Punkte je Runde */
+.kg-shutthebox .kg-main { background: radial-gradient(120% 90% at 50% 20%, #2F6B4F, #143326); place-items: start center; }
+.sb-table { gap: 12px; }
+.sb-wood { display: grid; justify-items: center; gap: 10px; padding: 12px 14px 14px; border-radius: 16px; width: min(100%, 620px);
+  background: linear-gradient(180deg, #8A5A33, #6A4224); box-shadow: inset 0 0 0 5px #4E301A, inset 0 10px 18px rgba(0,0,0,.35), 0 8px 18px rgba(0,0,0,.4); }
+.sb-wood > small { color: #F1E2C8; }
+.sb-box { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 5px; width: 100%; }
+.sb-box.twelve { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+.sb-flap { display: grid; place-items: center; align-content: center; min-height: 64px; padding: 0; border: 0; border-radius: 6px 6px 3px 3px; color: #3A2410;
+  background: linear-gradient(180deg, #F6E3BE, #E2C38D); box-shadow: inset 0 -4px 0 rgba(0,0,0,.18), 0 3px 4px rgba(0,0,0,.35); font-weight: 900; font-size: 22px; }
+.sb-flap small { font-size: 11px; font-weight: 700; }
+button.sb-flap { cursor: pointer; }
+button.sb-flap:disabled { cursor: default; opacity: .55; }
+/* Passend: leuchtet; gewählt: Goldrand und gedrückt */
+.sb-flap.fit { box-shadow: 0 0 0 3px var(--gold), 0 0 12px 3px rgba(201,154,69,.6), 0 3px 4px rgba(0,0,0,.35); }
+.sb-flap.sel { background: linear-gradient(180deg, #FFD27A, #E8A93A); transform: translateY(4px); box-shadow: 0 0 0 3px #fff, inset 0 3px 6px rgba(0,0,0,.25); }
+/* Zu: umgeklappt (dunkel, flach), mit „zu“ beschriftet – nicht nur Farbe */
+.sb-flap.shut { background: linear-gradient(180deg, #4E301A, #3A2312); color: #A8865E; min-height: 64px; box-shadow: inset 0 3px 6px rgba(0,0,0,.5); transform: perspective(200px) rotateX(35deg); }
+.sb-dice { display: flex; gap: 10px; align-items: center; }
+.sb-dice b { font-size: 26px; color: #FFF3D6; }
+.sb-sum { font-weight: 700; color: var(--text-2); }
+.sb-sum.ok { color: #8BE0A4; }
+.sb-banner { margin: 0; padding: 6px 14px; border-radius: 999px; background: rgba(201,154,69,.25); border: 1px solid var(--gold); font-weight: 700; }
+.sb-scores { width: min(100%, 620px); background: rgba(0,0,0,.22); border-radius: var(--r-m); padding: 6px 10px; overflow-x: auto; }
+.sb-scores tr.me td { color: var(--gold-text); }
+.sb-scores th.now { color: var(--gold-text); }
+/* Platz am Tisch: Mini-Box */
+.sb-mini { display: inline-flex; gap: 1px; }
+.sb-mini i { display: grid; place-items: center; width: 12px; height: 16px; border-radius: 2px; font-size: 9px; font-style: normal; font-weight: 700; background: #3A2312; color: #7A5A3A; }
+.sb-mini i.open { background: #E2C38D; color: #3A2410; }
+@media (max-width: 640px) {
+  .sb-box { gap: 4px; grid-template-columns: repeat(5, minmax(0, 1fr)); } /* 1–5 und 6–9 in zwei Reihen: Klappen bleiben ≥ 44 px breit */
+  .sb-box.twelve { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .sb-flap { min-height: 56px; font-size: 18px; }
+  .sb-wood { padding: 10px 8px 12px; }
+}

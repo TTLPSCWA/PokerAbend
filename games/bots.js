@@ -7,6 +7,8 @@ import { valueOf } from './maexchen/room.js';
 import { handValue } from './schwimmen/room.js';
 import { randomFleet, around, SIZE } from './schiffe/room.js';
 import { total as bjTotal } from './blackjack/room.js';
+import { botColumn } from './viergewinnt/room.js';
+import { combos as stbCombos } from './shutthebox/room.js';
 
 const one = (list, rng) => list[Math.floor(rng() * list.length)];
 
@@ -188,4 +190,19 @@ function kniffel(room, id, rng) {
   return room.score(id, order.find((f) => opts.some(([k]) => k === f)) || field);
 }
 
-export const BOTS = { maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, schiffe, blackjack, kniffel };
+// Vier gewinnt: eigener Sieg, Gegner blocken, Mitte – manchmal zufällig (sonst wären die Partien immer gleich)
+function viergewinnt(room, id, rng) {
+  const foe = room.order.find((p) => p !== id);
+  const free = [...Array(7).keys()].filter((c) => room.board[c] === null);
+  return room.drop(id, rng() < 0.25 ? free[Math.floor(rng() * free.length)] : botColumn(room.board, id, foe, rng));
+}
+
+// Shut the Box: meist die Kombination mit den höchsten Klappen, manchmal zufällig; ein Würfel, wenn wenig offen ist
+function shutthebox(room, id, rng) {
+  if (!room.pending) return room.throwDice(id, room.canOneDie(id) && (room.boxes[id].reduce((a, b) => a + b, 0) <= 6 || rng() < 0.3) ? 1 : 2);
+  const all = stbCombos(room.boxes[id], room.dice.reduce((a, b) => a + b, 0));
+  all.sort((a, b) => Math.max(...b) - Math.max(...a));
+  return room.close(id, rng() < 0.2 ? all[Math.floor(rng() * all.length)] : all[0]);
+}
+
+export const BOTS = { maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, schiffe, blackjack, kniffel, viergewinnt, shutthebox };
