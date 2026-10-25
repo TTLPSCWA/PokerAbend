@@ -8,12 +8,20 @@ import huetchen from './huetchen/index.js';
 import zehnetappen from './zehnetappen/index.js';
 import stapelrennen from './stapelrennen/index.js';
 
+// Die Kategorien betreffen nur die Auswahl; bestehende Spiel-IDs und Räume bleiben unverändert.
+const CATEGORIES = Object.freeze({
+  poker: 'karten', maumau: 'karten', farbenchaos: 'karten',
+  maexchen: 'wuerfel', schocken: 'wuerfel', huetchen: 'brett',
+  zehnetappen: 'karten', stapelrennen: 'karten',
+});
+
 export const GAMES = Object.fromEntries([poker, maumau, farbenchaos, maexchen, schocken, huetchen, zehnetappen, stapelrennen].map((g) => [g.id, g]));
 export const DEFAULT_GAME = 'poker'; // alte Spielstände ohne Spielart sind Poker
 
 // Was die Startseite über die Spiele wissen muss
 export const gameList = () => Object.values(GAMES).map(({ id, name, description, players, createFields, createHint }) => ({
   id, name, description, players, createFields, createHint,
+  category: CATEGORIES[id] || 'karten', status: 'spielbar',
 }));
 
 // Ereignisnamen aller Spiele – die Plattform meldet sie einmal pro Verbindung an
