@@ -1,0 +1,34 @@
+/* Zehntausend: Punktestände zum Ziel, Zugpunkte, herausgelegte Würfel, aktueller Wurf mit Live-Wertung */
+.kg-zehntausend .kg-main { background: radial-gradient(120% 90% at 50% 20%, #6E3A3A, #331818); place-items: start center; }
+.zt-table { gap: 12px; }
+.zt-track { display: grid; gap: 4px; width: min(100%, 560px); padding: 8px 12px; border-radius: var(--r-m); background: rgba(0,0,0,.25); }
+.zt-row { display: grid; grid-template-columns: minmax(80px, 1.2fr) 2fr 70px; gap: 10px; align-items: center; padding: 2px 6px; border-radius: 8px; }
+.zt-row.turn { box-shadow: inset 0 0 0 2px var(--gold); }
+.zt-row.me .zt-name { color: var(--gold-text); }
+.zt-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.zt-name small { color: #E6C9C9; font-weight: 400; }
+.zt-bar { height: 10px; border-radius: 5px; background: rgba(255,255,255,.12); overflow: hidden; }
+.zt-bar i { display: block; height: 100%; background: linear-gradient(90deg, #C99A45, #F2D58F); }
+.zt-row b { text-align: right; font-variant-numeric: tabular-nums; }
+.zt-turn { display: grid; justify-items: center; gap: 10px; padding: 14px 18px; border-radius: 18px; width: min(100%, 560px);
+  background: linear-gradient(180deg, #7A5534, #5E3F25); box-shadow: inset 0 0 0 4px #4A2F1B, inset 0 8px 18px rgba(0,0,0,.35); }
+.zt-points { display: grid; justify-items: center; }
+.zt-points small { color: #EADBC3; }
+.zt-points b { font-size: 34px; color: #FFF3D6; line-height: 1.1; }
+.zt-aside { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.zt-group { display: inline-flex; align-items: center; gap: 3px; padding: 3px 6px; border-radius: 8px; background: rgba(0,0,0,.25); }
+.zt-group .die.small { --d: 22px; box-shadow: none; }
+.zt-group b { margin-left: 4px; color: #F2D58F; font-size: 13px; }
+.zt-dice { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; min-height: 58px; align-items: center; }
+.zt-dice button.die { cursor: pointer; }
+.zt-wait { color: #EADBC3; }
+.zt-preview { font-weight: 700; color: #EADBC3; }
+.zt-preview.ok { color: #8BE0A4; }
+.zt-preview.bad { color: #FF8A80; }
+.zt-banner { margin: 0; padding: 6px 14px; border-radius: 999px; background: rgba(201,154,69,.25); border: 1px solid var(--gold); font-weight: 700; text-align: center; }
+.zt-loss { margin: 0; color: #FF8A80; font-weight: 700; }
+@media (max-width: 640px) {
+  .zt-dice { gap: 6px; }
+  .zt-dice .die.big { --d: 46px; }
+  .zt-row { grid-template-columns: minmax(60px, 1fr) 1fr 56px; gap: 6px; }
+}

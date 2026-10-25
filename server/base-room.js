@@ -73,7 +73,7 @@ export class BaseRoom {
   dropAway(ms, now = Date.now()) {
     let dropped = 0;
     for (const p of [...this.players.values()]) {
-      if (p.connected || p.kicked || now - (p.offlineSince ?? now) < ms) continue;
+      if (p.bot || p.connected || p.kicked || now - (p.offlineSince ?? now) < ms) continue;
       this.remove(p.id, `${p.name} war ${Math.round(ms / 60000) || 'ein paar'} Minuten weg und wurde entfernt`);
       dropped++;
     }
@@ -82,12 +82,12 @@ export class BaseRoom {
 
   // Niemand mehr da: alle entfernt oder nur noch auf dem Weg raus
   get abandoned() {
-    return [...this.players.values()].every((p) => p.kicked);
+    return [...this.players.values()].every((p) => p.kicked || p.bot);
   }
 
   transferHost() {
-    const next = [...this.players.values()].find((p) => p.connected && !p.kicked && p.id !== this.hostId)
-      || [...this.players.values()].find((p) => !p.kicked && p.id !== this.hostId);
+    const next = [...this.players.values()].find((p) => p.connected && !p.bot && !p.kicked && p.id !== this.hostId)
+      || [...this.players.values()].find((p) => !p.bot && !p.kicked && p.id !== this.hostId);
     if (next) { this.hostId = next.id; this.say(`${next.name} ist jetzt Host`); }
   }
 

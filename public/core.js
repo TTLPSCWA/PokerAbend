@@ -408,6 +408,22 @@ document.addEventListener('click', (e) => {
   if (t) showLeaderboard(t.dataset.leaderboard || chosenGame);
 });
 
+// Optionale Computer-Mitspieler, für Poker und alle Rundenspiele gleich.
+function botControlsHTML(state, busy) {
+  const bots = state.bots || [];
+  const occupied = state.players ? state.players.filter((p) => p.seated).length : state.seats.filter(Boolean).length;
+  const full = occupied >= (state.maxPlayers || state.settings.maxPlayers);
+  return `<section class="bot-controls" aria-label="Computer-Mitspieler"><h3>Mit Bots spielen (optional)</h3>
+    <p class="hint">${bots.length ? `${bots.length} Computer-Mitspieler am Tisch.` : 'Ohne Bots. Füge bei Bedarf einen Computer-Mitspieler hinzu.'} ${busy ? 'Änderungen gehen nach dieser Runde.' : 'Du startest die Runde wie gewohnt.'}</p>
+    <button type="button" class="btn" data-add-bot ${busy || full ? 'disabled' : ''}>Bot hinzufügen${full ? ' – Tisch voll' : ''}</button>
+    ${bots.map((p) => `<div class="bot-row"><span>${esc(p.name)} · Computer</span><button type="button" class="btn btn-outline-red" data-remove-bot="${esc(p.id)}" aria-label="${esc(p.name)} entfernen" ${busy ? 'disabled' : ''}>Entfernen</button></div>`).join('')}</section>`;
+}
+document.addEventListener('click', (e) => {
+  if (e.target.closest('[data-add-bot]:not(:disabled)')) send('addBot');
+  const remove = e.target.closest('[data-remove-bot]:not(:disabled)');
+  if (remove) send('removeBot', { id: remove.dataset.removeBot });
+});
+
 // Host-Menü: in ein anderes Spiel wechseln (gleicher Raum, alle bleiben drin)
 function switchGameHTML(currentId, busy) {
   const others = account.games.filter((g) => g.id !== currentId);

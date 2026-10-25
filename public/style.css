@@ -153,6 +153,10 @@ button { cursor: pointer; }
 
 /* Startseite: Spielauswahl */
 .games-pick { margin: 0 0 18px; }
+.bot-controls { display: grid; gap: 10px; border: 1px solid var(--line); border-radius: var(--r-m); padding: 12px; }
+.bot-controls .hint { margin: 0; }
+.bot-controls .btn { min-height: 44px; }
+.bot-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .pick-title { margin: 0 0 8px; font-size: var(--fs-label); text-transform: uppercase; letter-spacing: .08em; color: #D3E1DA; }
 /* Kompakt: zwei Spalten, nur das gewählte Spiel zeigt seine Beschreibung (über die ganze Breite) */
 .chosen-game { margin: 0 0 12px; color: var(--gold-text); font-weight: 600; overflow-wrap: anywhere; }

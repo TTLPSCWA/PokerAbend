@@ -22,22 +22,56 @@ export function winLine(board, r, c, who) {
   }
   return null;
 }
-// Einfache Strategie: eigenen Sieg nehmen, gegnerischen Sieg verhindern, keinen Sieg vorlegen, sonst Mitte bevorzugen
-export function botColumn(board, me, foe, rng = Math.random) {
-  const free = [...Array(COLS).keys()].filter((c) => landing(board, c) >= 0);
-  const winsWith = (who) => free.find((c) => { const r = landing(board, c); const b = [...board]; b[r * COLS + c] = who; return winLine(b, r, c, who); });
-  const win = winsWith(me); if (win !== undefined) return win;
-  const block = winsWith(foe); if (block !== undefined) return block;
-  // Nicht in eine Spalte legen, über der der Gegner dann gewinnt
-  const safe = free.filter((c) => {
+// Strategie: vier Züge vorausrechnen (Sieg nehmen, Sieg verhindern, keine Zwickmühle zulassen),
+// sonst Reihen mit vielen eigenen Steinen und die Mitte bevorzugen. Etwas Zufall bei gleich guten Spalten.
+const WINDOWS = [];
+for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) for (const [dr, dc] of DIRS) {
+  const cells = [0, 1, 2, 3].map((k) => [r + dr * k, c + dc * k]);
+  if (cells.every(([rr, cc]) => rr >= 0 && rr < ROWS && cc >= 0 && cc < COLS)) WINDOWS.push(cells.map(([rr, cc]) => rr * COLS + cc));
+}
+function rate(board, me, foe) {
+  let v = 0;
+  for (let r = 0; r < ROWS; r++) { const x = board[r * COLS + 3]; if (x === me) v += 3; else if (x === foe) v -= 3; }
+  for (const w of WINDOWS) {
+    let m = 0, f = 0;
+    for (const i of w) { if (board[i] === me) m++; else if (board[i] === foe) f++; }
+    if (m && f) continue;
+    if (m === 3) v += 12; else if (m === 2) v += 3;
+    if (f === 3) v -= 14; else if (f === 2) v -= 3;
+  }
+  return v;
+}
+const ORDER = [3, 2, 4, 1, 5, 0, 6];
+function search(board, depth, me, foe, alpha, beta) {
+  if (depth === 0) return rate(board, me, foe);
+  let any = false;
+  for (const c of ORDER) {
     const r = landing(board, c);
-    if (r <= 0) return true;
-    const b = [...board]; b[r * COLS + c] = me; b[(r - 1) * COLS + c] = foe;
-    return !winLine(b, r - 1, c, foe);
-  });
-  const pool = safe.length ? safe : free;
-  const weight = (c) => 4 - Math.abs(3 - c) + rng() * 2.5;
-  return pool.sort((a, b) => weight(b) - weight(a))[0];
+    if (r < 0) continue;
+    any = true;
+    board[r * COLS + c] = me;
+    const v = winLine(board, r, c, me) ? 10000 + depth : -search(board, depth - 1, foe, me, -beta, -alpha);
+    board[r * COLS + c] = null;
+    if (v > alpha) alpha = v;
+    if (alpha >= beta) break;
+  }
+  return any ? alpha : 0;
+}
+export function botColumn(board, me, foe, rng = Math.random, depth = 5) {
+  const b = [...board];
+  let best = null;
+  for (const c of ORDER) {
+    const r = landing(b, c);
+    if (r < 0) continue;
+    b[r * COLS + c] = me;
+    // Fenster knapp unter der besten Spalte: fast gleich gute Spalten werden noch genau bewertet und per Zufall gemischt
+    const floor = best ? best.raw - 4 : -Infinity;
+    const raw = winLine(b, r, c, me) ? 100000 : -search(b, depth - 1, foe, me, -Infinity, -floor);
+    b[r * COLS + c] = null;
+    const v = raw + rng() * 4;
+    if (!best || v > best.v) best = { c, v, raw: Math.max(raw, best?.raw ?? -Infinity) };
+  }
+  return best.c;
 }
 
 export class Room extends TurnRoom {

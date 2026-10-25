@@ -172,7 +172,7 @@ export class Room extends TurnRoom {
       this.moveNo++;
       return;
     }
-    this.peek();
+    this.dealerPeek();
   }
   insure(id, yes) {
     this.requireStep('insure', id);
@@ -187,10 +187,10 @@ export class Room extends TurnRoom {
       this.act(id, `versichert ${amount}`);
     } else this.act(id, 'keine Versicherung');
     this.decided.add(id);
-    if (this.order.every((p) => this.decided.has(p))) this.peek();
+    if (this.order.every((p) => this.decided.has(p))) this.dealerPeek();
   }
-  // Dealer schaut bei Ass oder Zehn nach Blackjack
-  peek() {
+  // Dealer schaut bei Ass oder Zehn nach Blackjack (heißt nicht peek – das ist in TurnRoom der Nächste in Spielrichtung)
+  dealerPeek() {
     const up = this.dealer[0];
     if ((up[0] === 'A' || cardValue(up) === 10) && isBlackjack(this.dealer)) {
       this.hidden = false;
@@ -344,7 +344,7 @@ export class Room extends TurnRoom {
     super.dropOut(p, message);
     if (this.phase !== 'playing') return;
     if (this.step === 'bet') this.maybeDeal();
-    else if (this.step === 'insure' && this.order.every((x) => this.decided.has(x))) this.peek();
+    else if (this.step === 'insure' && this.order.every((x) => this.decided.has(x))) this.dealerPeek();
     else if (this.step === 'play' && wasCurrent) { this.handIdx = -1; this.turn = Math.min(this.turn, this.order.length - 1); this.turn = Math.max(0, this.turn); this.advanceFromTurn(); }
   }
   advanceFromTurn() {

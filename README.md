@@ -81,11 +81,19 @@ Tische und Chipstände liegen im Docker-Volume `poker-data` und überleben Neust
 | Kniffel | 1–6 | Fünf Würfel, drei Würfe, 13 Felder (oben Einser bis Sechser mit Bonus 35 ab 63, unten Pasch, Full House, Straßen, Kniffel, Chance). Die höchste Summe gewinnt |
 | Shut the Box | 1–8 | Würfeln und Klappen 1–9 schließen, die genau die Augensumme ergeben. Offene Klappen zählen (wenig ist gut), Box zu gewinnt die Runde sofort. 5 Runden |
 | Vier gewinnt | 2 (+ Zuschauer) | 7 × 6, Steine fallen nach unten, vier in einer Reihe gewinnt (auch diagonal). Volles Feld = unentschieden, Anfang wechselt. Zeit pro Zug |
+| Zehntausend | 2–8 | Sechs Würfel, punktende Würfel herauslegen, weiterwürfeln oder sichern. Niete = Zug weg. Einstieg 350, wer das Ziel erreicht, löst die letzte Runde aus |
+| Mühle | 2 (+ Zuschauer) | Je 9 Steine setzen, ziehen, mit 3 Steinen springen. Mühle nimmt einen Stein, mit 2 Steinen oder ohne Zug verloren. Unentschieden nach 50 Zügen ohne Schlagen oder dreifacher Wiederholung |
 | Schiffe versenken | 2 (+ Zuschauer) | Zwei Meere 10 × 10, Flotte setzen (nicht berühren), abwechselnd schießen: Wasser, Treffer, versenkt. Zeit pro Schuss. Die gegnerischen Schiffe sieht man erst nach Spielende |
 
 Die Startseite zeigt die Spiele nach Kategorien (Karten-, Würfel-, Brettspiele) – festgelegt mit `category` in `games/<spiel>/index.js`.
 
 Die genauen Regeln stehen im Spiel unter „Regeln“ und oben in `games/<spiel>/room.js`. Die Rundenspiele haben einen gemeinsamen Rahmen: Mitspielen/Zuschauen, der Host startet jede Runde, Punkte und Siege über den Abend unter „Stand“, Verlauf und Host-Menü.
+
+### Computer-Mitspieler
+
+Im Host-Menü unter „Mit Bots spielen (optional)“ auf **Bot hinzufügen** klicken; bei Poker im Reiter „Spiel“. Standardmäßig sind keine Bots dabei. Bots sitzen automatisch am Tisch, du selbst trittst wie gewohnt bei. Hinzufügen und Entfernen gehen zwischen den Runden, die Runde startet weiterhin der Host. Bots bleiben bei Spielwechsel und Server-Neustart erhalten und werden als „Bot 1“, „Bot 2“ usw. angezeigt. Wird beim Spielwechsel der Tisch zu klein, schauen überzählige Spieler zu.
+
+Alle vorhandenen Spiele haben eine Bot-Strategie in `games/bots.js`. Poker schätzt mit zufällig simulierten unbekannten Karten seine Chancen; die anderen Spiele nutzen einfache Grundstrategien, etwa Farbmehrheiten, Schlagen, passende Phasen, Treffer-Nachbarschaften oder die offene Blackjack-Dealerkarte. Die Bots kennen keine verdeckten Gegnerkarten und sind keine Turnier-KI. Der automatische Bot-Treiber pausiert, wenn kein Mensch verbunden ist. Bots können keine Hosts werden; sie zählen im Tischstand, aber nicht in der übergreifenden Bestenliste. Poker-Bots kaufen nach einem verlorenen Stack nicht selbst nach – der Host kann Chips korrigieren oder den Bot zwischen den Händen ersetzen.
 
 ### Regeln anpassen
 
@@ -108,6 +116,8 @@ Gehen bei Skip-Bo während der Runde die Nachziehkarten aus, darf ein Spieler oh
 | Kniffel | Extra-Kniffel-Bonus: jeder weitere Kniffel +50 (aus)<br>Joker-Regel bei weiterem Kniffel (aus) |
 | Shut the Box | Runden (5)<br>Klappen 1–12 statt 1–9 (aus)<br>Ein-Würfel-Regel, wenn 7 bis zur höchsten Klappe zu sind (an)<br>Wertung: Ziffern hintereinander statt Summe (aus)<br>Zeit pro Zug in Sekunden, 0 = ohne (60) |
 | Vier gewinnt | Zeit pro Zug in Sekunden, 0 = ohne (60) |
+| Zehntausend | Zielpunktzahl (10000)<br>Einstieg ab Punkten, 0 = ohne (350)<br>Straße nur 1.500 statt 2.000 (aus)<br>Drei Paare zählen 1.500 (an)<br>Letzte Runde für die anderen (an)<br>Zeit pro Zug in Sekunden, 0 = ohne (60) |
+| Mühle | Springen mit 3 Steinen (an)<br>Unentschieden nach Zügen ohne Schlagen, 0 = aus (50)<br>Zeit pro Zug in Sekunden, 0 = ohne (60) |
 | Schiffe versenken | Klassische Flotte: 1× 5, 2× 4, 3× 3, 4× 2 (aus – Standard 1× 5, 1× 4, 2× 3, 1× 2)<br>Schiffe dürfen sich berühren (aus)<br>Treffer: nochmal schießen (aus)<br>Zeit pro Schuss in Sekunden, 0 = ohne (60) |
 | Schwimmen | Leben pro Spieler (3)<br>Schwimmen: ohne Leben noch einmal mitspielen (an)<br>Schieben erlaubt (an)<br>Feuer: drei Asse = 33, alle anderen verlieren ein Leben (aus) |
 

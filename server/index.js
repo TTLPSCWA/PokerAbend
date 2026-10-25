@@ -14,6 +14,7 @@ import {
 } from './security.js';
 import { createCodes, normalize } from './codes.js';
 import { createLeaderboard } from './leaderboard.js';
+import { addBot, removeBot, createBotRunner } from './bots.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -142,6 +143,7 @@ const io = new Server(http, {
 
 /** @type {Map<string, import('./base-room.js').BaseRoom>} */
 const rooms = new Map();
+const bots = createBotRunner({ isCurrent: (r) => rooms.get(r.code) === r, notify: (r) => { broadcast(r); if (!r.busy) save(); } });
 const codes = createCodes(); // gemeinsam für alle Spiele
 const leaderboard = createLeaderboard(DATA_DIR); // Bestenliste über alle Abende
 
@@ -195,7 +197,10 @@ function load() {
 // Meldungen eines Raums: mit data.to nur an diesen Spieler (z. B. Anstupsen), sonst alle neu zeichnen
 function onRoomChange(room, kind, data) {
   // Ergebnis einer Partie: in die Bestenliste (gespeichert wird mit dem nächsten Speichern)
-  if (kind === 'result') { leaderboard.record(room.game, data?.entries); save(); return; }
+  if (kind === 'result') {
+    const botNames = new Set([...room.players.values()].filter((p) => p.bot).map((p) => p.name));
+    leaderboard.record(room.game, data?.entries?.filter((p) => !botNames.has(p.name))); save(); return;
+  }
   if (data?.to) {
     const p = room.players.get(data.to);
     const { to, ...rest } = data;
@@ -220,14 +225,19 @@ function switchRoom(old, game) {
   for (const op of old.players.values()) {
     if (op.kicked) continue;
     next.players.set(op.id, { ...next.playerFields(op), id: op.id, token: op.token, name: op.name, avatar: op.avatar,
-      connected: op.connected, socketId: op.socketId, offlineSince: op.offlineSince });
+      bot: !!op.bot, connected: op.connected, socketId: op.socketId, offlineSince: op.offlineSince });
   }
   next.hostId = next.players.has(old.hostId) ? old.hostId : [...next.players.keys()][0];
   next.say(`Jetzt: ${game.name} (vorher ${before}${summary ? ` – ${summary}` : ''})`, 'summary');
+  // Menschen zuerst hinsetzen; Bots, für die kein Platz mehr ist, verlassen den Raum (zuschauen bringt ihnen nichts)
+  const isBot = (id) => next.players.get(id)?.bot;
   let seat = 0;
-  for (const id of playing) {
+  for (const id of [...playing.filter((id) => !isBot(id)), ...playing.filter(isBot)]) {
     try { if (next.table) next.sit(id, seat++); else next.sit(id); } catch { /* Tisch voll: schaut zu */ }
   }
+  const seated = (id) => (next.table ? next.table.seats.some((s) => s?.id === id) : next.seats.includes(id));
+  for (const p of [...next.players.values()]) if (p.bot && !seated(p.id)) next.players.delete(p.id);
+  bots.stop(old);
   old.dispose();
   rooms.set(old.code, next);
   codes.retag(old.code, game.id);
@@ -236,8 +246,10 @@ function switchRoom(old, game) {
 
 // ---------- Hilfen ----------
 function broadcast(room) {
+  bots.sync(room);
+  const botPlayers = [...room.players.values()].filter((p) => p.bot && !p.kicked).map(({ id, name }) => ({ id, name }));
   for (const p of room.players.values()) {
-    if (p.socketId) io.to(p.socketId).emit('state', { ...room.view(p.id), game: room.game }); // Spielart, damit der Browser bei einem Wechsel umschaltet
+    if (p.socketId) io.to(p.socketId).emit('state', { ...room.view(p.id), game: room.game, bots: botPlayers }); // Spielart, damit der Browser bei einem Wechsel umschaltet
   }
 }
 
@@ -325,6 +337,7 @@ io.on('connection', (socket) => {
     try { room = getRoom(code); } catch (e) { limits.badCode.hit(ip); throw e; }
     // Wiedererkennung über das Token aus dem Browser (localStorage)
     let p = typeof token === 'string' && token ? room.byToken(token) : null;
+    if (p?.bot) throw new Error('Computer-Mitspieler haben keinen Browser-Zugang');
     if (p) {
       if (!p.connected) room.say(`${p.name} ist wieder online`);
     } else {
@@ -357,7 +370,9 @@ io.on('connection', (socket) => {
 
   // Für alle Spiele gleich: Host-Rechte
   on('kick', ({ id }, room, p) => { room.requireHost(p.id); if (id === p.id) throw new Error('Du kannst dich nicht selbst entfernen'); const target = room.players.get(id); room.remove(id); if (target?.socketId && !room.players.has(id)) io.to(target.socketId).emit('kicked'); });
-  on('makeHost', ({ id }, room, p) => { room.requireHost(p.id); const t = room.players.get(id); if (!t) throw new Error('Spieler nicht gefunden'); room.hostId = id; room.say(`${t.name} ist jetzt Host`); });
+  on('makeHost', ({ id }, room, p) => { room.requireHost(p.id); const t = room.players.get(id); if (!t || t.bot) throw new Error('Ein Mensch muss Host bleiben'); room.hostId = id; room.say(`${t.name} ist jetzt Host`); });
+  on('addBot', (_data, room, p) => { addBot(room, p.id); });
+  on('removeBot', ({ id }, room, p) => { removeBot(room, p.id, id); });
 
   // Ganzer Verlauf auf Anfrage (nicht in jedem Update – der kann lang werden). Ohne Neuzeichnen für alle.
   socket.on('history', (data, cb) => {
@@ -404,8 +419,9 @@ setInterval(() => {
   let changed = false;
   for (const [code, r] of rooms) {
     if (r.dropAway(AWAY_MIN * 60000)) { r.afterChange(); broadcast(r); changed = true; }
-    const anyone = [...r.players.values()].some((p) => p.connected);
+    const anyone = [...r.players.values()].some((p) => p.connected && !p.bot);
     if (!anyone && (r.abandoned || Date.now() - r.lastActivity > ROOM_TTL_MIN * 60000)) {
+      bots.stop(r);
       r.dispose();
       rooms.delete(code); codes.release(code); dropHistory(code); changed = true;
     }
@@ -418,7 +434,7 @@ process.on('uncaughtException', (e) => console.error('Unerwarteter Fehler:', e))
 process.on('unhandledRejection', (e) => console.error('Unerwarteter Fehler:', e));
 
 // Ein Spiel darf keine Plattform-Ereignisse überschreiben
-const RESERVED = ['create', 'join', 'kick', 'makeHost', 'history', 'react', 'switchGame', 'disconnect'];
+const RESERVED = ['create', 'join', 'kick', 'makeHost', 'history', 'react', 'switchGame', 'disconnect', 'addBot', 'removeBot'];
 for (const g of Object.values(GAMES)) {
   const clash = Object.keys(g.events).filter((e) => RESERVED.includes(e));
   if (clash.length) throw new Error(`Spiel ${g.id}: Ereignisse ${clash.join(', ')} gehören der Plattform`);

@@ -118,6 +118,8 @@ export class Room extends MauMau {
     do { [c] = this.take(id, 1); n++; } while (c && !fits(c) && n < 120);
     this.say(`${this.name(id)} zieht ${n === 1 ? 'eine Karte' : `${n} Karten`}`, 'info', 'action');
     this.act(id, n === 1 ? 'zieht' : `zieht ${n}`);
+    if (!c && n === 1) return this.noDraw(); // gar nichts mehr zu ziehen
+    this.stall = 0;
     if (!fits(c)) return this.next(1);
     this.drawn = c;
   }

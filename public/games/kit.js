@@ -97,7 +97,7 @@ const deckPrefHTML = () => `<label class="toggle"><span>Kartenblatt<small>Franz�
       </select></label>`;
 
   // Welcher Ton passt zu einer Aktion („legt Herz König“, „UNO!“, „würfelt 5“ …)? Wichtigeres zuerst.
-const ACT_SOUNDS = [[/^(UNO|Mau|31|Feuer|Kniffel)!/, 'call'], [/^Box zu!/, 'call'], [/^schließt/, 'chips'], [/^klopft/, 'drum'], [/versenkt!$/, 'drum'], [/^Blackjack!/, 'call'], [/über 21/, 'end'], [/ Treffer$/, 'hit'], [/ Wasser$/, 'splash'], [/^Erwischt/, 'catch'], [/schlägt/, 'hit'], [/zweifelt/, 'drum'], [/^Phase d+ ✓/, 'done'],
+const ACT_SOUNDS = [[/^(UNO|Mau|31|Feuer|Kniffel)!/, 'call'], [/^Box zu!/, 'call'], [/^alle sechs!/, 'call'], [/^Mühle!/, 'call'], [/^setzt$/, 'chips'], [/^Niete/, 'end'], [/^schreibt/, 'done'], [/^\+\d/, 'chips'], [/^schließt/, 'chips'], [/^klopft/, 'drum'], [/versenkt!$/, 'drum'], [/^Blackjack!/, 'call'], [/über 21/, 'end'], [/ Treffer$/, 'hit'], [/ Wasser$/, 'splash'], [/^Erwischt/, 'catch'], [/schlägt/, 'hit'], [/zweifelt/, 'drum'], [/^Phase d+ ✓/, 'done'],
   [/setzt aus/, 'skip'], [/würfelt/, 'dice'], [/^(zieht|nimmt Ablage|erwischt)/, 'draw'], [/^(legt|wirft ab|ungesehen|tauscht|Karte:|verdoppelt|teilt)/, 'card'], [/^(setzt d|versichert|kauft)/, 'chips']];
 function actSound(acts, prev) {
   const seen = Math.max(0, ...Object.values(prev || {}).map((a) => a.n));
@@ -420,12 +420,13 @@ function kitGame(def) {
           ${S.phase !== 'playing' ? `<button class="btn btn-brass" data-kit="start">${ICON.play} ${S.phase === 'over' ? 'Nochmal' : S.roundNo ? 'Nächste Runde' : 'Runde starten'}</button>` : ''}
           <button class="btn btn-outline-red" data-kit="newGame" ${S.phase === 'playing' ? 'disabled title="Geht nur zwischen zwei Runden"' : ''}>Neues Spiel (Punkte auf null)</button>
         </div>
+        ${botControlsHTML(S, S.phase === 'playing')}
         ${fields ? `<h3>Regeln an diesem Tisch</h3>${fields}<p class="hint" style="margin:0">Änderungen gehen nur zwischen den Runden. Die Standardwerte sind unsere üblichen Hausregeln – alle sehen die aktiven Regeln unter „?“.</p>` : ''}
         ${switchGameHTML(def.id, S.phase === 'playing')}
         <h3>Leute im Raum</h3>
         <div class="plist">${others.map((p) => `<div class="prow"><span class="mini-av">${avatarHTML(p)}</span>
           <div class="who"><b>${esc(p.name)}</b><small>${p.seated ? 'spielt mit' : 'schaut zu'}${p.connected ? '' : ' · offline'}</small></div>
-          <button class="btn btn-sm" data-kit-host="${p.id}" title="Host weitergeben">${ICON.crown}</button>
+          ${p.bot ? '' : `<button class="btn btn-sm" data-kit-host="${p.id}" title="Host weitergeben">${ICON.crown}</button>`}
           <button class="btn btn-sm btn-outline-red" data-kit-kick="${p.id}">Entfernen</button></div>`).join('') || '<p class="hint" style="margin:0">Noch niemand sonst da.</p>'}</div>`;
     }
   }

@@ -37,6 +37,7 @@ export class Room extends TurnRoom {
     this.pending = 0;    // so viele Karten muss der Nächste ziehen (gestapelte 7en)
     this.drawn = null;   // Karte, die der Aktive gerade gezogen hat (nur die darf er noch spielen)
     this.forgot = null;  // Erwischen (UNO): wer „UNO“ vergessen hat – bis der Nächste etwas tut
+    this.stall = 0;      // Züge hintereinander, in denen nichts gezogen und nichts gelegt wurde
   }
 
   defaultSettings() {
@@ -139,6 +140,7 @@ export class Room extends TurnRoom {
     if (this.needsWish(card) && !this.validWish(wish)) throw new Error('Bitte eine Farbe wünschen');
     hand.splice(i, 1);
     this.discard.push(card);
+    this.stall = 0;
     this.wish = null;
     this.say(`${this.name(id)} spielt ${this.cardName(card)}`, 'info', 'action');
     this.act(id, `legt ${this.cardName(card)}`);
@@ -162,7 +164,7 @@ export class Room extends TurnRoom {
     this.forgot = null;
     if (this.pending > 0) {
       const n = this.pending; this.pending = 0;
-      this.take(id, n);
+      if (this.take(id, n).length) this.stall = 0; else if (++this.stall >= this.order.length) return this.endStuck();
       this.say(`${this.name(id)} zieht ${n} Karten`, 'info', 'action');
       this.act(id, `zieht ${n}`);
       return this.next(1);
@@ -171,8 +173,22 @@ export class Room extends TurnRoom {
     const [c] = this.take(id, 1);
     this.say(`${this.name(id)} zieht`, 'info', 'action');
     this.act(id, 'zieht');
-    if (!c) return this.next(1); // nichts mehr zu ziehen
+    if (!c) return this.noDraw(); // nichts mehr zu ziehen
+    this.stall = 0;
     this.drawn = c;
+  }
+
+  // Nichts mehr zu ziehen: Zug vorbei. Kann eine ganze Runde lang niemand ziehen oder legen, endet die Runde –
+  // sonst säßen alle für immer fest (alle Karten auf den Händen, keine passt)
+  noDraw() {
+    if (++this.stall >= this.order.length) return this.endStuck();
+    this.next(1);
+  }
+  endStuck() {
+    const fewest = Math.min(...this.order.map((p) => this.hands[p].length));
+    const id = this.order.find((p) => this.hands[p].length === fewest);
+    this.say(`Nichts mehr zu ziehen und niemand kann legen – ${this.name(id)} hat die wenigsten Karten`, 'warn');
+    this.win(id);
   }
 
   pass(id) {

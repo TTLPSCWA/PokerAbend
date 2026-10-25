@@ -272,3 +272,17 @@ test('UNO ohne Erwischen: „UNO“-Pflicht wie bisher (sofort 2 Strafkarten), M
   const m = setup(MauMau, ['Anna', 'Ben'], { catchCall: true });
   assert.equal(m.r.settings.catchCall, undefined, 'Option gibt es bei Mau-Mau nicht');
 });
+
+test('Mau-Mau/UNO: nichts mehr zu ziehen und niemand kann legen → Runde endet, die wenigsten Karten gewinnen', () => {
+  const { r, ids: [a, b] } = setup(UNO, ['Anna', 'Ben'], { drawUntil: true });
+  // Alle Karten auf den Händen, keine passt auf die grüne 5
+  r.deck = []; r.discard = ['5g']; r.wish = null; r.pending = 0;
+  r.hands[a] = ['1r', '2r', '3b']; r.hands[b] = ['7y', '8y'];
+  r.turn = r.order.indexOf(a);
+  r.draw(a);
+  assert.equal(r.phase, 'playing', 'nach einem Zug noch nicht');
+  r.draw(b);
+  assert.equal(r.phase, 'over', 'eine ganze Runde ohne Ziehen und Legen');
+  assert.deepEqual(r.result.winners, [b], 'Ben hat weniger Karten');
+  assert.match(r.log.map((l) => l.text).join('\n'), /Nichts mehr zu ziehen/);
+});

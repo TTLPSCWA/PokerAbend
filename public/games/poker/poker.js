@@ -1059,6 +1059,7 @@ function renderPanel(force = false) {
         <p class="hint" style="margin:0">Alle wieder auf Startchips, Blinds auf Level 1, Nachkäufe auf 0. Spieler und Plätze bleiben, der alte Abendstand steht im Verlauf.</p>
       </div>
       <p class="hint" style="margin:0">„Sofort anhalten“ friert alles ein, auch den Zug-Timer. „Pause nach dieser Hand“ lässt die laufende Hand zu Ende spielen.</p>
+      ${botControlsHTML(S, !!(S.hand && !S.hand.done))}
       ${switchGameHTML('poker', !!(S.hand && !S.hand.done))}`;
     } else if (hostTab === 'regeln') {
       inner = `<div class="notice" role="note">Änderungen gelten ab der nächsten Hand.</div>
@@ -1097,7 +1098,7 @@ function renderPanel(force = false) {
           <button class="icon-btn" data-menu="${p.id}" aria-haspopup="menu" aria-expanded="${openMenu === p.id}" aria-label="Aktionen für ${esc(p.name)}">${ICON.more}</button>
           ${openMenu === p.id ? `<div class="menu" role="menu">
             <button role="menuitem" data-adjust-open="${p.id}">Chips korrigieren</button>
-            <button role="menuitem" data-host-open="${p.id}">${ICON.crown} Host weitergeben</button>
+            ${(S.bots || []).some((bot) => bot.id === p.id) ? '' : `<button role="menuitem" data-host-open="${p.id}">${ICON.crown} Host weitergeben</button>`}
             <button role="menuitem" class="danger" data-kick-open="${p.id}">Vom Tisch entfernen</button>
           </div>` : ''}
         </div>`).join('') || '<p class="hint" style="margin:0">Noch niemand sonst da.</p>'}</div>`;

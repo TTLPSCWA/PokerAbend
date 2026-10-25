@@ -9,6 +9,7 @@ import { DECKEL } from '../games/schocken/room.js';
 import { TRACK, GOAL } from '../games/huetchen/room.js';
 import { SHOE_SIZE } from '../games/blackjack/room.js';
 import { FIELDS, totals } from '../games/kniffel/room.js';
+import { botColumn } from '../games/viergewinnt/room.js';
 
 // Fester Zufall für die Züge (Würfel ebenfalls) – Mischen bleibt echter Zufall
 function seeded(seed) {
@@ -40,6 +41,20 @@ const INVARIANTS = {
     assert.equal(new Set(cards.map((c) => c.id)).size, 108, 'Karte doppelt');
   },
   stapelrennen: (r) => assert.equal(sum([r.deck, r.used, ...r.build, ...Object.values(r.stock), ...Object.values(r.hand), ...Object.values(r.piles).flat()]), 162, 'Karten'),
+  muehle: (r) => {
+    for (const id of r.order) {
+      assert.ok(r.hand[id] >= 0 && r.hand[id] <= 9, 'Steine in der Hand');
+      assert.ok(r.hand[id] + r.count(id) <= 9, 'mehr als 9 Steine');
+      if (r.phase === 'playing') assert.ok(r.hand[id] + r.count(id) >= 3, 'mit 2 Steinen noch im Spiel');
+    }
+    assert.ok(r.board.every((x) => x === null || r.order.includes(x)), 'fremder Stein');
+  },
+  zehntausend: (r) => {
+    assert.ok(r.remaining >= 1 && r.remaining <= 6, 'Würfelzahl');
+    assert.ok(r.turnPoints >= 0, 'Zugpunkte');
+    if (r.rolled) assert.equal(r.dice.length, r.remaining, 'Wurf passt nicht zu den übrigen Würfeln');
+    for (const id of r.order) { assert.ok(r.banked[id] >= 0 && r.banked[id] % 50 === 0, 'Punktestand'); if (r.banked[id]) assert.ok(r.entered.has(id), 'angeschrieben ohne Einstieg'); }
+  },
   shutthebox: (r) => {
     const n = r.flaps();
     for (const id of r.order) {
@@ -99,7 +114,7 @@ const INVARIANTS = {
 const SCALE = Math.max(1, Number(process.env.SIM_SCALE) || 1);
 const PLAN = {
   maumau: { games: 1500, players: [2, 8], settings: {}, maxSteps: 3000 },
-  farbenchaos: { games: 1500, players: [2, 8], settings: {}, maxSteps: 3000 },
+  farbenchaos: { games: 1500, players: [2, 8], settings: {}, maxSteps: 6000 }, // mit „ziehen bis es passt“ und Stapeln werden Partien sehr lang
   maexchen: { games: 1500, players: [2, 10], settings: { lives: 3 }, maxSteps: 3000 },
   schocken: { games: 300, players: [2, 6], settings: {}, maxSteps: 40000 },
   huetchen: { games: 300, players: [2, 4], settings: {}, maxSteps: 20000 },
@@ -107,8 +122,11 @@ const PLAN = {
   stapelrennen: { games: 200, players: [2, 6], settings: { stockSize: 10 }, maxSteps: 30000 },
   schwimmen: { games: 1000, players: [2, 9], settings: {}, maxSteps: 20000 },
   schiffe: { games: 1000, players: [2, 2], settings: {}, maxSteps: 400 },
+  muehle: { games: 1500, players: [2, 2], settings: {}, maxSteps: 2000 },
+  zehntausend: { games: 300, players: [2, 8], settings: {}, maxSteps: 20000 },
   shutthebox: { games: 800, players: [1, 8], settings: {}, maxSteps: 3000 },
-  viergewinnt: { games: 2000, players: [2, 2], settings: {}, maxSteps: 50 },
+  // Flacher Bot (1 Zug voraus) statt der vollen Suche: hier zählen die Regeln, nicht die Spielstärke
+  viergewinnt: { games: 2000, players: [2, 2], settings: {}, maxSteps: 50, bot: (r, id, rng) => r.drop(id, botColumn(r.board, id, r.order.find((p) => p !== id), rng, 1)) },
   kniffel: { games: 600, players: [1, 6], settings: {}, maxSteps: 400 },
   blackjack: { games: 300, rounds: 20, players: [1, 7], settings: {}, maxSteps: 400 }, // 20 Hände je Tisch – Chips und Schlitten laufen weiter
 };
@@ -144,7 +162,7 @@ for (const [id, plan] of Object.entries(PLAN)) {
       while (room.phase === 'playing') {
         const cur = room.currentId;
         assert.ok(cur, `${id}: niemand am Zug`);
-        try { BOTS[id](room, cur, rng); }
+        try { (plan.bot || BOTS[id])(room, cur, rng); }
         catch (e) { assert.fail(`${id}, Partie ${n}, Zug ${k} (Optionen ${JSON.stringify(options)}): ${e.message}`); }
         INVARIANTS[id](room);
         // Niemand bleibt ewig dran (bei Skip-Bo legt man viele Karten in einem Zug)
