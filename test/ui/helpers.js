@@ -55,6 +55,10 @@ export const test = base.extend({
 export { expect };
 
 export async function login(page, app) {
+  // Die Einführung gehört nicht zum Lobby-Test; bei Bedarf wie ein Nutzer schließen.
+  await page.addLocatorHandler(page.locator('#intro-dlg[open]'), async () => {
+    await page.getByRole('button', { name: 'Überspringen', exact: true }).click();
+  });
   await page.goto(app.url);
   await page.getByLabel('Passwort').fill(app.password);
   await page.getByRole('button', { name: 'Reinkommen' }).click();

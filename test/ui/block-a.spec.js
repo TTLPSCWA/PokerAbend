@@ -3,14 +3,15 @@ import { test, expect, login, screenshot } from './helpers.js';
 const names = {
   poker: "Texas Hold'em", maumau: 'Mau-Mau', farbenchaos: 'UNO', maexchen: 'Mäxchen',
   schocken: 'Schocken', huetchen: 'Mensch ärgere Dich nicht', zehnetappen: 'Phase 10', stapelrennen: 'Skip-Bo',
+  schwimmen: 'Schwimmen', blackjack: 'Blackjack', kniffel: 'Kniffel', schiffe: 'Schiffe versenken',
 };
 
-test('A1: Lobby zeigt alle acht Anzeigenamen mit unveränderten Spiel-IDs', async ({ page, app }) => {
+test('A1: Lobby zeigt alle Anzeigenamen mit unveränderten Spiel-IDs', async ({ page, app }) => {
   await login(page, app);
   for (const [id, name] of Object.entries(names)) {
     await expect(page.locator(`[data-game="${id}"] b`)).toHaveText(name);
   }
-  await expect(page.locator('.game-card')).toHaveCount(8);
+  await expect(page.locator('.game-card')).toHaveCount(Object.keys(names).length);
   await screenshot(page, 'lobby');
 });
 
@@ -22,9 +23,11 @@ for (const id of ['farbenchaos', 'huetchen', 'zehnetappen', 'stapelrennen']) {
     await page.getByRole('button', { name: `${names[id]} hosten`, exact: true }).click();
     await expect(page.locator('#kg-meta .blinds')).toHaveText(names[id]);
     await page.getByRole('button', { name: 'Mitspielen', exact: true }).click();
-    await expect(page.locator('#kg-players')).toContainText('Anna');
+    await expect(page.locator('#kg-players:visible, #kg-main.ring')).toContainText('Anna');
+    await expect(page.getByRole('button', { name: 'Zuschauen', exact: true })).toBeVisible();
     const roomUrl = page.url();
-    await page.locator('[data-kit-panel="rules"]').click();
+    await page.getByRole('button', { name: 'Kurzregeln und Hausregeln', exact: true }).click();
+    await page.getByRole('button', { name: 'Alle Regeln', exact: true }).click();
     await expect(page.locator('#kg-panel-body')).toBeVisible();
     await expect(page.locator('#kg-panel-body')).not.toContainText(/Farbenchaos|Hütchenrennen|Zehn Etappen|Stapelrennen/);
     await page.locator('[data-kit="close"].icon-btn').click();
@@ -32,7 +35,8 @@ for (const id of ['farbenchaos', 'huetchen', 'zehnetappen', 'stapelrennen']) {
     await page.reload();
     await expect(page.locator('#kg-meta .blinds')).toHaveText(names[id]);
     expect(page.url()).toBe(roomUrl);
-    await expect(page.locator('#kg-players')).toContainText('Anna');
+    await expect(page.locator('#kg-players:visible, #kg-main.ring')).toContainText('Anna');
+    await expect(page.getByRole('button', { name: 'Zuschauen', exact: true })).toBeVisible();
   });
 }
 
@@ -65,6 +69,7 @@ test('A3: Spielwechsel zeigt ausschließlich die zugehörigen Lobby-Einstellunge
   const fields = {
     poker: ['startStack', 'smallBlind', 'bigBlind'], maumau: ['handSize'], farbenchaos: ['handSize'], maexchen: ['lives'],
     schocken: [], huetchen: [], zehnetappen: [], stapelrennen: ['stockSize'],
+    schwimmen: ['lives'], blackjack: ['startStack', 'minBet', 'maxBet'], kniffel: [], schiffe: ['turnTime'],
   };
   await login(page, app);
   await page.locator('[data-cf="startStack"]').fill('25000');
@@ -102,13 +107,18 @@ test('A3: ausgeblendete Host-Einstellungen blockieren den Beitritt nicht', async
     await guest.getByLabel('Dein Name').fill('Ben');
     await guest.locator('[data-cf="startStack"]').fill('0'); // als Poker-Einstellung ungültig
     await guest.getByRole('tab', { name: 'Lobby beitreten (Code)' }).click();
+    await guest.getByRole('tab', { name: 'Spiel hosten', exact: true }).click();
+    await expect(guest.locator('[data-cf="startStack"]')).toBeEnabled();
+    await expect(guest.locator('#f-code')).toBeDisabled();
+    expect(await guest.locator('#lobby-form').evaluate((form) => form.checkValidity())).toBe(false);
+    await guest.getByRole('tab', { name: 'Lobby beitreten (Code)' }).click();
     await guest.getByLabel('Code', { exact: true }).fill(code);
     expect(await guest.locator('#lobby-form').evaluate((form) => form.checkValidity())).toBe(true);
     await expect(guest.locator('[data-cf="startStack"]')).toBeDisabled();
     await guest.getByRole('button', { name: 'Beitreten', exact: true }).click();
     await expect(guest.locator('#kg-meta .blinds')).toHaveText('Schocken');
     await guest.getByRole('button', { name: 'Mitspielen', exact: true }).click();
-    await expect(guest.locator('#kg-players')).toContainText('Ben');
+    await expect(guest.locator('#kg-players:visible, #kg-main.ring')).toContainText('Ben');
   } finally {
     await guestContext.close();
   }

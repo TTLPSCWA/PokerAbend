@@ -31,9 +31,12 @@ Danach `http://localhost:3000` öffnen. Zum Testen mit mehreren Spielern einfach
 npm install
 npm start          # oder: npm run dev (startet bei Änderungen neu)
 npm test           # Engine- und Servertests
+npm run test:ui    # Browserprüfungen in Chrome (1440 und 390 Pixel)
 ```
 
 Voraussetzung ist Node.js 20 oder neuer.
+
+Die Browserprüfungen benötigen lokal installiertes Chrome. Screenshots liegen unter `artifacts/block-a/`; Fehlerberichte unter `test-results/`.
 
 ## Online stellen
 
@@ -240,15 +243,16 @@ Beispiel Mau-Mau mit der ID `maumau` (nur Kleinbuchstaben, Ziffern und Bindestri
 
    ```js
    import { Room } from './room.js';
-   export default {
+   import { turnGame } from '../../server/turn-game.js';
+   export default turnGame(Room, {
      id: 'maumau', name: 'Mau-Mau', description: 'Ablegen, aussetzen, Farbe wünschen.', category: 'karten', players: '2–6 Spieler',
      createFields: [{ key: 'cards', label: 'Karten pro Spieler', type: 'number', min: 3, value: 6 }],
      createHint: 'Alles andere stellst du im Raum ein.',
-     create: (code, settings, onChange) => new Room(code, settings, onChange),
-     restore: (data, onChange) => Room.restore(data, onChange),
      events: { play: (room, p, { card }) => room.play(p.id, card), draw: (room, p) => room.draw(p.id) },
-   };
+   });
    ```
+
+   `turnGame` bündelt Anlegen, Wiederherstellen, Regel-Optionen und gemeinsame Ereignisse wie Mitspielen und Starten. Eigene Ereignisse und Hinweise bleiben im Spielmodul; Eingaben werden dort weiterhin geprüft.
 
 2. **Raum:** Für Rundenspiele am einfachsten `class Room extends TurnRoom` (aus `server/turn-room.js`, siehe die vorhandenen Spiele) – Mitspieler, Reihenfolge, Runden und Punkte sind dann schon da, das Spiel füllt `setupRound`, `gameView`, `publicPlayer` und seine Aktionen. Einen **Zug-Timer** bekommt ein Rundenspiel, indem es die Einstellung `turnTime` (Sekunden, 0 = aus) in seine `OPTIONS` aufnimmt und `onTimeout(id)` füllt (siehe Schiffe versenken); `timerActive()` hält die Uhr an, wenn gerade niemand dran ist. Ganz frei geht es mit `class Room extends BaseRoom` (aus `server/base-room.js`). Spieler, Host, Wegbleiben und Verlauf sind damit schon da. Das Spiel füllt die Haken:
 

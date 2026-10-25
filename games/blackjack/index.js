@@ -1,8 +1,8 @@
 // Spielmodul Blackjack – Regeln in room.js
 import { Room } from './room.js';
-import { turnEvents } from '../../server/turn-room.js';
+import { turnGame } from '../../server/turn-game.js';
 
-export default {
+export default turnGame(Room, {
   id: 'blackjack',
   name: 'Blackjack',
   description: 'Gegen den Dealer: so nah wie möglich an 21, ohne drüber. Karte, Stehen, Verdoppeln, Teilen – Blackjack zahlt 3:2.',
@@ -14,11 +14,7 @@ export default {
     { key: 'maxBet', label: 'Höchsteinsatz', type: 'number', min: 1, value: 500 },
   ],
   createHint: 'Wer mitspielen will, klickt am Tisch auf „Mitspielen“. Der Host startet jede Hand – gespielt wird gegen den Dealer.',
-  create: (code, settings, onChange) => new Room(code, settings, onChange),
-  restore: (data, onChange) => Room.restore(data, onChange),
-  options: Room.OPTIONS, // Regel-Optionen fürs Host-Menü
   events: {
-    ...turnEvents,
     bet: (room, p, { amount }) => room.bet(p.id, amount),
     sitOut: (room, p) => room.sitOut(p.id),
     dealNow: (room, p) => room.dealNow(p.id),
@@ -29,4 +25,4 @@ export default {
     split: (room, p) => room.split(p.id),
     rebuy: (room, p) => room.rebuy(p.id),
   },
-};
+});

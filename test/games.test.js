@@ -25,7 +25,23 @@ test('Alle Spiele: Module, Grundlage und Spielarten', () => {
   for (const g of Object.values(GAMES)) {
     assert.ok(g.name && g.description && g.players, g.id);
     const r = g.create('ABCDE', {}, () => {});
-    if (g.id !== 'poker') assert.ok(r instanceof TurnRoom, g.id);
+    if (g.id !== 'poker') {
+      assert.ok(r instanceof TurnRoom, g.id);
+      const player = r.addPlayer('Anna', null);
+      g.events.sit(r, player);
+      assert.deepEqual(r.seats, [player.id], g.id);
+      const restored = g.restore(JSON.parse(JSON.stringify(r.snapshot())), () => {});
+      try {
+        assert.equal(restored.constructor, r.constructor, g.id);
+        assert.deepEqual(restored.settings, r.settings, g.id);
+        assert.deepEqual(restored.seats, [player.id], g.id);
+        assert.equal(restored.byToken(player.token).name, 'Anna', g.id);
+        g.events.stand(restored, restored.byToken(player.token));
+        assert.deepEqual(restored.seats, [], g.id);
+      } finally {
+        restored.dispose();
+      }
+    }
     r.dispose();
   }
   // Mitspielen, Zuschauen, Mindestzahl

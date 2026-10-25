@@ -287,7 +287,11 @@ function renderGames() {
 function setTab(tab) {
   lobbyTab = tab;
   $$('#lobby .tab').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === tab)));
-  $$('#lobby [data-for]').forEach((el) => { el.hidden = el.dataset.for !== tab; });
+  $$('#lobby [data-for]').forEach((el) => {
+    el.hidden = el.dataset.for !== tab;
+    // Versteckte Felder dürfen weder Validierung noch Übermittlung beeinflussen.
+    $$('input, select, textarea', el).forEach((field) => { field.disabled = el.hidden; });
+  });
   $('#f-submit').textContent = tab === 'join' ? 'Beitreten' : `${gameInfo()?.name || 'Spiel'} hosten`;
   $('#f-code').required = tab === 'join';
 }
@@ -312,7 +316,7 @@ $('#lobby-form').addEventListener('submit', (e) => {
     enterGame(r);
   };
   if (lobbyTab === 'create') {
-    const settings = Object.fromEntries($$('[data-cf]').map((el) => [el.dataset.cf, el.value]));
+    const settings = Object.fromEntries($$('#create-fields [data-cf]:enabled').map((el) => [el.dataset.cf, el.value]));
     socket.emit('create', { game: gameInfo()?.id, name, avatar, settings }, done);
   } else {
     const code = $('#f-code').value.trim().toUpperCase();
