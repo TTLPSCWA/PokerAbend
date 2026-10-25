@@ -18,7 +18,25 @@
 
       <nav class="games-pick" aria-labelledby="games-title">
         <h2 id="games-title" class="pick-title">Spiele</h2>
+        <div class="game-categories" role="tablist" aria-label="Spielekategorie">
+          <button type="button" class="game-category" role="tab" data-category="karten" aria-selected="true">Kartenspiele</button>
+          <button type="button" class="game-category" role="tab" data-category="wuerfel" aria-selected="false">Würfelspiele</button>
+          <button type="button" class="game-category" role="tab" data-category="brett" aria-selected="false">Brettspiele</button>
+          <button type="button" class="game-category" role="tab" data-category="party" aria-selected="false">Party Spiele</button>
+        </div>
         <div id="game-list" class="game-list" role="radiogroup" aria-labelledby="games-title"></div>
+        <div id="party-catalog" class="party-catalog" hidden>
+          <div class="party-intro"><strong>Party Spiele</strong><span>Eigenständige Minispiele für euren Spieleabend. Diese Ideen befinden sich noch in Planung.</span></div>
+          <label class="field party-filter-field"><span>Art des Minispiels</span>
+            <select id="party-filter">
+              <option value="alle">Alle</option><option value="reaktion">Reaktion</option>
+              <option value="geschick">Geschicklichkeit</option><option value="wissen">Wissen &amp; Kreativität</option>
+              <option value="bluff">Bluff &amp; Sabotage</option><option value="echtzeit">Echtzeit &amp; Bewegung</option>
+            </select>
+          </label>
+          <div id="party-list" class="party-list" aria-live="polite"></div>
+          <p class="hint">Geplante Partyspiele können noch nicht gestartet werden. Mit einem vorhandenen Raumcode kannst du weiterhin einem Spiel beitreten.</p>
+        </div>
       </nav>
 
       <div class="tabs" role="tablist">
