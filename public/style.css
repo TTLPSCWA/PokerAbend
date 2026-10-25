@@ -155,9 +155,17 @@ button { cursor: pointer; }
 .games-pick { margin: 0 0 18px; }
 .pick-title { margin: 0 0 8px; font-size: var(--fs-label); text-transform: uppercase; letter-spacing: .08em; color: #D3E1DA; }
 /* Kompakt: zwei Spalten, nur das gewählte Spiel zeigt seine Beschreibung (über die ganze Breite) */
-.game-list { display: grid; gap: 14px; }
-.game-cat h3 { margin: 0 0 6px; font-size: var(--fs-label); text-transform: uppercase; letter-spacing: .07em; color: var(--gold-text); }
-.game-cat-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; }
+.chosen-game { margin: 0 0 12px; color: var(--gold-text); font-weight: 600; overflow-wrap: anywhere; }
+.game-list { display: grid; gap: 8px; }
+.game-cat { border: 1px solid var(--line); border-radius: var(--r-m); background: rgba(0,0,0,.15); overflow: hidden; }
+.game-cat summary { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 10px 12px; cursor: pointer; list-style: none; font-weight: 600; }
+.game-cat summary::-webkit-details-marker { display: none; }
+.game-cat summary small { margin-left: auto; color: var(--text-2); font-weight: 400; white-space: nowrap; }
+.game-cat summary::after { content: '+'; width: 20px; text-align: center; color: var(--gold-text); font-size: 22px; }
+.game-cat[open] > summary::after { content: '−'; }
+.game-cat summary:hover { background: rgba(255,255,255,.05); }
+.game-cat summary:focus-visible { outline: 2px solid var(--gold); outline-offset: -3px; }
+.game-cat-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr)); gap: 8px; padding: 0 10px 10px; }
 .game-card {
   display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; text-align: left; padding: 12px 14px; border-radius: var(--r-m);
   background: rgba(0,0,0,.25); border: 2px solid rgba(255,255,255,.12); color: var(--text); cursor: pointer;

@@ -54,6 +54,13 @@ export const test = base.extend({
 
 export { expect };
 
+export async function selectGame(page, id) {
+  const card = page.locator(`[data-game="${id}"]`);
+  const category = page.locator('#game-list details').filter({ has: card });
+  if (!await category.evaluate((el) => el.open)) await category.locator('summary').click();
+  await card.click();
+}
+
 export async function login(page, app) {
   // Die Einführung gehört nicht zum Lobby-Test; bei Bedarf wie ein Nutzer schließen.
   await page.addLocatorHandler(page.locator('#intro-dlg[open]'), async () => {

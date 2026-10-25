@@ -1,10 +1,7 @@
-import { test, expect, login, screenshot } from './helpers.js';
+import { test, expect, login, screenshot, selectGame } from './helpers.js';
+import { gameList } from '../../games/index.js';
 
-const names = {
-  poker: "Texas Hold'em", maumau: 'Mau-Mau', farbenchaos: 'UNO', maexchen: 'Mäxchen',
-  schocken: 'Schocken', huetchen: 'Mensch ärgere Dich nicht', zehnetappen: 'Phase 10', stapelrennen: 'Skip-Bo',
-  schwimmen: 'Schwimmen', blackjack: 'Blackjack', kniffel: 'Kniffel', schiffe: 'Schiffe versenken',
-};
+const names = Object.fromEntries(gameList().map(({ id, name }) => [id, name]));
 
 test('A1: Lobby zeigt alle Anzeigenamen mit unveränderten Spiel-IDs', async ({ page, app }) => {
   await login(page, app);
@@ -18,7 +15,7 @@ test('A1: Lobby zeigt alle Anzeigenamen mit unveränderten Spiel-IDs', async ({ 
 for (const id of ['farbenchaos', 'huetchen', 'zehnetappen', 'stapelrennen']) {
   test(`A1: ${names[id]} am Tisch, in den Regeln und nach Neuladen`, async ({ page, app }) => {
     await login(page, app);
-    await page.locator(`[data-game="${id}"]`).click();
+    await selectGame(page, id);
     await page.getByLabel('Dein Name').fill('Anna');
     await page.getByRole('button', { name: `${names[id]} hosten`, exact: true }).click();
     await expect(page.locator('#kg-meta .blinds')).toHaveText(names[id]);
@@ -54,7 +51,7 @@ test('A2: Spieleabend in Login, Lobby, Tab und Manifest; technische Sitzungsschl
   await expect(page.getByRole('heading', { name: 'Spieleabend', exact: true })).toBeVisible();
   await expect(page.locator('#lobby-foot')).toContainText('Ohne Benutzerkonto');
   await screenshot(page, 'lobby');
-  await page.locator('[data-game="poker"]').click();
+  await selectGame(page, 'poker');
   await page.getByLabel('Dein Name').fill('Anna');
   await page.getByRole('button', { name: "Texas Hold'em hosten", exact: true }).click();
   await expect(page.locator('#game')).toBeVisible();
@@ -66,15 +63,11 @@ test('A2: Spieleabend in Login, Lobby, Tab und Manifest; technische Sitzungsschl
 });
 
 test('A3: Spielwechsel zeigt ausschließlich die zugehörigen Lobby-Einstellungen', async ({ page, app }) => {
-  const fields = {
-    poker: ['startStack', 'smallBlind', 'bigBlind'], maumau: ['handSize'], farbenchaos: ['handSize'], maexchen: ['lives'],
-    schocken: [], huetchen: [], zehnetappen: [], stapelrennen: ['stockSize'],
-    schwimmen: ['lives'], blackjack: ['startStack', 'minBet', 'maxBet'], kniffel: [], schiffe: ['turnTime'],
-  };
+  const fields = Object.fromEntries(gameList().map(({ id, createFields = [] }) => [id, createFields.map((field) => field.key)]));
   await login(page, app);
   await page.locator('[data-cf="startStack"]').fill('25000');
   for (const id of [...Object.keys(fields), 'poker', 'farbenchaos']) {
-    await page.locator(`[data-game="${id}"]`).click();
+    await selectGame(page, id);
     expect(await page.locator('#create-fields input').evaluateAll((inputs) => inputs.map((input) => input.dataset.cf))).toEqual(fields[id]);
     await expect(page.locator('#f-submit')).toHaveText(`${names[id]} hosten`);
     for (const key of fields[id]) {
@@ -95,7 +88,7 @@ test('A3: Spielwechsel zeigt ausschließlich die zugehörigen Lobby-Einstellunge
 
 test('A3: ausgeblendete Host-Einstellungen blockieren den Beitritt nicht', async ({ page, app, browser }) => {
   await login(page, app);
-  await page.locator('[data-game="schocken"]').click();
+  await selectGame(page, 'schocken');
   await page.getByLabel('Dein Name').fill('Anna');
   await page.getByRole('button', { name: 'Schocken hosten', exact: true }).click();
   await expect(page.locator('#kg-meta .blinds')).toHaveText('Schocken');

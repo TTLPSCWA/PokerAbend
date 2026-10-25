@@ -271,13 +271,18 @@ function showLobby(error = '') {
 }
 function renderGames() {
   const list = account.games;
+  const openCategories = new Set($$('#game-list details[open]').map((el) => el.dataset.category));
+  const selected = gameInfo();
+  $('#chosen-game').textContent = selected ? `Gewählt: ${selected.name}` : 'Wähle ein Spiel';
   // Nach Kategorien gruppiert (Karten, Würfel, Brett) – Kategorien ohne Spiel fallen weg
   const card = (g) => `<button type="button" class="game-card" role="radio" data-game="${esc(g.id)}" aria-checked="${g.id === gameInfo()?.id}">
       <b>${esc(g.name)}</b><small>${esc(g.players)}</small><span>${esc(g.description)}</span>
     </button>`;
   $('#game-list').innerHTML = GAME_CATEGORIES.map(([id, title]) => {
     const games = list.filter((g) => (g.category || 'karten') === id);
-    return games.length ? `<div class="game-cat" role="group" aria-label="${title}"><h3>${title}</h3><div class="game-cat-list">${games.map(card).join('')}</div></div>` : '';
+    return games.length ? `<details class="game-cat" data-category="${id}" ${openCategories.has(id) ? 'open' : ''}>
+      <summary><span>${title}</span><small>${games.length} Spiele</small></summary>
+      <div class="game-cat-list" role="group" aria-label="${title}">${games.map(card).join('')}</div></details>` : '';
   }).join('');
   const g = gameInfo();
   $('#create-fields').innerHTML = (g?.createFields || []).map((f) => `<label class="field"><span>${esc(f.label)}</span>
@@ -300,6 +305,7 @@ $('#game-list').addEventListener('click', (e) => {
   const b = e.target.closest('[data-game]'); if (!b) return;
   chosenGame = b.dataset.game; store.set('poker:game', chosenGame);
   renderGames(); setTab(lobbyTab);
+  $$('#game-list [data-game]').find((el) => el.dataset.game === chosenGame)?.focus({ preventScroll: true });
 });
 $('#avatars').addEventListener('click', (e) => {
   const b = e.target.closest('.avatar-opt'); if (!b) return;
