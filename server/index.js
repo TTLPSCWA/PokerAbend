@@ -8,6 +8,7 @@ import { readFileSync, writeFileSync, renameSync, mkdirSync, existsSync, unlinkS
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { GAMES, DEFAULT_GAME, gameList, gameEvents } from '../games/index.js';
+import { PARTY_GAMES } from '../games/party-catalog.js';
 import {
   COOKIE, loadSecret, createAuth, parseCookies, cookieHeader, limiter, bucket,
   securityHeaders, sameOrigin, clientIp, safeNext,
@@ -104,7 +105,7 @@ app.use((req, res, next) => {
 });
 app.get('/me', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
-  res.json({ mode: MODE, games: gameList() });
+  res.json({ mode: MODE, games: gameList(), plannedPartyGames: PARTY_GAMES });
 });
 app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
 app.use((_req, res) => res.status(404).send('Nicht gefunden'));
