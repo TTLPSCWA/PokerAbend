@@ -125,7 +125,7 @@ test('Login-Seite hat ein Passwortfeld, /me meldet Modus und Spiele', async () =
   assert.match(html, /name="next" value="\/\?t=ABCDE"/);
   const me = await (await get('/me', cookie)).json();
   assert.equal(me.mode, 'password');
-  assert.deepEqual(me.games.map((g) => g.id), ['poker', 'maumau', 'farbenchaos', 'maexchen', 'schocken', 'huetchen', 'zehnetappen', 'stapelrennen'], 'Spielauswahl für die Startseite');
+  assert.deepEqual(me.games.map((g) => g.id), ['poker', 'maumau', 'farbenchaos', 'maexchen', 'schocken', 'huetchen', 'zehnetappen', 'stapelrennen', 'schwimmen'], 'Spielauswahl für die Startseite');
   assert.ok(me.games[0].createFields.some((f) => f.key === 'bigBlind'));
   assert.equal('events' in me.games[0], false, 'keine Server-Interna');
 });

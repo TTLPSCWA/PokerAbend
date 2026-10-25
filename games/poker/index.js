@@ -8,6 +8,7 @@ export default {
   id: 'poker',
   name: "Texas Hold'em",
   description: 'No Limit mit Spielgeld: Blinds, Side Pots, steigende Blinds, Abendstand.',
+  category: 'karten', // Karten, Würfel oder Brett – gruppiert die Startseite
   players: '2–9 Spieler',
   // Felder beim Hosten (alles andere stellt der Host am Tisch ein)
   createFields: [

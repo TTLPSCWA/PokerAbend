@@ -8,6 +8,7 @@ export default {
   id: 'stapelrennen',
   name: 'Skip-Bo',
   description: 'Reihen von 1 bis 12 bauen, Joker helfen. Wer zuerst seinen eigenen Stapel los ist, gewinnt.',
+  category: 'karten', // Karten, Würfel oder Brett – gruppiert die Startseite
   players: '2–6 Spieler',
   createFields: [{ key: 'stockSize', label: 'Karten im eigenen Stapel', type: 'number', min: 5, value: 20 }],
   createHint: 'Wer mitspielen will, klickt am Tisch auf „Mitspielen“. Der Host startet die Runde.',

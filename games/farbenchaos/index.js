@@ -8,6 +8,7 @@ export default {
   id: 'farbenchaos',
   name: 'UNO',
   description: 'Farbe oder Zahl ablegen, Aussetzen, Richtungswechsel, +2 und Farbwahl. Der Gewinner kassiert die Punkte.',
+  category: 'karten', // Karten, Würfel oder Brett – gruppiert die Startseite
   players: '2–8 Spieler',
   createFields: [{ key: 'handSize', label: 'Karten pro Spieler', type: 'number', min: 3, value: 7 }],
   createHint: 'Wer mitspielen will, klickt am Tisch auf „Mitspielen“. Der Host startet die Runde.',

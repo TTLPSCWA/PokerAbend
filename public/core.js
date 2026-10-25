@@ -255,6 +255,7 @@ let lobbyTab = params.get('t') ? 'join' : 'create';
 let avatar = store.get('poker:avatar', AVATARS[Math.floor(Math.random() * AVATARS.length)]);
 let chosenGame = store.get('poker:game', 'poker');
 const gameInfo = () => account.games.find((g) => g.id === chosenGame) || account.games[0] || null;
+const GAME_CATEGORIES = [['karten', 'Kartenspiele'], ['wuerfel', 'Würfelspiele'], ['brett', 'Brettspiele']]; // wie games/index.js
 
 function showLobby(error = '') {
   $('#game-root').hidden = true;
@@ -268,9 +269,14 @@ function showLobby(error = '') {
 }
 function renderGames() {
   const list = account.games;
-  $('#game-list').innerHTML = list.map((g) => `<button type="button" class="game-card" role="radio" data-game="${esc(g.id)}" aria-checked="${g.id === gameInfo()?.id}">
+  // Nach Kategorien gruppiert (Karten, Würfel, Brett) – Kategorien ohne Spiel fallen weg
+  const card = (g) => `<button type="button" class="game-card" role="radio" data-game="${esc(g.id)}" aria-checked="${g.id === gameInfo()?.id}">
       <b>${esc(g.name)}</b><small>${esc(g.players)}</small><span>${esc(g.description)}</span>
-    </button>`).join('') ;
+    </button>`;
+  $('#game-list').innerHTML = GAME_CATEGORIES.map(([id, title]) => {
+    const games = list.filter((g) => (g.category || 'karten') === id);
+    return games.length ? `<div class="game-cat" role="group" aria-label="${title}"><h3>${title}</h3><div class="game-cat-list">${games.map(card).join('')}</div></div>` : '';
+  }).join('');
   const g = gameInfo();
   $('#create-fields').innerHTML = (g?.createFields || []).map((f) => `<label class="field"><span>${esc(f.label)}</span>
       <input data-cf="${esc(f.key)}" type="${f.type === 'number' ? 'number' : 'text'}" ${f.min !== undefined ? `min="${f.min}"` : ''} ${f.step ? `step="${f.step}"` : ''} value="${esc(f.value)}"></label>`).join('');

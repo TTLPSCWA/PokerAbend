@@ -38,6 +38,13 @@ const INVARIANTS = {
     assert.equal(new Set(cards.map((c) => c.id)).size, 108, 'Karte doppelt');
   },
   stapelrennen: (r) => assert.equal(sum([r.deck, r.used, ...r.build, ...Object.values(r.stock), ...Object.values(r.hand), ...Object.values(r.piles).flat()]), 162, 'Karten'),
+  schwimmen: (r) => {
+    const cards = [...r.deck, ...r.middle, ...Object.values(r.hands).flat()];
+    assert.equal(cards.length, 32, 'Karten');
+    assert.equal(new Set(cards).size, 32, 'Karte doppelt');
+    assert.equal(r.middle.length, 3, 'Mitte');
+    for (const id of r.order) { assert.equal(r.hands[id].length, 3, 'Hand'); assert.ok(r.lives[id] >= 0, 'Leben'); assert.ok(r.lives[id] > 0 || r.swimming.has(id), 'ohne Leben, aber nicht geschwommen'); }
+  },
 };
 
 // Partien je Spiel, Spielerzahl, Zug-Obergrenze pro Runde. SIM_SCALE=10 npm test spielt zehnmal so viele (gut 1,5 Minuten).
@@ -50,6 +57,7 @@ const PLAN = {
   huetchen: { games: 300, players: [2, 4], settings: {}, maxSteps: 20000 },
   zehnetappen: { games: 200, players: [2, 6], settings: {}, maxSteps: 20000 },
   stapelrennen: { games: 200, players: [2, 6], settings: { stockSize: 10 }, maxSteps: 30000 },
+  schwimmen: { games: 1000, players: [2, 9], settings: {}, maxSteps: 20000 },
 };
 
 for (const [id, plan] of Object.entries(PLAN)) {

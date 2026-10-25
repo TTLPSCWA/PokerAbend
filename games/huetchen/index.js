@@ -6,6 +6,7 @@ export default {
   id: 'huetchen',
   name: 'Mensch ärgere Dich nicht',
   description: 'Würfeln, rauskommen mit der 6, andere rauswerfen. Wer zuerst alle vier Figuren im Ziel hat, gewinnt.',
+  category: 'brett', // Karten, Würfel oder Brett – gruppiert die Startseite
   players: '2–4 Spieler',
   createFields: [],
   createHint: 'Wer mitspielen will, klickt am Tisch auf „Mitspielen“. Der Host startet die Runde.',

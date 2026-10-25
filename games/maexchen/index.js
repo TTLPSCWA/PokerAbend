@@ -6,6 +6,7 @@ export default {
   id: 'maexchen',
   name: 'Mäxchen',
   description: 'Verdeckt würfeln, höher ansagen, bluffen oder anzweifeln. Wer alle Leben verliert, ist raus.',
+  category: 'wuerfel', // Karten, Würfel oder Brett – gruppiert die Startseite
   players: '2–10 Spieler',
   createFields: [{ key: 'lives', label: 'Leben pro Spieler', type: 'number', min: 1, value: 3 }],
   createHint: 'Wer mitspielen will, klickt am Tisch auf „Mitspielen“. Der Host startet die Runde.',

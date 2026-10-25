@@ -8,6 +8,7 @@ export default {
   id: 'maumau',
   name: 'Mau-Mau',
   description: 'Ablegen nach Farbe oder Wert. 7 zieht 2, 8 setzt aus, Bube wünscht. Wenig Punkte gewinnen.',
+  category: 'karten', // Karten, Würfel oder Brett – gruppiert die Startseite
   players: '2–8 Spieler',
   createFields: [{ key: 'handSize', label: 'Karten pro Spieler', type: 'number', min: 3, value: 5 }],
   createHint: 'Wer mitspielen will, klickt am Tisch auf „Mitspielen“. Der Host startet die Runde.',

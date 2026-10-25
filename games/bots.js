@@ -4,6 +4,7 @@
 import { PHASES, partition, validGroup } from './zehnetappen/room.js';
 import { JOKER } from './stapelrennen/room.js';
 import { valueOf } from './maexchen/room.js';
+import { handValue } from './schwimmen/room.js';
 
 const one = (list, rng) => list[Math.floor(rng() * list.length)];
 
@@ -119,4 +120,25 @@ function stapelrennen(room, id, rng) {
   return room.throwAway(id, Math.floor(rng() * room.hand[id].length), Math.floor(rng() * 4));
 }
 
-export const BOTS = { maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen };
+// Schwimmen: meist der Tausch, der am meisten bringt; manchmal zufällig, alle drei oder schieben; klopft mit guter Hand
+function schwimmen(room, id, rng) {
+  const fire = room.settings.fire;
+  const hand = room.hands[id];
+  const cur = handValue(hand, fire);
+  // Je länger der Durchgang dauert, desto eher wird geklopft (sonst tauschen zwei Bots ewig hin und her)
+  const rounds = room.turnsTaken / room.order.length;
+  if (room.canKnock() && (cur >= 31 - rounds + rng() * 3 || rounds > 12) && rng() < 0.7) return room.knock(id);
+  if (room.settings.passing && rng() < 0.12) return room.pass(id);
+  if (rng() < 0.08 || handValue(room.middle, fire) > cur + 3) return room.swapAll(id);
+  let best = null;
+  for (let h = 0; h < 3; h++) for (let m = 0; m < 3; m++) {
+    const t = [...hand]; t[h] = room.middle[m];
+    const v = handValue(t, fire);
+    if (!best || v > best.v) best = { v, h, m };
+  }
+  if (rng() < 0.2) return room.swap(id, Math.floor(rng() * 3), Math.floor(rng() * 3));
+  if (best.v <= cur && room.settings.passing && rng() < 0.5) return room.pass(id);
+  return room.swap(id, best.h, best.m);
+}
+
+export const BOTS = { maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen };
