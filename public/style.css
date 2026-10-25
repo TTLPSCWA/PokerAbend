@@ -444,3 +444,6 @@ button.die { cursor: pointer; }
 .party-meta span { border: 1px solid rgba(255,255,255,.13); border-radius: 6px; padding: 2px 6px; font-size: 11px; color: #C8D6CE; }
 #f-submit:disabled { opacity: .55; cursor: not-allowed; }
 @media (max-width: 640px) { .game-category { flex: 1 1 42%; } .party-list { max-height: 42vh; } }
+
+/* Hidden muss auch gegen explizite Grid-Layouts gewinnen. */
+#game-list[hidden], #party-catalog[hidden] { display: none !important; }
