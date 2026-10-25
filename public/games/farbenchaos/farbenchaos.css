@@ -1,4 +1,4 @@
-/* Farbenchaos: kräftige Farbkarten mit Symbol in der Mitte */
+/* UNO: kräftige Farbkarten mit Symbol in der Mitte */
 .kc-fc { color: #fff; border: 3px solid #fff; }
 .kc-fc .v { display: grid; place-items: center; width: 72%; aspect-ratio: 1; border-radius: 50%; background: #fff; font-size: calc(var(--w) * .34); font-weight: 900; transform: rotate(-12deg); }
 .fc-r { background: #C8322D; } .fc-r .v { color: #C8322D; }

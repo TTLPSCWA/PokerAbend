@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { Room as MauMau } from '../games/maumau/room.js';
-import { Room as Farbenchaos } from '../games/farbenchaos/room.js';
+import { Room as UNO } from '../games/farbenchaos/room.js';
 import { Room as Maexchen, valueOf, rank, MAEXCHEN, VALUES } from '../games/maexchen/room.js';
 import { Room as Schocken, judge, DECKEL } from '../games/schocken/room.js';
 import { Room as Huetchen } from '../games/huetchen/room.js';
@@ -119,9 +119,9 @@ test('Mau-Mau: letzte Karte, Wertung über den Abend, nichts Fremdes in der Ansi
   assert.equal(r.order[0], b, 'nächste Runde fängt der Nächste an');
 });
 
-// ---------- Farbenchaos ----------
-test('Farbenchaos: 108 Karten, Startkarte ist eine Zahl, Farbwahl passt immer', () => {
-  const { r } = setup(Farbenchaos);
+// ---------- UNO ----------
+test('UNO: 108 Karten, Startkarte ist eine Zahl, Farbwahl passt immer', () => {
+  const { r } = setup(UNO);
   assert.equal(r.buildDeck().length, 108);
   assert.match(r.discard[0][0], /\d/);
   r.discard = ['5r'];
@@ -131,8 +131,8 @@ test('Farbenchaos: 108 Karten, Startkarte ist eine Zahl, Farbwahl passt immer', 
   assert.ok(r.canPlay('3b') && !r.canPlay('3r'));
 });
 
-test('Farbenchaos: Aussetzen, Richtungswechsel, +2, +4 und Wertung', () => {
-  const { r, ids: [a, b, c] } = setup(Farbenchaos);
+test('UNO: Aussetzen, Richtungswechsel, +2, +4 und Wertung', () => {
+  const { r, ids: [a, b, c] } = setup(UNO);
   r.discard = ['5r'];
   r.hands[a] = ['Sr', 'Rr', '1g']; r.hands[b] = ['2r', '3r', 'Dr']; r.hands[c] = ['Fw', '4r', '9b'];
   r.play(a, 'Sr');
@@ -154,8 +154,8 @@ test('Farbenchaos: Aussetzen, Richtungswechsel, +2, +4 und Wertung', () => {
   assert.equal(r.cardPoints('Dr'), 20); assert.equal(r.cardPoints('Fw'), 50); assert.equal(r.cardPoints('7b'), 7);
 });
 
-test('Farbenchaos zu zweit: Richtungswechsel wirkt wie Aussetzen', () => {
-  const { r, ids: [a] } = setup(Farbenchaos, ['Anna', 'Ben']);
+test('UNO zu zweit: Richtungswechsel wirkt wie Aussetzen', () => {
+  const { r, ids: [a] } = setup(UNO, ['Anna', 'Ben']);
   r.discard = ['5r']; r.hands[a] = ['Rr', '2g'];
   r.play(a, 'Rr');
   assert.equal(r.currentId, a);
@@ -272,8 +272,8 @@ test('Schocken: Stapel leer → Deckel wandern, wer alle hat, verliert', () => {
   assert.match(r.result.text, /Anna verliert die Hälfte/);
 });
 
-// ---------- Hütchenrennen ----------
-test('Hütchenrennen: drei Versuche, mit 6 raus, nach 6 nochmal', () => {
+// ---------- Mensch ärgere Dich nicht ----------
+test('Mensch ärgere Dich nicht: drei Versuche, mit 6 raus, nach 6 nochmal', () => {
   const { r, ids: [a, b] } = setup(Huetchen, ['Anna', 'Ben']);
   r.roll = seq(2, 3, 4);
   r.throwDice(a); r.throwDice(a); r.throwDice(a);
@@ -291,7 +291,7 @@ test('Hütchenrennen: drei Versuche, mit 6 raus, nach 6 nochmal', () => {
   assert.equal(r.currentId, a);
 });
 
-test('Hütchenrennen: schlagen, Ziel nur passend, nicht überspringen, Sieg', () => {
+test('Mensch ärgere Dich nicht: schlagen, Ziel nur passend, nicht überspringen, Sieg', () => {
   const { r, ids: [a, b] } = setup(Huetchen, ['Anna', 'Ben']);
   // Ben (Startfeld 10) steht auf Feld 13 = Annas Fortschritt 13
   r.pieces[a] = [10, -1, -1, -1]; r.pieces[b] = [3, -1, -1, -1];
@@ -317,9 +317,9 @@ test('Hütchenrennen: schlagen, Ziel nur passend, nicht überspringen, Sieg', ()
   assert.deepEqual(r.result.winners, [a]);
 });
 
-// ---------- Zehn Etappen ----------
+// ---------- Phase 10 ----------
 const card = (c, n, id = Math.random()) => ({ id, c, n });
-test('Zehn Etappen: Gruppen mit Jokern und Aufteilen in die Etappe', () => {
+test('Phase 10: Gruppen mit Jokern und Aufteilen in die Phase', () => {
   assert.ok(validGroup('set', [card('r', 7), card('b', 7), card('j', 0)]));
   assert.ok(!validGroup('set', [card('r', 7), card('b', 8)]));
   assert.ok(validGroup('run', [card('r', 3), card('b', 5), card('j', 0), card('g', 6)]));
@@ -336,7 +336,7 @@ test('Zehn Etappen: Gruppen mit Jokern und Aufteilen in die Etappe', () => {
   assert.equal(phaseText(8), '7 einer Farbe');
 });
 
-test('Zehn Etappen: ziehen, auslegen, anlegen, Aussetzen, Runde und Fortschritt', () => {
+test('Phase 10: ziehen, auslegen, anlegen, Aussetzen, Runde und Fortschritt', () => {
   const { r, ids: [a, b, c] } = setup(Etappen);
   let k = 1000;
   const C = (col, n) => ({ id: k++, c: col, n });
@@ -371,15 +371,15 @@ test('Zehn Etappen: ziehen, auslegen, anlegen, Aussetzen, Runde und Fortschritt'
   r.hit(a, r.hands[a].find((x) => x.n === 4).id, a, r.laid[a].findIndex((g) => g.cards.some((x) => x.n === 4)));
   r.throwAway(a, r.hands[a][0].id);
   assert.equal(r.phase, 'over');
-  assert.equal(r.progress[a], 2, 'Anna ist eine Etappe weiter');
+  assert.equal(r.progress[a], 2, 'Anna ist eine Phase weiter');
   assert.equal(r.phaseOf(b), 1);
   assert.ok(r.penalty[b] > 0);
-  // Neue Runde: Anna hat Etappe 2
+  // Neue Runde: Anna hat Phase 2
   r.start(a);
   assert.equal(r.view(a).g.myPhase, 2);
 });
 
-test('Zehn Etappen: wer Etappe 10 schafft, gewinnt das Spiel', () => {
+test('Phase 10: wer Phase 10 schafft, gewinnt das Spiel', () => {
   const { r, ids: [a, b] } = setup(Etappen, ['Anna', 'Ben']);
   let k = 2000;
   const C = (col, n) => ({ id: k++, c: col, n });
@@ -392,12 +392,12 @@ test('Zehn Etappen: wer Etappe 10 schafft, gewinnt das Spiel', () => {
   assert.deepEqual(r.result.winners, [a]);
   assert.equal(r.scores[a], 1);
   r.start(a);
-  assert.equal(r.phaseOf(a), 1, 'neues Spiel beginnt bei Etappe 1');
+  assert.equal(r.phaseOf(a), 1, 'neues Spiel beginnt bei Phase 1');
   assert.equal(r.phaseOf(b), 1);
 });
 
-// ---------- Stapelrennen ----------
-test('Stapelrennen: Reihen bauen, Joker, volle Reihe, Hand auffüllen, Ablage', () => {
+// ---------- Skip-Bo ----------
+test('Skip-Bo: Reihen bauen, Joker, volle Reihe, Hand auffüllen, Ablage', () => {
   const { r, ids: [a, b] } = setup(Stapel, ['Anna', 'Ben'], { stockSize: 5 });
   assert.equal(r.hand[a].length, 5, 'Hand aufgefüllt');
   r.hand[a] = [1, 2, JOKER, 9, 9];
@@ -425,7 +425,7 @@ test('Stapelrennen: Reihen bauen, Joker, volle Reihe, Hand auffüllen, Ablage', 
   assert.deepEqual(r.piles[b][0], [3]);
 });
 
-test('Stapelrennen: Stapel leer gewinnt – 25 plus 5 je Restkarte der anderen', () => {
+test('Skip-Bo: Stapel leer gewinnt – 25 plus 5 je Restkarte der anderen', () => {
   const { r, ids: [a, b] } = setup(Stapel, ['Anna', 'Ben'], { stockSize: 5 });
   r.stock[a] = [1]; r.stock[b] = [5, 6, 7];
   r.play(a, { kind: 'stock' }, 3);
@@ -450,4 +450,52 @@ test('Rundenspiele: Aussteigen mitten in der Runde, Neues Spiel, Speichern', () 
   r.newGame(a);
   assert.deepEqual(r.scores, {});
   assert.ok(r.log.some((l) => l.kind === 'summary'));
+});
+
+test('Anzeigenamen geändert, interne IDs gleich – alte gespeicherte Tische laden weiter', () => {
+  const names = Object.fromEntries(Object.values(GAMES).map((g) => [g.id, g.name]));
+  assert.deepEqual(names, {
+    poker: "Texas Hold'em", maumau: 'Mau-Mau', farbenchaos: 'UNO', maexchen: 'Mäxchen',
+    schocken: 'Schocken', huetchen: 'Mensch ärgere Dich nicht', zehnetappen: 'Phase 10', stapelrennen: 'Skip-Bo',
+  });
+  // Spielstand wie in data/rooms.json: Spielart steht unter der alten ID
+  for (const id of ['farbenchaos', 'huetchen', 'zehnetappen', 'stapelrennen']) {
+    const room = GAMES[id].create('ALT' + id.slice(0, 2).toUpperCase(), {}, () => {});
+    const a = room.addPlayer('Anna', null); room.sit(a.id);
+    const b = room.addPlayer('Ben', null); room.sit(b.id);
+    room.scores[a.id] = 7;
+    const saved = JSON.parse(JSON.stringify({ ...room.snapshot(), game: id, code: room.code }));
+    const back = GAMES[saved.game].restore(saved, () => {});
+    assert.deepEqual(back.seats, [a.id, b.id], id);
+    assert.equal(back.scores[a.id], 7, id);
+    assert.equal(back.byToken(a.token).name, 'Anna', id);
+    back.start(a.id);
+    assert.equal(back.phase, 'playing', id);
+    back.dispose(); room.dispose();
+  }
+});
+
+test('Siegtexte und Rufe mit den neuen Namen', () => {
+  const { r, ids: [a] } = setup(UNO, ['Anna', 'Ben']);
+  assert.equal(r.lastCardCall(), 'UNO!');
+  assert.equal(r.winText('Anna'), 'Anna gewinnt – UNO!');
+  r.discard = ['5r']; r.hands[a] = ['6r', '7r'];
+  r.play(a, '6r');
+  assert.ok(r.log.some((l) => l.text === 'Anna: UNO!'));
+  assert.equal(phaseText(4), '7er-Folge');
+});
+
+test('Lobby: jedes Spiel bringt nur seine eigenen Einstellungen mit', () => {
+  const fields = Object.fromEntries(Object.values(GAMES).map((g) => [g.id, g.createFields.map((f) => f.key)]));
+  assert.deepEqual(fields, {
+    poker: ['startStack', 'smallBlind', 'bigBlind'], maumau: ['handSize'], farbenchaos: ['handSize'], maexchen: ['lives'],
+    schocken: [], huetchen: [], zehnetappen: [], stapelrennen: ['stockSize'],
+  });
+  // Was die Lobby anbietet, versteht das Spiel auch (unbekannte Felder würden still ignoriert)
+  for (const g of Object.values(GAMES)) {
+    if (g.id === 'poker') continue;
+    const r = g.create('X', Object.fromEntries(g.createFields.map((f) => [f.key, f.value])), () => {});
+    for (const f of g.createFields) assert.equal(r.settings[f.key], f.value, `${g.id}.${f.key}`);
+    r.dispose();
+  }
 });

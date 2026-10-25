@@ -13,9 +13,10 @@ export default {
   createHint: 'Wer mitspielen will, klickt am Tisch auf „Mitspielen“. Der Host startet die Runde.',
   create: (code, settings, onChange) => new Room(code, settings, onChange),
   restore: (data, onChange) => Room.restore(data, onChange),
+  options: Room.OPTIONS, // Regel-Optionen fürs Host-Menü
   events: {
     ...turnEvents,
-    play: (room, p, { card, wish }) => room.play(p.id, str(card), str(wish) || null),
+    play: (room, p, { card, wish, call }) => room.play(p.id, str(card), str(wish) || null, !!call),
     draw: (room, p) => room.draw(p.id),
     pass: (room, p) => room.pass(p.id),
   },

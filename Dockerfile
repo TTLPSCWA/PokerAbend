@@ -1,4 +1,4 @@
-# Pokerabend – Texas Hold'em für die Freundesgruppe
+# Spieleabend – Spielesammlung für die Freundesgruppe (Image-Name bleibt „pokerabend“)
 FROM node:22-alpine
 WORKDIR /app
 ENV NODE_ENV=production PORT=3000 DATA_DIR=/app/data

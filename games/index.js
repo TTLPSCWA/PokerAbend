@@ -12,8 +12,8 @@ export const GAMES = Object.fromEntries([poker, maumau, farbenchaos, maexchen, s
 export const DEFAULT_GAME = 'poker'; // alte Spielstände ohne Spielart sind Poker
 
 // Was die Startseite über die Spiele wissen muss
-export const gameList = () => Object.values(GAMES).map(({ id, name, description, players, createFields, createHint }) => ({
-  id, name, description, players, createFields, createHint,
+export const gameList = () => Object.values(GAMES).map(({ id, name, description, players, createFields, createHint, options = [] }) => ({
+  id, name, description, players, createFields, createHint, options,
 }));
 
 // Ereignisnamen aller Spiele – die Plattform meldet sie einmal pro Verbindung an

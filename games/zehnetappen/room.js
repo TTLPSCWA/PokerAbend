@@ -1,11 +1,11 @@
-// Zehn Etappen – Kartenspiel über zehn Aufgaben (Phase-10-ähnlich, eigene Gestaltung). Hausregeln:
+// Phase 10 – Kartenspiel über zehn Phasen (interne ID bleibt „zehnetappen“). Hausregeln:
 // 108 Karten: 1–12 in vier Farben (je zweimal), 8 Joker, 4 Aussetzen. Jeder bekommt 10 Karten.
-// Zug: eine Karte ziehen (Stapel oder oberste Ablage, aber kein Aussetzen), dann evtl. die eigene Etappe auslegen,
+// Zug: eine Karte ziehen (Stapel oder oberste Ablage, aber kein Aussetzen), dann evtl. die eigene Phase auslegen,
 // nach dem Auslegen auch an beliebige ausgelegte Gruppen anlegen, zum Schluss eine Karte abwerfen.
 // Aussetzen abwerfen: ein Mitspieler deiner Wahl setzt einmal aus. Joker ersetzen jede Karte.
-// Die Runde endet, wenn jemand keine Karten mehr hat. Wer seine Etappe ausgelegt hat, ist in der nächsten Runde eine weiter.
+// Die Runde endet, wenn jemand keine Karten mehr hat. Wer seine Phase ausgelegt hat, ist in der nächsten Runde eine weiter.
 // Strafpunkte für Restkarten: 1–9 = 5, 10–12 = 10, Aussetzen = 15, Joker = 25.
-// Wer zuerst Etappe 10 schafft, gewinnt das Spiel (bei Gleichstand wenig Strafpunkte). Danach geht es wieder bei Etappe 1 los.
+// Wer zuerst Phase 10 schafft, gewinnt das Spiel (bei Gleichstand wenig Strafpunkte). Danach geht es wieder bei Phase 1 los.
 import { TurnRoom } from '../../server/turn-room.js';
 import { shuffle } from '../../server/random.js';
 
@@ -36,7 +36,7 @@ export function validGroup(type, cards) {
   return !ns.length || Math.max(...ns) - Math.min(...ns) + 1 <= cards.length;
 }
 
-// Ausgewählte Karten in die Gruppen der Etappe aufteilen – oder null
+// Ausgewählte Karten in die Gruppen der Phase aufteilen – oder null
 export function partition(cards, groups) {
   if (cards.length !== groups.reduce((a, [, k]) => a + k, 0)) return null;
   const go = (rest, gi) => {
@@ -59,6 +59,21 @@ export function partition(cards, groups) {
   return go(cards, 0);
 }
 
+// Wie partition, aber Gruppen dürfen größer sein als verlangt (Option „nicht genau“)
+export function partitionMin(cards, groups) {
+  if (cards.length < groups.reduce((a, [, k]) => a + k, 0)) return null;
+  if (groups.length === 1) { const [type, k] = groups[0]; return cards.length >= k && validGroup(type, cards) ? [{ type, cards }] : null; }
+  // Zwei Gruppen: jede Karte kommt in Gruppe 1 oder 2 (bei ≤ 12 Karten höchstens 4096 Möglichkeiten)
+  if (cards.length > 12) return null;
+  const [[t1, k1], [t2, k2]] = groups;
+  for (let mask = 0; mask < 1 << cards.length; mask++) {
+    const a = cards.filter((_, i) => mask & (1 << i));
+    const b = cards.filter((_, i) => !(mask & (1 << i)));
+    if (a.length >= k1 && b.length >= k2 && validGroup(t1, a) && validGroup(t2, b)) return [{ type: t1, cards: a }, { type: t2, cards: b }];
+  }
+  return null;
+}
+
 // Folge zum Anzeigen ordnen: Zahlen aufsteigend, Joker in die Lücken
 export function arrange(group) {
   if (group.type !== 'run') return group.cards;
@@ -73,6 +88,13 @@ export function arrange(group) {
 }
 
 export class Room extends TurnRoom {
+  static OPTIONS = [
+    { key: 'skipChoose', label: 'Aussetzen: Spieler frei wählen (sonst setzt der Nächste aus)', type: 'bool' },
+    { key: 'exactSize', label: 'Phase genau in der verlangten Größe auslegen', type: 'bool' },
+    { key: 'firstSkip', label: 'Aussetzen als erste Ablage: der Erste setzt aus', type: 'bool' },
+  ];
+  defaultSettings() { return { skipChoose: true, exactSize: true, firstSkip: false }; }
+
   constructor(code, settings, onChange) {
     super(code, settings, onChange, { minPlayers: 2, maxPlayers: 6, lowWins: false, scoreLabel: 'Siege', winPoints: 1 });
     this.progress = {}; this.penalty = {}; this.gameOver = false;
@@ -95,10 +117,13 @@ export class Room extends TurnRoom {
     this.deck = shuffle(deck);
     for (const id of this.order) { this.hands[id] = this.deck.splice(-10); this.laid[id] = []; }
     // Erste Ablage: kein Aussetzen
-    let first = this.deck.pop();
-    while (first.c === 's') { this.deck.unshift(first); first = this.deck.pop(); }
+    let first = this.pickFirst();
+    if (this.settings.firstSkip && first.c === 's') this.skip.add(this.order[0]); // der Erste setzt aus
+    else while (first.c === 's') { this.deck.unshift(first); first = this.deck.pop(); }
     this.discard = [first];
   }
+
+  pickFirst() { return this.deck.pop(); } // erste Ablagekarte (Tests legen sie fest)
 
   // Wer aussetzen muss, wird übersprungen
   onTurnStart() {
@@ -106,6 +131,7 @@ export class Room extends TurnRoom {
     for (let k = 0; k < this.order.length && this.skip.has(this.currentId); k++) {
       this.skip.delete(this.currentId);
       this.say(`${this.name(this.currentId)} setzt aus`);
+      this.act(this.currentId, 'setzt aus');
       const n = this.order.length;
       this.turn = (this.turn + this.dir + n) % n;
     }
@@ -128,11 +154,13 @@ export class Room extends TurnRoom {
       if (c.c === 's') throw new Error('Aussetzen darf man nicht aufnehmen');
       this.discard.pop();
       this.say(`${this.name(id)} nimmt von der Ablage`, 'info', 'action');
+      this.act(id, 'nimmt Ablage');
     } else {
       if (!this.deck.length) { const top = this.discard.pop(); this.deck = shuffle(this.discard); this.discard = top ? [top] : []; }
       c = this.deck.pop();
       if (!c) throw new Error('Keine Karten mehr');
       this.say(`${this.name(id)} zieht`, 'info', 'action');
+      this.act(id, 'zieht');
     }
     this.hands[id].push(c);
     this.step = 'play';
@@ -141,23 +169,24 @@ export class Room extends TurnRoom {
   layPhase(id, cardIds) {
     this.requireTurn(id);
     if (this.step !== 'play') throw new Error('Erst eine Karte ziehen');
-    if (this.done.has(id)) throw new Error('Deine Etappe liegt schon');
+    if (this.done.has(id)) throw new Error('Deine Phase liegt schon');
     const cards = [...new Set(cardIds.map(Number))].map((x) => this.inHand(id, x));
     const n = this.phaseOf(id);
-    if (n > 10) throw new Error('Du hast alle Etappen geschafft');
-    const groups = partition(cards, PHASES[n]);
-    if (!groups) throw new Error(`Das passt nicht zu Etappe ${n}: ${phaseText(n)}`);
+    if (n > 10) throw new Error('Du hast alle Phasen geschafft');
+    const groups = (this.settings.exactSize ? partition : partitionMin)(cards, PHASES[n]);
+    if (!groups) throw new Error(`Das passt nicht zu Phase ${n}: ${phaseText(n)}`);
     this.removeCards(id, cards);
     this.laid[id] = groups;
     this.done.add(id);
-    this.say(`${this.name(id)} legt Etappe ${n} aus (${phaseText(n)})`, 'win');
+    this.say(`${this.name(id)} legt Phase ${n} aus (${phaseText(n)})`, 'win');
+    this.act(id, `Phase ${n} ✓`);
     if (!this.hands[id].length) this.endRound(id);
   }
 
   hit(id, cardId, owner, groupIndex) {
     this.requireTurn(id);
     if (this.step !== 'play') throw new Error('Erst eine Karte ziehen');
-    if (!this.done.has(id)) throw new Error('Anlegen geht erst, wenn deine Etappe liegt');
+    if (!this.done.has(id)) throw new Error('Anlegen geht erst, wenn deine Phase liegt');
     const g = this.laid[owner]?.[Number(groupIndex)];
     if (!g) throw new Error('Diese Gruppe gibt es nicht');
     const c = this.inHand(id, cardId);
@@ -165,6 +194,7 @@ export class Room extends TurnRoom {
     g.cards.push(c);
     this.removeCards(id, [c]);
     this.say(`${this.name(id)} legt an bei ${this.name(owner)}`, 'info', 'action');
+    this.act(id, 'legt an');
     if (!this.hands[id].length) this.endRound(id);
   }
 
@@ -173,10 +203,12 @@ export class Room extends TurnRoom {
     if (this.step !== 'play') throw new Error('Erst eine Karte ziehen');
     const c = this.inHand(id, cardId);
     if (c.c === 's') {
+      if (!this.settings.skipChoose) target = this.peek(1); // ohne Wahl: der Nächste
       if (!this.order.includes(target) || target === id) throw new Error('Wer soll aussetzen?');
       this.skip.add(target);
       this.say(`${this.name(id)} lässt ${this.name(target)} aussetzen`, 'react');
-    } else this.say(`${this.name(id)} wirft ab`, 'info', 'action');
+      this.act(id, `${this.name(target)} setzt aus`);
+    } else { this.say(`${this.name(id)} wirft ab`, 'info', 'action'); this.act(id, 'wirft ab'); }
     this.removeCards(id, [c]);
     this.discard.push(c);
     if (!this.hands[id].length) return this.endRound(id);
@@ -189,13 +221,13 @@ export class Room extends TurnRoom {
       const pts = this.hands[p].reduce((a, c) => a + cardPoints(c), 0);
       this.penalty[p] = (this.penalty[p] || 0) + pts;
       if (this.done.has(p)) this.progress[p] = this.phaseOf(p) + 1;
-      lines.push(`${this.name(p)}: Etappe ${Math.min(10, this.phaseOf(p))}${this.phaseOf(p) > 10 ? ' geschafft' : ''}, ${this.penalty[p]} Strafpunkte`);
+      lines.push(`${this.name(p)}: Phase ${Math.min(10, this.phaseOf(p))}${this.phaseOf(p) > 10 ? ' geschafft' : ''}, ${this.penalty[p]} Strafpunkte`);
     }
     this.say(`${this.name(out)} ist fertig. ${lines.join(' · ')}`, 'win');
     const finished = this.order.filter((p) => this.phaseOf(p) > 10).sort((a, b) => this.penalty[a] - this.penalty[b]);
     if (finished.length) {
       this.gameOver = true;
-      return this.finishRound([finished[0]], `${this.name(finished[0])} schafft alle zehn Etappen und gewinnt!`, { [finished[0]]: 1 });
+      return this.finishRound([finished[0]], `${this.name(finished[0])} schafft alle zehn Phasen und gewinnt!`, { [finished[0]]: 1 });
     }
     this.finishRound([], `Runde vorbei – ${this.name(out)} ist zuerst fertig`);
   }

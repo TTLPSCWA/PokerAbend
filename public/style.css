@@ -1,4 +1,4 @@
-/* Pokerabend – „Modern Poker Lounge“.
+/* Spieleabend – „Modern Poker Lounge“.
    Dunkelgrüner Filz, warmes Holz, sparsames Gold. Leuchten gibt es nur für „du bist dran“ und den Gewinner. */
 /* Schrift liegt lokal – keine Verbindung zu Google (DSGVO) */
 @font-face { font-family: 'Bricolage Grotesque'; src: url('/fonts/bricolage.woff2') format('woff2'); font-weight: 200 800; font-display: swap; }
@@ -318,12 +318,16 @@ button { cursor: pointer; }
   .btn kbd { display: none; }
   .host-grid { grid-template-columns: 1fr; }
   .panel { top: auto; left: 0; width: 100%; max-height: 82dvh; border-left: 0; border-radius: var(--r-l) var(--r-l) 0 0; box-shadow: 0 -20px 40px rgba(0,0,0,.5); animation: drawer .25s ease-out; }
-  .grip { display: block; width: 100%; height: 22px; border: 0; background: none; padding: 0; position: relative; }
-  .grip::before { content: ''; position: absolute; left: 50%; top: 9px; width: 44px; height: 5px; margin-left: -22px; border-radius: 3px; background: #3A4D46; }
+  .grip { display: block; width: 100%; height: 44px; border: 0; background: none; padding: 0; position: relative; } /* Griff klein, Fläche groß genug */
+  .grip::before { content: ''; position: absolute; left: 50%; top: 14px; width: 44px; height: 5px; margin-left: -22px; border-radius: 3px; background: #3A4D46; }
 }
 @keyframes drawer { from { transform: translateY(40px); opacity: 0; } }
+/* Touch: alle Ziele mindestens 44 × 44 px */
 @media (pointer: coarse) {
   .btn, .btn-sm, .presets .btn, .reacts .btn, .nav-btn, .code-chip, .seg button { min-height: 44px; }
+  .nav-btn, .btn-sm, .freeze-btn { min-width: 44px; justify-content: center; }
+  .icon-btn { min-width: 44px; min-height: 44px; }
+  input[type=number], select, .input { min-height: 44px; }
 }
 /* ---------- Verlauf: Filter, Suche, Hände zum Aufklappen ---------- */
 .log-tools { display: grid; gap: 8px; margin: var(--s-3) 0; }
@@ -342,10 +346,17 @@ details.lg > summary small { color: var(--text-2); font-size: 12px; min-width: 0
 .lg-n { margin-left: auto; font-size: 11px; color: var(--text-2); background: var(--panel-2); border-radius: 999px; padding: 1px 7px; }
 details.lg .log { margin: 4px 0 4px 18px; }
 @media (max-width: 640px) { .nav-btn .ico { display: none; } }
+/* Handy: Regeln über „?“ → „Alle Regeln“, damit der Spielname oben Platz hat */
+@media (max-width: 640px) { .kg .nav-btn[data-kit-panel="rules"] { display: none; } }
 
 /* ---------- Rundenspiele (games/kit.js): Rahmen, Spielerleiste, Karten, Würfel ---------- */
-.kg { height: 100dvh; display: grid; grid-template-rows: auto auto 1fr auto; overflow: hidden; }
-.kg-players { display: flex; gap: 8px; padding: 8px var(--s-4); overflow-x: auto; border-bottom: 1px solid var(--line); background: #0F1A17; }
+/* Eine Spalte, die nie breiter als der Bildschirm wird – sonst drückt die Spielerleiste die ganze Seite auf (Handy zoomt heraus) */
+.kg { height: 100dvh; display: grid; grid-template-rows: auto auto 1fr auto; grid-template-columns: minmax(0, 1fr); overflow: hidden; }
+.kg > * { min-width: 0; }
+/* Feste Zeilen – auch wenn die Leiste am großen Tisch ausgeblendet ist, bleibt der Tisch die wachsende Zeile */
+.kg > .topbar { grid-row: 1; } .kg > .kg-players { grid-row: 2; } .kg > .kg-main { grid-row: 3; } .kg > .kg-dock { grid-row: 4; }
+/* position: relative, damit unsichtbare Vorlesetexte (.sr-only) mit der Leiste scrollen statt die Seite zu verbreitern */
+.kg-players { position: relative; display: flex; gap: 8px; padding: 8px var(--s-4); overflow-x: auto; border-bottom: 1px solid var(--line); background: #0F1A17; }
 .kp { flex: none; display: flex; align-items: center; gap: 8px; padding: 5px 14px 5px 5px; border-radius: 999px; background: var(--panel); border: 1px solid var(--line); }
 .kp.turn { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold), 0 0 14px rgba(201,154,69,.3); }
 .kp.me .kp-txt b { color: var(--gold-text); }
@@ -365,12 +376,9 @@ body.kg-myturn .kg-dock { box-shadow: inset 0 3px 0 var(--gold); }
 .kg-dock-in { display: grid; gap: var(--s-3); }
 .kg-hand { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; padding-top: 8px; }
 .kg-table { display: grid; gap: var(--s-4); justify-items: center; width: min(100%, 940px); }
-.kg-lobby, .kg-result { text-align: center; padding: var(--s-5); border-radius: var(--r-l); background: rgba(0,0,0,.28); max-width: 540px; }
+.kg-lobby { text-align: center; padding: var(--s-5); border-radius: var(--r-l); background: rgba(0,0,0,.28); max-width: 540px; }
 .kg-lobby h2 { margin: 0 0 8px; font-size: 26px; }
 .kg-lobby .hint { color: #C9D8D1; }
-.kg-result { display: grid; gap: 6px; margin: 0 auto var(--s-4); border: 1px solid var(--gold); width: min(100%, 540px); }
-.kg-result b { font-size: 19px; }
-.kg-result small { color: #C9D8D1; }
 .kg-piles { display: flex; gap: var(--s-5); align-items: flex-end; justify-content: center; }
 .kg-pile { display: grid; gap: 6px; justify-items: center; }
 .kg-pile small, .kg-table small { color: #D3E1DA; }
@@ -380,6 +388,90 @@ body.kg-myturn .kg-dock { box-shadow: inset 0 3px 0 var(--gold); }
 .kg-rules ul, .kg-rules ol { padding-left: 20px; margin: 8px 0; }
 .kg-rules li { margin: 4px 0; }
 .kg-rules p { margin: 0 0 8px; }
+
+/* ---------- Tisch mit Plätzen (große Bildschirme) ---------- */
+/* Links (von unten nach oben), oben, rechts (von oben nach unten) – der Nächste sitzt links von dir. Du selbst unten. */
+.kg-main.ring { padding: 12px 16px; place-items: stretch; overflow: hidden; }
+.kt { display: grid; width: 100%; height: 100%; min-height: 0; gap: 10px 14px;
+  grid-template: "top top top" auto "left center right" minmax(0, 1fr) "bottom bottom bottom" auto / auto minmax(0, 1fr) auto; }
+.kt-rail { display: flex; gap: 12px; align-items: center; justify-content: center; min-width: 0; }
+.kt-top { grid-area: top; padding: 0 64px; flex-wrap: wrap; }
+.kt-left { grid-area: left; flex-direction: column-reverse; }
+.kt-right { grid-area: right; flex-direction: column; }
+.kt-bottom { grid-area: bottom; }
+.kt-center { grid-area: center; position: relative; min-height: 0; min-width: 0; display: grid; }
+.kt-content { position: relative; z-index: 1; min-height: 0; min-width: 0; overflow: auto; display: grid; place-items: center; container-type: size; padding: 8px; }
+.kt-watch { font-size: 12px; color: var(--text-2); }
+/* Zugrichtung: dezenter Kreis mit zwei Pfeilen, spiegelt sich beim Richtungswechsel */
+.kt-dir { position: absolute; inset: 3% 2%; pointer-events: none; transition: transform .3s ease; }
+.kt-dir i { position: absolute; inset: 0; border: 2px dashed rgba(255,255,255,.13); border-radius: 50%; }
+.kt-dir b { position: absolute; left: 50%; bottom: -14px; transform: translateX(-50%) rotate(180deg); font-size: 26px; line-height: 1; color: rgba(255,255,255,.55); font-weight: 400; }
+.kt-dir.ccw { transform: scaleX(-1); }
+/* Platz am Tisch */
+.ks { position: relative; display: grid; gap: 4px; justify-items: center; min-width: 124px; max-width: 170px; padding: 8px 10px;
+  border-radius: 14px; background: rgba(8,14,12,.6); border: 1px solid rgba(255,255,255,.12); text-align: center; }
+.ks.turn { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold), 0 0 18px rgba(201,154,69,.35); }
+.ks.me .kp-txt b { color: var(--gold-text); }
+.ks.is-offline, .ks.out { opacity: .55; }
+.ks-head { display: flex; gap: 8px; align-items: center; text-align: left; min-width: 0; }
+.ks .kp-txt b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; display: block; }
+.ks .kp-txt b small { color: var(--text-2); font-weight: 400; }
+.ks-info { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2px 8px; font-size: 12px; color: var(--text-2); }
+.ks-info:empty { display: none; }
+.kt-bottom .ks { grid-auto-flow: column; max-width: none; align-items: center; gap: 12px; }
+/* Sprechblase: letzte Aktion. Die neueste ist kräftig, ältere etwas blasser. */
+.ks-bubble { position: absolute; z-index: 4; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%); max-width: 200px; overflow: hidden; text-overflow: ellipsis;
+  padding: 4px 10px; border-radius: 12px; background: #F3EEE2; color: var(--ink); font-size: 13px; font-weight: 700; white-space: nowrap; box-shadow: 0 3px 8px rgba(0,0,0,.4); opacity: .78; }
+.ks-bubble::after { content: ''; position: absolute; left: 50%; top: 100%; margin-left: -6px; border: 6px solid transparent; border-top-color: #F3EEE2; }
+.ks-bubble.fresh { opacity: 1; animation: bubble-in .22s ease-out; }
+.kt-top .ks-bubble { bottom: auto; top: calc(100% + 8px); }
+.kt-top .ks-bubble::after { top: auto; bottom: 100%; border-top-color: transparent; border-bottom-color: #F3EEE2; }
+.kt-left .ks-bubble, .kt-right .ks-bubble { bottom: auto; top: 50%; transform: translateY(-50%); }
+.kt-left .ks-bubble { left: calc(100% + 10px); }
+.kt-right .ks-bubble { left: auto; right: calc(100% + 10px); }
+.kt-left .ks-bubble::after { left: auto; right: 100%; top: 50%; margin: -6px 0 0; border-top-color: transparent; border-right-color: #F3EEE2; }
+.kt-right .ks-bubble::after { left: 100%; top: 50%; margin: -6px 0 0; border-top-color: transparent; border-left-color: #F3EEE2; }
+@keyframes bubble-in { from { opacity: 0; scale: .85; } }
+/* Verdeckter Kartenfächer: zeigt, wie viele Karten jemand hat */
+.fan { position: relative; display: inline-block; width: 40px; height: 26px; }
+.fan i { position: absolute; left: 50%; bottom: 0; width: 15px; height: 21px; margin-left: -7.5px; border-radius: 3px; transform-origin: 50% 100%; transform: rotate(var(--r));
+  background: repeating-linear-gradient(45deg, #1F5A44 0 3px, #184836 3px 6px); border: 1.5px solid #E9DFC6; }
+/* Leiste (Handy): letzte Aktion klein unter dem Namen */
+.kp-act { justify-self: start; margin-top: 2px; padding: 0 6px; border-radius: 8px; background: #F3EEE2; color: var(--ink); font-size: 11px; font-weight: 700; white-space: nowrap; opacity: .7; }
+.kp-act.fresh { opacity: 1; }
+.kg-players[hidden] { display: none; }
+
+/* Über der Hand: was man gerade tun kann */
+.kg-hint-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 12px; }
+.kg-hint { margin: 0; text-align: center; font-weight: 600; color: var(--text-2); }
+.kg-hint.mine { color: var(--text); }
+.kg-hint:empty { display: none; }
+@media (pointer: fine) { .kg-sort { min-height: 32px; } }
+/* Viele Handkarten auf dem Handy: überlappend in einer Zeile, Antippen vergrößert */
+.kg-hand.overlap { flex-wrap: nowrap; justify-content: flex-start; gap: 0; overflow-x: auto; padding: 22px 10px 0; }
+.kg-hand.overlap > :first-child { margin-left: auto; }
+.kg-hand.overlap > :last-child { margin-right: auto; }
+.kg-hand.overlap > * + * { margin-left: var(--ov, 0); }
+.kg-hand.overlap > .kc { box-shadow: -3px 0 6px rgba(0,0,0,.35); }
+.kg-hand.overlap > .kc.peek { z-index: 2; transform: translateY(-16px) scale(1.25); }
+/* Ziehen auf die Ablage */
+.drop-ok { outline: 2px dashed rgba(255,255,255,.45); outline-offset: 4px; border-radius: 12px; }
+.drag-over { outline: 3px solid var(--gold); }
+[draggable='true'] { cursor: grab; }
+
+/* Rundenende: großes Ergebnisfenster über dem Tisch */
+.kg-over { position: absolute; inset: 0; z-index: 8; display: grid; place-items: center; padding: 16px; background: rgba(4,9,8,.55); }
+.kg-over-card { width: min(100%, 540px); max-height: 100%; overflow: auto; display: grid; gap: 12px; padding: 22px; border-radius: var(--r-l);
+  background: var(--panel); border: 1px solid var(--gold); box-shadow: var(--shadow-2); animation: over-in .25s ease-out; }
+.kg-over-kicker { color: var(--gold-text); text-transform: uppercase; letter-spacing: .06em; font-weight: 700; font-size: 12px; }
+.kg-over h2 { margin: 0; font-size: 22px; line-height: 1.3; }
+.kg-over tr.won td { font-weight: 700; color: var(--gold-text); }
+.kg-over td small { color: var(--text-2); font-weight: 400; }
+.kg-won { white-space: nowrap; font-size: 13px; }
+@media (max-width: 640px) { .kg-over { padding: 8px; } .kg-over-card { padding: 16px; gap: 10px; } .kg-over h2 { font-size: 18px; } .kg-over td, .kg-over th { padding: 6px 4px; } }
+.kg-over-acts { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; align-items: center; }
+.kg-over-acts .waiting { margin-left: auto; }
+@keyframes over-in { from { opacity: 0; transform: translateY(10px); } }
 .standings th { text-align: left; font-size: var(--fs-label); color: var(--text-2); font-weight: 600; padding: 4px; }
 .standings th.num { text-align: right; }
 /* Karten */
@@ -387,8 +479,12 @@ body.kg-myturn .kg-dock { box-shadow: inset 0 3px 0 var(--gold); }
   background: var(--paper); color: var(--ink); font-weight: 800; box-shadow: 0 2px 6px rgba(0,0,0,.35); cursor: pointer; transition: transform .12s, box-shadow .12s; }
 .kc:disabled { cursor: default; }
 .kc.big { --w: 84px; }
-.kc.can { box-shadow: 0 0 0 3px var(--gold), 0 4px 10px rgba(0,0,0,.4); transform: translateY(-4px); }
-.kc.cant { filter: brightness(.68); }
+.kc.can { box-shadow: 0 0 0 3px var(--gold), 0 4px 10px rgba(0,0,0,.4); transform: translateY(-6px); }
+/* Farbsymbol in der Ecke (Schalter „Farbsymbole“ unter „Ich“) */
+.kc .cm { display: none; position: absolute; top: 4px; left: 4px; width: max(8px, calc(var(--w) * .2)); height: max(8px, calc(var(--w) * .2)); fill: #fff; stroke: rgba(0,0,0,.45); stroke-width: 2; }
+body.marks .kc .cm { display: block; }
+.btn .cm, .toggle small .cm { display: inline-block; width: 13px; height: 13px; fill: currentColor; vertical-align: -1px; }
+body:not(.marks) .btn .cm { display: none; }
 .kc.sel { box-shadow: 0 0 0 3px var(--info), 0 4px 10px rgba(0,0,0,.4); transform: translateY(-8px); }
 .kc-back { background: repeating-linear-gradient(45deg, #1F5A44 0 6px, #184836 6px 12px); color: #F2F6F3; font-size: 15px; border: 3px solid #E9DFC6; }
 .kc-empty { border: 2px dashed rgba(255,255,255,.28); background: transparent; box-shadow: none; }
@@ -411,11 +507,39 @@ button.die { cursor: pointer; }
   .kc { --w: 44px; }
   .kc.big { --w: 64px; }
   .die.big { --d: 46px; }
-  .kg-main { padding: var(--s-3); }
+  .kg-main { padding: 60px var(--s-3) var(--s-3); } /* oben Platz für das „?“ */
   .kg-players { padding: 6px 8px; }
   .kg-dock { padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); }
   .kp-txt small { white-space: normal; }
 }
+
+/* Regel-Schalter im Host-Menü der Rundenspiele */
+.kg-switches { display: grid; gap: 2px; }
+.kg-switches .toggle { padding: 8px 0; border-bottom: 1px solid var(--line); }
+
+/* Host-Menü: Spiel wechseln */
+.switch-game { display: flex; gap: 8px; }
+.switch-game select { flex: 1; min-width: 0; }
+
+/* Bestenliste */
+.lb-dlg { width: min(580px, calc(100vw - 24px)); }
+.lb-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.lb-scroll { max-height: min(52dvh, 460px); overflow-y: auto; }
+.lb-table small { color: var(--text-2); font-weight: 400; }
+.lb-open { justify-self: start; margin-top: 8px; }
+.games-pick { display: grid; }
+
+/* ---------- Kurzregeln: „?“ am Tisch ---------- */
+.help-btn { position: absolute; top: 12px; right: 12px; z-index: 5; width: 44px; height: 44px; border-radius: 50%;
+  border: 2px solid var(--gold); background: rgba(10,16,14,.75); color: var(--gold-text); font-weight: 800; font-size: 20px; cursor: pointer; box-shadow: var(--shadow-1); }
+.help-btn:hover { background: var(--panel-2); }
+.kg-main { position: relative; }
+.help-dlg { width: min(480px, calc(100vw - 24px)); }
+.help-body { padding: var(--s-5); display: grid; gap: var(--s-3); }
+.help-body h2 { margin: 0; font-size: 20px; }
+.help-body h3 { margin: 4px 0 0; font-size: var(--fs-label); color: var(--text-2); text-transform: uppercase; letter-spacing: .06em; }
+.help-list { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.help-list.house li::marker { color: var(--gold-text); }
 
 /* ---------- Bewegung aus: prefers-reduced-motion und „Animationen aus“ ---------- */
 @media (prefers-reduced-motion: reduce) {

@@ -1,4 +1,4 @@
-// Hütchenrennen – Brettspiel für 2–4 (Mensch-ärgere-dich-ähnlich, eigene Gestaltung). Hausregeln:
+// Mensch ärgere Dich nicht – Brettspiel für 2–4 (interne ID „huetchen“). Im Code heißen die Spielfiguren „Hütchen“. Hausregeln:
 // 40 Felder im Kreis, jeder hat 4 Hütchen im Haus, 4 Zielfelder. Rauskommen nur mit einer 6.
 // Wer kein Hütchen auf der Strecke hat, darf bis zu dreimal würfeln. Nach einer 6 darf man nochmal.
 // Mit einer 6 muss man raus, wenn das eigene Startfeld frei ist; steht ein eigenes Hütchen auf dem Startfeld, muss es weg (wenn es geht).
@@ -13,6 +13,14 @@ export const GOAL = 40; // erster Zielplatz
 export const COLORS = ['Rot', 'Blau', 'Grün', 'Gelb'];
 
 export class Room extends TurnRoom {
+  static OPTIONS = [
+    { key: 'forceCapture', label: 'Schlagzwang', type: 'bool' },
+    { key: 'sixAgain', label: 'Nach einer 6 nochmal würfeln', type: 'bool' },
+    { key: 'threeTries', label: 'Drei Versuche, wenn keine Figur draußen ist', type: 'bool' },
+    { key: 'mustExit', label: 'Mit einer 6 muss man raus (und das Startfeld räumen)', type: 'bool' },
+  ];
+  defaultSettings() { return { forceCapture: false, sixAgain: true, threeTries: true, mustExit: true }; }
+
   constructor(code, settings, onChange) {
     super(code, settings, onChange, { minPlayers: 2, maxPlayers: 4, lowWins: false, scoreLabel: 'Siege', winPoints: 1 });
     this.roll = die;
@@ -50,14 +58,30 @@ export class Room extends TurnRoom {
       }
       return !pcs.some((q, j) => j !== i && q === t); // eigenes Hütchen im Weg
     };
-    const all = [0, 1, 2, 3].filter(ok);
-    // Pflicht: mit einer 6 raus
-    const out = all.filter((i) => pcs[i] === -1);
-    if (out.length) return [out[0]];
-    // Pflicht: eigenes Startfeld räumen, solange noch jemand im Haus wartet
-    const onStart = pcs.indexOf(0);
-    if (onStart >= 0 && pcs.includes(-1) && all.includes(onStart)) return [onStart];
+    let all = [0, 1, 2, 3].filter(ok);
+    // Nur eine Figur aus dem Haus anbieten (die vier sind gleich)
+    const house = all.filter((i) => pcs[i] === -1);
+    if (house.length > 1) all = all.filter((i) => pcs[i] !== -1 || i === house[0]);
+    if (this.settings.mustExit) {
+      // Pflicht: mit einer 6 raus
+      if (house.length) return [house[0]];
+      // Pflicht: eigenes Startfeld räumen, solange noch jemand im Haus wartet
+      const onStart = pcs.indexOf(0);
+      if (onStart >= 0 && pcs.includes(-1) && all.includes(onStart)) return [onStart];
+    }
+    // Schlagzwang: wenn man schlagen kann, muss man
+    if (this.settings.forceCapture) {
+      const hits = all.filter((i) => this.captures(id, i, d));
+      if (hits.length) return hits;
+    }
     return all;
+  }
+
+  // Würde dieser Zug eine fremde Figur schlagen?
+  captures(id, i, d) {
+    const p = this.pieces[id][i];
+    const t = p === -1 ? 0 : p + d;
+    return t < GOAL && !!this.occupant(this.abs(id, t), id);
   }
 
   // Kein Hütchen unterwegs? (dann drei Versuche)
@@ -70,10 +94,12 @@ export class Room extends TurnRoom {
     this.rolled = d;
     this.options = this.movable(id, d);
     this.say(`${this.name(id)} würfelt eine ${d}`, 'info', 'action');
+    this.act(id, `würfelt ${d}`);
     if (this.options.length) return;
     // Nichts zu ziehen
-    if (this.stuck(id) && d !== 6 && ++this.tries < 3) { this.rolled = null; return; }
-    if (d === 6) { this.rolled = null; this.tries = 0; return; } // nochmal
+    const s = this.settings;
+    if (s.threeTries && this.stuck(id) && d !== 6 && ++this.tries < 3) { this.rolled = null; return; }
+    if (d === 6 && s.sixAgain) { this.rolled = null; this.tries = 0; return; } // nochmal
     this.next(1);
   }
 
@@ -81,7 +107,7 @@ export class Room extends TurnRoom {
     this.requireTurn(id);
     if (this.rolled === null) throw new Error('Erst würfeln');
     piece = Number(piece);
-    if (!this.options.includes(piece)) throw new Error('Dieses Hütchen darf gerade nicht ziehen');
+    if (!this.options.includes(piece)) throw new Error('Diese Figur darf gerade nicht ziehen');
     const pcs = this.pieces[id];
     const d = this.rolled;
     pcs[piece] = pcs[piece] === -1 ? 0 : pcs[piece] + d;
@@ -90,10 +116,11 @@ export class Room extends TurnRoom {
       if (hit) {
         this.pieces[hit[0]][hit[1]] = -1;
         this.say(`${this.name(id)} schlägt ${this.name(hit[0])} – zurück ins Haus!`, 'react');
+        this.act(id, 'schlägt!');
       }
-    } else if (pcs[piece] >= GOAL) this.say(`${this.name(id)} ist mit einem Hütchen im Ziel`, 'info', 'action');
-    if (pcs.every((p) => p >= GOAL)) return this.finishRound([id], `${this.name(id)} gewinnt das Hütchenrennen!`, { [id]: 1 });
-    if (d === 6) { this.rolled = null; this.tries = 0; this.options = []; return; } // nach einer 6 nochmal
+    } else if (pcs[piece] >= GOAL) { this.say(`${this.name(id)} ist mit einer Figur im Ziel`, 'info', 'action'); this.act(id, 'ins Ziel'); }
+    if (pcs.every((p) => p >= GOAL)) return this.finishRound([id], `${this.name(id)} gewinnt Mensch ärgere Dich nicht!`, { [id]: 1 });
+    if (d === 6 && this.settings.sixAgain) { this.rolled = null; this.tries = 0; this.options = []; return; } // nach einer 6 nochmal
     this.next(1);
   }
 

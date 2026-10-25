@@ -11,9 +11,11 @@ export default {
   createHint: 'Wer mitspielen will, klickt am Tisch auf „Mitspielen“. Der Host startet die Runde.',
   create: (code, settings, onChange) => new Room(code, settings, onChange),
   restore: (data, onChange) => Room.restore(data, onChange),
+  options: Room.OPTIONS, // Regel-Optionen fürs Host-Menü
   events: {
     ...turnEvents,
     roll: (room, p, { keep }) => room.throwDice(p.id, Array.isArray(keep) ? keep.slice(0, 3).map(Number) : []),
     stop: (room, p) => room.stop(p.id),
+    sixes: (room, p) => room.turnSixes(p.id),
   },
 };

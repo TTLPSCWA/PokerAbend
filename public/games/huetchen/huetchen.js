@@ -1,4 +1,4 @@
-// Hütchenrennen im Browser (Regeln: games/huetchen/room.js). Spielbrett als 11 × 11-Raster.
+// Mensch ärgere Dich nicht im Browser (Regeln: games/huetchen/room.js). Spielbrett als 11 × 11-Raster.
 'use strict';
 {
   // Strecke: 40 Felder im Uhrzeigersinn, Feld 0 ist das Startfeld von Rot (Farbe 0)
@@ -13,9 +13,25 @@
 
   const kit = kitGame({
     id: 'huetchen',
-    name: 'Hütchenrennen',
+    name: 'Mensch ärgere Dich nicht',
+    short: [
+      "Raus aus dem Haus nur mit einer <b>6</b>.",
+      "Nach einer 6 darfst du nochmal würfeln.",
+      "Ohne Figur auf der Strecke: bis zu drei Versuche für die 6.",
+      "Landest du auf einer fremden Figur, muss sie zurück ins Haus.",
+      "Ins Ziel nur mit passender Zahl, eigene Figuren im Ziel nicht überspringen.",
+      "Wer zuerst alle vier im Ziel hat, gewinnt.",
+    ],
+    house: () => ['Die Runde endet beim ersten Sieger'],
     playerInfo: (p) => (p.color !== null && p.color !== undefined ? `<span class="hc-dot hc-${p.color}"></span>${NAMES[p.color]} · ${p.home}/4 im Ziel` : ''),
     onState(S) { if (S.g?.rolled) lastRoll = S.g.rolled; },
+    direction: false, // man zieht immer im Uhrzeigersinn ums Brett
+    hint(S, myTurn) {
+      if (!myTurn) return '';
+      const g = S.g;
+      if (g.rolled) return `Du hast eine <b>${g.rolled}</b> – tipp eine leuchtende Figur an`;
+      return g.stuck ? `Würfle – du brauchst eine 6 (Versuch ${g.tries + 1} von 3)` : 'Würfle';
+    },
     main(S) {
       const g = S.g;
       const cells = new Map(); // "x,y" → HTML
@@ -31,8 +47,8 @@
           const can = mine && id === S.you.id && g.options.includes(i);
           const who = esc(S.players.find((q) => q.id === id)?.name ?? '?');
           return can
-            ? `<button type="button" class="hb-piece hc-${c} can" style="grid-area:${y + 1}/${x + 1}" data-g="move" data-piece="${i}" aria-label="Hütchen ${i + 1} von ${who} ziehen"></button>`
-            : `<span class="hb-piece hc-${c}" style="grid-area:${y + 1}/${x + 1}" role="img" aria-label="Hütchen von ${who}"></span>`;
+            ? `<button type="button" class="hb-piece hc-${c} can" style="grid-area:${y + 1}/${x + 1}" data-g="move" data-piece="${i}" aria-label="Figur ${i + 1} von ${who} ziehen"></button>`
+            : `<span class="hb-piece hc-${c}" style="grid-area:${y + 1}/${x + 1}" role="img" aria-label="Figur von ${who}"></span>`;
         }).join('');
       }).join('');
       const dice = g.rolled || lastRoll;
@@ -40,9 +56,9 @@
         <div class="hb-dice">${dice ? dieHTML(dice, { cls: `big ${g.rolled ? '' : 'old'}` }) : ''}</div></div></div></div>`;
     },
     dock(S, myTurn) {
-      if (!myTurn) return '<span class="waiting">Warte, bis du dran bist</span>';
+      if (!myTurn) return '';
       const g = S.g;
-      if (g.rolled) return `<span class="waiting">Du hast eine <b>${g.rolled}</b> – tipp ein leuchtendes Hütchen an</span>`;
+      if (g.rolled) return '';
       const tries = g.stuck ? ` (Versuch ${g.tries + 1} von 3)` : '';
       return `<button class="btn btn-brass" data-g="roll">Würfeln${tries}</button>`;
     },
@@ -50,13 +66,13 @@
       if (t.dataset.g === 'roll') send('roll');
       else if (t.dataset.g === 'move') send('move', { piece: Number(t.dataset.piece) });
     },
-    rules: `<p>Jeder hat vier Hütchen im Haus. Wer zuerst alle vier ins Ziel bringt, gewinnt.</p>
+    rules: `<p>Jeder hat vier Figuren im Haus. Wer zuerst alle vier ins Ziel bringt, gewinnt.</p>
       <ul>
-        <li>Raus kommt man nur mit einer <b>6</b>. Wer kein Hütchen auf der Strecke hat, darf bis zu dreimal würfeln.</li>
+        <li>Raus kommt man nur mit einer <b>6</b>. Wer keine Figur auf der Strecke hat, darf bis zu dreimal würfeln.</li>
         <li>Nach einer 6 darf man nochmal würfeln.</li>
-        <li>Mit einer 6 muss man rauskommen, wenn das eigene Startfeld frei ist. Steht dort ein eigenes Hütchen, muss es weiter.</li>
-        <li>Landest du auf einem fremden Hütchen, muss es zurück ins Haus.</li>
-        <li>Ins Ziel nur mit passender Zahl, eigene Hütchen im Ziel kann man nicht überspringen.</li>
+        <li>Mit einer 6 muss man rauskommen, wenn das eigene Startfeld frei ist. Steht dort eine eigene Figur, muss sie weiter.</li>
+        <li>Landest du auf einer fremden Figur, muss sie zurück ins Haus.</li>
+        <li>Ins Ziel nur mit passender Zahl, eigene Figuren im Ziel kann man nicht überspringen.</li>
       </ul>`,
   });
 }

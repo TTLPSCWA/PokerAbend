@@ -1,4 +1,4 @@
-/* Zehn Etappen: Zahlkarten in vier Farben, ausgelegte Gruppen */
+/* Phase 10: Zahlkarten in vier Farben, ausgelegte Gruppen */
 .kc-ze { color: #fff; font-size: calc(var(--w) * .42); border: 3px solid #fff; }
 .ze-r { background: #C8322D; } .ze-g { background: #2E8B4E; } .ze-b { background: #2D5FB8; } .ze-y { background: #D79A00; }
 .ze-j { background: linear-gradient(135deg, #6E3FB0, #B0408F); } .ze-s { background: #1F1F1F; }

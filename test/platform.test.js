@@ -94,3 +94,59 @@ test('Anstupsen kommt nur beim Angestupsten an', async () => {
   assert.ok(existsSync(join(dataDir, `history-${r.code}.json`)));
   for (const s of [a, b, c]) s.disconnect();
 });
+
+test('Spiel wechseln im selben Raum: gleicher Code, alle bleiben, Mitspieler sitzen wieder', async () => {
+  const [a, b, c] = [client(), client(), client()];
+  const r = await a.ask('create', { name: 'Anna', settings: { autoNext: false, turnTime: 0 } });
+  const jb = await b.ask('join', { code: r.code, name: 'Ben' });
+  await c.ask('join', { code: r.code, name: 'Zoe' }); // schaut nur zu
+  await a.ask('sit', { seat: 0 }); await b.ask('sit', { seat: 1 });
+  assert.match((await b.ask('switchGame', { game: 'maumau' })).error, /Nur der Host/);
+  assert.match((await a.ask('switchGame', { game: 'schach' })).error, /gibt es nicht/);
+  assert.match((await a.ask('switchGame', { game: 'poker' })).error, /schon gespielt/);
+  await a.ask('start');
+  assert.match((await a.ask('switchGame', { game: 'maumau' })).error, /Runde vorbei/, 'nicht mitten in der Hand');
+  // Hand beenden
+  await until(() => [a, b].some((s) => s.state?.legal));
+  const actor = [a, b].find((s) => s.state.legal);
+  await actor.ask('action', { type: 'fold', id: 'w1' });
+  await until(() => a.state.hand?.done);
+  const sw = await a.ask('switchGame', { game: 'maumau' });
+  assert.ok(sw.ok, sw.error);
+  await until(() => [a, b, c].every((s) => s.state?.game === 'maumau'));
+  assert.equal(a.state.code, r.code);
+  assert.deepEqual(a.state.players.filter((p) => p.seated).map((p) => p.name).sort(), ['Anna', 'Ben'], 'Mitspieler sitzen wieder');
+  assert.equal(a.state.players.find((p) => p.name === 'Zoe').seated, false, 'Zuschauer schaut weiter zu');
+  assert.equal(a.state.you.isHost, true);
+  assert.ok(a.state.log.some((l) => /^Jetzt: Mau-Mau \(vorher Texas Hold'em – /.test(l.text)), 'alter Stand im Verlauf');
+  // Wiederkommen mit dem alten Token
+  b.disconnect();
+  const b2 = client();
+  const back = await b2.ask('join', { code: r.code, token: jb.token });
+  assert.ok(back.ok && back.game === 'maumau', 'gleiches Token im neuen Spiel');
+  // Runde Mau-Mau, dann zurück zu Poker
+  assert.ok((await a.ask('start')).ok);
+  assert.match((await a.ask('switchGame', { game: 'poker' })).error, /Runde vorbei/);
+  await a.ask('stand'); // Anna steigt aus → Ben gewinnt, Runde vorbei
+  await until(() => a.state.phase === 'over');
+  assert.ok((await a.ask('switchGame', { game: 'poker' })).ok);
+  await until(() => a.state.game === 'poker' && a.state.seats);
+  assert.equal(a.state.seats.filter(Boolean).length, 1, 'Ben sitzt am Pokertisch (Anna war ausgestiegen)');
+  for (const s of [a, b2, c]) s.disconnect();
+});
+
+test('Bestenliste per /api/leaderboard: Partien aus dem Raum zählen', async () => {
+  // Die Tests oben haben schon Poker-Hände und eine Mau-Mau-Runde gespielt
+  const r = await (await fetch(`${URL}/api/leaderboard?game=poker`)).json();
+  assert.equal(r.game, 'poker');
+  assert.equal(r.period, 'all');
+  assert.ok(r.games.some((g) => g.id === 'maumau' && g.lowWins === true && g.name === 'Mau-Mau'));
+  assert.ok(r.rows.length >= 2, 'Poker-Spieler stehen drin');
+  assert.ok(r.rows.every((x) => x.played >= 1 && typeof x.points === 'number'));
+  assert.equal(r.months[0], r.current);
+  const m = await (await fetch(`${URL}/api/leaderboard?game=maumau&period=${r.current}`)).json();
+  assert.equal(m.period, r.current);
+  assert.ok(m.rows.some((x) => x.name === 'Ben' && x.wins >= 1));
+  const bad = await (await fetch(`${URL}/api/leaderboard?game=<script>&period=1999-01`)).json();
+  assert.equal(bad.game, 'poker'); assert.equal(bad.period, 'all');
+});

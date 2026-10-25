@@ -382,6 +382,9 @@ input[type='range']::-moz-range-thumb { width: 18px; height: 18px; border-radius
   .act-main .btn { min-height: 56px; min-width: 0; }
   .act-row .waiting { flex-basis: 100%; text-align: center; }
   .act-row .long, .freeze-btn .long { display: none; }
+  /* „Alle anhalten“ steht auch im Host-Menü – oben bleibt so Platz für die Blinds */
+  .freeze-btn { display: none; }
+  .p-bet { font-size: 11px; font-weight: 700; color: var(--gold-text); line-height: 1.1; }
   .raise-box { width: 100%; }
   /* Seitenleisten als Schublade von unten */
   .hands-pop { left: 8px; right: 8px; width: auto; }
@@ -397,6 +400,12 @@ input[type='range']::-moz-range-thumb { width: 18px; height: 18px; border-radius
   .mine .cards { --card-w: calc(52px * var(--cs, 1)); }
 }
 /* Touch: alle Ziele mindestens 44 × 44 px */
+
+/* Touch: Einsatz-Vorgaben und Betragsfeld groß genug (die Regeln oben machen sie sonst wieder kleiner) */
+@media (pointer: coarse) {
+  .presets .btn { min-height: 44px; }
+  .raise-line input[type='number'] { min-height: 44px; }
+}
 
 /* ---------- Spielgefühl: Du bist dran, Restzeit, Vorab-Aktionen, Anstupsen, Gewinnmoment ---------- */
 body.cards-l { --cs: 1.25; }

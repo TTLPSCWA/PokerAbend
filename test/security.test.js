@@ -177,3 +177,21 @@ test('Passwort ändern macht alte Cookies ungültig', () => {
   assert.equal(a.checkPassword('Alt'), false);
   assert.equal(a.checkPassword(undefined), false);
 });
+
+test('App fürs Handy: Manifest und Icons ohne Login, sonst nichts', async () => {
+  const m = await get('/manifest.webmanifest');
+  assert.equal(m.status, 200);
+  assert.match(m.headers.get('content-type'), /manifest\+json/);
+  const json = await m.json();
+  assert.equal(json.name, 'Spieleabend');
+  assert.equal(json.display, 'standalone');
+  for (const icon of json.icons) {
+    const r = await get(icon.src);
+    assert.equal(r.status, 200, icon.src);
+    assert.equal(r.headers.get('content-type'), 'image/png');
+  }
+  assert.equal((await get('/icons/apple-touch-icon.png')).status, 200);
+  // Alles andere bleibt hinter dem Passwort
+  assert.equal((await get('/sw.js')).status, 401);
+  assert.equal((await get('/icons/../core.js')).status, 401);
+});

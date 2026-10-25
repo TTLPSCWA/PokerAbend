@@ -18,17 +18,18 @@ export const valueOf = ([a, b]) => { const hi = Math.max(a, b), lo = Math.min(a,
 export const valueName = (v) => (v === MAEXCHEN ? 'Mäxchen' : v % 11 === 0 ? `Pasch ${v / 11}` : String(v));
 
 export class Room extends TurnRoom {
+  static OPTIONS = [
+    { key: 'lives', label: 'Leben pro Spieler', type: 'number', min: 1, max: 10 },
+    { key: 'maexchenDouble', label: 'Mäxchen kostet 2 Leben', type: 'bool' },
+    { key: 'blindPass', label: 'Ungesehen weitergeben erlaubt', type: 'bool' },
+  ];
+
   constructor(code, settings, onChange) {
     super(code, settings, onChange, { minPlayers: 2, maxPlayers: 10, lowWins: false, scoreLabel: 'Siege', winPoints: 1 });
     this.lives = {}; this.cup = null; this.last = null; this.reveal = null;
     this.roll = die; // Tests würfeln selbst
   }
-  defaultSettings() { return { lives: 3 }; }
-  clampSettings(input, base) {
-    const s = { ...base };
-    if ('lives' in input) { const n = Math.floor(Number(input.lives)); if (n >= 1 && n <= 10) s.lives = n; }
-    return s;
-  }
+  defaultSettings() { return { lives: 3, maexchenDouble: true, blindPass: false }; }
 
   setupRound() {
     this.lives = Object.fromEntries(this.order.map((id) => [id, this.settings.lives]));
@@ -45,6 +46,7 @@ export class Room extends TurnRoom {
     this.cup = [this.roll(), this.roll()];
     this.reveal = null;
     this.say(`${this.name(id)} würfelt${this.last ? ' (glaubt die Ansage)' : ''}`, 'info', 'action');
+    this.act(id, this.last ? 'glaubt und würfelt' : 'würfelt');
   }
 
   announce(id, value) {
@@ -56,6 +58,7 @@ export class Room extends TurnRoom {
     this.last = { by: id, value, actual: valueOf(this.cup) };
     this.cup = null;
     this.say(`${this.name(id)} sagt ${valueName(value)}`, 'info', 'action');
+    this.act(id, `sagt ${valueName(value)}`);
     this.next(1);
   }
 
@@ -68,7 +71,23 @@ export class Room extends TurnRoom {
     const loser = lied ? by : id;
     this.reveal = { by, value, actual, loser };
     this.say(`${this.name(id)} zweifelt – aufgedeckt: ${valueName(actual)}. ${lied ? `${this.name(by)} hat geblufft` : 'Die Ansage stimmt'}`, 'cards');
-    this.lose(loser, value === MAEXCHEN ? 2 : 1);
+    this.act(id, 'zweifelt!');
+    this.lose(loser, value === MAEXCHEN && this.settings.maexchenDouble ? 2 : 1);
+  }
+
+  // Ungesehen weitergeben (mit Option): der Becher bleibt zu, man sagt nur höher an
+  passBlind(id, value) {
+    this.requireTurn(id);
+    if (!this.settings.blindPass) throw new Error('Ungesehen weitergeben ist an diesem Tisch aus');
+    if (!this.last || this.cup) throw new Error('Weitergeben geht nur mit dem Becher des Vorgängers');
+    if (this.last.value === MAEXCHEN) throw new Error('Mäxchen kann man nicht überbieten');
+    value = Number(value);
+    if (!VALUES.includes(value) || rank(value) <= rank(this.last.value)) throw new Error(`Die Ansage muss höher sein als ${valueName(this.last.value)}`);
+    this.last = { by: id, value, actual: this.last.actual }; // derselbe Wurf, jetzt höher angesagt
+    this.reveal = null;
+    this.say(`${this.name(id)} gibt ungesehen weiter und sagt ${valueName(value)}`, 'info', 'action');
+    this.act(id, `ungesehen: ${valueName(value)}`);
+    this.next(1);
   }
 
   // Mäxchen gelten lassen: ein Leben weg, ohne aufzudecken
@@ -77,6 +96,7 @@ export class Room extends TurnRoom {
     if (this.last?.value !== MAEXCHEN || this.cup) throw new Error('Geltenlassen geht nur bei Mäxchen');
     this.reveal = null;
     this.say(`${this.name(id)} lässt Mäxchen gelten`, 'info', 'action');
+    this.act(id, 'lässt gelten');
     this.lose(id, 1);
   }
 

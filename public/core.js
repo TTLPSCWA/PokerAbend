@@ -1,4 +1,4 @@
-// Pokerabend – gemeinsamer Teil im Browser: Startseite mit Spielauswahl, Lobby, Verbindung, Dialoge.
+// Spieleabend – gemeinsamer Teil im Browser: Startseite mit Spielauswahl, Lobby, Verbindung, Dialoge.
 // Die Spiele selbst liegen unter /games/<id>/<id>.js (+ .css) und melden sich mit registerGame() an.
 // Alles hier ist für die Spiele sichtbar ($, esc, store, prefs, socket, send, toast, ask, beep …).
 /* global io */
@@ -90,6 +90,27 @@ function ask({ title, text = '', ok = 'OK', danger = false, input = null, cancel
     else if (field) { okBtn.focus(); field.select(); }
     else (danger ? $('#dlg-cancel') : okBtn).focus();
   });
+}
+
+// Kurzregeln („?“ am Tisch): ein paar Zeilen und die Hausregeln, die an diesem Tisch gelten.
+// Zeilen sind HTML aus dem Spielcode (keine Eingaben von Spielern).
+function showHelp({ title, short, house = [], more = null }) {
+  let d = $('#help-dlg');
+  if (!d) {
+    d = document.createElement('dialog');
+    d.id = 'help-dlg'; d.className = 'dlg help-dlg';
+    d.setAttribute('aria-labelledby', 'help-title');
+    document.body.append(d);
+    // Klick neben den Dialog oder auf „Alles klar“ schließt
+    d.addEventListener('click', (e) => { if (e.target === d || e.target.closest('[data-help-close]')) d.close(); });
+  }
+  d.innerHTML = `<div class="help-body"><h2 id="help-title">${esc(title)}</h2>
+    <ul class="help-list">${short.map((l) => `<li>${l}</li>`).join('')}</ul>
+    ${house.length ? `<h3>Hausregeln an diesem Tisch</h3><ul class="help-list house">${house.map((l) => `<li>${l}</li>`).join('')}</ul>` : ''}
+    <div class="dlg-actions">${more ? '<button class="btn btn-ghost" data-help-more>Alle Regeln</button>' : '<span></span>'}<button class="btn btn-brass" data-help-close>Alles klar</button></div></div>`;
+  d.querySelector('[data-help-more]')?.addEventListener('click', () => { d.close(); more(); });
+  d.showModal();
+  d.querySelector('[data-help-close]').focus();
 }
 
 // ---------- Töne ----------
@@ -245,12 +266,75 @@ socket.on('connect_error', async () => {
     if (r.status === 401) location.href = '/login?next=' + encodeURIComponent(location.pathname + location.search);
   } catch { /* Server nicht erreichbar – Socket.IO versucht es weiter */ }
 });
-socket.on('replaced', () => { session = null; document.body.innerHTML = '<main class="lobby"><div class="lobby-felt"><h1 class="wordmark">Pokerabend</h1><p class="lobby-sub">Du spielst gerade in einem anderen Tab weiter. Diesen Tab kannst du schließen.</p></div></main>'; });
+socket.on('replaced', () => { session = null; document.body.innerHTML = '<main class="lobby"><div class="lobby-felt"><h1 class="wordmark">Spieleabend</h1><p class="lobby-sub">Du spielst gerade in einem anderen Tab weiter. Diesen Tab kannst du schließen.</p></div></main>'; });
 socket.on('kicked', () => { if (session) store.set('poker:session:' + session.code, null); leaveGame(); toast('Der Host hat dich vom Tisch genommen', true); showLobby(); });
 socket.on('state', (st) => {
   lastState = st;
+  // Der Host hat das Spiel gewechselt: neu laden, das neue Spiel kommt automatisch (gleicher Raum, gleiches Token)
+  if (session && st.game && st.game !== session.game) {
+    session.game = st.game;
+    if (mounted) { location.href = '/?t=' + session.code; return; }
+  }
   if (session && current) current.onState(st);
 });
+
+// ---------- Bestenliste über alle Abende ----------
+// Daten von /api/leaderboard; Spiel und Zeitraum (alle Abende oder ein Monat) wählbar
+async function showLeaderboard(game, period = 'all') {
+  let d = $('#lb-dlg');
+  if (!d) {
+    d = document.createElement('dialog');
+    d.id = 'lb-dlg'; d.className = 'dlg lb-dlg';
+    d.setAttribute('aria-labelledby', 'lb-title');
+    document.body.append(d);
+    d.addEventListener('click', (e) => { if (e.target === d || e.target.closest('[data-lb-close]')) d.close(); });
+    d.addEventListener('change', (e) => { if (e.target.matches('[data-lb]')) showLeaderboard($('#lb-game').value, $('#lb-period').value); });
+  }
+  let r;
+  try {
+    const res = await fetch(`/api/leaderboard?game=${encodeURIComponent(game || '')}&period=${encodeURIComponent(period)}`, { credentials: 'same-origin' });
+    r = await res.json();
+  } catch { toast('Die Bestenliste ist gerade nicht erreichbar', true); return; }
+  const info = r.games.find((g) => g.id === r.game);
+  const isPoker = r.game === 'poker';
+  const monthName = (m) => new Date(m + '-15T12:00:00').toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+  const months = r.months.includes(r.current) ? r.months : [r.current, ...r.months];
+  const fmtPoints = (n) => (isPoker ? `${n > 0 ? '+' : n < 0 ? '−' : '±'}${Math.abs(n).toLocaleString('de-DE')}` : n.toLocaleString('de-DE'));
+  const rows = r.rows.map((x, k) => `<tr><td><span class="rank ${k < 3 ? 'r' + (k + 1) : ''}" aria-label="Platz ${k + 1}">${k + 1}</span></td>
+    <td>${esc(x.name)}</td><td class="num">${x.played}</td>
+    <td class="num">${x.wins} <small>(${Math.round((100 * x.wins) / x.played)} %)</small></td>
+    <td class="num ${isPoker ? (x.points > 0 ? 'pos' : x.points < 0 ? 'neg' : '') : ''}">${fmtPoints(x.points)}</td></tr>`).join('');
+  d.innerHTML = `<div class="help-body"><h2 id="lb-title">Bestenliste aller Abende</h2>
+    <div class="lb-filters">
+      <label class="field"><span>Spiel</span><select id="lb-game" class="input" data-lb>${r.games.map((g) => `<option value="${esc(g.id)}" ${g.id === r.game ? 'selected' : ''}>${esc(g.name)}</option>`).join('')}</select></label>
+      <label class="field"><span>Zeitraum</span><select id="lb-period" class="input" data-lb><option value="all">Alle Abende</option>${months.map((m) => `<option value="${m}" ${m === r.period ? 'selected' : ''}>${monthName(m)}</option>`).join('')}</select></label>
+    </div>
+    ${rows ? `<div class="lb-scroll"><table class="standings lb-table"><thead><tr><th></th><th>Name</th><th class="num">${isPoker ? 'Hände' : 'Partien'}</th><th class="num">Siege</th><th class="num">${esc(info?.scoreLabel || 'Punkte')}</th></tr></thead><tbody>${rows}</tbody></table></div>`
+      : '<p class="hint">In diesem Zeitraum wurde das noch nicht gespielt.</p>'}
+    <p class="hint" style="margin:0">Sortiert nach Siegen. ${isPoker ? 'Eine Partie ist eine Hand, gezählt werden gewonnene und verlorene Chips.' : `Eine Partie ist eine Runde. ${info?.lowWins ? 'Punkte: wenig ist gut.' : ''}`} Wiedererkannt wird man am Namen.</p>
+    <div class="dlg-actions"><span></span><button class="btn btn-brass" data-lb-close>Schließen</button></div></div>`;
+  if (!d.open) d.showModal();
+}
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-leaderboard]');
+  if (t) showLeaderboard(t.dataset.leaderboard || chosenGame);
+});
+
+// Host-Menü: in ein anderes Spiel wechseln (gleicher Raum, alle bleiben drin)
+function switchGameHTML(currentId, busy) {
+  const others = account.games.filter((g) => g.id !== currentId);
+  return `<h3>Spiel wechseln</h3>
+    <div class="switch-game"><select class="input" id="switch-game" aria-label="Neues Spiel">${others.map((g) => `<option value="${esc(g.id)}">${esc(g.name)}</option>`).join('')}</select>
+      <button class="btn" data-switch-game ${busy ? 'disabled title="Geht erst, wenn die Runde vorbei ist"' : ''}>Wechseln</button></div>
+    <p class="hint" style="margin:0">Gleicher Raum und Code, alle bleiben drin. Wer gerade mitspielt, sitzt im neuen Spiel wieder. Der bisherige Stand kommt in den Verlauf.</p>`;
+}
+async function askSwitchGame() {
+  const id = $('#switch-game')?.value;
+  const g = account.games.find((x) => x.id === id);
+  if (!g) return;
+  if (await ask({ title: `Zu ${g.name} wechseln?`, text: 'Die laufende Wertung dieses Spiels endet – sie steht danach im Verlauf. Alle bleiben im Raum.', ok: 'Wechseln' })) send('switchGame', { game: id });
+}
+document.addEventListener('click', (e) => { if (e.target.closest('[data-switch-game]:not(:disabled)')) askSwitchGame(); });
 
 // Abmelden immer erst bestätigen
 document.addEventListener('submit', async (e) => {
@@ -272,3 +356,6 @@ async function boot() {
   tryResume();
 }
 boot();
+
+// Als App installierbar (Homescreen): kleiner Service Worker ohne Zwischenspeicher
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => { /* egal – geht auch ohne */ });

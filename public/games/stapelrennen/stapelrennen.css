@@ -1,4 +1,4 @@
-/* Stapelrennen: Baureihen, eigener Stapel, Ablagen */
+/* Skip-Bo: Baureihen, eigener Stapel, Ablagen */
 .kc-st { font-size: calc(var(--w) * .46); color: #fff; border: 3px solid #fff; }
 .st-1 { background: #2D5FB8; } .st-2 { background: #2E8B4E; } .st-3 { background: #C8322D; } .kc-st.joker { background: linear-gradient(135deg, #E8B21C, #E06D1C); }
 .kc.drop { box-shadow: 0 0 0 3px var(--gold); }
@@ -12,3 +12,9 @@
 .st-stock, .st-pile { display: grid; gap: 4px; justify-items: center; }
 .st-stock { margin-right: 10px; }
 .kg-stapelrennen .kg-main { background: radial-gradient(120% 90% at 50% 25%, #4A3A6B, #241B38); place-items: start center; }
+/* Platz am großen Tisch: Stapel mit Restanzahl, Ablagen klein */
+.st-seat { display: flex; gap: 8px; align-items: flex-end; }
+.st-seat .kc { --w: 30px; font-size: 14px; border-width: 2px; cursor: default; }
+.st-seat-stock { display: grid; justify-items: center; gap: 2px; }
+.st-seat-piles { display: flex; gap: 3px; }
+.st-seat-piles .kc { --w: 22px; font-size: 11px; }

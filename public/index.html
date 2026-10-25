@@ -3,9 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Pokerabend</title>
+  <title>Spieleabend</title>
   <meta name="theme-color" content="#0B1513">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='28' fill='%23e8b04a'/><circle cx='32' cy='32' r='18' fill='none' stroke='%23101a18' stroke-width='5' stroke-dasharray='7 6'/></svg>">
+  <!-- Als App auf dem Homescreen ablegen -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Spieleabend">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect x='6' y='6' width='52' height='52' rx='13' fill='%23F7F3E8' stroke='%23C99A45' stroke-width='4'/><g fill='%23101a18'><circle cx='21' cy='21' r='5'/><circle cx='43' cy='21' r='5'/><circle cx='32' cy='32' r='5'/><circle cx='21' cy='43' r='5'/><circle cx='43' cy='43' r='5'/></g></svg>">
   <link rel="preload" href="/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/style.css">
 </head>
@@ -13,12 +20,13 @@
   <!-- Startseite: Spiel wählen, dann Lobby beitreten oder Spiel hosten -->
   <main id="lobby" class="lobby" hidden>
     <div class="lobby-felt">
-      <h1 class="wordmark">Pokerabend</h1>
-      <p class="lobby-sub">Spieleabend für eure Runde. Einer hostet, die anderen kommen per Link oder Code dazu.</p>
+      <h1 class="wordmark">Spieleabend</h1>
+      <p class="lobby-sub">Acht Spiele für eure Runde. Einer hostet, die anderen kommen per Link oder Code dazu.</p>
 
       <nav class="games-pick" aria-labelledby="games-title">
         <h2 id="games-title" class="pick-title">Spiele</h2>
         <div id="game-list" class="game-list" role="radiogroup" aria-labelledby="games-title"></div>
+        <button type="button" class="btn btn-ghost btn-sm lb-open" data-leaderboard>Bestenliste aller Abende</button>
       </nav>
 
       <div class="tabs" role="tablist">
@@ -54,7 +62,7 @@
         <p id="lobby-error" class="error" role="alert"></p>
       </form>
     </div>
-    <p class="lobby-foot" id="lobby-foot">Nur Spielgeld. Keine Anmeldung, kein Echtgeld.</p>
+    <p class="lobby-foot" id="lobby-foot">Ohne Benutzerkonto. Nur Spielgeld, kein Echtgeld.</p>
   </main>
 
   <!-- Hier zeichnet das gewählte Spiel seine Oberfläche hinein (z. B. /games/poker/poker.js) -->

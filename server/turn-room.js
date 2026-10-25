@@ -17,11 +17,23 @@ export class TurnRoom extends BaseRoom {
     this.scores = {};     // ID → Punkte des Abends
     this.wins = {};       // ID → gewonnene Runden
     this.result = null;   // Ergebnis der letzten Runde
+    this.acts = {};       // ID → { text, n }: letzte Aktion je Spieler in dieser Runde (Sprechblase am Platz)
+    this.actSeq = 0;
   }
 
   // ---------- Haken für das Spiel ----------
   defaultSettings() { return {}; }
-  clampSettings(input, base) { return { ...base }; }
+  // Regel-Optionen des Spiels stehen als static OPTIONS in der Klasse: Zahl (in Grenzen) oder Schalter
+  clampSettings(input, base) {
+    const s = { ...base };
+    for (const o of this.constructor.OPTIONS || []) {
+      if (!(o.key in input)) continue;
+      if (o.type === 'bool') s[o.key] = !!input[o.key];
+      else { const n = Math.floor(Number(input[o.key])); if (Number.isFinite(n) && n >= o.min && n <= o.max) s[o.key] = n; }
+    }
+    return s;
+  }
+  validateStart() {}      // Einstellungen und Mitspieler prüfen, bevor sich der Spielstand ändert
   setupRound() {}         // Karten geben, Würfel bereitlegen …
   onTurnStart() {}        // wer jetzt dran ist (z. B. Aussetzen überspringen)
   onDropOut() {}          // jemand verlässt die laufende Runde (Karten zurück …)
@@ -34,6 +46,8 @@ export class TurnRoom extends BaseRoom {
   get currentId() { return this.phase === 'playing' ? this.order[this.turn] ?? null : null; }
   get current() { return this.players.get(this.currentId); }
   name(id) { return this.players.get(id)?.name ?? '?'; }
+  // Kurz, was jemand gerade getan hat („zieht 2“, „sagt 52“) – erscheint als Sprechblase an seinem Platz
+  act(id, text) { if (id) this.acts[id] = { text, n: ++this.actSeq }; }
 
   sit(id) {
     const p = this.players.get(id);
@@ -82,6 +96,7 @@ export class TurnRoom extends BaseRoom {
     if (this.phase === 'playing') throw new Error('Die Runde läuft schon');
     const ids = this.seats.filter((x) => this.players.has(x));
     if (ids.length < this.opts.minPlayers) throw new Error(`Es müssen mindestens ${this.opts.minPlayers} mitspielen`);
+    this.validateStart(ids);
     // Wer anfängt, wechselt jede Runde
     const s = this.roundNo % ids.length;
     this.order = [...ids.slice(s), ...ids.slice(0, s)];
@@ -89,8 +104,10 @@ export class TurnRoom extends BaseRoom {
     this.turn = 0; this.dir = 1;
     this.phase = 'playing';
     this.result = null;
+    this.acts = {};
     this.say(`Runde #${this.roundNo}`, 'hand');
     this.setupRound();
+    this.roundPlayers = [...this.order]; // für die Bestenliste (auch wer unterwegs ausscheidet)
     if (this.phase === 'playing') this.onTurnStart();
   }
 
@@ -116,7 +133,9 @@ export class TurnRoom extends BaseRoom {
     this.phase = 'over';
     for (const [id, pts] of Object.entries(points)) this.scores[id] = (this.scores[id] || 0) + pts;
     for (const w of winners) this.wins[w] = (this.wins[w] || 0) + 1;
-    this.result = { text, winners, points };
+    const players = (this.roundPlayers || this.order).filter((id) => this.players.has(id));
+    this.result = { text, winners, points, players };
+    this.onChange('result', { entries: players.map((id) => ({ name: this.name(id), win: winners.includes(id), points: points[id] || 0 })) });
     this.say(text, 'win');
     this.onChange('handDone');
   }
@@ -130,7 +149,7 @@ export class TurnRoom extends BaseRoom {
     this.resetGame();
     this.say('Neues Spiel – alle starten bei null', 'warn');
   }
-  resetGame() {} // Haken: Fortschritt über mehrere Runden zurücksetzen (z. B. Etappen)
+  resetGame() {} // Haken: Fortschritt über mehrere Runden zurücksetzen (z. B. Phasen bei Phase 10)
 
   updateSettings(id, input) {
     this.requireHost(id);
@@ -154,7 +173,7 @@ export class TurnRoom extends BaseRoom {
     return {
       code: this.code, game: this.game, now: Date.now(),
       you: me ? { id: me.id, name: me.name, isHost: me.id === this.hostId, playing: this.seats.includes(me.id), inRound: this.order.includes(me.id) } : null,
-      hostId: this.hostId, settings: this.settings, phase: this.phase, roundNo: this.roundNo, turnId: this.currentId, dir: this.dir,
+      hostId: this.hostId, settings: this.settings, phase: this.phase, roundNo: this.roundNo, turnId: this.currentId, dir: this.dir, acts: this.phase === 'lobby' ? {} : this.acts,
       minPlayers: this.opts.minPlayers, maxPlayers: this.opts.maxPlayers, scoreLabel: this.opts.scoreLabel, lowWins: this.opts.lowWins,
       players: people.map((p) => ({
         id: p.id, name: p.name, avatar: p.avatar, connected: p.connected, isHost: p.id === this.hostId,

@@ -24,6 +24,7 @@ $('#game-root').innerHTML = `<div id="game" class="game" hidden>
   </header>
 
   <section class="table-wrap">
+    <button class="help-btn" data-help aria-label="Kurzregeln und Hausregeln" title="Kurzregeln">?</button>
     <div class="table" id="table">
       <div class="rail"></div>
       <div class="felt">
@@ -376,6 +377,7 @@ function renderTable() {
   $('#felt-msg').innerHTML = msg;
 
   // Plätze
+  const compact = matchMedia(COMPACT).matches;
   const mySeat = S.you?.seat;
   const iAmSeated = mySeat !== null && mySeat !== undefined;
   const seatedCount = S.seats.filter(Boolean).length;
@@ -425,13 +427,15 @@ function renderTable() {
         <div class="p-info">
           <div class="p-name"><span>${esc(s.name)}</span>${s.isHost ? `${ICON.crown}<span class="sr-only">(Host)</span>` : ''}</div>
           <div class="p-stack"><span class="chip c5" aria-hidden="true"></span>${amt(s.stack)}</div>
+          ${compact && s.bet > 0 ? `<div class="p-bet" aria-label="Einsatz ${amt(s.bet)}">↳ ${amt(s.bet)}</div>` : ''}
           ${handName}
         </div>
         ${act}${status}${nudge}
         ${won ? `<span class="p-win ${justDone ? 'pop' : ''} ${big ? 'big' : ''}">+${amt(won)}</span>` : ''}
       </div>
     </div>`;
-    if (s.bet > 0) seatsHTML += `<div class="bet" style="visibility:hidden" data-bet="${i}">${chipStack(s.bet, 3)}${amt(s.bet)}</div>`;
+    // Am Handy steht der Einsatz im Namensschild – auf dem kleinen Tisch ist kein Platz für eigene Chips
+    if (s.bet > 0 && !compact) seatsHTML += `<div class="bet" style="visibility:hidden" data-bet="${i}">${chipStack(s.bet, 3)}${amt(s.bet)}</div>`;
     if (h && !h.done) {
       const blind = h.bb === i ? 'bb' : h.sb === i && h.sb !== h.button ? 'sb' : null;
       if (blind) seatsHTML += `<b class="badge ${blind}" style="visibility:hidden" data-for="${i}" title="${blind === 'sb' ? 'Small Blind' : 'Big Blind'}">${blind.toUpperCase()}</b>`;
@@ -615,15 +619,15 @@ function cues(a, b) {
 let blinkTimer = null;
 function blinkTitle(on) {
   clearInterval(blinkTimer); blinkTimer = null;
-  document.title = 'Pokerabend';
+  document.title = 'Spieleabend';
   if (!on) return;
   let k = 0;
-  blinkTimer = setInterval(() => { document.title = k++ % 2 ? 'Pokerabend' : '● Du bist dran!'; }, 900);
+  blinkTimer = setInterval(() => { document.title = k++ % 2 ? 'Spieleabend' : '● Du bist dran – Spieleabend'; }, 900);
 }
 function notifyTurn() {
   if (!prefs.notify || !('Notification' in window) || Notification.permission !== 'granted') return;
   try {
-    const n = new Notification('Pokerabend', { body: 'Du bist dran!', tag: 'poker-turn', silent: true });
+    const n = new Notification('Spieleabend', { body: 'Du bist dran!', tag: 'poker-turn', silent: true });
     n.onclick = () => { window.focus(); n.close(); };
   } catch { /* manche Handys erlauben das nur mit Service Worker */ }
 }
@@ -1018,7 +1022,8 @@ function renderPanel(force = false) {
         <div class="fact"><small>Gespielte Hände</small>${st.hands}</div>
         ${st.biggestPot ? `<div class="fact"><small>Größter Pot</small>${amt(st.biggestPot.amount)} – ${esc(st.biggestPot.name)}${st.biggestPot.hand ? ` mit ${esc(st.biggestPot.hand)}` : ''}</div>` : ''}
         ${st.bestHand ? `<div class="fact"><small>Beste Hand des Abends</small>${esc(st.bestHand.hand)} – ${esc(st.bestHand.name)}</div>` : ''}
-      </div>`;
+      </div>
+      <button class="btn btn-sm btn-ghost" data-leaderboard="poker">Bestenliste aller Abende</button>`;
   } else if (panel === 'me') {
     const t = (k, label, sub = '') => `<label class="toggle"><span>${label}${sub ? `<small>${sub}</small>` : ''}</span><input type="checkbox" role="switch" data-pref="${k}" ${prefs[k] ? 'checked' : ''}></label>`;
     body.innerHTML = `<div>
@@ -1061,7 +1066,8 @@ function renderPanel(force = false) {
         <button class="btn btn-outline-red" data-new-game ${S.hand && !S.hand.done ? 'disabled title="Geht nur zwischen zwei Händen"' : ''}>Neues Spiel starten</button>
         <p class="hint" style="margin:0">Alle wieder auf Startchips, Blinds auf Level 1, Nachkäufe auf 0. Spieler und Plätze bleiben, der alte Abendstand steht im Verlauf.</p>
       </div>
-      <p class="hint" style="margin:0">„Sofort anhalten“ friert alles ein, auch den Zug-Timer. „Pause nach dieser Hand“ lässt die laufende Hand zu Ende spielen.</p>`;
+      <p class="hint" style="margin:0">„Sofort anhalten“ friert alles ein, auch den Zug-Timer. „Pause nach dieser Hand“ lässt die laufende Hand zu Ende spielen.</p>
+      ${switchGameHTML('poker', !!(S.hand && !S.hand.done))}`;
     } else if (hostTab === 'regeln') {
       inner = `<div class="notice" role="note">Änderungen gelten ab der nächsten Hand.</div>
         ${group('blinds', 'Blinds &amp; Chips', `<div class="host-grid">
@@ -1108,6 +1114,33 @@ function renderPanel(force = false) {
   }
 }
 
+// Kurzregeln („?“ am Tisch) mit den Hausregeln, die an diesem Tisch gelten
+function pokerHelp() {
+  const s = S?.settings || {};
+  const b = S?.blinds || { sb: s.smallBlind, bb: s.bigBlind, mode: 'off' };
+  const rebuy = s.rebuy === 'unlimited' ? 'unbegrenzt' : s.rebuy === 'off' ? 'aus' : `höchstens ${s.rebuy}×`;
+  const onOff = (v) => (v ? 'an' : 'aus');
+  showHelp({
+    title: "Texas Hold'em – kurz erklärt",
+    short: [
+      'Jeder bekommt 2 verdeckte Karten. In die Mitte kommen nach und nach 5 offene: Flop (3), Turn, River.',
+      'Die beste Hand aus 5 der 7 Karten gewinnt – die Reihenfolge zeigt „Hände“ unten links.',
+      'Vor jeder neuen Karte wird gesetzt: Check (nichts), Call (mitgehen), Raise (erhöhen) oder Fold (aussteigen).',
+      'Small und Big Blind sind Pflichteinsätze und wandern jede Hand einen Platz weiter.',
+      'Wer All-in ist, spielt nur um den Teil des Pots, den er abdecken kann (Side Pots).',
+      'Steigen alle anderen aus, gewinnt der Letzte ohne Aufdecken.',
+    ],
+    house: [
+      `Blinds: <b>${amt(b.sb)} / ${amt(b.bb)}</b>${b.mode !== 'off' ? ` – steigen alle ${s.blindEvery} ${b.mode === 'hands' ? 'Hände' : 'Minuten'}` : ''}`,
+      'Pro Setzrunde höchstens ein Einsatz und 3 Erhöhungen',
+      `Nachkaufen: <b>${rebuy}</b> (${amt(s.startStack)} Chips)`,
+      `Zeit pro Zug: <b>${s.turnTime ? s.turnTime + ' s' : 'unbegrenzt'}</b>`,
+      `Gewinnchancen: <b>${{ off: 'aus', own: 'nur eigene', after: 'nach der Hand' }[s.oddsMode] || 'nur eigene'}</b>`,
+      `Chips verschenken: <b>${onOff(s.gifts)}</b> · Anstupsen: <b>${onOff(s.nudge)}</b>`,
+    ],
+  });
+}
+
 // ---------- Eingaben ----------
 function newId() { return Date.now().toString(36) + (actionSeq++).toString(36); }
 
@@ -1141,7 +1174,8 @@ document.addEventListener('click', async (e) => {
   if (openMenu && !e.target.closest('.menu, [data-menu]')) closeMenu();
   const t = e.target.closest('button, [data-pref], [data-set]');
   if (!t) return;
-  if (t.dataset.act) doAction(t.dataset.act);
+  if (t.dataset.help !== undefined) pokerHelp();
+  else if (t.dataset.act) doAction(t.dataset.act);
   else if (t.dataset.pre) send('preAction', { type: S.you?.pre === t.dataset.pre ? null : t.dataset.pre });
   else if (t.dataset.logcat) {
     const k = t.dataset.logcat;

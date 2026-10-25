@@ -1,13 +1,14 @@
 {
   "name": "pokerabend",
   "version": "1.0.0",
-  "description": "Texas Hold'em für die Freundesgruppe – Multiplayer im Browser",
+  "description": "Spieleabend für die Freundesgruppe – acht Multiplayer-Spiele im Browser",
   "type": "module",
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
-    "test": "node --test \"test/*.test.js\""
+    "test": "node --test \"test/*.test.js\"",
+    "test:ui": "playwright test"
   },
   "engines": {
     "node": ">=20"
@@ -19,6 +20,7 @@
     "socket.io": "^4.8.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "socket.io-client": "^4.8.4"
   }
 }

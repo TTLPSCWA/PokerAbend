@@ -408,6 +408,8 @@ export class Room extends BaseRoom {
     this.cleanupAfterHand();
     this.applyBlinds();
     if (this.table.eligibleSeats().length < 2) return false;
+    // Namen bleiben für die Wertung erhalten, auch wenn ein Spieler beim letzten Fold entfernt wird.
+    this.handNames = Object.fromEntries(this.table.eligibleSeats().map((seat) => [seat, this.table.seats[seat].name]));
     this.table.startHand();
     this.flushEvents();
     this.afterChange();
@@ -537,6 +539,7 @@ export class Room extends BaseRoom {
         h.counted = true;
         this.blind.hands++;
         this.recordStats(h);
+        this.reportResult(h);
         if (this.settings.oddsMode === 'after') this.logAfterOdds(h);
         this.onChange('handDone');
       }
@@ -607,6 +610,18 @@ export class Room extends BaseRoom {
     const label = { preflop: 'Pre-Flop', flop: 'Flop', turn: 'Turn' };
     const name = (s) => this.table.seats[s]?.name ?? '?';
     this.say('Chancen – ' + rows.map((r) => `${label[r.street]}: ${Object.entries(r.odds).map(([s, p]) => `${name(s)} ${String(p).replace('.', ',')} %`).join(', ')}`).join(' · '), 'info', 'win');
+  }
+
+  // Ergebnis der Hand an die Plattform (Bestenliste): jeder, der Karten hatte
+  reportResult(h) {
+    const winners = new Set(h.result.pots.flatMap((p) => p.winners));
+    const entries = h.seats.map((seat) => ({
+      name: this.handNames[seat],
+      win: winners.has(seat),
+      // total enthält nur die tatsächlichen Einsätze, nicht gecallte Überschüsse sind bereits erstattet.
+      points: h.result.pots.reduce((sum, pot) => sum + (pot.payouts[seat] || 0), 0) - h.players[seat].total,
+    })).filter((e) => e.name);
+    this.onChange('result', { entries });
   }
 
   recordStats(h) {

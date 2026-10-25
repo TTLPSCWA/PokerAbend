@@ -13,6 +13,7 @@ import {
   securityHeaders, sameOrigin, clientIp, safeNext,
 } from './security.js';
 import { createCodes, normalize } from './codes.js';
+import { createLeaderboard } from './leaderboard.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -88,7 +89,8 @@ app.post('/logout', (req, res) => {
 });
 
 // Alles ab hier nur angemeldet. Offen bleibt nur, was die Login-Seite braucht.
-const OPEN = new Set(['/style.css', '/fonts/bricolage.woff2']);
+// Manifest und Icons auch ohne Login – sonst kann das Handy die Seite nicht als App ablegen (sie verraten nichts)
+const OPEN = new Set(['/style.css', '/fonts/bricolage.woff2', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png']);
 const isPage = (req) => req.method === 'GET' && (req.path === '/' || req.path === '/index.html');
 app.use((req, res, next) => {
   if (MODE === 'open' || OPEN.has(req.path)) return next();
@@ -105,6 +107,21 @@ app.use((req, res, next) => {
 app.get('/me', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.json({ mode: MODE, games: gameList() });
+});
+// Bestenliste über alle Abende: ?game=maumau&period=all|2026-10 (nur angemeldet)
+const GAME_INFO = Object.fromEntries(Object.values(GAMES).map((g) => {
+  const r = g.create('INFO', {}, () => {}); const info = { id: g.id, name: g.name, lowWins: !!r.opts?.lowWins, scoreLabel: r.opts?.scoreLabel || 'Chips' }; r.dispose?.();
+  return [g.id, info];
+}));
+app.get('/api/leaderboard', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  const game = GAME_INFO[req.query.game] ? String(req.query.game) : DEFAULT_GAME;
+  const months = leaderboard.months();
+  const period = req.query.period === 'all' || months.includes(req.query.period) ? String(req.query.period) : 'all';
+  const info = GAME_INFO[game];
+  // Sortiert nach Siegen, dann Siegquote, dann Punkten (je nach Spiel wenig oder viel besser)
+  const rows = leaderboard.table(game, period).sort((a, b) => b.wins - a.wins || b.wins / b.played - a.wins / a.played || (info.lowWins ? a.points / a.played - b.points / b.played : b.points - a.points));
+  res.json({ game, period, months, current: leaderboard.currentMonth(), games: Object.values(GAME_INFO), rows });
 });
 app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
 app.use((_req, res) => res.status(404).send('Nicht gefunden'));
@@ -126,6 +143,7 @@ const io = new Server(http, {
 /** @type {Map<string, import('./base-room.js').BaseRoom>} */
 const rooms = new Map();
 const codes = createCodes(); // gemeinsam für alle Spiele
+const leaderboard = createLeaderboard(DATA_DIR); // Bestenliste über alle Abende
 
 // ---------- Speichern ----------
 // Verlauf pro Tisch in eigener Datei – der Spielstand bleibt klein, der Verlauf wird nur bei Änderungen geschrieben
@@ -149,6 +167,7 @@ function save() {
       writeFileSync(SAVE_FILE + '.tmp', JSON.stringify(data));
       renameSync(SAVE_FILE + '.tmp', SAVE_FILE);
       for (const r of rooms.values()) saveHistory(r);
+      leaderboard.save();
     } catch (e) { console.error('Speichern fehlgeschlagen:', e.message); }
   }, 300);
 }
@@ -175,6 +194,8 @@ function load() {
 
 // Meldungen eines Raums: mit data.to nur an diesen Spieler (z. B. Anstupsen), sonst alle neu zeichnen
 function onRoomChange(room, kind, data) {
+  // Ergebnis einer Partie: in die Bestenliste (gespeichert wird mit dem nächsten Speichern)
+  if (kind === 'result') { leaderboard.record(room.game, data?.entries); save(); return; }
   if (data?.to) {
     const p = room.players.get(data.to);
     const { to, ...rest } = data;
@@ -186,10 +207,37 @@ function onRoomChange(room, kind, data) {
 }
 const snapshotOf = (r) => ({ ...r.snapshot(), game: r.game, code: r.code });
 
+// ---------- Spiel wechseln (gleicher Raum, gleicher Code, alle bleiben drin) ----------
+// Gleiche Spieler-IDs und Tokens, damit Reconnect weiter klappt. Wer mitgespielt hat, sitzt wieder.
+function switchRoom(old, game) {
+  const before = GAMES[old.game]?.name || old.game;
+  // Abendstand des alten Spiels als eine Zeile in den Verlauf (Poker: Plus/Minus, Rundenspiele: Punkte und Siege)
+  const summary = old.standingsList().map((s) => ('net' in s ? `${s.name} ${s.net > 0 ? '+' : ''}${s.net}` : `${s.name} ${s.score} (${s.wins} gewonnen)`)).join(', ');
+  const playing = old.seats ? [...old.seats] : [...old.players.values()].filter((p) => p.seat !== null && !p.kicked).sort((a, b) => a.seat - b.seat).map((p) => p.id);
+  const next = game.create(old.code, {}, (kind, data) => onRoomChange(next, kind, data));
+  next.game = game.id;
+  next.loadHistory(old.log);
+  for (const op of old.players.values()) {
+    if (op.kicked) continue;
+    next.players.set(op.id, { ...next.playerFields(op), id: op.id, token: op.token, name: op.name, avatar: op.avatar,
+      connected: op.connected, socketId: op.socketId, offlineSince: op.offlineSince });
+  }
+  next.hostId = next.players.has(old.hostId) ? old.hostId : [...next.players.keys()][0];
+  next.say(`Jetzt: ${game.name} (vorher ${before}${summary ? ` – ${summary}` : ''})`, 'summary');
+  let seat = 0;
+  for (const id of playing) {
+    try { if (next.table) next.sit(id, seat++); else next.sit(id); } catch { /* Tisch voll: schaut zu */ }
+  }
+  old.dispose();
+  rooms.set(old.code, next);
+  codes.retag(old.code, game.id);
+  return next;
+}
+
 // ---------- Hilfen ----------
 function broadcast(room) {
   for (const p of room.players.values()) {
-    if (p.socketId) io.to(p.socketId).emit('state', room.view(p.id));
+    if (p.socketId) io.to(p.socketId).emit('state', { ...room.view(p.id), game: room.game }); // Spielart, damit der Browser bei einem Wechsel umschaltet
   }
 }
 
@@ -297,6 +345,16 @@ io.on('connection', (socket) => {
     });
   }
 
+  // Für alle Spiele gleich: Spiel wechseln (nur zwischen zwei Runden)
+  on('switchGame', ({ game: gameId }, room, p) => {
+    room.requireHost(p.id);
+    const game = GAMES[String(gameId || '')];
+    if (!game) throw new Error('Dieses Spiel gibt es nicht');
+    if (game.id === room.game) throw new Error('Das wird hier schon gespielt');
+    if (room.busy) throw new Error('Wechseln geht erst, wenn die Runde vorbei ist');
+    return { room: switchRoom(room, game) };
+  });
+
   // Für alle Spiele gleich: Host-Rechte
   on('kick', ({ id }, room, p) => { room.requireHost(p.id); if (id === p.id) throw new Error('Du kannst dich nicht selbst entfernen'); const target = room.players.get(id); room.remove(id); if (target?.socketId && !room.players.has(id)) io.to(target.socketId).emit('kicked'); });
   on('makeHost', ({ id }, room, p) => { room.requireHost(p.id); const t = room.players.get(id); if (!t) throw new Error('Spieler nicht gefunden'); room.hostId = id; room.say(`${t.name} ist jetzt Host`); });
@@ -360,14 +418,14 @@ process.on('uncaughtException', (e) => console.error('Unerwarteter Fehler:', e))
 process.on('unhandledRejection', (e) => console.error('Unerwarteter Fehler:', e));
 
 // Ein Spiel darf keine Plattform-Ereignisse überschreiben
-const RESERVED = ['create', 'join', 'kick', 'makeHost', 'history', 'react', 'disconnect'];
+const RESERVED = ['create', 'join', 'kick', 'makeHost', 'history', 'react', 'switchGame', 'disconnect'];
 for (const g of Object.values(GAMES)) {
   const clash = Object.keys(g.events).filter((e) => RESERVED.includes(e));
   if (clash.length) throw new Error(`Spiel ${g.id}: Ereignisse ${clash.join(', ')} gehören der Plattform`);
 }
 
 load();
-http.listen(PORT, () => console.log(`Pokerabend läuft auf http://localhost:${PORT}`));
+http.listen(PORT, () => console.log(`Spieleabend läuft auf http://localhost:${PORT}`));
 
 for (const sig of ['SIGINT', 'SIGTERM']) {
   process.on(sig, () => {
@@ -376,6 +434,7 @@ for (const sig of ['SIGINT', 'SIGTERM']) {
       mkdirSync(DATA_DIR, { recursive: true });
       writeFileSync(SAVE_FILE, JSON.stringify([...rooms.values()].map((r) => r.lastSnapshot).filter(Boolean)));
       for (const r of rooms.values()) saveHistory(r);
+      leaderboard.save();
     } catch { /* egal */ }
     process.exit(0);
   });

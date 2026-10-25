@@ -8,9 +8,26 @@
   const kit = kitGame({
     id: 'maexchen',
     name: 'Mäxchen',
-    settings: [{ key: 'lives', label: 'Leben pro Spieler', min: 1, max: 10 }],
+    short: [
+      "Würfle verdeckt mit zwei Würfeln – nur du siehst den Wurf.",
+      "Die höhere Zahl steht vorne: 5 und 3 = 53. Pasch schlägt jede Zahl, <b>Mäxchen</b> (2 und 1) schlägt alles.",
+      "Sag einen Wert an, der höher ist als der letzte – ehrlich oder geblufft.",
+      "Der Nächste glaubt (und würfelt selbst) oder zweifelt an.",
+      "Aufgedeckt: gelogen → der Ansager verliert ein Leben, sonst der Zweifler.",
+      "Ohne Leben ist man raus, der Letzte gewinnt.",
+    ],
+    house: () => ['Auf Mäxchen: anzweifeln oder gelten lassen (kostet 1 Leben)'],
     playerInfo: (p, S) => (p.out || (S.phase !== 'lobby' && !p.inRound && p.seated && !p.lives) ? 'raus' : `<span class="lives" aria-hidden="true">${'♥'.repeat(p.lives || 0)}</span><span class="sr-only">${p.lives} Leben</span>`),
     onState(S, prev) { if (!S.g?.cup || prev?.g?.cup) return; choice = null; },
+    hint(S, myTurn) {
+      const g = S.g;
+      const name = (id) => esc(S.players.find((p) => p.id === id)?.name ?? '?');
+      if (!myTurn) return g.last ? `${name(S.turnId)} ist dran: glauben oder anzweifeln?` : `${name(S.turnId)} ist dran`;
+      if (g.cup) return g.last ? `Sag mehr als ${vName(g.last.value)} an – ehrlich oder geblufft` : 'Sag deinen Wurf an – ehrlich oder geblufft';
+      if (g.last?.value === MAEXCHEN) return `${name(g.last.by)} sagt Mäxchen! Anzweifeln oder gelten lassen`;
+      if (g.last) return `${name(g.last.by)} sagt ${vName(g.last.value)} – glauben und würfeln oder anzweifeln`;
+      return 'Würfle und sag an';
+    },
     main(S) {
       const g = S.g;
       const name = (id) => esc(S.players.find((p) => p.id === id)?.name ?? '?');
@@ -28,7 +45,7 @@
     },
     dock(S, myTurn) {
       const g = S.g;
-      if (!myTurn) return '<span class="waiting">Warte, bis du dran bist</span>';
+      if (!myTurn) return '';
       if (g.cup) {
         const min = g.last ? g.values.indexOf(g.last.value) + 1 : 0;
         const opts = g.values.slice(min);
@@ -36,8 +53,18 @@
         return `<label class="field kg-say"><span>Ansage</span><select data-g="value">${opts.map((v) => `<option value="${v}" ${v === choice ? 'selected' : ''}>${vName(v)}</option>`).join('')}</select></label>
           <button class="btn btn-brass" data-g="announce">Ansagen</button>`;
       }
-      if (g.last?.value === MAEXCHEN) return '<span class="waiting">Mäxchen!</span><button class="btn btn-outline-red" data-g="doubt">Anzweifeln</button><button class="btn" data-g="accept">Gelten lassen (1 Leben)</button>';
-      if (g.last) return '<button class="btn btn-outline-red" data-g="doubt">Anzweifeln</button><button class="btn btn-brass" data-g="roll">Glauben und würfeln</button>';
+      if (g.last?.value === MAEXCHEN) return '<button class="btn btn-outline-red" data-g="doubt">Anzweifeln</button><button class="btn" data-g="accept">Gelten lassen (1 Leben)</button>';
+      if (g.last) {
+        // Mit Option: Becher ungesehen weitergeben und höher ansagen
+        let blind = '';
+        if (S.settings.blindPass) {
+          const opts = g.values.slice(g.values.indexOf(g.last.value) + 1);
+          if (choice === null || !opts.includes(choice)) choice = opts[0];
+          blind = `<label class="field kg-say"><span>Ansage</span><select data-g="value">${opts.map((v) => `<option value="${v}" ${v === choice ? 'selected' : ''}>${vName(v)}</option>`).join('')}</select></label>
+            <button class="btn" data-g="blind">Ungesehen weitergeben</button>`;
+        }
+        return `<button class="btn btn-outline-red" data-g="doubt">Anzweifeln</button><button class="btn btn-brass" data-g="roll">Glauben und würfeln</button>${blind}`;
+      }
       return '<button class="btn btn-brass" data-g="roll">Würfeln</button>';
     },
     onChange(t) { if (t.dataset.g === 'value') choice = Number(t.value); },
@@ -47,6 +74,7 @@
       else if (g === 'announce') send('announce', { value: choice });
       else if (g === 'doubt') send('doubt');
       else if (g === 'accept') send('accept');
+      else if (g === 'blind') send('blind', { value: choice });
     },
     rules: `<p>Zwei Würfel unter dem Becher. Die höhere Zahl steht vorne: 5 und 3 = <b>53</b>.</p>
       <p><b>Reihenfolge:</b> 31 < 32 < 41 < … < 65 < Pasch 1 < … < Pasch 6 < <b>Mäxchen</b> (2 und 1).</p>

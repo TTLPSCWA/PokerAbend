@@ -25,6 +25,8 @@ export function createCodes({ random = randomInt } = {}) {
       return true;
     },
     release(code) { used.delete(normalize(code)); },
+    // Raum wechselt das Spiel, der Code bleibt
+    retag(code, game) { if (used.has(normalize(code))) used.set(normalize(code), game); },
     has(code) { return used.has(normalize(code)); },
     gameOf(code) { return used.get(normalize(code)) ?? null; },
     get size() { return used.size; },

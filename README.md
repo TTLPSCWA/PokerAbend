@@ -1,7 +1,19 @@
-# PokerAbend
-PokerWebsite
+# Spieleabend
 
-Texas Hold'em No-Limit für die Freundesgruppe, im Browser und online spielbar. Der Server ist Geber und Schiedsrichter: Er mischt, teilt aus, prüft jede Aktion, bildet Main und Side Pots und zahlt automatisch aus.
+Spielesammlung für die Freundesgruppe, im Browser und online spielbar: Texas Hold'em, Mau-Mau, UNO, Mäxchen, Schocken, Mensch ärgere Dich nicht, Phase 10 und Skip-Bo. Der Server ist Geber und Schiedsrichter: Er mischt, teilt aus, würfelt, prüft jeden Zug und rechnet ab.
+
+> **Name:** Sichtbar heißt die Seite „Spieleabend“. Technisch bleibt „pokerabend“ – Repo, Docker-Image `ghcr.io/ttlpscwa/pokerabend`, Container, Volume `poker-data`, Paketname, Cookie `pa_auth` und die Browser-Speicherschlüssel `poker:…`. Sonst brechen Deployment und laufende Sitzungen.
+
+Die alten Namen bleiben an diesen Stellen absichtlich erhalten:
+
+| Stelle | Unverändert | Grund |
+| --- | --- | --- |
+| `package.json`, `package-lock.json` | Paketname `pokerabend` | Bestehende Paketidentität |
+| `docker-compose.yml`, `.env.example`, `.github/workflows/docker.yml` | `pokerabend:latest` bzw. `ghcr.io/ttlpscwa/pokerabend:latest` | Bestehendes Deployment und Image |
+| Docker-Dateien und diese README | Kommentare, Image-Beispiele, Repo-Link `TTLPSCWA/PokerAbend` | Technische Referenzen statt sichtbarer Markenname |
+| Compose-Konfiguration | Dienst `poker`, Volume `poker-data` | Bestehende Container und gespeicherte Daten |
+| `server/security.js`, `public/core.js` | Cookie `pa_auth`, Browser-Schlüssel `poker:…` | Login und Wiederverbinden bleiben gültig |
+| `games/`, `public/games/`, gespeicherte Räume | IDs `farbenchaos`, `huetchen`, `zehnetappen`, `stapelrennen` | Alte Links, Module und Spielstände bleiben verwendbar |
 
 ## Schnellstart
 
@@ -55,20 +67,55 @@ Tische und Chipstände liegen im Docker-Volume `poker-data` und überleben Neust
 | --- | --- | --- |
 | Texas Hold'em | 2–9 | No Limit mit Spielgeld, alles unten beschrieben |
 | Mau-Mau | 2–8 | 7 zieht 2 (stapelbar), 8 setzt aus, Bube wünscht (nicht auf Bube). „Mau!“ automatisch. Wertung: Augen der Restkarten, wenig ist gut |
-| Farbenchaos (Uno-ähnlich) | 2–8 | 108 Karten, Aussetzen, Richtungswechsel, +2, Farbwahl (+4). Kein Stapeln. Gewinner kassiert die Punkte der anderen |
+| UNO | 2–8 | 108 Karten, Aussetzen, Richtungswechsel, +2, Farbwahl (+4). Kein Stapeln. Gewinner kassiert die Punkte der anderen |
 | Mäxchen | 2–10 | Verdeckt würfeln, höher ansagen, anzweifeln. Mäxchen kostet 2 Leben. Der Letzte mit Leben gewinnt |
 | Schocken | 2–8 | Bis zu 3 Würfe, Schock out / Schock / General / Straße / Zahl, 13 Deckel. Wer alle Deckel hat, verliert die Hälfte |
-| Hütchenrennen (Mensch-ärgere-dich-ähnlich) | 2–4 | Raus mit der 6, drei Versuche, schlagen, Ziel passend, nicht überspringen |
-| Zehn Etappen (Phase-10-ähnlich) | 2–6 | Zehn Etappen nacheinander, Joker, Aussetzen, Anlegen. Wer zuerst Etappe 10 schafft, gewinnt |
-| Stapelrennen (Skip-Bo-ähnlich) | 2–6 | Reihen 1–12 bauen, Joker, 4 Ablagen. Wer seinen Stapel zuerst los ist, gewinnt (25 + 5 je Restkarte der anderen) |
+| Mensch ärgere Dich nicht | 2–4 | Raus mit der 6, drei Versuche, schlagen, Ziel passend, nicht überspringen |
+| Phase 10 | 2–6 | Zehn Phasen nacheinander, Joker, Aussetzen, Anlegen. Wer zuerst Phase 10 schafft, gewinnt |
+| Skip-Bo | 2–6 | Reihen 1–12 bauen, Joker, 4 Ablagen. Wer seinen Stapel zuerst los ist, gewinnt (25 + 5 je Restkarte der anderen) |
 
 Die genauen Regeln stehen im Spiel unter „Regeln“ und oben in `games/<spiel>/room.js`. Die Rundenspiele haben einen gemeinsamen Rahmen: Mitspielen/Zuschauen, der Host startet jede Runde, Punkte und Siege über den Abend unter „Stand“, Verlauf und Host-Menü.
+
+### Regeln anpassen
+
+Der Host stellt die Regeln am Tisch ein (Host-Menü, nur zwischen den Runden). In Klammern der Standard – das sind unsere üblichen Hausregeln. Alle sehen die aktiven Regeln unter „?“ am Tisch. Die Optionen stehen im Code als static OPTIONS in games/<spiel>/room.js.
+
+Bei Mau-Mau und Skip-Bo prüft der Server vor dem Start, ob die Karten für alle Mitspieler reichen. Falls nicht, nennt die Fehlermeldung die maximal mögliche Kartenanzahl; der Host kann die Einstellung ändern und erneut starten. Bei Skip-Bo werden zusätzlich fünf Handkarten je Spieler berücksichtigt.
+
+Gehen bei Skip-Bo während der Runde die Nachziehkarten aus, darf ein Spieler ohne Handkarten ohne Abwerfen weitergeben. Kann niemand mehr ziehen oder legen, endet die Runde unentschieden und ohne Punkte.
+
+| Spiel | Optionen (Standard) |
+| --- | --- |
+| Mau-Mau | Karten pro Spieler (5)<br>7: der Nächste zieht 2 (an)<br>7 auf 7 legen (dann 4, 6 …) (an)<br>8: der Nächste setzt aus (an)<br>Bube: Farbe wünschen (an)<br>Bube auf Bube erlaubt (aus)<br>Ass: nochmal dran (aus)<br>„Mau“ selbst sagen (vergessen = 1 Strafkarte) (aus)<br>Erste Karte wirkt (7 und 8) (aus) |
+| UNO | Karten pro Spieler (7)<br>+2 und +4 stapeln (aus)<br>Ziehen, bis eine Karte passt (aus)<br>„UNO“ selbst sagen (vergessen = 2 Strafkarten) (aus)<br>+4 nur, wenn man die Farbe nicht hat (aus)<br>Startkarte wirkt (Aussetzen, Richtung, +2, Farbwahl) (aus) |
+| Mäxchen | Leben pro Spieler (3)<br>Mäxchen kostet 2 Leben (an)<br>Ungesehen weitergeben erlaubt (aus) |
+| Schocken | Zwei Sechsen zu einer Eins drehen (aus)<br>Ganzes Spiel: 2 Hälften und Finale (aus) |
+| Mensch ärgere Dich nicht | Schlagzwang (aus)<br>Nach einer 6 nochmal würfeln (an)<br>Drei Versuche, wenn keine Figur draußen ist (an)<br>Mit einer 6 muss man raus (und das Startfeld räumen) (an) |
+| Phase 10 | Aussetzen: Spieler frei wählen (sonst setzt der Nächste aus) (an)<br>Phase genau in der verlangten Größe auslegen (an)<br>Aussetzen als erste Ablage: der Erste setzt aus (aus) |
+| Skip-Bo | Karten im eigenen Stapel (offiziell 30, ab 5 Spielern 20) (20) |
+
+### Spiel wechseln, Nochmal
+
+Nach einer Runde kann der Host im Host-Menü unter „Spiel wechseln“ ein anderes Spiel wählen: gleicher Raum, gleicher Code, alle bleiben drin, wer mitgespielt hat, sitzt wieder. Der bisherige Stand kommt als eine Zeile in den Verlauf (Poker-Chips nimmt man nicht mit). Die Browser aller Leute laden kurz neu und landen im neuen Spiel. „Nochmal“ startet bei den Rundenspielen die nächste Runde desselben Spiels.
+
+### Bestenliste über alle Abende
+
+Auf der Startseite und unter „Stand“ in jedem Spiel: pro Spiel gespielte Partien, Siege (mit Quote) und Punkte – über alle Abende oder für einen Monat. Wiedererkannt wird man am Namen (Groß/Klein egal). Eine Partie ist beim Poker eine Hand (gezählt werden gewonnene/verlorene Chips), sonst eine Runde. Gespeichert in `data/leaderboard.json` im Daten-Volume.
+
+### Als App aufs Handy
+
+Die Seite lässt sich auf den Homescreen legen und startet dann ohne Browserleiste:
+
+- **iPhone (Safari):** Teilen → „Zum Home-Bildschirm“.
+- **Android (Chrome):** Menü ⋮ → „App installieren“ bzw. „Zum Startbildschirm hinzufügen“.
+
+Dafür gibt es `public/manifest.webmanifest`, Icons in `public/icons/` und einen kleinen Service Worker (`public/sw.js`), der nichts zwischenspeichert – gespielt wird immer live. Manifest und Icons sind auch ohne Passwort abrufbar, alles andere nicht.
 
 ## Was V1.0 kann
 
 | Bereich | Funktionen |
 | --- | --- |
-| Lobby | Tisch erstellen, Einladungslink mit Code, Name + Avatar, keine Anmeldung |
+| Lobby | Spiel wählen, Tisch erstellen, Einladungslink mit Code, Name + Avatar; Gruppenpasswort statt Benutzerkonto |
 | Spiel | Automatisches Mischen (Krypto-Zufall) und Austeilen, Blinds, Button wandert, Heads-up-Regeln, Big-Blind-Option |
 | Aktionen | Fold, Check, Call, Bet, Raise, All-in, Slider + ½ Pot / ¾ Pot / Pot / All-in, Tastenkürzel F / C / R, Controller (A / B / X, LB / RB, Start) |
 | Am Zug | „Du bist dran“ über der Aktionsleiste, große Restzeit (letzte 8 s rot), Ton, blinkender Tab-Titel, auf Wunsch Browser-Benachrichtigung |
@@ -85,6 +132,31 @@ Die genauen Regeln stehen im Spiel unter „Regeln“ und oben in `games/<spiel>
 | Verlauf | Ganzer Abend (die letzten 500 Hände, übersteht Neustarts), nach Händen gruppiert und einklappbar, neueste oben. Filter: Aktionen, Gewinne, Karten, System, Reaktionen; Suche nach Spielername. Liegt pro Tisch in `data/history-CODE.json` |
 | Extras | Gewinnmoment mit Chip-Regen und großem Betrag (stärker ab 50 BB oder Full House), Reaktionen (👍 😂 GG …), Abendstand mit Plus/Minus, größter Pot, beste Hand |
 | Handy | Eigene Hochformat-Ansicht mit großen Buttons |
+
+## Backups
+
+`scripts/backup.sh` sichert das Daten-Volume (Tische, Verläufe, Bestenliste, Schlüssel) als `spieleabend-JJJJ-MM-TT_HHMM.tar.gz` und löscht eigene Sicherungen, die älter als 14 Tage sind. Das Volume wird automatisch gefunden (Docker Compose nennt es z. B. `webseite_poker_poker-data`).
+
+Auf dem Server einmal einrichten:
+
+```bash
+chmod +x scripts/backup.sh
+sudo mkdir -p /var/backups/spieleabend
+scripts/backup.sh            # einmal von Hand testen
+crontab -e                   # und diese Zeile eintragen – täglich um 4:30 Uhr:
+30 4 * * * /pfad/zum/repo/scripts/backup.sh >> /var/log/spieleabend-backup.log 2>&1
+```
+
+Einstellbar über Umgebungsvariablen: `BACKUP_DIR` (Standard `/var/backups/spieleabend`), `KEEP_DAYS` (14), `VOLUME` (falls die Suche nicht passt).
+
+**Zurückspielen:** Container stoppen, Archiv ins Volume entpacken, Container starten:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml stop poker
+docker run --rm -v webseite_poker_poker-data:/data -v /var/backups/spieleabend:/backup alpine:3 \
+  sh -c "rm -rf /data/* && tar xzf /backup/spieleabend-2026-10-25_0430.tar.gz -C /data"
+docker compose -f docker-compose.yml -f docker-compose.prod.yml start poker
+```
 
 ## Zugangsschutz
 
@@ -119,6 +191,7 @@ server/            Plattform (für alle Spiele gleich)
   security.js        Passwort-Cookie, Rate-Limits, Header, Texte säubern
   env.js             liest die .env ein (ohne Zusatzpaket)
   login.html         Passwort-Seite
+  leaderboard.js     Bestenliste über alle Abende (data/leaderboard.json)
 games/             Spiele (Server-Teil)
   index.js           Liste aller Spiele
   poker/
@@ -128,7 +201,7 @@ games/             Spiele (Server-Teil)
     sebastian.js       Easter Egg „Waiting for Sebastian“
     engine/            Poker-Regeln ohne Netzwerk: cards.js (Deck, Bewertung, Chancen), table.js (Setzrunden, Pots)
   maumau/, farbenchaos/, maexchen/, schocken/, huetchen/, zehnetappen/, stapelrennen/
-                     je index.js (Beschreibung, Ereignisse) und room.js (Regeln); Farbenchaos erweitert Mau-Mau
+                     je index.js (Beschreibung, Ereignisse) und room.js (Regeln); UNO erweitert Mau-Mau
 public/            Browser
   index.html         Startseite mit Spielauswahl, Dialoge
   core.js            Startseite, Lobby, Verbindung, Dialoge, Hilfen – lädt das gewählte Spiel nach
@@ -136,6 +209,7 @@ public/            Browser
   games/poker/       poker.js (Tisch-Oberfläche) und poker.css
   games/kit.js       gemeinsamer Rahmen der Rundenspiele (Kopfzeile, Spielerleiste, Seitenleiste, Ablegespiel-Bedienung)
   games/<spiel>/     <spiel>.js und <spiel>.css – nur der eigene Tisch und die Aktionen
+scripts/           backup.sh – tägliche Sicherung des Daten-Volumes (siehe „Backups“)
 test/              node:test – Engine inkl. 100.000 Zufallshänden, Räume, Server, Sicherheit, Plattform
 ```
 
@@ -194,7 +268,7 @@ Beispiel Mau-Mau mit der ID `maumau` (nur Kleinbuchstaben, Ziffern und Bindestri
 
 ### Weitere Ideen
 
-Eigene Namen und eigenes Design – Uno, Skip-Bo, Phase 10 und Mensch ärgere Dich nicht sind geschützte Marken, deshalb heißen unsere Varianten anders. Mögliche nächste Spiele: Schwimmen/31, Blackjack mit unseren Chips, Würfelpoker mit Punkteblatt, Werwolf, Montagsmaler.
+Mögliche nächste Spiele: Schwimmen/31, Blackjack mit unseren Chips, Würfelpoker mit Punkteblatt, Werwolf, Montagsmaler.
 
 **Wichtig für die Fairness:** Der Browser bekommt nur seine eigenen Karten. Gegnerkarten verlassen den Server erst beim Showdown. Das prüft `test/server.test.js`. Das gilt für jedes Spiel: Was ein Spieler nicht sehen darf, gehört nicht in `view()`.
 
