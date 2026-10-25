@@ -97,8 +97,8 @@ const deckPrefHTML = () => `<label class="toggle"><span>Kartenblatt<small>Franz�
       </select></label>`;
 
   // Welcher Ton passt zu einer Aktion („legt Herz König“, „UNO!“, „würfelt 5“ …)? Wichtigeres zuerst.
-const ACT_SOUNDS = [[/^(UNO|Mau|31|Feuer)!/, 'call'], [/^klopft/, 'drum'], [/versenkt!$/, 'drum'], [/ Treffer$/, 'hit'], [/ Wasser$/, 'splash'], [/^Erwischt/, 'catch'], [/schlägt/, 'hit'], [/zweifelt/, 'drum'], [/^Phase d+ ✓/, 'done'],
-  [/setzt aus/, 'skip'], [/würfelt/, 'dice'], [/^(zieht|nimmt Ablage|erwischt)/, 'draw'], [/^(legt|wirft ab|ungesehen|tauscht)/, 'card']];
+const ACT_SOUNDS = [[/^(UNO|Mau|31|Feuer|Kniffel)!/, 'call'], [/^klopft/, 'drum'], [/versenkt!$/, 'drum'], [/^Blackjack!/, 'call'], [/über 21/, 'end'], [/ Treffer$/, 'hit'], [/ Wasser$/, 'splash'], [/^Erwischt/, 'catch'], [/schlägt/, 'hit'], [/zweifelt/, 'drum'], [/^Phase d+ ✓/, 'done'],
+  [/setzt aus/, 'skip'], [/würfelt/, 'dice'], [/^(zieht|nimmt Ablage|erwischt)/, 'draw'], [/^(legt|wirft ab|ungesehen|tauscht|Karte:|verdoppelt|teilt)/, 'card'], [/^(setzt d|versichert|kauft)/, 'chips']];
 function actSound(acts, prev) {
   const seen = Math.max(0, ...Object.values(prev || {}).map((a) => a.n));
   const fresh = Object.values(acts || {}).filter((a) => a.n > seen).map((a) => a.text);
@@ -315,7 +315,7 @@ function kitGame(def) {
     const rows = ids.map((id) => {
       const p = S.players.find((x) => x.id === id);
       const won = r.winners.includes(id);
-      return `<tr class="${won ? 'won' : ''}"><td><span class="mini-av">${avatarHTML(p)}</span> ${esc(p.name)}${id === S.you?.id ? ' <small>(du)</small>' : ''}${won ? ` <span class="kg-won">${ICON.crown} gewinnt</span>` : ''}</td>
+      return `<tr class="${won ? 'won' : ''}"><td><span class="mini-av">${avatarHTML(p)}</span> ${esc(p.name)}${id === S.you?.id ? ' <small>(du)</small>' : ''}${won ? ` <span class="kg-won">${ICON.crown} gewinnt</span>` : ''}${r.detail?.[id] ? `<small class="kg-detail">${esc(r.detail[id])}</small>` : ''}</td>
         <td class="num">${pts(id)}</td><td class="num">${p.score}</td></tr>`;
     }).join('');
     const host = S.you?.isHost;

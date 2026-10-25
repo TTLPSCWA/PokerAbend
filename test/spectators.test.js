@@ -24,6 +24,7 @@ for (const g of Object.values(GAMES)) {
     r.start(a);
     if (g.id === 'maexchen') r.throwDice(r.currentId); // ein verdeckter Wurf liegt unter dem Becher
     if (g.id === 'schiffe') for (const id of [a, b]) r.place(id, randomFleet(r.fleet(), false)); // Flotten stehen, es wird geschossen
+    if (g.id === 'blackjack') { r.bet(a, 10); r.bet(b, 10); } // Karten liegen, die zweite Dealerkarte ist verdeckt
     const v = r.view(z);
     assert.equal(v.you.playing, false);
     assert.equal(v.you.inRound, false);
@@ -38,6 +39,7 @@ for (const g of Object.values(GAMES)) {
       }
     }
     if (g.id === 'maexchen') assert.equal(v.g.cup, null);
+    if (g.id === 'blackjack' && r.phase === 'playing') assert.equal(v.g.dealer.cards[1], null, 'verdeckte Dealerkarte sichtbar');
     // Mitten in der Runde einsteigen: erst ab der nächsten Runde (bei Spielen für genau zwei erst, wenn ein Platz frei wird)
     if (r.opts.maxPlayers <= 2) {
       assert.throws(() => r.sit(z), /Mehr als 2/);

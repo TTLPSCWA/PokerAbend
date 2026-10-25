@@ -9,8 +9,10 @@ import zehnetappen from './zehnetappen/index.js';
 import stapelrennen from './stapelrennen/index.js';
 import schwimmen from './schwimmen/index.js';
 import schiffe from './schiffe/index.js';
+import blackjack from './blackjack/index.js';
+import kniffel from './kniffel/index.js';
 
-export const GAMES = Object.fromEntries([poker, maumau, farbenchaos, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, schiffe].map((g) => [g.id, g]));
+export const GAMES = Object.fromEntries([poker, maumau, farbenchaos, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, blackjack, kniffel, schiffe].map((g) => [g.id, g]));
 export const DEFAULT_GAME = 'poker'; // alte Spielstände ohne Spielart sind Poker
 
 // Was die Startseite über die Spiele wissen muss

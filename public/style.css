@@ -582,3 +582,6 @@ button.die { cursor: pointer; }
 #kg-clock { font-variant-numeric: tabular-nums; }
 #kg-clock.mine { color: var(--gold-text); font-weight: 700; }
 #kg-clock.urgent { color: #FF8A80; font-weight: 800; }
+
+/* Ergebnisfenster: Einzelheiten je Spieler (z. B. Blackjack: „Blackjack! +37 · Push“) */
+.kg-detail { display: block; color: var(--text-2); font-size: 12px; margin-top: 2px; }

@@ -6,6 +6,7 @@ import { JOKER } from './stapelrennen/room.js';
 import { valueOf } from './maexchen/room.js';
 import { handValue } from './schwimmen/room.js';
 import { randomFleet, around, SIZE } from './schiffe/room.js';
+import { total as bjTotal } from './blackjack/room.js';
 
 const one = (list, rng) => list[Math.floor(rng() * list.length)];
 
@@ -154,4 +155,37 @@ function schiffe(room, id, rng) {
   return room.shoot(id, pool[Math.floor(rng() * pool.length)]);
 }
 
-export const BOTS = { maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, schiffe };
+// Blackjack: zufälliger Einsatz, einfache Strategie (bis 16 ziehen, bei 10/11 meist verdoppeln, manchmal teilen)
+function blackjack(room, id, rng) {
+  const min = room.settings.minBet;
+  if (room.step === 'bet') {
+    if (room.stacks[id] < min && room.canRebuy(id)) room.rebuy(id);
+    if (room.stacks[id] < min || rng() < 0.08) return room.sitOut(id);
+    const max = Math.min(room.settings.maxBet, room.stacks[id]);
+    return room.bet(id, min + Math.floor(rng() * (max - min + 1)));
+  }
+  if (room.step === 'insure') { const half = Math.floor(room.bets[id] / 2); return room.insure(id, half >= 1 && room.stacks[id] >= half && rng() < 0.3); }
+  const t = bjTotal(room.hands[id][room.handIdx].cards).total;
+  if (room.canSplit(id) && rng() < 0.5) return room.split(id);
+  if (room.canDouble(id) && (t === 10 || t === 11 || rng() < 0.05)) return room.double(id);
+  if (t < 17 && rng() < 0.9) return room.hit(id);
+  return room.stay(id);
+}
+
+// Kniffel: die häufigste Augenzahl liegen lassen, bis zu 3 Würfe; dann das Feld mit den meisten Punkten (sonst das unwichtigste streichen)
+function kniffel(room, id, rng) {
+  if (!room.rolls || (room.rolls < 3 && rng() < 0.75)) {
+    const c = [0, 0, 0, 0, 0, 0, 0]; room.dice.forEach((x) => c[x]++);
+    const best = c.indexOf(Math.max(...c.slice(1)));
+    const keep = room.rolls ? room.dice.map((x, i) => (x === best ? i : -1)).filter((i) => i >= 0) : [];
+    if (keep.length < 5) return room.throwDice(id, keep);
+  }
+  const opts = Object.entries(room.options(id));
+  opts.sort((a, b) => b[1] - a[1] || (rng() < 0.5 ? -1 : 1));
+  const [field, v] = opts[0];
+  if (v > 0) return room.score(id, field);
+  const order = ['ones', 'kniffel', 'twos', 'largeStraight', 'threes', 'fourKind', 'smallStraight', 'fullHouse', 'fours', 'threeKind', 'fives', 'sixes', 'chance'];
+  return room.score(id, order.find((f) => opts.some(([k]) => k === f)) || field);
+}
+
+export const BOTS = { maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, schiffe, blackjack, kniffel };

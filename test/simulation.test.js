@@ -7,6 +7,8 @@ import { GAMES } from '../games/index.js';
 import { BOTS } from '../games/bots.js';
 import { DECKEL } from '../games/schocken/room.js';
 import { TRACK, GOAL } from '../games/huetchen/room.js';
+import { SHOE_SIZE } from '../games/blackjack/room.js';
+import { FIELDS, totals } from '../games/kniffel/room.js';
 
 // Fester Zufall für die Züge (Würfel ebenfalls) – Mischen bleibt echter Zufall
 function seeded(seed) {
@@ -38,6 +40,24 @@ const INVARIANTS = {
     assert.equal(new Set(cards.map((c) => c.id)).size, 108, 'Karte doppelt');
   },
   stapelrennen: (r) => assert.equal(sum([r.deck, r.used, ...r.build, ...Object.values(r.stock), ...Object.values(r.hand), ...Object.values(r.piles).flat()]), 162, 'Karten'),
+  kniffel: (r) => {
+    for (const x of r.dice) assert.ok(x >= 0 && x <= 6, 'Würfel');
+    assert.ok(r.rolls >= 0 && r.rolls <= 3, 'mehr als 3 Würfe');
+    const filled = r.order.map((id) => r.filled(id));
+    assert.ok(Math.max(...filled) - Math.min(...filled) <= 1, 'ungleich viele Runden');
+    for (const id of r.order) {
+      for (const f of FIELDS) { const v = r.sheets[id][f]; assert.ok(v === null || (Number.isInteger(v) && v >= 0 && v <= 50), 'Feldwert ' + f + ' ' + v); }
+      assert.ok(totals(r.sheets[id], r.extra[id]).total <= 1575, 'zu viele Punkte');
+    }
+  },
+  blackjack: (r) => {
+    // Chips: Spieler + Bank + Tisch = alles Ausgegebene (Start + Nachkäufe) – nichts entsteht, nichts geht verloren
+    const sum = (o) => Object.values(o).reduce((a, b) => a + b, 0);
+    assert.equal(sum(r.stacks) + r.bank + r.onTable(), sum(r.bought), 'Chips');
+    for (const v of Object.values(r.stacks)) assert.ok(v >= 0, 'negativer Chipstand');
+    const inPlay = r.settled ? 0 : r.dealer.length + Object.values(r.hands).flat().reduce((a, h) => a + h.cards.length, 0);
+    assert.equal(r.shoe.length + r.used.length + inPlay, SHOE_SIZE, 'Karten');
+  },
   schiffe: (r) => {
     for (const id of r.order) {
       const foe = r.other(id);
@@ -70,6 +90,8 @@ const PLAN = {
   stapelrennen: { games: 200, players: [2, 6], settings: { stockSize: 10 }, maxSteps: 30000 },
   schwimmen: { games: 1000, players: [2, 9], settings: {}, maxSteps: 20000 },
   schiffe: { games: 1000, players: [2, 2], settings: {}, maxSteps: 400 },
+  kniffel: { games: 600, players: [1, 6], settings: {}, maxSteps: 400 },
+  blackjack: { games: 300, rounds: 20, players: [1, 7], settings: {}, maxSteps: 400 }, // 20 Hände je Tisch – Chips und Schlitten laufen weiter
 };
 
 for (const [id, plan] of Object.entries(PLAN)) {
@@ -88,10 +110,17 @@ for (const [id, plan] of Object.entries(PLAN)) {
         if (id === 'stapelrennen' && o.key === 'stockSize') max = Math.min(max, Math.floor(162 / count) - 5);
         return [o.key, o.min + Math.floor(rng() * (max - o.min + 1))];
       }));
+      // Blackjack: Mindesteinsatz höchstens ein Fünftel der Startchips und nicht über dem Höchsteinsatz (sonst spielt niemand)
+      if (id === 'blackjack') {
+        options.minBet = Math.max(1, Math.min(options.minBet, Math.floor(options.startStack / 5)));
+        options.maxBet = Math.max(options.maxBet, options.minBet);
+      }
       const room = GAMES[id].create('SIM' + n, { ...plan.settings, ...options }, () => {});
       if ('roll' in room) room.roll = () => Math.floor(rng() * 6) + 1;
       const ids = Array.from({ length: count }, (_, k) => { const p = room.addPlayer('Bot' + k, null); room.sit(p.id); return p.id; });
-      room.start(ids[0]);
+      for (let rd = 0; rd < (plan.rounds || 1); rd++) {
+      if (rd) { assert.equal(room.phase, 'over'); room.start(ids[0]); }
+      else room.start(ids[0]);
       let k = 0, same = 0, last = null;
       while (room.phase === 'playing') {
         const cur = room.currentId;
@@ -107,6 +136,7 @@ for (const [id, plan] of Object.entries(PLAN)) {
       assert.equal(room.phase, 'over');
       assert.ok(room.result?.text, 'Ergebnis fehlt');
       steps += k; rounds++; longest = Math.max(longest, k);
+      }
       room.dispose();
     }
     console.log(`  ${GAMES[id].name}: ${rounds} Runden, Ø ${Math.round(steps / rounds)} Züge, längste ${longest}`);

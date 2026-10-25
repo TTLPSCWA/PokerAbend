@@ -103,7 +103,8 @@ export class TurnRoom extends BaseRoom {
     if (this.phase !== 'playing') return; // das Spiel hat die Runde schon beendet
     this.order.splice(i, 1);
     if (i < this.turn) this.turn--;
-    if (this.order.length < 2) {
+    // Bleibt nur einer übrig, gewinnt er – außer bei Spielen, die man auch allein spielt (minPlayers 1): dann erst, wenn niemand mehr da ist
+    if (this.order.length < (this.opts.minPlayers <= 1 ? 1 : 2)) {
       const left = this.order[0];
       this.finishRound(left ? [left] : [], left ? `${this.name(left)} bleibt übrig und gewinnt die Runde` : 'Runde abgebrochen', left && this.opts.winPoints ? { [left]: this.opts.winPoints } : {});
       return;

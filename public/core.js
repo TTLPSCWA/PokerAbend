@@ -152,6 +152,7 @@ const SFX = {
   hit: () => { beep(420, 90, 0.07, 'triangle'); setTimeout(() => beep(210, 160, 0.07, 'triangle'), 90); }, // Schlagen
   skip: () => { beep(520, 90, 0.05); setTimeout(() => beep(390, 120, 0.05), 90); },          // Aussetzen
   drum: () => noise(0.22, 300, 0.6, 'lowpass'),                                               // Aufdecken
+  chips: () => { beep(2200, 40, 0.03, 'triangle'); setTimeout(() => beep(1800, 50, 0.025, 'triangle'), 50); }, // Chips setzen
   splash: () => { noise(0.28, 700, 0.5, 'lowpass'); setTimeout(() => noise(0.18, 1400, 0.15, 'bandpass'), 60); }, // Wasser (Schiffe versenken)
   done: () => [523, 659, 784].forEach((f, i) => setTimeout(() => beep(f, 140, 0.05), i * 90)), // Phase geschafft
   win: () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 200, 0.055), i * 110)),
