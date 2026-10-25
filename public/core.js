@@ -22,7 +22,7 @@ function savePrefs() { store.set('poker:prefs', prefs); current?.onPrefs?.(); }
 
 // ---------- Zustand ----------
 let session = null;                       // { code, token, game }
-let account = { mode: 'open', games: [] }; // aus /me: Passwort oder offen, und welche Spiele es gibt
+let account = { mode: 'open', games: [], plannedPartyGames: [] }; // aus /me: Passwort oder offen, und welche Spiele es gibt
 const socket = io({ transports: ['websocket', 'polling'] });
 
 // ---------- Hilfen ----------
@@ -163,7 +163,21 @@ const params = new URLSearchParams(location.search);
 let lobbyTab = params.get('t') ? 'join' : 'create';
 let avatar = store.get('poker:avatar', AVATARS[Math.floor(Math.random() * AVATARS.length)]);
 let chosenGame = store.get('poker:game', 'poker');
+const CATEGORIES = ['karten', 'wuerfel', 'brett', 'party'];
+let chosenCategory = 'karten';
+let partyFilter = 'alle';
 const gameInfo = () => account.games.find((g) => g.id === chosenGame) || account.games[0] || null;
+function activeCategory() {
+  return CATEGORIES.includes(chosenCategory) ? chosenCategory : 'karten';
+}
+function renderPartyGames() {
+  const games = (account.plannedPartyGames || []).filter((g) => partyFilter === 'alle' || g.subtype === partyFilter);
+  $('#party-list').innerHTML = games.length ? games.map((g) => `<article class="party-card">
+    <div class="party-card-head"><b>${esc(g.name)}</b><span class="party-status">In Planung</span></div>
+    <p>${esc(g.description)}</p>
+    <div class="party-meta"><span>${esc(g.players)}</span><span>${esc(g.duration)}</span><span>Aufwand: ${esc(g.effort)}</span></div>
+  </article>`).join('') : '<p class="hint">Noch keine Ideen in dieser Kategorie.</p>';
+}
 
 function showLobby(error = '') {
   $('#game-root').hidden = true;
@@ -172,18 +186,29 @@ function showLobby(error = '') {
   $('#f-name').value = store.get('poker:name', '');
   if (params.get('t')) $('#f-code').value = params.get('t').toUpperCase();
   $('#avatars').innerHTML = AVATARS.map((a) => `<button type="button" class="avatar-opt" data-a="${a}" aria-pressed="${a === avatar}" aria-label="Avatar ${a}">${a}</button>`).join('');
+  const selected = account.games.find((g) => g.id === chosenGame);
+  if (selected) chosenCategory = selected.category || 'karten';
   renderGames();
   setTab(lobbyTab);
 }
 function renderGames() {
-  const list = account.games;
-  $('#game-list').innerHTML = list.map((g) => `<button type="button" class="game-card" role="radio" data-game="${esc(g.id)}" aria-checked="${g.id === gameInfo()?.id}">
+  const category = activeCategory();
+  $$('#lobby .game-category').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.category === category)));
+  const party = category === 'party';
+  $('#game-list').hidden = party;
+  $('#party-catalog').hidden = !party;
+  if (party) renderPartyGames();
+  else {
+    const list = account.games.filter((g) => (g.category || 'karten') === category);
+    $('#game-list').innerHTML = list.map((g) => `<button type="button" class="game-card" role="radio" data-game="${esc(g.id)}" aria-checked="${g.id === gameInfo()?.id}">
       <b>${esc(g.name)}</b><small>${esc(g.players)}</small><span>${esc(g.description)}</span>
-    </button>`).join('') ;
+    </button>`).join('');
+  }
   const g = gameInfo();
   $('#create-fields').innerHTML = (g?.createFields || []).map((f) => `<label class="field"><span>${esc(f.label)}</span>
       <input data-cf="${esc(f.key)}" type="${f.type === 'number' ? 'number' : 'text'}" ${f.min !== undefined ? `min="${f.min}"` : ''} ${f.step ? `step="${f.step}"` : ''} value="${esc(f.value)}"></label>`).join('');
   $('#create-hint').textContent = g?.createHint || '';
+  setTab(lobbyTab);
 }
 function setTab(tab) {
   lobbyTab = tab;
@@ -191,8 +216,24 @@ function setTab(tab) {
   $$('#lobby [data-for]').forEach((el) => { el.hidden = el.dataset.for !== tab; });
   $('#f-submit').textContent = tab === 'join' ? 'Beitreten' : `${gameInfo()?.name || 'Spiel'} hosten`;
   $('#f-code').required = tab === 'join';
+  const noPartyHosting = activeCategory() === 'party' && tab === 'create';
+  $('#f-submit').disabled = noPartyHosting;
+  if (noPartyHosting) $('#f-submit').textContent = 'Partyspiele in Planung';
 }
-$$('#lobby .tab').forEach((b) => b.addEventListener('click', () => setTab(b.dataset.tab)));
+$('#lobby .tab').forEach((b) => b.addEventListener('click', () => setTab(b.dataset.tab)));
+$('#lobby .game-category').forEach((b) => b.addEventListener('click', () => {
+  chosenCategory = b.dataset.category;
+  if (chosenCategory !== 'party') {
+    const games = account.games.filter((g) => (g.category || 'karten') === chosenCategory);
+    if (games.length && !games.some((g) => g.id === chosenGame)) {
+      chosenGame = games[0].id; store.set('poker:game', chosenGame);
+    }
+  }
+  renderGames();
+}));
+$('#party-filter').addEventListener('change', (e) => {
+  partyFilter = e.target.value; renderPartyGames();
+});
 $('#game-list').addEventListener('click', (e) => {
   const b = e.target.closest('[data-game]'); if (!b) return;
   chosenGame = b.dataset.game; store.set('poker:game', chosenGame);
@@ -213,6 +254,10 @@ $('#lobby-form').addEventListener('submit', (e) => {
     enterGame(r);
   };
   if (lobbyTab === 'create') {
+    if (activeCategory() === 'party') {
+      $('#lobby-error').textContent = 'Die Partyspiele befinden sich noch in Planung.';
+      return;
+    }
     const settings = Object.fromEntries($$('[data-cf]').map((el) => [el.dataset.cf, el.value]));
     socket.emit('create', { game: gameInfo()?.id, name, avatar, settings }, done);
   } else {
