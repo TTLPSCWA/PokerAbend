@@ -21,7 +21,7 @@ function setup(Room, names = ['Anna', 'Ben', 'Carla'], settings = {}) {
 const seq = (...vals) => () => { if (!vals.length) throw new Error('Würfel aufgebraucht'); return vals.shift(); };
 
 test('Alle Spiele: Module, Grundlage und Spielarten', () => {
-  assert.deepEqual(Object.keys(GAMES), ['poker', 'maumau', 'farbenchaos', 'maexchen', 'schocken', 'huetchen', 'zehnetappen', 'stapelrennen', 'schwimmen']);
+  assert.deepEqual(Object.keys(GAMES), ['poker', 'maumau', 'farbenchaos', 'maexchen', 'schocken', 'huetchen', 'zehnetappen', 'stapelrennen', 'schwimmen', 'schiffe']);
   for (const g of Object.values(GAMES)) {
     assert.ok(g.name && g.description && g.players, g.id);
     const r = g.create('ABCDE', {}, () => {});
@@ -456,7 +456,7 @@ test('Anzeigenamen geändert, interne IDs gleich – alte gespeicherte Tische la
   const names = Object.fromEntries(Object.values(GAMES).map((g) => [g.id, g.name]));
   assert.deepEqual(names, {
     poker: "Texas Hold'em", maumau: 'Mau-Mau', farbenchaos: 'UNO', maexchen: 'Mäxchen',
-    schocken: 'Schocken', huetchen: 'Mensch ärgere Dich nicht', zehnetappen: 'Phase 10', stapelrennen: 'Skip-Bo', schwimmen: 'Schwimmen',
+    schocken: 'Schocken', huetchen: 'Mensch ärgere Dich nicht', zehnetappen: 'Phase 10', stapelrennen: 'Skip-Bo', schwimmen: 'Schwimmen', schiffe: 'Schiffe versenken',
   });
   // Spielstand wie in data/rooms.json: Spielart steht unter der alten ID
   for (const id of ['farbenchaos', 'huetchen', 'zehnetappen', 'stapelrennen']) {
@@ -489,7 +489,7 @@ test('Lobby: jedes Spiel bringt nur seine eigenen Einstellungen mit', () => {
   const fields = Object.fromEntries(Object.values(GAMES).map((g) => [g.id, g.createFields.map((f) => f.key)]));
   assert.deepEqual(fields, {
     poker: ['startStack', 'smallBlind', 'bigBlind'], maumau: ['handSize'], farbenchaos: ['handSize'], maexchen: ['lives'],
-    schocken: [], huetchen: [], zehnetappen: [], stapelrennen: ['stockSize'], schwimmen: ['lives'],
+    schocken: [], huetchen: [], zehnetappen: [], stapelrennen: ['stockSize'], schwimmen: ['lives'], schiffe: ['turnTime'],
   });
   // Was die Lobby anbietet, versteht das Spiel auch (unbekannte Felder würden still ignoriert)
   for (const g of Object.values(GAMES)) {

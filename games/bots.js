@@ -5,6 +5,7 @@ import { PHASES, partition, validGroup } from './zehnetappen/room.js';
 import { JOKER } from './stapelrennen/room.js';
 import { valueOf } from './maexchen/room.js';
 import { handValue } from './schwimmen/room.js';
+import { randomFleet, around, SIZE } from './schiffe/room.js';
 
 const one = (list, rng) => list[Math.floor(rng() * list.length)];
 
@@ -141,4 +142,16 @@ function schwimmen(room, id, rng) {
   return room.swap(id, best.h, best.m);
 }
 
-export const BOTS = { maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen };
+// Schiffe versenken: zufällig setzen; schießen neben Treffer, die noch nicht versenkt sind – sonst zufällig
+function schiffe(room, id, rng) {
+  if (room.step === 'place') return room.place(id, randomFleet(room.fleet(), room.settings.touch, rng));
+  const mine = room.shots[id];
+  const sunkCells = new Set((room.sunk[id] || []).flatMap((k) => room.ships[room.other(id)][k].cells)); // versenkt wurde angesagt
+  const open = Object.keys(mine).map(Number).filter((c) => mine[c] === 'hit' && !sunkCells.has(c));
+  const free = (c) => !mine[c];
+  const near = open.flatMap((c) => around(c).filter((n) => free(n) && (Math.floor(n / SIZE) === Math.floor(c / SIZE) || n % SIZE === c % SIZE)));
+  const pool = near.length && rng() < 0.9 ? near : [...Array(SIZE * SIZE).keys()].filter(free);
+  return room.shoot(id, pool[Math.floor(rng() * pool.length)]);
+}
+
+export const BOTS = { maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, schiffe };

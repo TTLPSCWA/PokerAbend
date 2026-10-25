@@ -5,10 +5,12 @@ import { Room, handValue, SUITS, RANKS } from '../games/schwimmen/room.js';
 
 function setup(n = 3, settings = {}) {
   const r = new Room('SW', settings, () => {});
+  r.checkInstant = () => false; // kein sofortiges Aufdecken beim ersten Geben (31 schon in der Hand) – sonst wäre der Start zufällig
   const ids = ['Anna', 'Ben', 'Cem', 'Dora'].slice(0, n).map((x) => { const p = r.addPlayer(x, null); r.sit(p.id); return p.id; });
   r.start(ids[0]);
   // Nach einer Wertung nicht wirklich neu geben – sonst könnte die neue Hand schon 31 haben und das Ergebnis überschreiben
   r.deal = (start) => { r.dealNo++; r.resetDeal(); r.turn = start % r.order.length; };
+  delete r.checkInstant; // ab jetzt wieder echte Prüfung auf 31 und Feuer
   return { r, ids };
 }
 // Feste Hände und Mitte (ohne 31, damit nichts sofort endet); der Rest bleibt im Stapel

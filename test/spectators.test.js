@@ -2,6 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { GAMES } from '../games/index.js';
+import { randomFleet } from '../games/schiffe/room.js';
 
 // Alles Geheime eines Spielers als Text (Karten, Würfel), damit man es im JSON der Zuschauer-Ansicht suchen kann
 const SECRETS = {
@@ -10,6 +11,8 @@ const SECRETS = {
   zehnetappen: (r, id) => r.hands[id].map((c) => `"id":${c.id},`),
   stapelrennen: (r, id) => (r.hand[id].length ? [`"hand":[${r.hand[id].join(',')}]`] : []),
   maexchen: (r, id) => (r.cup && r.currentId === id ? [`"cup":[${r.cup.join(',')}]`] : []),
+  schwimmen: (r, id) => (r.lastDeal ? [] : r.hands[id]), // gleich beim Geben 31: dann wurde zu Recht aufgedeckt (Karten des alten Durchgangs)
+  schiffe: (r, id) => r.ships[id].map((s) => JSON.stringify(s.cells)), // Schiffspositionen
 };
 
 for (const g of Object.values(GAMES)) {
@@ -20,6 +23,7 @@ for (const g of Object.values(GAMES)) {
     const z = r.addPlayer('Zoe', null).id; // schaut nur zu
     r.start(a);
     if (g.id === 'maexchen') r.throwDice(r.currentId); // ein verdeckter Wurf liegt unter dem Becher
+    if (g.id === 'schiffe') for (const id of [a, b]) r.place(id, randomFleet(r.fleet(), false)); // Flotten stehen, es wird geschossen
     const v = r.view(z);
     assert.equal(v.you.playing, false);
     assert.equal(v.you.inRound, false);
@@ -28,17 +32,21 @@ for (const g of Object.values(GAMES)) {
     for (const id of [a, b]) {
       for (const secret of SECRETS[g.id]?.(r, id) || []) {
         // Bei Mau-Mau/UNO kann dieselbe Karte als offene Ablage liegen – die ist nicht geheim
-        if (typeof secret === 'string' && secret.length === 2 && v.g.top === secret) continue;
+        if (typeof secret === 'string' && secret.length === 2 && (v.g.top === secret || v.g.middle?.includes(secret))) continue;
         if (typeof secret === 'string' && secret.length === 2) assert.ok(!json.includes(`"${secret}"`), `${g.id}: ${secret} sichtbar`);
         else assert.ok(!json.includes(secret), `${g.id}: ${secret} sichtbar`);
       }
     }
     if (g.id === 'maexchen') assert.equal(v.g.cup, null);
-    // Mitten in der Runde einsteigen: erst ab der nächsten Runde
+    // Mitten in der Runde einsteigen: erst ab der nächsten Runde (bei Spielen für genau zwei erst, wenn ein Platz frei wird)
+    if (r.opts.maxPlayers <= 2) {
+      assert.throws(() => r.sit(z), /Mehr als 2/);
+      r.stand(b);
+    }
     r.sit(z);
     assert.ok(r.seats.includes(z));
     assert.ok(!r.order.includes(z));
-    assert.ok(r.log.some((l) => l.text === 'Zoe spielt ab der nächsten Runde mit'));
+    if (r.opts.maxPlayers > 2) assert.ok(r.log.some((l) => l.text === 'Zoe spielt ab der nächsten Runde mit'));
     r.phase = 'over'; // Runde vorbei (für den Test abgekürzt)
     r.start(a);
     assert.ok(r.order.includes(z), 'in der nächsten Runde dabei');

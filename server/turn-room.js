@@ -19,6 +19,9 @@ export class TurnRoom extends BaseRoom {
     this.result = null;   // Ergebnis der letzten Runde
     this.acts = {};       // ID → { text, n }: letzte Aktion je Spieler in dieser Runde (Sprechblase am Platz)
     this.actSeq = 0;
+    // Zug-Timer (nur Spiele mit der Einstellung turnTime, Sekunden, 0 = aus): wer zu lange braucht, für den entscheidet onTimeout
+    this.turnTimer = null; this.timerKey = null; this.deadline = null;
+    this.moveNo = 0;      // zählt Züge – ein neuer Zug startet die Uhr neu, auch wenn derselbe nochmal dran ist
   }
 
   // ---------- Haken für das Spiel ----------
@@ -47,7 +50,32 @@ export class TurnRoom extends BaseRoom {
   get current() { return this.players.get(this.currentId); }
   name(id) { return this.players.get(id)?.name ?? '?'; }
   // Kurz, was jemand gerade getan hat („zieht 2“, „sagt 52“) – erscheint als Sprechblase an seinem Platz
-  act(id, text) { if (id) this.acts[id] = { text, n: ++this.actSeq }; }
+  act(id, text) { if (id) this.acts[id] = { text, n: ++this.actSeq }; this.moveNo++; }
+
+  // ---------- Zug-Timer ----------
+  timerActive() { return true; }   // Haken: läuft die Uhr gerade? (z. B. nicht beim Schiffe-Setzen)
+  onTimeout() {}                   // Haken: Zeit abgelaufen – das Spiel entscheidet für den, der dran ist
+  // Nach jedem Ereignis (Plattform ruft afterChange): Uhr starten, neu starten oder stoppen
+  afterChange() { this.syncTimer(); }
+  syncTimer() {
+    const secs = Number(this.settings.turnTime) || 0;
+    const key = this.phase === 'playing' && secs > 0 && this.currentId && this.timerActive() ? `${this.roundNo}:${this.currentId}:${this.moveNo}` : null;
+    if (key === this.timerKey) return;
+    clearTimeout(this.turnTimer);
+    this.turnTimer = null; this.deadline = null; this.timerKey = key;
+    if (!key) return;
+    this.deadline = Date.now() + secs * 1000;
+    this.turnTimer = setTimeout(() => {
+      this.turnTimer = null;
+      if (this.timerKey !== key) return;
+      try { this.onTimeout(this.currentId); } catch { /* nichts zu entscheiden */ }
+      this.syncTimer();
+      this.onChange('state');
+    }, secs * 1000);
+    this.turnTimer.unref?.();
+  }
+  dispose() { clearTimeout(this.turnTimer); this.turnTimer = null; }
+
 
   sit(id) {
     const p = this.players.get(id);
@@ -173,7 +201,7 @@ export class TurnRoom extends BaseRoom {
     return {
       code: this.code, game: this.game, now: Date.now(),
       you: me ? { id: me.id, name: me.name, isHost: me.id === this.hostId, playing: this.seats.includes(me.id), inRound: this.order.includes(me.id) } : null,
-      hostId: this.hostId, settings: this.settings, phase: this.phase, roundNo: this.roundNo, turnId: this.currentId, dir: this.dir, acts: this.phase === 'lobby' ? {} : this.acts,
+      hostId: this.hostId, settings: this.settings, phase: this.phase, roundNo: this.roundNo, turnId: this.currentId, deadline: this.deadline, dir: this.dir, acts: this.phase === 'lobby' ? {} : this.acts,
       minPlayers: this.opts.minPlayers, maxPlayers: this.opts.maxPlayers, scoreLabel: this.opts.scoreLabel, lowWins: this.opts.lowWins,
       players: people.map((p) => ({
         id: p.id, name: p.name, avatar: p.avatar, connected: p.connected, isHost: p.id === this.hostId,

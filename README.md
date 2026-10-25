@@ -74,6 +74,7 @@ Tische und Chipstände liegen im Docker-Volume `poker-data` und überleben Neust
 | Phase 10 | 2–6 | Zehn Phasen nacheinander, Joker, Aussetzen, Anlegen. Wer zuerst Phase 10 schafft, gewinnt |
 | Skip-Bo | 2–6 | Reihen 1–12 bauen, Joker, 4 Ablagen. Wer seinen Stapel zuerst los ist, gewinnt (25 + 5 je Restkarte der anderen) |
 | Schwimmen (31) | 2–9 | 32 Karten, eine Farbe zählt (31 ist das Höchste), tauschen, schieben, klopfen. Die Niedrigsten verlieren Leben, ohne Leben schwimmt man noch einmal. Der Letzte gewinnt |
+| Schiffe versenken | 2 (+ Zuschauer) | Zwei Meere 10 × 10, Flotte setzen (nicht berühren), abwechselnd schießen: Wasser, Treffer, versenkt. Zeit pro Schuss. Die gegnerischen Schiffe sieht man erst nach Spielende |
 
 Die Startseite zeigt die Spiele nach Kategorien (Karten-, Würfel-, Brettspiele) – festgelegt mit `category` in `games/<spiel>/index.js`.
 
@@ -96,6 +97,7 @@ Gehen bei Skip-Bo während der Runde die Nachziehkarten aus, darf ein Spieler oh
 | Mensch ärgere Dich nicht | Schlagzwang (aus)<br>Nach einer 6 nochmal würfeln (an)<br>Drei Versuche, wenn keine Figur draußen ist (an)<br>Mit einer 6 muss man raus (und das Startfeld räumen) (an) |
 | Phase 10 | Aussetzen: Spieler frei wählen (sonst setzt der Nächste aus) (an)<br>Phase genau in der verlangten Größe auslegen (an)<br>Aussetzen als erste Ablage: der Erste setzt aus (aus) |
 | Skip-Bo | Karten im eigenen Stapel (offiziell 30, ab 5 Spielern 20) (20) |
+| Schiffe versenken | Klassische Flotte: 1× 5, 2× 4, 3× 3, 4× 2 (aus – Standard 1× 5, 1× 4, 2× 3, 1× 2)<br>Schiffe dürfen sich berühren (aus)<br>Treffer: nochmal schießen (aus)<br>Zeit pro Schuss in Sekunden, 0 = ohne (60) |
 | Schwimmen | Leben pro Spieler (3)<br>Schwimmen: ohne Leben noch einmal mitspielen (an)<br>Schieben erlaubt (an)<br>Feuer: drei Asse = 33, alle anderen verlieren ein Leben (aus) |
 
 ### Am Tisch: Plätze, Hinweise, „Ich“
@@ -244,7 +246,7 @@ Beispiel Mau-Mau mit der ID `maumau` (nur Kleinbuchstaben, Ziffern und Bindestri
    };
    ```
 
-2. **Raum:** Für Rundenspiele am einfachsten `class Room extends TurnRoom` (aus `server/turn-room.js`, siehe die vorhandenen Spiele) – Mitspieler, Reihenfolge, Runden und Punkte sind dann schon da, das Spiel füllt `setupRound`, `gameView`, `publicPlayer` und seine Aktionen. Ganz frei geht es mit `class Room extends BaseRoom` (aus `server/base-room.js`). Spieler, Host, Wegbleiben und Verlauf sind damit schon da. Das Spiel füllt die Haken:
+2. **Raum:** Für Rundenspiele am einfachsten `class Room extends TurnRoom` (aus `server/turn-room.js`, siehe die vorhandenen Spiele) – Mitspieler, Reihenfolge, Runden und Punkte sind dann schon da, das Spiel füllt `setupRound`, `gameView`, `publicPlayer` und seine Aktionen. Einen **Zug-Timer** bekommt ein Rundenspiel, indem es die Einstellung `turnTime` (Sekunden, 0 = aus) in seine `OPTIONS` aufnimmt und `onTimeout(id)` füllt (siehe Schiffe versenken); `timerActive()` hält die Uhr an, wenn gerade niemand dran ist. Ganz frei geht es mit `class Room extends BaseRoom` (aus `server/base-room.js`). Spieler, Host, Wegbleiben und Verlauf sind damit schon da. Das Spiel füllt die Haken:
 
    | Haken | Wofür |
    | --- | --- |

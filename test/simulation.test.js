@@ -38,6 +38,17 @@ const INVARIANTS = {
     assert.equal(new Set(cards.map((c) => c.id)).size, 108, 'Karte doppelt');
   },
   stapelrennen: (r) => assert.equal(sum([r.deck, r.used, ...r.build, ...Object.values(r.stock), ...Object.values(r.hand), ...Object.values(r.piles).flat()]), 162, 'Karten'),
+  schiffe: (r) => {
+    for (const id of r.order) {
+      const foe = r.other(id);
+      for (const [cell, kind] of Object.entries(r.shots[id] || {})) {
+        const hit = !!r.ships[foe]?.some((sh) => sh.cells.includes(Number(cell)));
+        assert.equal(kind, hit ? 'hit' : 'miss', 'Treffer/Wasser falsch');
+      }
+      assert.ok(Object.keys(r.shots[id] || {}).length <= 100, 'mehr Schüsse als Felder');
+      if (r.ships[id]) assert.equal(r.ships[id].length, r.fleet().length, 'Flotte');
+    }
+  },
   schwimmen: (r) => {
     const cards = [...r.deck, ...r.middle, ...Object.values(r.hands).flat()];
     assert.equal(cards.length, 32, 'Karten');
@@ -58,6 +69,7 @@ const PLAN = {
   zehnetappen: { games: 200, players: [2, 6], settings: {}, maxSteps: 20000 },
   stapelrennen: { games: 200, players: [2, 6], settings: { stockSize: 10 }, maxSteps: 30000 },
   schwimmen: { games: 1000, players: [2, 9], settings: {}, maxSteps: 20000 },
+  schiffe: { games: 1000, players: [2, 2], settings: {}, maxSteps: 400 },
 };
 
 for (const [id, plan] of Object.entries(PLAN)) {

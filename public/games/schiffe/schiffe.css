@@ -1,0 +1,40 @@
+/* Schiffe versenken: zwei Meere 10 × 10 mit Beschriftung A–J / 1–10 */
+.kg-schiffe .kg-main { background: radial-gradient(120% 90% at 50% 25%, #1E4E6E, #0C2638); }
+.sv-wrap { gap: 10px; }
+.sv-two { display: flex; flex-wrap: wrap; gap: 16px 28px; align-items: flex-start; justify-content: center; width: 100%; }
+.sv-sea { display: grid; gap: 6px; width: min(100%, 420px); }
+.sv-sea.small { width: min(100%, 300px); }
+.sv-sea h3 { margin: 0; font-size: 14px; color: #D6E6F2; text-align: center; }
+.sv-sea h3 small { color: var(--gold-text); font-weight: 700; }
+.sv-board { display: grid; grid-template-columns: 18px repeat(10, minmax(0, 1fr)); gap: 2px; padding: 6px; border-radius: var(--r-m); background: #0A1C2A; box-shadow: inset 0 0 0 2px #2D5A7A; }
+.sv-lab, .sv-corner { display: grid; place-items: center; font-size: 11px; color: #9DBBD2; font-weight: 700; }
+.sv-cell { aspect-ratio: 1; min-width: 0; padding: 0; border: 0; border-radius: 3px; display: grid; place-items: center; font-weight: 900; line-height: 1;
+  background: linear-gradient(135deg, #2A6F9E, #1F5A82); color: #fff; font-size: clamp(10px, 2.6cqmin, 18px); }
+button.sv-cell { cursor: crosshair; }
+button.sv-cell:hover, button.sv-cell:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+/* Eigene Schiffe: grauer Rumpf */
+.sv-cell.ship { background: linear-gradient(135deg, #8C9AA6, #5E6C78); box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); }
+.sv-cell.picked { box-shadow: inset 0 0 0 3px var(--gold); }
+/* Wasser: Punkt; Treffer: Kreuz auf Orange; versenkt: dunkler Rumpf mit Kreuz (Form, nicht nur Farbe) */
+.sv-cell.miss { background: #173E5A; color: #9FC4DE; }
+.sv-cell.hit { background: #E0702A; }
+.sv-cell.sunk { background: #3A1E1E; box-shadow: inset 0 0 0 2px #E0702A; }
+.sv-cell.sunk.ship { background: #4A2A2A; }
+.sv-cell i { font-style: normal; }
+.sv-cell.aim { outline: 3px solid var(--gold); outline-offset: -3px; background: #3C82B4; }
+.sv-cell.aim::after { content: '◎'; color: var(--gold-text); }
+.sv-sea.small .sv-cell { font-size: clamp(8px, 2cqmin, 13px); }
+/* Flotte beim Setzen */
+.sv-ships { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.sv-ship { display: grid; justify-items: center; gap: 4px; min-height: 44px; padding: 6px 10px; border-radius: var(--r-m); border: 2px solid var(--line); background: var(--panel-2); color: var(--text); font-size: 12px; cursor: pointer; }
+.sv-ship.sel { border-color: var(--gold); background: rgba(201,154,69,.18); }
+.sv-ship.set { opacity: .8; }
+.sv-hull { display: flex; gap: 2px; }
+.sv-hull i { width: 12px; height: 12px; border-radius: 2px; background: #8C9AA6; }
+.sv-ship.sel .sv-hull i { background: var(--gold); }
+.sv-fire { min-height: 52px; font-size: 18px; }
+@media (max-width: 640px) {
+  .sv-sea, .sv-sea.small { width: 100%; }
+  .sv-sea.small { width: min(100%, 260px); }
+  .sv-board { grid-template-columns: 14px repeat(10, minmax(0, 1fr)); padding: 4px; gap: 1px; }
+}

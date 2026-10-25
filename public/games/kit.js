@@ -8,7 +8,7 @@
 //   sort: { color(c), number(c) } → Sortierschlüssel für die Hand (Knopf „Sortieren“),
 //   onDrop(quelle, ziel, S) → Karte per Ziehen abgelegt (Desktop; Ziele tragen data-drop),
 //   peek: true → bei überlappender Hand (Handy) erst vergrößern, zweites Tippen spielt,
-//   direction: false → keinen Richtungspfeil zeigen, afterRender(S) → nach dem Zeichnen (z. B. Animationen),
+//   status(S, myTurn) → eigene Statuszeile oben, direction: false → keinen Richtungspfeil zeigen, afterRender(S) → nach dem Zeichnen (z. B. Animationen),
 //   prefs() → eigene Schalter im Reiter „Ich“, standExtra(S) → zusätzlicher Teil im Reiter „Stand“,
 //   intro: [[Überschrift, Text], …] → Erste Schritte beim ersten Spiel (3 Schritte), sounds(S, prev) → eigene Töne (Namen aus SFX),
 //   translate(text) → Texte vom Server anders benennen (z. B. deutsches Blatt), onClick(el, S) für Elemente mit data-g
@@ -97,7 +97,7 @@ const deckPrefHTML = () => `<label class="toggle"><span>Kartenblatt<small>Franz�
       </select></label>`;
 
   // Welcher Ton passt zu einer Aktion („legt Herz König“, „UNO!“, „würfelt 5“ …)? Wichtigeres zuerst.
-const ACT_SOUNDS = [[/^(UNO|Mau|31|Feuer)!/, 'call'], [/^klopft/, 'drum'], [/^Erwischt/, 'catch'], [/schlägt/, 'hit'], [/zweifelt/, 'drum'], [/^Phase d+ ✓/, 'done'],
+const ACT_SOUNDS = [[/^(UNO|Mau|31|Feuer)!/, 'call'], [/^klopft/, 'drum'], [/versenkt!$/, 'drum'], [/ Treffer$/, 'hit'], [/ Wasser$/, 'splash'], [/^Erwischt/, 'catch'], [/schlägt/, 'hit'], [/zweifelt/, 'drum'], [/^Phase d+ ✓/, 'done'],
   [/setzt aus/, 'skip'], [/würfelt/, 'dice'], [/^(zieht|nimmt Ablage|erwischt)/, 'draw'], [/^(legt|wirft ab|ungesehen|tauscht)/, 'card']];
 function actSound(acts, prev) {
   const seen = Math.max(0, ...Object.values(prev || {}).map((a) => a.n));
@@ -227,6 +227,17 @@ function kitGame(def) {
       || '<p class="hint" style="margin:0">Noch spielt niemand mit.</p>';
   }
 
+  // Restzeit des Zug-Timers anzeigen (Serverzeit, an die eigene Uhr angeglichen)
+  let clockOffset = 0;
+  function tickClock() {
+    const el = $('#kg-clock');
+    if (!el || !S?.deadline) return;
+    const left = Math.max(0, Math.ceil((S.deadline - (Date.now() + clockOffset)) / 1000));
+    el.textContent = `noch ${left} s`;
+    el.classList.toggle('urgent', left <= 10);
+  }
+  setInterval(() => { if (isMine()) tickClock(); }, 1000);
+
   function render() {
     if (!isMine() || !$('#kg')) return;
     document.documentElement.style.setProperty('--topbar', $('#kg .topbar').offsetHeight + 'px');
@@ -235,9 +246,13 @@ function kitGame(def) {
     $('#kg-code').textContent = S.code;
     $('#kg-nav-host').hidden = !S.you?.isHost;
     const myTurn = S.turnId && S.turnId === S.you?.id;
-    const status = S.phase === 'playing' ? `Runde #${S.roundNo} · ${myTurn ? '<b>Du bist dran</b>' : `${esc(nameOf(S.turnId))} ist dran`}`
-      : S.phase === 'over' ? `Runde #${S.roundNo} vorbei` : 'Noch nicht gestartet';
-    $('#kg-meta').innerHTML = `<div class="blinds">${esc(def.name)}</div><div class="meta-sub">${status}</div>`;
+    // status(S) darf das Spiel selbst liefern (z. B. „Schiffe setzen“, wenn niemand dran ist)
+    const status = (S.phase === 'playing' && def.status?.(S, myTurn)) || (S.phase === 'playing' ? `Runde #${S.roundNo} · ${myTurn ? '<b>Du bist dran</b>' : `${esc(nameOf(S.turnId))} ist dran`}`
+      : S.phase === 'over' ? `Runde #${S.roundNo} vorbei` : 'Noch nicht gestartet');
+    // Zug-Timer: Restzeit (läuft im Sekundentakt weiter, siehe tickClock)
+    const clock = S.phase === 'playing' && S.deadline ? ` · <span id="kg-clock" class="${myTurn ? 'mine' : ''}"></span>` : '';
+    $('#kg-meta').innerHTML = `<div class="blinds">${esc(def.name)}</div><div class="meta-sub">${status}${clock}</div>`;
+    tickClock();
     document.body.classList.toggle('kg-myturn', !!myTurn);
 
     const ring = WIDE.matches;
@@ -537,6 +552,7 @@ function kitGame(def) {
       else if (prev?.phase === 'playing' && st.phase === 'over') sfx(st.result?.winners?.includes(st.you?.id) ? 'win' : 'end');
       else if (prev && prev.roundNo === st.roundNo) { const name = def.sounds?.(st, prev) || actSound(st.acts, prev.acts); if (name) sfx(name); }
       sortHand(st);
+      clockOffset = (st.now || Date.now()) - Date.now();
       def.onState?.(st, prev);
       render();
       // Neues Rundenende: Fokus ins Ergebnisfenster (Tastatur, Bildschirmleser)

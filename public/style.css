@@ -577,3 +577,8 @@ button.die { cursor: pointer; }
 .kc-de .big-suit { width: 66%; height: auto; margin-top: 18%; }
 .de-suit.inline { width: 1.1em; height: 1.1em; vertical-align: -.2em; }
 .btn .de-suit.inline { width: 20px; height: 20px; }
+
+/* Zug-Timer oben: Restzeit, die letzten 10 Sekunden hervorgehoben (mit Text, nicht nur Farbe) */
+#kg-clock { font-variant-numeric: tabular-nums; }
+#kg-clock.mine { color: var(--gold-text); font-weight: 700; }
+#kg-clock.urgent { color: #FF8A80; font-weight: 800; }
