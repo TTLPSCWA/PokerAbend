@@ -1,2 +1,9 @@
-/* Mau-Mau: nutzt die gemeinsamen Karten aus /style.css */
+/* Mau-Mau: Tisch, Wunschfarbe, deutsches Blatt (Eichel, Grün, Herz, Schellen – selbst gezeichnet) */
 .kg-maumau .kg-main { background: radial-gradient(120% 90% at 50% 25%, #2C6E55, #174534); }
+.mm-wish-sign { font-size: 46px; line-height: 1; color: var(--paper); }
+.mm-wish-sign.red { color: #F06A6A; }
+.mm-wish-sign svg { width: 52px; height: 52px; display: block; }
+.kc-de .r { position: absolute; top: 5px; left: 6px; font-size: calc(var(--w) * .3); line-height: 1; }
+.kc-de .big-suit { width: 66%; height: auto; margin-top: 18%; }
+.de-suit.inline { width: 1.1em; height: 1.1em; vertical-align: -.2em; }
+.btn .de-suit.inline { width: 20px; height: 20px; }

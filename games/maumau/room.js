@@ -36,6 +36,7 @@ export class Room extends TurnRoom {
     this.wish = null;    // gewünschte Farbe nach einem Buben (bzw. Farbwahl)
     this.pending = 0;    // so viele Karten muss der Nächste ziehen (gestapelte 7en)
     this.drawn = null;   // Karte, die der Aktive gerade gezogen hat (nur die darf er noch spielen)
+    this.forgot = null;  // Erwischen (UNO): wer „UNO“ vergessen hat – bis der Nächste etwas tut
   }
 
   defaultSettings() {
@@ -121,9 +122,15 @@ export class Room extends TurnRoom {
     return got;
   }
 
+  // Erwischen-Option (nur UNO): Vergessen kostet nicht sofort, sondern erst, wenn jemand es meldet
+  catchKey() { return null; }
+  catching() { return !!(this.catchKey() && this.settings[this.catchKey()]); }
+  needCall() { return !!this.settings[this.callKey()] || this.catching(); }
+
   // called: hat der Spieler bei der vorletzten Karte „Mau“/„UNO“ gesagt? (zählt nur mit Option)
   play(id, card, wish, called = false) {
     this.requireTurn(id);
+    this.forgot = null; // wer jetzt handelt, schließt das Fenster zum Erwischen
     const hand = this.hands[id];
     const i = hand.indexOf(card);
     if (i < 0) throw new Error('Die Karte hast du nicht');
@@ -139,7 +146,8 @@ export class Room extends TurnRoom {
     if (!hand.length) return this.win(id);
     if (hand.length === 1) {
       const word = this.lastCardCall();
-      if (this.settings[this.callKey()] && !called) {
+      if (this.catching() && !called) this.forgot = id; // die anderen dürfen melden
+      else if (this.needCall() && !called) {
         const n = this.callPenalty();
         this.take(id, n);
         this.say(`${this.name(id)} hat „${word.replace('!', '')}“ vergessen – ${n === 1 ? 'eine Strafkarte' : `${n} Strafkarten`}`, 'react');
@@ -151,6 +159,7 @@ export class Room extends TurnRoom {
 
   draw(id) {
     this.requireTurn(id);
+    this.forgot = null;
     if (this.pending > 0) {
       const n = this.pending; this.pending = 0;
       this.take(id, n);
@@ -168,10 +177,32 @@ export class Room extends TurnRoom {
 
   pass(id) {
     this.requireTurn(id);
+    this.forgot = null;
     if (!this.drawn) throw new Error('Erst ziehen, dann weiter');
     this.say(`${this.name(id)} kann nicht`, 'info', 'action');
     this.act(id, 'kann nicht');
     this.next(1);
+  }
+
+  // Erwischen: jemand aus der Runde meldet, dass der Vorgänger „UNO“ vergessen hat → Strafkarten
+  catchForgot(id) {
+    if (this.phase !== 'playing' || !this.forgot) throw new Error('Gerade hat niemand etwas vergessen – zu spät oder zu früh');
+    if (!this.order.includes(id)) throw new Error('Nur wer mitspielt, darf melden');
+    if (id === this.forgot) throw new Error('Dich selbst kannst du nicht erwischen – sag es lieber schnell');
+    const f = this.forgot;
+    this.forgot = null;
+    const n = this.callPenalty();
+    this.take(f, n);
+    this.say(`${this.name(id)} erwischt ${this.name(f)}: „${this.lastCardCall().replace('!', '')}“ vergessen – ${n} Strafkarten`, 'react');
+    this.act(id, 'Erwischt!');
+    this.act(f, `erwischt: +${n}`);
+  }
+  // … oder man sagt es selbst noch schnell, bevor jemand meldet
+  lateCall(id) {
+    if (this.forgot !== id) throw new Error('Das musst du gerade nicht sagen');
+    this.forgot = null;
+    this.say(`${this.name(id)}: ${this.lastCardCall()} (gerade noch)`, 'react');
+    this.act(id, this.lastCardCall());
   }
 
   win(id) {
@@ -186,6 +217,7 @@ export class Room extends TurnRoom {
     this.deck.unshift(...(this.hands[p.id] || []));
     delete this.hands[p.id];
     if (this.currentId === p.id) this.drawn = null;
+    if (this.forgot === p.id) this.forgot = null;
   }
 
   publicPlayer(p) {
@@ -202,7 +234,8 @@ export class Room extends TurnRoom {
       // Was der Aktive gerade machen kann (nur für ihn)
       playable: mine && this.phase === 'playing' ? this.hands[viewerId].filter((c) => (!this.drawn || c === this.drawn) && this.canPlay(c) && this.allowed(c, viewerId)) : [],
       drawn: mine ? this.drawn : null,
-      callNeeded: !!this.settings[this.callKey()], // „Mau“/„UNO“ muss man selbst sagen
+      callNeeded: this.needCall(), // „Mau“/„UNO“ muss man selbst sagen
+      forgot: this.forgot, // Erwischen: wer gerade „UNO“ vergessen hat (sehen alle – am Tisch hört man es ja auch)
     };
   }
 

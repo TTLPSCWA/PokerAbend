@@ -18,14 +18,16 @@ export class Room extends MauMau {
     { key: 'unoCall', label: '„UNO“ selbst sagen (vergessen = 2 Strafkarten)', type: 'bool' },
     { key: 'strictPlus4', label: '+4 nur, wenn man die Farbe nicht hat', type: 'bool' },
     { key: 'startAction', label: 'Startkarte wirkt (Aussetzen, Richtung, +2, Farbwahl)', type: 'bool' },
+    { key: 'catchCall', label: 'Erwischen: wer „UNO“ vergisst, kann gemeldet werden (+2)', type: 'bool' },
   ];
 
   constructor(code, settings, onChange) {
     super(code, settings, onChange, { minPlayers: 2, maxPlayers: 8, lowWins: false, scoreLabel: 'Punkte' });
   }
-  defaultSettings() { return { handSize: 7, stacking: false, drawUntil: false, unoCall: false, strictPlus4: false, startAction: false }; }
+  defaultSettings() { return { handSize: 7, stacking: false, drawUntil: false, unoCall: false, strictPlus4: false, startAction: false, catchCall: false }; }
   callKey() { return 'unoCall'; }
   callPenalty() { return 2; }
+  catchKey() { return 'catchCall'; }
   // +4 nur, wenn man keine Karte der geltenden Farbe hat (mit Option)
   allowed(c, id) {
     if (c[0] !== 'F' || !this.settings.strictPlus4) return true;

@@ -4,12 +4,23 @@
 'use strict';
 {
   let sel = null; // { kind: 'hand' | 'stock' | 'pile', index }
-  const num = (n, { cls = '', attrs = '', tag = 'button' } = {}) => `<${tag} ${tag === 'button' ? 'type="button"' : 'role="img"'} class="kc kc-st ${n === 0 ? 'joker' : `st-${Math.ceil(n / 4)}`} ${cls}" ${attrs} aria-label="${n === 0 ? 'Joker' : n}">${n ? colorMark('bgr'[Math.ceil(n / 4) - 1]) : ''}<span class="v">${n === 0 ? '★' : n}</span></${tag}>`;
+  // Karte: 1–4 blau, 5–8 grün, 9–12 rot (mit Form je Gruppe), große Zahl und kleine in den Ecken. Joker: dunkel mit Goldstern – deutlich anders.
+  const num = (n, { cls = '', attrs = '', tag = 'button' } = {}) => {
+    const corner = n === 0 ? '★' : n;
+    return `<${tag} ${tag === 'button' ? 'type="button"' : 'role="img"'} class="kc kc-st ${n === 0 ? 'joker' : `st-${Math.ceil(n / 4)}`} ${cls}" ${attrs} aria-label="${n === 0 ? 'Joker' : n}">${n ? colorMark('bgr'[Math.ceil(n / 4) - 1]) : ''}
+      <span class="cr tl">${corner}</span><span class="v">${n === 0 ? '★<small>Joker</small>' : n}</span><span class="cr br">${corner}</span></${tag}>`;
+  };
   const same = (a, b) => a && b && a.kind === b.kind && (a.index ?? 0) === (b.index ?? 0);
 
   const kit = kitGame({
     id: 'stapelrennen',
     name: 'Skip-Bo',
+    // Erste Schritte beim ersten Spiel (3 Schritte, abschaltbar unter „Ich“)
+    intro: [
+      ["Ziel", "Werde deinen Spielstapel (rechts von deinen Ablagen) als Erster los."],
+      ["Legen", "Karte wählen – aus der Hand, vom Spielstapel oder oben von einer Ablage – und einen Bau-Stapel in der Mitte antippen. Jeder braucht die nächste Zahl."],
+      ["Zug beenden", "Zum Schluss eine Handkarte auf eine deiner vier Ablagen. Die leuchten, sobald das geht."],
+    ],
     short: [
       "Ziel: deinen eigenen Stapel als Erster loswerden.",
       "In der Mitte: vier Reihen von 1 bis 12, volle Reihen kommen weg.",
@@ -43,7 +54,7 @@
       const mine = S.turnId === S.you?.id;
       const me = S.players.find((p) => p.id === S.you?.id);
       const build = g.build.map((b, i) => `<button type="button" class="st-build ${mine && sel ? 'can' : ''}" data-g="build" data-i="${i}" ${mine ? 'data-drop="build"' : ''} ${mine && sel ? '' : 'disabled'} aria-label="Baureihe ${i + 1}, braucht ${b.next}">
-        ${b.count ? num(b.count, { tag: 'span' }) : '<span class="kc kc-empty"></span>'}<small>braucht <b>${b.next}</b></small></button>`).join('');
+        ${b.count ? num(b.count, { tag: 'span' }) : '<span class="kc kc-empty"></span>'}<small>braucht <b class="st-need">${b.next}</b></small></button>`).join('');
       const piles = (p, own) => (p.piles || []).map((pile, i) => {
         const top = pile[pile.length - 1];
         const click = own && mine;
@@ -55,9 +66,12 @@
       }).join('');
       const others = S.players.filter((p) => p.inRound && p.id !== S.you?.id).map((p) => `<div class="st-other"><b>${esc(p.name)}</b>
         <div class="st-row"><div class="st-stock">${p.stock ? num(p.stockTop, { attrs: 'disabled' }) : '<span class="kc kc-empty"></span>'}<small>Stapel ${p.stock}</small></div>${piles(p, false)}</div></div>`).join('');
-      const mineHTML = me?.inRound ? `<div class="st-mine"><b>Du</b><div class="st-row">
-        <div class="st-stock">${me.stock ? num(me.stockTop, { cls: `big ${same(sel, { kind: 'stock' }) ? 'sel' : ''}`, attrs: mine ? 'data-g="pick" data-kind="stock" data-drag="stock"' : 'disabled' }) : ''}<small>Dein Stapel: ${me.stock}</small></div>
-        ${piles(me, true)}</div></div>` : '';
+      // Wie am echten Tisch: deine vier Ablagen vorne, dein Spielstapel rechts daneben
+      const ending = mine && sel?.kind === 'hand';
+      const mineHTML = me?.inRound ? `<div class="st-mine"><div class="st-row">
+        <div class="st-piles ${ending ? 'ending' : ''}"><div class="st-row">${piles(me, true)}</div><small>${ending ? '<b>Handkarte auf eine Ablage = Zug beenden</b>' : 'Deine Ablagen'}</small></div>
+        <div class="st-stock">${me.stock ? num(me.stockTop, { cls: `big ${same(sel, { kind: 'stock' }) ? 'sel' : ''}`, attrs: mine ? 'data-g="pick" data-kind="stock" data-drag="stock"' : 'disabled' }) : '<span class="kc kc-empty big"></span>'}<small>Dein Stapel: <b>${me.stock}</b></small></div>
+        </div></div>` : '';
       // Am großen Tisch sitzen die Gegner mit Stapel und Ablagen an ihren Plätzen
       return `<div class="kg-table"><div class="st-builds">${build}</div>${mineHTML}${ui.ring ? '' : `<div class="st-others">${others}</div>`}</div>`;
     },

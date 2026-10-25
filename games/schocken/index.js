@@ -5,7 +5,7 @@ import { turnEvents } from '../../server/turn-room.js';
 export default {
   id: 'schocken',
   name: 'Schocken',
-  description: 'Drei Würfel, bis zu drei Würfe, 13 Deckel. Wer am Ende alle Deckel hat, verliert die Hälfte.',
+  description: 'Drei Würfel, bis zu drei Würfe, 13 Deckel. Wer am Ende alle Deckel hat, verliert die Halbzeit.',
   players: '2–8 Spieler',
   createFields: [],
   createHint: 'Wer mitspielen will, klickt am Tisch auf „Mitspielen“. Der Host startet die Runde.',

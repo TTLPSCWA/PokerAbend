@@ -19,5 +19,7 @@ export default {
     play: (room, p, { card, wish, call }) => room.play(p.id, str(card), str(wish) || null, !!call),
     draw: (room, p) => room.draw(p.id),
     pass: (room, p) => room.pass(p.id),
+    catch: (room, p) => room.catchForgot(p.id), // Erwischen: vergessenes „UNO“ melden
+    late: (room, p) => room.lateCall(p.id),     // … oder selbst noch schnell sagen
   },
 };

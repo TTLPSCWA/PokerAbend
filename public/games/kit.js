@@ -8,8 +8,10 @@
 //   sort: { color(c), number(c) } → Sortierschlüssel für die Hand (Knopf „Sortieren“),
 //   onDrop(quelle, ziel, S) → Karte per Ziehen abgelegt (Desktop; Ziele tragen data-drop),
 //   peek: true → bei überlappender Hand (Handy) erst vergrößern, zweites Tippen spielt,
-//   direction: false → keinen Richtungspfeil zeigen, prefs() → eigene Schalter im Reiter „Ich“,
-//   onClick(el, S) für Elemente mit data-g
+//   direction: false → keinen Richtungspfeil zeigen, afterRender(S) → nach dem Zeichnen (z. B. Animationen),
+//   prefs() → eigene Schalter im Reiter „Ich“, standExtra(S) → zusätzlicher Teil im Reiter „Stand“,
+//   intro: [[Überschrift, Text], …] → Erste Schritte beim ersten Spiel (3 Schritte), sounds(S, prev) → eigene Töne (Namen aus SFX),
+//   translate(text) → Texte vom Server anders benennen (z. B. deutsches Blatt), onClick(el, S) für Elemente mit data-g
 // Läuft nach /core.js ($, esc, send, toast, ask, beep, socket …).
 'use strict';
 
@@ -45,6 +47,16 @@ function dieHTML(n, { cls = '', attrs = '', tag = 'span' } = {}) {
   return `<${tag} class="die ${cls}" ${attrs} role="img" aria-label="Würfel ${n || 'leer'}">${[...Array(9)].map((_, i) => `<i class="${PIPS[n]?.includes(i) ? 'on' : ''}"></i>`).join('')}</${tag}>`;
 }
 const backCard = (label = '') => `<div class="kc kc-back" aria-hidden="true">${label}</div>`;
+
+  // Welcher Ton passt zu einer Aktion („legt Herz König“, „UNO!“, „würfelt 5“ …)? Wichtigeres zuerst.
+const ACT_SOUNDS = [[/^(UNO|Mau)!/, 'call'], [/^Erwischt/, 'catch'], [/schlägt/, 'hit'], [/zweifelt/, 'drum'], [/^Phase d+ ✓/, 'done'],
+  [/setzt aus/, 'skip'], [/würfelt/, 'dice'], [/^(zieht|nimmt Ablage|erwischt)/, 'draw'], [/^(legt|wirft ab|ungesehen)/, 'card']];
+function actSound(acts, prev) {
+  const seen = Math.max(0, ...Object.values(prev || {}).map((a) => a.n));
+  const fresh = Object.values(acts || {}).filter((a) => a.n > seen).map((a) => a.text);
+  for (const [re, name] of ACT_SOUNDS) if (fresh.some((t) => re.test(t))) return name;
+  return null;
+}
 
 // ---------- Rahmen ----------
 function kitGame(def) {
@@ -104,10 +116,11 @@ function kitGame(def) {
   // Was am Platz bzw. in der Leiste über einen Spieler steht
   // Am eigenen Platz unten reicht die kurze Zeile – Hand, Stapel usw. liegen ohnehin vor dir
   const infoOf = (p, seat) => (S.phase !== 'lobby' && p.inRound !== undefined ? (seat && def.seat && p.id !== S.you?.id ? def.seat(p, S) : def.playerInfo?.(p, S)) || '' : '');
+  const tr = (t) => (def.translate ? def.translate(t) : t);
   const lastAct = () => Math.max(0, ...Object.values(S.acts || {}).map((a) => a.n));
   const bubble = (p, cls) => {
     const a = S.acts?.[p.id];
-    return a ? `<span class="${cls} ${a.n === lastAct() ? 'fresh' : ''}">${esc(a.text)}</span>` : '';
+    return a ? `<span class="${cls} ${a.n === lastAct() ? 'fresh' : ''}">${esc(tr(a.text))}</span>` : '';
   };
   const nameHTML = (p) => `${esc(p.name)}${p.isHost ? ` ${ICON.crown}<span class="sr-only">(Host)</span>` : ''}`;
   const statusText = (p) => [p.id === S.turnId && '<em>am Zug</em>', !p.connected && `${ICON.offline} offline`,
@@ -115,7 +128,7 @@ function kitGame(def) {
   const pClass = (p) => `${p.id === S.turnId ? 'turn' : ''} ${p.id === S.you?.id ? 'me' : ''} ${p.connected ? '' : 'is-offline'} ${S.phase === 'playing' && !p.inRound ? 'out' : ''}`;
 
   function seatHTML(p) {
-    return `<div class="ks ${pClass(p)}">
+    return `<div class="ks ${pClass(p)}" data-pid="${esc(p.id)}">
       ${bubble(p, 'ks-bubble')}
       <div class="ks-head"><span class="kp-av" aria-hidden="true">${avatarHTML(p)}</span>
         <span class="kp-txt"><b>${nameHTML(p)}${p.id === S.you?.id ? ' <small>(du)</small>' : ''}</b><small>${statusText(p)}</small></span></div>
@@ -157,7 +170,7 @@ function kitGame(def) {
     return dir + players.map((p) => {
       const info = infoOf(p, false);
       const st = statusText(p);
-      return `<div class="kp ${pClass(p)}">
+      return `<div class="kp ${pClass(p)}" data-pid="${esc(p.id)}">
         <span class="kp-av" aria-hidden="true">${avatarHTML(p)}</span>
         <span class="kp-txt"><b>${nameHTML(p)}</b>
           <small>${st}${st && info ? ' · ' : ''}${info}</small>${bubble(p, 'kp-act')}</span>
@@ -195,6 +208,7 @@ function kitGame(def) {
     document.documentElement.style.setProperty('--dock-h', $('#kg-dock').offsetHeight + 'px');
     setupHand();
     if (panel) renderPanel();
+    def.afterRender?.(S);
   }
 
   // Hand nach dem Zeichnen: Ziehen auf die Ablage (Maus) und Überlappen bei vielen Karten (Handy)
@@ -304,16 +318,18 @@ function kitGame(def) {
       body.innerHTML = `<ul class="log">${list.filter((l) => l.cat !== 'hand').map((l) => {
         const head = l.hand !== round ? `<li class="hand">${l.hand ? `Runde #${l.hand}` : 'Vor der ersten Runde'}</li>` : '';
         round = l.hand;
-        return `${head}<li class="${esc(l.kind)}">${esc(l.text)}</li>`;
+        return `${head}<li class="${esc(l.kind)}">${esc(tr(l.text))}</li>`;
       }).join('')}</ul>
         ${fullLog ? '' : '<button class="btn btn-sm btn-ghost" data-kit="history">Ganzen Verlauf laden</button>'}`;
       if (atBottom || force) body.scrollTop = body.scrollHeight;
     } else if (panel === 'stand') {
-      body.innerHTML = `<table class="standings"><thead><tr><th></th><th>Name</th><th class="num">${esc(S.scoreLabel)}</th><th class="num">Siege</th></tr></thead><tbody>
+      const winsCol = S.scoreLabel !== 'Siege'; // zählt das Spiel ohnehin Siege, nicht zweimal zeigen
+      body.innerHTML = `<table class="standings"><thead><tr><th></th><th>Name</th><th class="num">${esc(S.scoreLabel)}</th>${winsCol ? '<th class="num">Siege</th>' : ''}</tr></thead><tbody>
         ${S.standings.map((p, k) => `<tr><td><span class="rank ${k < 3 ? 'r' + (k + 1) : ''}" aria-label="Platz ${k + 1}">${k + 1}</span></td>
-          <td><span class="mini-av">${avatarHTML(p)}</span> ${esc(p.name)}</td><td class="num">${p.score}</td><td class="num">${p.wins}</td></tr>`).join('')}
+          <td><span class="mini-av">${avatarHTML(p)}</span> ${esc(p.name)}</td><td class="num">${p.score}</td>${winsCol ? `<td class="num">${p.wins}</td>` : ''}</tr>`).join('')}
         </tbody></table>
         <p class="hint">${S.lowWins ? 'Wenig Punkte sind gut.' : 'Viel ist gut.'}</p>
+        ${def.standExtra ? def.standExtra(S) : ''}
         <button class="btn btn-sm btn-ghost" data-leaderboard="${def.id}">Bestenliste aller Abende</button>`;
     } else if (panel === 'rules') {
       body.innerHTML = `<div class="kg-rules">${def.rules}</div>`;
@@ -322,8 +338,9 @@ function kitGame(def) {
       const t = (k, label, sub = '') => `<label class="toggle"><span>${label}${sub ? `<small>${sub}</small>` : ''}</span><input type="checkbox" role="switch" data-pref="${k}" ${prefs[k] ? 'checked' : ''}></label>`;
       body.innerHTML = `<div class="kg-switches">
         ${t('marks', 'Farbsymbole auf Karten', `Jede Farbe hat zusätzlich eine Form: ${Object.keys(MARK_SHAPE).map((k) => `${colorMark(k)} ${MARK_NAME[k]}`).join(', ')}`)}
-        ${t('sound', 'Töne')}
+        ${t('sound', 'Töne', 'Karten, Würfel, „UNO!“ und ein Signal, wenn du dran bist')}
         ${t('calm', 'Animationen aus', 'Karten, Würfel und Figuren springen ohne Bewegung an ihren Platz. Ist am Gerät „Bewegung reduzieren“ an, gilt das sowieso.')}
+        ${t('intros', 'Erste Schritte zeigen', 'Kurze Einführung beim ersten Spiel jeder Art. Einschalten zeigt sie wieder.')}
         ${def.prefs ? def.prefs() : ''}
       </div>`;
     } else if (panel === 'host') {
@@ -430,7 +447,12 @@ function kitGame(def) {
   document.addEventListener('change', (e) => {
     if (!isMine()) return;
     const t = e.target;
-    if (t.dataset?.pref && t.closest('#kg')) { prefs[t.dataset.pref] = t.type === 'checkbox' ? t.checked : t.value; savePrefs(); return; }
+    if (t.dataset?.pref && t.closest('#kg')) {
+      prefs[t.dataset.pref] = t.type === 'checkbox' ? t.checked : t.value;
+      if (t.dataset.pref === 'intros' && t.checked) resetIntros();
+      savePrefs();
+      return;
+    }
     if (t.dataset?.kitSet) send('settings', { [t.dataset.kitSet]: t.type === 'checkbox' ? t.checked : Number(t.value) }).then((r) => r?.ok && toast('Gespeichert – gilt ab der nächsten Runde'));
     else if (t.closest?.('#kg') && t.dataset?.g !== undefined) def.onChange?.(t, S, e);
   });
@@ -449,7 +471,10 @@ function kitGame(def) {
   }
 
   Object.assign(mod, {
-    show() { mount(); render(); },
+    show() {
+      mount(); render();
+      if (def.intro) setTimeout(() => { if (isMine() && !$('#dlg').open) showIntro(def.id, def.name, def.intro); }, 400);
+    },
     onState(st) {
       const prev = S;
       S = st;
@@ -459,6 +484,10 @@ function kitGame(def) {
       if (now && !before) { beep(740, 140, 0.06); setTimeout(() => beep(988, 160, 0.05), 140); if (document.hidden) document.title = '● Du bist dran – Spieleabend'; }
       if (!now) document.title = 'Spieleabend';
       if (!now || !before) peekKey = null;
+      // Spiel-Töne: neue Runde = mischen, Rundenende = Sieg oder Schluss, sonst passend zur letzten Aktion
+      if (prev && prev.roundNo !== st.roundNo && st.phase === 'playing') sfx('shuffle');
+      else if (prev?.phase === 'playing' && st.phase === 'over') sfx(st.result?.winners?.includes(st.you?.id) ? 'win' : 'end');
+      else if (prev && prev.roundNo === st.roundNo) { const name = def.sounds?.(st, prev) || actSound(st.acts, prev.acts); if (name) sfx(name); }
       sortHand(st);
       def.onState?.(st, prev);
       render();
@@ -477,14 +506,18 @@ function kitShedding(opts) {
   let wishFor = null; // Karte, für die gerade eine Farbe gewählt wird
   let callArmed = false; // „Mau“/„UNO“ für den nächsten Zug angesagt
   const kit = kitGame({
-    id: opts.id, name: opts.name, rules: opts.rules, short: opts.short, house: opts.house, sort: opts.sort, prefs: opts.prefs,
+    id: opts.id, name: opts.name, house: opts.house, sort: opts.sort, prefs: opts.prefs, translate: opts.translate, intro: opts.intro,
+    get rules() { return opts.rules; },
+    get short() { return opts.short; },
     peek: true,
     playerInfo: (p) => `${p.cards} Karte${p.cards === 1 ? '' : 'n'}${p.last ? ` · <b class="kg-call">${opts.lastWord}</b>` : ''}`,
     seat: (p) => `${fanHTML(p.cards)}<span>${p.cards} Karte${p.cards === 1 ? '' : 'n'}</span>${p.last ? `<b class="kg-call">${opts.lastWord}</b>` : ''}`,
     hint(S, myTurn) {
       const g = S.g;
+      if (g.forgot && g.forgot !== S.you?.id) return `<b>${esc(S.players.find((p) => p.id === g.forgot)?.name ?? '?')} hat „${opts.lastWord.replace('!', '')}“ vergessen</b> – tipp schnell auf „Erwischt!“`;
       if (!myTurn) return `${esc(S.players.find((p) => p.id === S.turnId)?.name ?? '?')} ist dran`;
       if (wishFor) return esc(opts.wishLabel);
+      if (g.forgot === S.you?.id) return `Du hast „${opts.lastWord.replace('!', '')}“ vergessen – schnell nachholen, bevor dich jemand erwischt!`;
       const n = g.playable.length;
       if (g.drawn) return n ? 'Gezogen – du darfst die Karte gleich legen oder „Weiter“ sagen' : 'Die gezogene Karte passt nicht – sag „Weiter“';
       if (g.pending) return n ? `${opts.pendingHint(g)} – oder zieh ${g.pending}` : `Zieh ${g.pending} Karten`;
@@ -492,17 +525,21 @@ function kitShedding(opts) {
     },
     onDrop(src) { if (src.dataset.card) src.click(); }, // Ablage ist das einzige Ziel – Ziehen = Antippen
     onState(S) {
-      if (!S.g?.playable?.length) wishFor = null;
+      if (!S.g?.playable?.includes(wishFor)) wishFor = null; // Karte weg oder nicht mehr spielbar
       if (S.turnId !== S.you?.id) callArmed = false;
     },
     main(S) {
       const g = S.g;
-      const wish = g.wish ? `<div class="kg-chip">Gewünscht: <b>${esc(opts.wishName(g.wish))}</b></div>` : '';
+      const wishBig = g.wish && opts.wishBadge
+        ? `<div class="kg-pile kg-wish" role="status"><div class="kg-wish-badge">${opts.wishBadge(g.wish)}</div><small>Gewünscht: <b>${esc(opts.wishName(g.wish))}</b></small></div>` : '';
+      const wish = g.wish && !opts.wishBadge ? `<div class="kg-chip">Gewünscht: <b>${esc(opts.wishName(g.wish))}</b></div>` : '';
       const pending = g.pending ? `<div class="kg-chip warn">${esc(opts.pendingText(g))}</div>` : '';
+      const penalty = g.pending ? `<span class="kg-penalty" aria-label="Strafe: ${g.pending} Karten ziehen">+${g.pending}</span>` : '';
       return `<div class="kg-table">
         <div class="kg-piles">
           <div class="kg-pile">${backCard(g.deck)}<small>Stapel</small></div>
-          <div class="kg-pile" data-drop="discard">${g.top ? opts.card(g.top, { cls: 'big', attrs: 'disabled' }) : ''}<small>Ablage</small></div>
+          <div class="kg-pile kg-discard ${opts.pileClass ? opts.pileClass(g) : ''}" data-drop="discard">${g.top ? opts.card(g.top, { cls: 'big', attrs: 'disabled' }) : ''}${penalty}<small>Ablage</small></div>
+          ${wishBig}
         </div>
         <div class="kg-chips">${wish}${pending}</div>
       </div>`;
@@ -517,16 +554,17 @@ function kitShedding(opts) {
       })).join('');
       let acts = '';
       if (myTurn && wishFor) {
-        acts = `${opts.wishes.map(([v, l, cls]) => `<button class="btn wish ${cls}" data-g="wish" data-wish="${v}">${l}</button>`).join('')}
+        acts = `<div class="kg-wishes" role="group" aria-label="${esc(opts.wishLabel)}">${opts.wishes.map(([v, l, cls]) => `<button class="btn wish ${cls}" data-g="wish" data-wish="${v}">${l}</button>`).join('')}</div>
           <button class="btn btn-ghost" data-g="nowish">Abbrechen</button>`;
       } else if (myTurn) {
-        const word = opts.lastWord.replace('!', '');
         const call = g.callNeeded && (g.hand || []).length === 2
-          ? `<button class="btn ${callArmed ? 'btn-brass' : ''}" data-g="call" aria-pressed="${callArmed}" title="Bei der vorletzten Karte selbst sagen – sonst gibt es Strafkarten">„${word}“ sagen</button>` : '';
+          ? `<button class="btn btn-call ${callArmed ? 'armed' : ''}" data-g="call" aria-pressed="${callArmed}" title="Bei der vorletzten Karte selbst sagen – sonst gibt es Strafkarten">${callArmed ? '✓ ' : ''}${opts.lastWord}</button>` : '';
         acts = call + (g.drawn
           ? '<button class="btn" data-g="pass">Weiter</button>'
           : `<button class="btn ${playable.size ? '' : 'btn-brass'}" data-g="draw">${g.pending ? `${g.pending} Karten ziehen` : 'Karte ziehen'}</button>`);
       }
+      if (g.forgot === S.you?.id) acts = `<button class="btn btn-call" data-g="late">${opts.lastWord}</button>` + acts;
+      else if (g.forgot) acts = `<button class="btn btn-call catch" data-g="catch">Erwischt! (+2 für ${esc(S.players.find((p) => p.id === g.forgot)?.name ?? '?')})</button>` + acts;
       return `<div class="kg-hand" role="group" aria-label="Deine Karten">${hand}</div><div class="kg-acts">${acts}</div>`;
     },
     onClick(t, S) {
@@ -540,6 +578,8 @@ function kitShedding(opts) {
       else if (g === 'nowish') { wishFor = null; kit.render(); }
       else if (g === 'draw') send('draw');
       else if (g === 'pass') send('pass');
+      else if (g === 'catch') send('catch');
+      else if (g === 'late') send('late');
     },
   });
   return kit;

@@ -69,7 +69,7 @@ Tische und Chipstände liegen im Docker-Volume `poker-data` und überleben Neust
 | Mau-Mau | 2–8 | 7 zieht 2 (stapelbar), 8 setzt aus, Bube wünscht (nicht auf Bube). „Mau!“ automatisch. Wertung: Augen der Restkarten, wenig ist gut |
 | UNO | 2–8 | 108 Karten, Aussetzen, Richtungswechsel, +2, Farbwahl (+4). Kein Stapeln. Gewinner kassiert die Punkte der anderen |
 | Mäxchen | 2–10 | Verdeckt würfeln, höher ansagen, anzweifeln. Mäxchen kostet 2 Leben. Der Letzte mit Leben gewinnt |
-| Schocken | 2–8 | Bis zu 3 Würfe, Schock out / Schock / General / Straße / Zahl, 13 Deckel. Wer alle Deckel hat, verliert die Hälfte |
+| Schocken | 2–8 | Bis zu 3 Würfe, Schock aus / Schock / General / Straße / Zahl, 13 Deckel. Wer alle Deckel hat, verliert die Halbzeit |
 | Mensch ärgere Dich nicht | 2–4 | Raus mit der 6, drei Versuche, schlagen, Ziel passend, nicht überspringen |
 | Phase 10 | 2–6 | Zehn Phasen nacheinander, Joker, Aussetzen, Anlegen. Wer zuerst Phase 10 schafft, gewinnt |
 | Skip-Bo | 2–6 | Reihen 1–12 bauen, Joker, 4 Ablagen. Wer seinen Stapel zuerst los ist, gewinnt (25 + 5 je Restkarte der anderen) |
@@ -87,12 +87,19 @@ Gehen bei Skip-Bo während der Runde die Nachziehkarten aus, darf ein Spieler oh
 | Spiel | Optionen (Standard) |
 | --- | --- |
 | Mau-Mau | Karten pro Spieler (5)<br>7: der Nächste zieht 2 (an)<br>7 auf 7 legen (dann 4, 6 …) (an)<br>8: der Nächste setzt aus (an)<br>Bube: Farbe wünschen (an)<br>Bube auf Bube erlaubt (aus)<br>Ass: nochmal dran (aus)<br>„Mau“ selbst sagen (vergessen = 1 Strafkarte) (aus)<br>Erste Karte wirkt (7 und 8) (aus) |
-| UNO | Karten pro Spieler (7)<br>+2 und +4 stapeln (aus)<br>Ziehen, bis eine Karte passt (aus)<br>„UNO“ selbst sagen (vergessen = 2 Strafkarten) (aus)<br>+4 nur, wenn man die Farbe nicht hat (aus)<br>Startkarte wirkt (Aussetzen, Richtung, +2, Farbwahl) (aus) |
+| UNO | Karten pro Spieler (7)<br>+2 und +4 stapeln (aus)<br>Ziehen, bis eine Karte passt (aus)<br>„UNO“ selbst sagen (vergessen = 2 Strafkarten) (aus)<br>+4 nur, wenn man die Farbe nicht hat (aus)<br>Startkarte wirkt (Aussetzen, Richtung, +2, Farbwahl) (aus)<br>Erwischen: wer „UNO“ vergisst, kann gemeldet werden (+2) (aus) |
 | Mäxchen | Leben pro Spieler (3)<br>Mäxchen kostet 2 Leben (an)<br>Ungesehen weitergeben erlaubt (aus) |
-| Schocken | Zwei Sechsen zu einer Eins drehen (aus)<br>Ganzes Spiel: 2 Hälften und Finale (aus) |
+| Schocken | Zwei Sechsen zu einer Eins drehen (aus)<br>Ganzes Spiel: 2 Halbzeiten und Finale (aus) |
 | Mensch ärgere Dich nicht | Schlagzwang (aus)<br>Nach einer 6 nochmal würfeln (an)<br>Drei Versuche, wenn keine Figur draußen ist (an)<br>Mit einer 6 muss man raus (und das Startfeld räumen) (an) |
 | Phase 10 | Aussetzen: Spieler frei wählen (sonst setzt der Nächste aus) (an)<br>Phase genau in der verlangten Größe auslegen (an)<br>Aussetzen als erste Ablage: der Erste setzt aus (aus) |
 | Skip-Bo | Karten im eigenen Stapel (offiziell 30, ab 5 Spielern 20) (20) |
+
+### Am Tisch: Plätze, Hinweise, „Ich“
+
+- Ab 900 px Breite sitzen die Gegner rund um den Tisch (Avatar, Name, Karten/Leben/Deckel/Phase, letzte Aktion als Sprechblase), du selbst unten. Auf dem Handy bleibt oben eine kompakte Leiste.
+- Über der eigenen Hand steht immer ein Satz, was man gerade tun kann; spielbare Karten heben sich an und haben einen Goldrand. Karten lassen sich antippen oder (am Computer) auf die Ablage ziehen, auf dem Handy überlappt eine volle Hand – erstes Tippen vergrößert, zweites legt.
+- Nach jeder Runde zeigt ein großes Fenster die Punkte; der Host startet dort die nächste Runde oder wechselt das Spiel.
+- Unter „Ich“ (pro Browser gemerkt): **Farbsymbole** auf farbigen Karten (Rot ▲, Gelb ●, Grün ■, Blau ◆ – Standard an), **Töne** (Karten, Würfel, „UNO!“ – alles per Web Audio erzeugt, keine Dateien), **Animationen aus** (gilt auch bei „Bewegung reduzieren“ am Gerät), **Erste Schritte** (kurze Einführung beim ersten Spiel jeder Art), bei Mau-Mau das **Kartenblatt** (französisch oder deutsch).
 
 ### Spiel wechseln, Nochmal
 

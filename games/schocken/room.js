@@ -1,11 +1,11 @@
-// Schocken – Würfelspiel mit drei Würfeln und 13 Deckeln. Hausregeln (vereinfacht, eine „Hälfte“ pro Runde):
+// Schocken – Würfelspiel mit drei Würfeln und 13 Deckeln. Hausregeln (vereinfacht, eine „Halbzeit“ pro Runde):
 // Jeder würfelt nacheinander bis zu dreimal; Würfel kann man liegen lassen und den Rest neu werfen.
 // Wie oft gewürfelt werden darf, legt der Erste fest (seine Wurfzahl gilt für alle danach).
-// Wertung (hoch nach niedrig): Schock out (1-1-1) > Schock X (1-1-X) > General (drei Gleiche) > Straße (drei in Folge) > Zahl (höchste zuerst, z. B. 6-5-3).
+// Wertung (hoch nach niedrig): Schock aus (1-1-1) > Schock X (1-1-X) > General (drei Gleiche) > Straße (drei in Folge) > Zahl (höchste zuerst, z. B. 6-5-3).
 // Gleichstand: weniger Würfe ist besser, dann wer früher dran war.
 // Der Schlechteste bekommt Deckel: Schock X = X, General = 3, Straße = 2, Zahl = 1 (nach dem Wurf des Besten).
 // Erst vom Stapel in der Mitte, ist der leer, vom Besten. Wer dann keinen Deckel hat, ist raus.
-// Wer am Ende alle 13 hat – oder gegen einen Schock out verliert –, verliert die Hälfte. Wertung: verlorene Hälften (wenig ist gut).
+// Wer am Ende alle 13 hat – oder gegen einen Schock aus verliert –, verliert die Halbzeit. Wertung: verlorene Halbzeiten (wenig ist gut).
 import { TurnRoom } from '../../server/turn-room.js';
 import { die } from '../../server/random.js';
 
@@ -15,7 +15,7 @@ export const DECKEL = 13;
 export function judge(d) {
   const s = [...d].sort((a, b) => b - a);
   const ones = d.filter((x) => x === 1).length;
-  if (ones === 3) return { cat: 6, val: 0, name: 'Schock out', deckel: DECKEL };
+  if (ones === 3) return { cat: 6, val: 0, name: 'Schock aus', deckel: DECKEL };
   if (ones === 2) return { cat: 5, val: s[0], name: `Schock ${s[0]}`, deckel: s[0] };
   if (s[0] === s[2]) return { cat: 4, val: s[0], name: `General ${s[0]}`, deckel: 3 };
   if (s[0] - 1 === s[1] && s[1] - 1 === s[2]) return { cat: 3, val: s[0], name: `Straße ${s[2]}-${s[1]}-${s[0]}`, deckel: 2 };
@@ -25,14 +25,14 @@ export function judge(d) {
 export class Room extends TurnRoom {
   static OPTIONS = [
     { key: 'sixToOne', label: 'Zwei Sechsen zu einer Eins drehen', type: 'bool' },
-    { key: 'fullGame', label: 'Ganzes Spiel: 2 Hälften und Finale', type: 'bool' },
+    { key: 'fullGame', label: 'Ganzes Spiel: 2 Halbzeiten und Finale', type: 'bool' },
   ];
   defaultSettings() { return { sixToOne: false, fullGame: false }; }
 
   constructor(code, settings, onChange) {
-    super(code, settings, onChange, { minPlayers: 2, maxPlayers: 8, lowWins: true, scoreLabel: 'verlorene Hälften' });
+    super(code, settings, onChange, { minPlayers: 2, maxPlayers: 8, lowWins: true, scoreLabel: 'verlorene Halbzeiten' });
     this.roll = die;
-    this.series = []; // Verlierer der Hälften im laufenden Spiel (Option „Ganzes Spiel“)
+    this.series = []; // Verlierer der Halbzeiten im laufenden Spiel (Option „Ganzes Spiel“)
     this.finale = null; // [A, B]: die nächste Runde ist das Finale
     this.isFinale = false;
     this.resetHalf();
@@ -49,14 +49,14 @@ export class Room extends TurnRoom {
 
   setupRound() {
     this.resetHalf();
-    // Finale: nur die beiden Verlierer der Hälften (wenn beide noch mitspielen)
+    // Finale: nur die beiden Verlierer der Halbzeiten (wenn beide noch mitspielen)
     this.isFinale = false;
     if (this.settings.fullGame && this.finale) {
       const both = this.finale.filter((id) => this.order.includes(id));
       if (both.length === 2) { this.order = both; this.isFinale = true; this.say(`Finale: ${this.name(both[0])} gegen ${this.name(both[1])}`, 'warn'); }
       else { this.finale = null; this.series = []; }
     }
-    this.halfPlayers = [...this.order]; // wer diese Hälfte angefangen hat
+    this.halfPlayers = [...this.order]; // wer diese Halbzeit angefangen hat
     for (const id of this.order) this.held[id] = 0;
     this.startPass(0);
   }
@@ -126,18 +126,19 @@ export class Room extends TurnRoom {
     const key = (p) => { const j = judge(this.dice[p]); return [j.cat, j.val, -this.throws[p], -ids.indexOf(p)]; };
     const cmp = (a, b) => { const x = key(a), y = key(b); for (let i = 0; i < 4; i++) if (x[i] !== y[i]) return x[i] - y[i]; return 0; };
     const sorted = [...ids].sort(cmp);
-    return { worst: sorted[0], best: sorted[sorted.length - 1] };
+    return { worst: sorted[0], best: sorted[sorted.length - 1], sorted };
   }
 
   evaluate() {
-    const { worst, best } = this.ranking();
+    const { worst, best, sorted } = this.ranking();
     const j = judge(this.dice[best]);
     if (j.cat === 6) {
-      this.say(`Schock out von ${this.name(best)}!`, 'win');
+      this.say(`Schock aus von ${this.name(best)}!`, 'win');
       return this.loseHalf(worst);
     }
     let n = j.deckel;
-    if (this.stack > 0) {
+    const fromStack = this.stack > 0;
+    if (fromStack) {
       n = Math.min(n, this.stack);
       this.stack -= n;
       this.held[worst] += n;
@@ -147,7 +148,9 @@ export class Room extends TurnRoom {
       this.held[best] -= n; this.held[worst] += n;
       this.say(`${this.name(best)} gibt ${this.name(worst)} ${n} Deckel (${j.name})`, 'win');
     }
-    this.lastPass = { best, worst, name: j.name, deckel: n, dice: { ...this.dice } };
+    // Übersicht des Durchgangs, bester Wurf zuerst
+    const rank = [...sorted].reverse().map((p) => ({ id: p, name: judge(this.dice[p]).name, dice: [...this.dice[p]], throws: this.throws[p] }));
+    this.lastPass = { best, worst, name: j.name, deckel: n, dice: { ...this.dice }, rank, fromStack };
     if (this.stack === 0) {
       // Ohne Deckel ist man raus
       for (const p of [...this.order]) {
@@ -160,21 +163,21 @@ export class Room extends TurnRoom {
 
   loseHalf(id) {
     const winners = this.halfPlayers.filter((p) => p !== id);
-    if (!this.settings.fullGame) return this.finishRound(winners, `${this.name(id)} verliert die Hälfte`, { [id]: 1 });
-    // Ganzes Spiel: zwei Hälften, bei verschiedenen Verlierern ein Finale
+    if (!this.settings.fullGame) return this.finishRound(winners, `${this.name(id)} verliert die Halbzeit`, { [id]: 1 });
+    // Ganzes Spiel: zwei Halbzeiten, bei verschiedenen Verlierern ein Finale
     if (this.isFinale) {
       this.series = []; this.finale = null;
       return this.finishRound(winners, `${this.name(id)} verliert das Finale und damit das Spiel`, { [id]: 1 });
     }
     this.series.push(id);
-    if (this.series.length === 1) return this.finishRound([], `${this.name(id)} verliert die 1. Hälfte`);
+    if (this.series.length === 1) return this.finishRound([], `${this.name(id)} verliert die 1. Halbzeit`);
     const [a, b] = this.series;
     if (a === b) {
       this.series = [];
-      return this.finishRound(winners, `${this.name(id)} verliert beide Hälften und damit das Spiel`, { [id]: 1 });
+      return this.finishRound(winners, `${this.name(id)} verliert beide Halbzeiten und damit das Spiel`, { [id]: 1 });
     }
     this.finale = [a, b]; this.series = [];
-    this.finishRound([], `${this.name(id)} verliert die 2. Hälfte – jetzt Finale: ${this.name(a)} gegen ${this.name(b)}`);
+    this.finishRound([], `${this.name(id)} verliert die 2. Halbzeit – jetzt Finale: ${this.name(a)} gegen ${this.name(b)}`);
   }
 
   onDropOut(p) {
@@ -192,6 +195,7 @@ export class Room extends TurnRoom {
       dice: this.dice, kept: this.kept, throws: this.throws, done: [...this.done],
       judged: Object.fromEntries(Object.entries(this.dice).map(([p, d]) => [p, judge(d).name])),
       lastPass: this.lastPass, forced: this.forced, reroll: this.reroll,
+      rank: [...this.ranking().sorted].reverse(), // laufender Durchgang: bester Wurf zuerst (vorläufig, solange nicht alle fertig sind)
       series: this.series.map((p) => this.name(p)), finale: this.isFinale,
     };
   }

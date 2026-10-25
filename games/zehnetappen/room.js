@@ -250,6 +250,8 @@ export class Room extends TurnRoom {
       top: this.discard[this.discard.length - 1] ?? null, deck: this.deck.length,
       step: this.currentId === viewerId ? this.step : null,
       myPhase: this.phaseOf(viewerId), phaseText: phaseText(this.phaseOf(viewerId)),
+      // Aufbau der eigenen Phase für die Ausleg-Felder: [{ type, size }]
+      myGroups: (PHASES[this.phaseOf(viewerId)] || []).map(([type, size]) => ({ type, size })),
       phases: Object.fromEntries(this.order.map((id) => [id, phaseText(this.phaseOf(id))])),
     };
   }

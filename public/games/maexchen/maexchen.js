@@ -1,13 +1,37 @@
 // Mäxchen im Browser (Regeln: games/maexchen/room.js). Der eigene Wurf ist nur für einen selbst sichtbar.
+// Würfel liegen unter einem Becher; „Anheben“ zeigt den Wurf nur dir. Beim Anzweifeln hebt sich der Becher für alle.
 'use strict';
 {
   const MAEXCHEN = 21;
   const vName = (v) => (v === MAEXCHEN ? 'Mäxchen' : v % 11 === 0 ? `Pasch ${v / 11}` : String(v));
   const digits = (v) => (v === MAEXCHEN ? [2, 1] : [Math.floor(v / 10), v % 10]);
-  let choice = null; // gewählte Ansage
+  const valueOf = ([a, b]) => { const hi = Math.max(a, b), lo = Math.min(a, b); return hi === 2 && lo === 1 ? MAEXCHEN : hi * 10 + lo; };
+  const special = (v) => (v === MAEXCHEN ? 'mx-max' : v % 11 === 0 ? 'mx-pasch' : '');
+  let lifted = false;   // eigener Becher angehoben (nur bei dir)
+  let blindMode = false; // „Ungesehen weitergeben“: Ansage-Knöpfe geben ungesehen weiter
+  let revealKey = '';   // welches Aufdecken schon gezeigt wurde (Animation nur einmal)
+
+  // Becher (selbst gezeichnet): Lederbecher mit Rand und Naht
+  const CUP = `<svg class="mx-cup-svg" viewBox="0 0 120 110" aria-hidden="true">
+    <path d="M16 12h88l-10 88H26z" fill="#7A4A2A"/><path d="M16 12h88l-2 14H18z" fill="#5E3820"/>
+    <path d="M24 40h72M22 64h76" stroke="#94603A" stroke-width="2" stroke-dasharray="5 4"/>
+    <ellipse cx="60" cy="100" rx="34" ry="6" fill="#4A2C18"/></svg>`;
+  // Bühne: Würfel auf dem Filz, Becher darüber – angehoben oder zu
+  const stage = ({ dice = null, open = false, cls = '', label = '' }) => `<div class="mx-stage ${open ? 'open' : ''} ${cls}" role="img" aria-label="${esc(label)}">
+      <div class="mx-felt"></div>
+      <div class="mx-dice">${(dice || [0, 0]).map((d) => dieHTML(d, { cls: `big ${dice ? '' : 'hidden'}` })).join('')}</div>
+      <div class="mx-cup">${CUP}</div>
+    </div>`;
+
   const kit = kitGame({
     id: 'maexchen',
     name: 'Mäxchen',
+    // Erste Schritte beim ersten Spiel (3 Schritte, abschaltbar unter „Ich“)
+    intro: [
+      ["Würfeln", "Du würfelst verdeckt. Tipp auf den Becher – nur du siehst den Wurf."],
+      ["Ansagen", "Tipp einen Wert an, der höher ist als die letzte Ansage – ehrlich oder geblufft. <b>Mäxchen</b> (2 und 1) ist das Höchste."],
+      ["Glauben oder zweifeln", "Der Nächste glaubt (und würfelt selbst) oder zweifelt an. Wer beim Aufdecken falsch liegt, verliert ein Leben."],
+    ],
     short: [
       "Würfle verdeckt mit zwei Würfeln – nur du siehst den Wurf.",
       "Die höhere Zahl steht vorne: 5 und 3 = 53. Pasch schlägt jede Zahl, <b>Mäxchen</b> (2 und 1) schlägt alles.",
@@ -18,12 +42,17 @@
     ],
     house: () => ['Auf Mäxchen: anzweifeln oder gelten lassen (kostet 1 Leben)'],
     playerInfo: (p, S) => (p.out || (S.phase !== 'lobby' && !p.inRound && p.seated && !p.lives) ? 'raus' : `<span class="lives" aria-hidden="true">${'♥'.repeat(p.lives || 0)}</span><span class="sr-only">${p.lives} Leben</span>`),
-    onState(S, prev) { if (!S.g?.cup || prev?.g?.cup) return; choice = null; },
+    onState(S, prev) {
+      if (!S.g?.cup) lifted = false;
+      if (S.turnId !== S.you?.id || S.g?.cup || !S.g?.last) blindMode = false;
+      if (prev?.turnId !== S.turnId) lifted = false;
+    },
     hint(S, myTurn) {
       const g = S.g;
       const name = (id) => esc(S.players.find((p) => p.id === id)?.name ?? '?');
       if (!myTurn) return g.last ? `${name(S.turnId)} ist dran: glauben oder anzweifeln?` : `${name(S.turnId)} ist dran`;
       if (g.cup) return g.last ? `Sag mehr als ${vName(g.last.value)} an – ehrlich oder geblufft` : 'Sag deinen Wurf an – ehrlich oder geblufft';
+      if (blindMode) return `Ungesehen weitergeben: sag mehr als ${vName(g.last.value)} an`;
       if (g.last?.value === MAEXCHEN) return `${name(g.last.by)} sagt Mäxchen! Anzweifeln oder gelten lassen`;
       if (g.last) return `${name(g.last.by)} sagt ${vName(g.last.value)} – glauben und würfeln oder anzweifeln`;
       return 'Würfle und sag an';
@@ -33,55 +62,70 @@
       const name = (id) => esc(S.players.find((p) => p.id === id)?.name ?? '?');
       let center = '';
       if (g.reveal) {
+        // Aufdecken: Becher hebt sich für alle, dann groß „Gelogen!“ oder „Stimmt!“
         const r = g.reveal;
-        center = `<div class="kg-reveal"><small>Aufgedeckt</small><div class="dice">${digits(r.actual).map((d) => dieHTML(d, { cls: 'big' })).join('')}</div>
-          <b>${vName(r.actual)}</b> – angesagt war ${vName(r.value)}. <b>${name(r.loser)}</b> verliert.</div>`;
+        const lied = r.loser === r.by;
+        const key = `${S.roundNo}:${r.by}:${r.value}:${r.actual}:${r.loser}`;
+        const fresh = key !== revealKey;
+        revealKey = key;
+        center = `<div class="mx-reveal ${fresh ? 'fresh' : ''}">
+          ${stage({ dice: digits(r.actual), open: true, cls: fresh ? 'lifting' : '', label: `Aufgedeckt: ${vName(r.actual)}` })}
+          <b class="mx-verdict ${lied ? 'lie' : 'true'}" role="status">${lied ? '✗ Gelogen!' : '✓ Stimmt!'}</b>
+          <p>Angesagt: <b>${vName(r.value)}</b> · unter dem Becher: <b>${vName(r.actual)}</b><br><b>${name(r.loser)}</b> verliert ${r.value === MAEXCHEN && S.settings.maexchenDouble ? 'zwei Leben' : 'ein Leben'}.</p>
+        </div>`;
+      } else if (g.cup) {
+        // Eigener Wurf: Becher zu, „Anheben“ zeigt ihn nur dir
+        const v = valueOf(g.cup);
+        center = `<div class="mx-mine">
+          <button type="button" class="mx-lift" data-g="lift" aria-pressed="${lifted}" aria-label="${lifted ? 'Becher wieder zu' : 'Becher anheben – nur du siehst den Wurf'}">
+            ${stage({ dice: g.cup, open: lifted, label: lifted ? `Dein Wurf: ${vName(v)}` : 'Becher zu' })}</button>
+          <small>${lifted ? `Dein Wurf: <b class="mx-val">${vName(v)}</b> – nur du siehst ihn` : 'Tipp auf den Becher: Anheben zeigt den Wurf nur dir'}</small>
+        </div>`;
       } else if (g.last) {
-        center = `<div class="kg-announce"><small>${name(g.last.by)} sagt</small><b>${vName(g.last.value)}</b>
-          <div class="dice cup">${dieHTML(0, { cls: 'big hidden' })}${dieHTML(0, { cls: 'big hidden' })}</div><small>Becher zu – glaubst du es?</small></div>`;
-      } else center = '<div class="kg-announce"><small>Neue Runde</small><b>Würfeln und ansagen</b></div>';
-      const mine = g.cup ? `<div class="kg-cup"><small>Dein Wurf (nur du siehst ihn)</small><div class="dice">${g.cup.map((d) => dieHTML(d, { cls: 'big' })).join('')}</div><b>${vName(g.cup[0] === g.cup[1] ? g.cup[0] * 11 : Math.max(...g.cup) === 2 && Math.min(...g.cup) === 1 ? MAEXCHEN : Math.max(...g.cup) * 10 + Math.min(...g.cup))}</b></div>` : '';
-      return `<div class="kg-table">${center}${mine}</div>`;
+        center = `<div class="mx-said"><small>${name(g.last.by)} sagt</small><b class="${special(g.last.value)}">${vName(g.last.value)}</b>
+          ${stage({ label: 'Becher zu' })}<small>Becher zu – glaubst du es?</small></div>`;
+      } else center = `<div class="mx-said"><small>Neue Runde</small><b>Würfeln und ansagen</b>${stage({ open: true, label: 'Leerer Becher' })}</div>`;
+      // Rangliste der Würfe zum Aufklappen, stärkster oben
+      const last = g.last?.value;
+      const ranks = `<details class="mx-ranks"><summary>Rangliste der Würfe</summary>
+        <ol>${[...g.values].reverse().map((v) => `<li class="${special(v)} ${v === last ? 'now' : ''}">${vName(v)}${v === MAEXCHEN ? ' <small>(2 und 1)</small>' : ''}${v === last ? ' <small>← zuletzt angesagt</small>' : ''}</li>`).join('')}</ol></details>`;
+      return `<div class="kg-table">${center}${ranks}</div>`;
     },
     dock(S, myTurn) {
       const g = S.g;
       if (!myTurn) return '';
-      if (g.cup) {
-        const min = g.last ? g.values.indexOf(g.last.value) + 1 : 0;
-        const opts = g.values.slice(min);
-        if (choice === null || !opts.includes(choice)) choice = opts[0];
-        return `<label class="field kg-say"><span>Ansage</span><select data-g="value">${opts.map((v) => `<option value="${v}" ${v === choice ? 'selected' : ''}>${vName(v)}</option>`).join('')}</select></label>
-          <button class="btn btn-brass" data-g="announce">Ansagen</button>`;
-      }
+      // Ansage: große Knöpfe, nur Werte über der letzten Ansage; Päsche und Mäxchen hervorgehoben
+      const buttons = (action) => {
+        const from = g.last ? g.values.indexOf(g.last.value) + 1 : 0;
+        const real = g.cup ? valueOf(g.cup) : null;
+        return `<div class="mx-say" role="group" aria-label="Ansage">${g.values.slice(from).map((v) => `<button class="btn mx-v ${special(v)} ${v === real && lifted ? 'real' : ''}" data-g="${action}" data-v="${v}" ${v === real && lifted ? 'title="Das ist dein Wurf"' : ''}>${vName(v)}${v === real && lifted ? ' ✓' : ''}</button>`).join('')}</div>`;
+      };
+      if (g.cup) return buttons('announce');
+      if (blindMode) return `${buttons('blind')}<div class="kg-acts"><button class="btn btn-ghost" data-g="noblind">Doch nicht</button></div>`;
       if (g.last?.value === MAEXCHEN) return '<button class="btn btn-outline-red" data-g="doubt">Anzweifeln</button><button class="btn" data-g="accept">Gelten lassen (1 Leben)</button>';
       if (g.last) {
-        // Mit Option: Becher ungesehen weitergeben und höher ansagen
-        let blind = '';
-        if (S.settings.blindPass) {
-          const opts = g.values.slice(g.values.indexOf(g.last.value) + 1);
-          if (choice === null || !opts.includes(choice)) choice = opts[0];
-          blind = `<label class="field kg-say"><span>Ansage</span><select data-g="value">${opts.map((v) => `<option value="${v}" ${v === choice ? 'selected' : ''}>${vName(v)}</option>`).join('')}</select></label>
-            <button class="btn" data-g="blind">Ungesehen weitergeben</button>`;
-        }
+        const blind = S.settings.blindPass ? '<button class="btn" data-g="blindmode">Ungesehen weitergeben …</button>' : '';
         return `<button class="btn btn-outline-red" data-g="doubt">Anzweifeln</button><button class="btn btn-brass" data-g="roll">Glauben und würfeln</button>${blind}`;
       }
       return '<button class="btn btn-brass" data-g="roll">Würfeln</button>';
     },
-    onChange(t) { if (t.dataset.g === 'value') choice = Number(t.value); },
     onClick(t) {
       const g = t.dataset.g;
       if (g === 'roll') send('roll');
-      else if (g === 'announce') send('announce', { value: choice });
+      else if (g === 'lift') { lifted = !lifted; kit.render(); }
+      else if (g === 'announce') send('announce', { value: Number(t.dataset.v) });
       else if (g === 'doubt') send('doubt');
       else if (g === 'accept') send('accept');
-      else if (g === 'blind') send('blind', { value: choice });
+      else if (g === 'blindmode') { blindMode = true; kit.render(); }
+      else if (g === 'noblind') { blindMode = false; kit.render(); }
+      else if (g === 'blind') send('blind', { value: Number(t.dataset.v) });
     },
     rules: `<p>Zwei Würfel unter dem Becher. Die höhere Zahl steht vorne: 5 und 3 = <b>53</b>.</p>
-      <p><b>Reihenfolge:</b> 31 < 32 < 41 < … < 65 < Pasch 1 < … < Pasch 6 < <b>Mäxchen</b> (2 und 1).</p>
+      <p><b>Reihenfolge:</b> 31 &lt; 32 &lt; 41 &lt; … &lt; 65 &lt; Pasch 1 &lt; … &lt; Pasch 6 &lt; <b>Mäxchen</b> (2 und 1). Die ganze Liste steht am Tisch unter „Rangliste der Würfe“.</p>
       <ul>
         <li>Du würfelst verdeckt und sagst einen Wert an, der <b>höher</b> sein muss als die letzte Ansage – ehrlich oder geblufft.</li>
         <li>Der Nächste glaubt dir (und würfelt selbst) oder <b>zweifelt an</b>. Dann wird aufgedeckt: Gelogen → du verlierst ein Leben, sonst der Zweifler.</li>
-        <li>Bei Mäxchen geht es um zwei Leben. Auf Mäxchen kann man nur anzweifeln oder es gelten lassen (ein Leben, ohne Aufdecken).</li>
+        <li>Bei Mäxchen geht es um zwei Leben (Hausregel). Auf Mäxchen kann man nur anzweifeln oder es gelten lassen (ein Leben, ohne Aufdecken).</li>
         <li>Wer verliert, fängt neu an. Ohne Leben ist man raus – der Letzte gewinnt.</li>
       </ul>`,
   });

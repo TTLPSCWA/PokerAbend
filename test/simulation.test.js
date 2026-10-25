@@ -40,7 +40,8 @@ const INVARIANTS = {
   stapelrennen: (r) => assert.equal(sum([r.deck, r.used, ...r.build, ...Object.values(r.stock), ...Object.values(r.hand), ...Object.values(r.piles).flat()]), 162, 'Karten'),
 };
 
-// Partien je Spiel, Spielerzahl, Zug-Obergrenze pro Runde
+// Partien je Spiel, Spielerzahl, Zug-Obergrenze pro Runde. SIM_SCALE=10 npm test spielt zehnmal so viele (gut 1,5 Minuten).
+const SCALE = Math.max(1, Number(process.env.SIM_SCALE) || 1);
 const PLAN = {
   maumau: { games: 1500, players: [2, 8], settings: {}, maxSteps: 3000 },
   farbenchaos: { games: 1500, players: [2, 8], settings: {}, maxSteps: 3000 },
@@ -52,10 +53,11 @@ const PLAN = {
 };
 
 for (const [id, plan] of Object.entries(PLAN)) {
-  test(`Massentest ${GAMES[id].name}: ${plan.games} zufällige Partien`, () => {
+  const games = plan.games * SCALE;
+  test(`Massentest ${GAMES[id].name}: ${games} zufällige Partien`, () => {
     const rng = seeded(1234 + id.length);
     let steps = 0, rounds = 0, longest = 0;
-    for (let n = 0; n < plan.games; n++) {
+    for (let n = 0; n < games; n++) {
       const [lo, hi] = plan.players;
       const count = lo + Math.floor(rng() * (hi - lo + 1));
       // Auch Zahlenoptionen variieren. Unmögliche Kartenzahlen prüft review-regressions.test.js separat.

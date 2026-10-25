@@ -215,7 +215,7 @@ test('Mäxchen: zwei Leben bei Mäxchen, Geltenlassen, wer raus ist, und der Sie
 
 // ---------- Schocken ----------
 test('Schocken: Wertung der Würfe', () => {
-  assert.equal(judge([1, 1, 1]).name, 'Schock out');
+  assert.equal(judge([1, 1, 1]).name, 'Schock aus');
   assert.deepEqual([judge([1, 6, 1]).name, judge([1, 6, 1]).deckel], ['Schock 6', 6]);
   assert.deepEqual([judge([4, 4, 4]).name, judge([4, 4, 4]).deckel], ['General 4', 3]);
   assert.deepEqual([judge([3, 5, 4]).name, judge([3, 5, 4]).deckel], ['Straße 3-4-5', 2]);
@@ -247,7 +247,7 @@ test('Schocken: Würfe festlegen, liegen lassen, Deckel vom Stapel', () => {
   assert.equal(r.currentId, r.lastPass.worst, 'Verlierer fängt an');
 });
 
-test('Schocken: Gleichstand – weniger Würfe gewinnt; Schock out beendet die Hälfte', () => {
+test('Schocken: Gleichstand – weniger Würfe gewinnt; Schock aus beendet die Halbzeit', () => {
   const { r, ids: [a, b] } = setup(Schocken, ['Anna', 'Ben']);
   r.roll = seq(6, 5, 2, 1, 6, 5, 1, 2);
   r.throwDice(a); r.throwDice(a, [0, 1]); r.stop(a); // 6-5-1 in 2 Würfen
@@ -258,7 +258,7 @@ test('Schocken: Gleichstand – weniger Würfe gewinnt; Schock out beendet die H
   r.throwDice(first); r.stop(first);
   r.throwDice(other);
   assert.equal(r.phase, 'over');
-  assert.equal(r.scores[other], 1, 'gegen Schock out verliert man die Hälfte');
+  assert.equal(r.scores[other], 1, 'gegen Schock aus verliert man die Halbzeit');
 });
 
 test('Schocken: Stapel leer → Deckel wandern, wer alle hat, verliert', () => {
@@ -269,7 +269,7 @@ test('Schocken: Stapel leer → Deckel wandern, wer alle hat, verliert', () => {
   r.throwDice(b); // Anna hat nach einem Wurf aufgehört → auch Ben nur einer
   assert.equal(r.phase, 'over');
   assert.equal(r.scores[a], 1);
-  assert.match(r.result.text, /Anna verliert die Hälfte/);
+  assert.match(r.result.text, /Anna verliert die Halbzeit/);
 });
 
 // ---------- Mensch ärgere Dich nicht ----------

@@ -1,10 +1,58 @@
-/* Schocken: Deckelstapel und Würfelreihen */
-.kg-stack { display: grid; justify-items: center; gap: 2px; }
-.kg-stack i { display: block; width: 74px; height: 8px; margin-top: -3px; border-radius: 50%; background: #C9A26A; box-shadow: 0 2px 0 #8A6B3C; }
-.kg-stack b { font-size: 28px; margin-top: 6px; }
-.kg-rows { display: grid; gap: 8px; width: min(100%, 560px); }
-.kg-row { display: grid; grid-template-columns: minmax(80px, 1fr) auto; gap: 4px 12px; align-items: center; padding: 10px 14px; border-radius: var(--r-m); background: rgba(0,0,0,.25); }
-.kg-row small { grid-column: 1 / -1; }
-.kg-row.active { outline: 2px solid var(--gold); }
+/* Schocken: runder Bierdeckelstapel, Würfeltablett, Übersicht der Würfe */
 .kg-schocken .kg-main { background: radial-gradient(120% 90% at 50% 25%, #5A4632, #2C2217); }
-.kg-rows .hint { text-align: center; color: #D9CBB5; }
+.sc-table { gap: 12px; }
+.sc-half { display: grid; justify-items: center; }
+.sc-half b { font-size: 20px; letter-spacing: .04em; text-transform: uppercase; color: var(--gold-text); }
+.sc-half small { color: #D9CBB5; }
+.sc-center { display: flex; flex-wrap: wrap; gap: 18px 28px; align-items: center; justify-content: center; }
+
+/* Bierdeckel: rund, von oben, mit Rand und Ring */
+.sc-deckel { display: block; width: 64px; height: 64px; border-radius: 50%;
+  background: radial-gradient(circle, #F4E6C8 0 30%, #C8322D 31% 37%, #F4E6C8 38% 62%, #D7C29A 63% 100%);
+  box-shadow: inset 0 0 0 3px #B79C6B, 0 2px 0 #8A6B3C, 0 3px 6px rgba(0,0,0,.35); }
+.sc-deckel.mini { width: 16px; height: 16px; display: inline-block; vertical-align: -3px; box-shadow: inset 0 0 0 1.5px #B79C6B; }
+.sc-stack { position: relative; display: grid; justify-items: center; padding-top: 30px; min-width: 90px; }
+.sc-stack .sc-deckel { position: absolute; top: calc(30px - var(--i) * 2.2px); left: 50%; margin-left: -32px; }
+.sc-stack .sc-deckel:last-of-type { position: relative; left: 0; margin-left: 0; top: calc(-1 * var(--i) * 2.2px); }
+.sc-stack b { font-size: 26px; margin-top: 4px; position: relative; }
+.sc-stack small { color: #D9CBB5; }
+.sc-seat-deckel b { color: var(--text); }
+/* Fliegende Deckel (Durchgang ausgewertet) */
+.sc-fly { position: fixed; z-index: 50; width: 44px; height: 44px; pointer-events: none; transition: transform .36s ease-in, opacity .36s ease-in; }
+
+/* Tablett mit den Würfeln des Aktiven. Liegen gelassen = rutscht nach vorne, Goldrand und „bleibt“ */
+.sc-tray { display: grid; gap: 8px; justify-items: center; padding: 14px 20px 10px; border-radius: 18px; min-width: 240px;
+  background: linear-gradient(180deg, #7A5534, #5E3F25); box-shadow: inset 0 0 0 4px #4A2F1B, inset 0 8px 18px rgba(0,0,0,.35), 0 4px 12px rgba(0,0,0,.35); }
+.sc-tray.empty { min-height: 90px; place-items: center; max-width: 280px; text-align: center; }
+.sc-tray.empty small { color: #EADBC3; }
+.sc-dice { display: flex; gap: 14px; }
+.sc-slot { display: grid; justify-items: center; gap: 4px; transition: transform .18s ease; }
+.sc-slot small { min-height: 16px; font-size: 12px; font-weight: 700; color: var(--gold-text); text-transform: uppercase; letter-spacing: .05em; }
+.sc-slot.kept { transform: translateY(12px); }
+.sc-slot .die.kept { transform: none; box-shadow: 0 0 0 4px var(--gold), 0 4px 8px rgba(0,0,0,.4); }
+.sc-tray.mine .sc-dice button.die { cursor: pointer; }
+.sc-judge { display: grid; justify-items: center; margin-top: 8px; }
+.sc-judge small { color: #EADBC3; }
+.sc-judge b { font-size: 26px; color: #FFF3D6; }
+
+/* Übersicht aller Würfe, bester oben */
+.sc-overview { width: min(100%, 520px); background: rgba(0,0,0,.25); border-radius: var(--r-m); padding: 10px 14px; }
+.sc-overview h3 { margin: 0 0 6px; font-size: var(--fs-label); text-transform: uppercase; letter-spacing: .06em; color: #D9CBB5; }
+.sc-overview ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.sc-overview li { display: grid; grid-template-columns: 34px minmax(60px, 1fr) auto minmax(70px, auto) 70px; gap: 8px; align-items: center; padding: 4px 6px; border-radius: 8px; }
+.sc-overview li.best { background: rgba(201,154,69,.18); }
+.sc-overview li.best .sc-pos::after { content: ' ★'; color: var(--gold-text); }
+.sc-overview li.worst { background: rgba(184,67,63,.22); }
+.sc-overview li b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sc-overview .sc-name { font-weight: 700; }
+.sc-overview small { color: #D9CBB5; text-align: right; }
+.sc-mini { display: flex; gap: 3px; }
+.sc-mini .die { --d: 20px; box-shadow: none; }
+.sc-result { margin: 8px 0 0; text-align: center; }
+@media (max-width: 640px) {
+  .sc-deckel { width: 50px; height: 50px; }
+  .sc-stack .sc-deckel { margin-left: -25px; }
+  .sc-overview li { grid-template-columns: 30px minmax(50px, 1fr) auto auto; }
+  .sc-overview li small { display: none; }
+  .sc-tray { min-width: 0; padding: 10px 14px 8px; }
+}

@@ -175,11 +175,11 @@ test('Schocken: zwei Sechsen zu einer Eins', () => {
   assert.throws(() => r.turnSixes(a), /zwei Sechsen|kein Wurf/);
 });
 
-test('Schocken: ganzes Spiel – zwei Hälften, bei verschiedenen Verlierern Finale', () => {
+test('Schocken: ganzes Spiel – zwei Halbzeiten, bei verschiedenen Verlierern Finale', () => {
   const { r, ids: [a, b, c] } = setup(Schocken, ['Anna', 'Ben', 'Carla'], { fullGame: true });
   r.loseHalf(a);
   assert.equal(r.phase, 'over');
-  assert.deepEqual(r.scores, {}, '1. Hälfte zählt noch nicht');
+  assert.deepEqual(r.scores, {}, '1. Halbzeit zählt noch nicht');
   r.start(a); r.loseHalf(b);
   assert.deepEqual(r.finale, [a, b]);
   r.start(a);
@@ -189,7 +189,7 @@ test('Schocken: ganzes Spiel – zwei Hälften, bei verschiedenen Verlierern Fin
   assert.deepEqual(r.scores, { [b]: 1 });
   assert.match(r.result.text, /verliert das Finale/);
   r.start(a); r.loseHalf(c); r.start(a); r.loseHalf(c);
-  assert.equal(r.scores[c], 1, 'beide Hälften verloren = Spiel verloren');
+  assert.equal(r.scores[c], 1, 'beide Halbzeiten verloren = Spiel verloren');
 });
 
 // ---------- Mensch ärgere Dich nicht ----------
@@ -232,4 +232,43 @@ test('Phase 10: Aussetzen trifft den Nächsten, Phase größer auslegen, Aussetz
   assert.equal(first.discard[0].c, 's');
   assert.equal(first.currentId, ids[1], 'Anna setzt aus');
   assert.ok(b);
+});
+
+test('UNO Erwischen: vergessen kostet erst, wenn jemand meldet – bis der Nächste handelt', () => {
+  const { r, ids: [a, b, c] } = setup(UNO, ['Anna', 'Ben', 'Carla'], { catchCall: true });
+  assert.ok(r.view(a).g.callNeeded, 'mit Erwischen muss man „UNO“ selbst sagen');
+  r.discard = ['5r']; r.hands[a] = ['3r', '8g']; r.hands[b] = ['4r', '6g', '1b']; r.hands[c] = ['7r', '2y', '9b'];
+  r.play(a, '3r'); // vergessen
+  assert.equal(r.hands[a].length, 1, 'keine Strafe von selbst');
+  assert.equal(r.view(c).g.forgot, a, 'alle sehen, dass Anna es vergessen hat');
+  assert.throws(() => r.catchForgot(a), /selbst/);
+  r.catchForgot(c);
+  assert.equal(r.hands[a].length, 3, 'Carla erwischt Anna: +2');
+  assert.equal(r.view(a).acts[c].text, 'Erwischt!');
+  assert.throws(() => r.catchForgot(b), /niemand/, 'nur einmal');
+  // Nochmal vergessen – diesmal handelt der Nächste zuerst: zu spät zum Melden
+  r.play(b, '4r'); // Ben (3 → 2 Karten)
+  r.hands[c] = ['7r', '2y'];
+  r.play(c, '7r'); // Carla auf 1, vergessen
+  assert.equal(r.forgot, c);
+  r.hands[a] = ['9r', '1g', '2g'];
+  r.play(a, '9r'); // Anna handelt → Fenster zu
+  assert.throws(() => r.catchForgot(b), /zu spät/);
+  assert.equal(r.hands[c].length, 1);
+  // Selbst nachholen schützt
+  r.hands[b] = ['6r', '8b'];
+  r.play(b, '6r');
+  r.lateCall(b);
+  assert.equal(r.forgot, null);
+  assert.throws(() => r.catchForgot(c), /niemand/);
+});
+
+test('UNO ohne Erwischen: „UNO“-Pflicht wie bisher (sofort 2 Strafkarten), Mau-Mau kennt kein Erwischen', () => {
+  const { r, ids: [a, b] } = setup(UNO, ['Anna', 'Ben'], { unoCall: true });
+  r.discard = ['5r']; r.hands[a] = ['3r', '8g']; r.hands[b] = ['1b', '2b', '3b'];
+  r.play(a, '3r');
+  assert.equal(r.hands[a].length, 3);
+  assert.equal(r.forgot, null);
+  const m = setup(MauMau, ['Anna', 'Ben'], { catchCall: true });
+  assert.equal(m.r.settings.catchCall, undefined, 'Option gibt es bei Mau-Mau nicht');
 });

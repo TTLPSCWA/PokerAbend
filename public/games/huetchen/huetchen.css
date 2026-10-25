@@ -1,18 +1,50 @@
-/* Mensch ärgere Dich nicht: Spielbrett 11 × 11 */
+/* Mensch ärgere Dich nicht: Spielbrett 11 × 11 wie das klassische Brett */
 .hb-wrap { width: min(100%, 560px, calc(100dvh - var(--topbar, 57px) - var(--dock-h, 90px) - 120px)); aspect-ratio: 1; min-width: 260px; }
-.hb-board { position: relative; display: grid; grid-template: repeat(11, minmax(0, 1fr)) / repeat(11, minmax(0, 1fr)); gap: 3px; width: 100%; height: 100%; padding: 10px; border-radius: 20px; background: #E9DFC6; box-shadow: 0 0 0 6px #6B4A2B, var(--shadow-2); }
-.hb-cell { border-radius: 50%; background: #FFF9EA; box-shadow: inset 0 0 0 2px #B9A37A; }
-.hb-cell.start { box-shadow: inset 0 0 0 3px rgba(0,0,0,.35); }
-.hb-cell.goal, .hb-cell.house { opacity: .75; }
-.hc-bg-0 { background: #F1B3AE; } .hc-bg-1 { background: #AFC6EE; } .hc-bg-2 { background: #ABD9B9; } .hc-bg-3 { background: #F3DE95; }
-.hb-piece { z-index: 2; width: 70%; height: 70%; margin: auto; border-radius: 50% 50% 45% 45%; border: 2px solid rgba(0,0,0,.45); box-shadow: 0 3px 4px rgba(0,0,0,.35); padding: 0; }
-.hc-0 { background: #C8322D; } .hc-1 { background: #2D5FB8; } .hc-2 { background: #2E8B4E; } .hc-3 { background: #E0A800; }
+.hb-board { position: relative; display: grid; grid-template: repeat(11, minmax(0, 1fr)) / repeat(11, minmax(0, 1fr)); gap: 3px; width: 100%; height: 100%; padding: 10px;
+  border-radius: 20px; background: #F2E3B8; box-shadow: 0 0 0 6px #8A5A2E, inset 0 0 0 2px #C9A86A, var(--shadow-2); }
+.hb-cell { border-radius: 50%; background: #FFFDF5; box-shadow: inset 0 0 0 2px #3A3A3A; display: grid; place-items: center; }
+/* Kräftige Feldfarben: Startfeld mit „A“, Zielfelder und Häuser gefüllt */
+.hc-bg-0 { background: #E53935; } .hc-bg-1 { background: #1E63D6; } .hc-bg-2 { background: #2E9E4F; } .hc-bg-3 { background: #F7C600; }
+.hb-cell.start span { font-weight: 900; font-size: min(18px, 3.4cqmin, 3.2vw); color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,.5); }
+.hb-cell.start.hc-bg-3 span { color: #3A2E00; text-shadow: none; }
+.hb-cell.goal, .hb-cell.house { box-shadow: inset 0 0 0 2px rgba(0,0,0,.55), inset 0 0 0 5px rgba(255,255,255,.35); }
+
+/* Figuren als Hütchen von oben: Kegel mit Kopf, Licht von oben links, Schatten */
+.hb-piece { position: relative; z-index: 2; width: 72%; height: 72%; margin: auto; padding: 0; border: 0; border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, rgba(255,255,255,.55) 0 8%, transparent 9%), radial-gradient(circle at 50% 50%, var(--pc) 0 34%, var(--pd) 35% 40%, var(--pc) 41% 100%);
+  box-shadow: inset 0 -3px 5px rgba(0,0,0,.35), 0 4px 5px rgba(0,0,0,.45), 0 0 0 1.5px rgba(0,0,0,.55); display: grid; place-items: center; }
+.hb-top { width: 34%; height: 34%; border-radius: 50%; background: radial-gradient(circle at 40% 35%, var(--pl), var(--pc) 70%); box-shadow: 0 1px 2px rgba(0,0,0,.5); }
+.hb-piece .cm { display: none; position: absolute; width: 38%; height: 38%; fill: #fff; stroke: rgba(0,0,0,.6); stroke-width: 2; }
+body.marks .hb-piece .cm { display: block; }
+body.marks .hb-piece .hb-top { visibility: hidden; }
+.hc-0 { --pc: #D32F2F; --pd: #8E1B1B; --pl: #FF8A80; } .hc-1 { --pc: #1E63D6; --pd: #0F3C8C; --pl: #8AB4FF; }
+.hc-2 { --pc: #2E9E4F; --pd: #1A6331; --pl: #9BE0AE; } .hc-3 { --pc: #F2C200; --pd: #9C7A00; --pl: #FFF0A0; }
 button.hb-piece { cursor: pointer; }
-.hb-piece.can { outline: 3px solid #fff; outline-offset: 2px; animation: hb-pulse 1s ease-in-out infinite; }
-@keyframes hb-pulse { 50% { transform: scale(1.12); } }
+/* Ziehbare Figuren: weißer Rand, leicht angehoben (kein Dauer-Pulsieren); gewählt: Goldrand */
+.hb-piece.can { box-shadow: 0 0 0 3px #fff, 0 7px 8px rgba(0,0,0,.45); transform: translateY(-2px); }
+.hb-piece.can.sel { box-shadow: 0 0 0 4px #1A1A1A, 0 0 0 7px var(--gold), 0 0 16px 6px rgba(201,154,69,.8); transform: translateY(-2px) scale(1.14); }
+/* Zielfeld der gewählten Figur: leuchtet; rot mit ✕, wenn dort geschlagen wird */
+.hb-target { z-index: 3; width: 92%; height: 92%; margin: auto; padding: 0; border-radius: 50%; border: 3px solid var(--gold); background: rgba(255,214,120,.35);
+  box-shadow: 0 0 14px 5px rgba(255,200,90,.75); cursor: pointer; display: grid; place-items: center; }
+.hb-target.hit { border-color: #fff; background: rgba(211,47,47,.55); box-shadow: 0 0 14px 6px rgba(229,57,53,.85); }
+.hb-target b { color: #fff; font-size: 20px; text-shadow: 0 1px 2px #000; }
+.hb-hit { color: #FF8A80; }
+/* Laufende Figur (Animation) */
+.hb-ghost { position: fixed; margin: 0; z-index: 40; pointer-events: none; transition: left .1s ease-out, top .1s ease-out; }
+.hb-ghost.fly { transition: left .32s ease-in, top .32s ease-in; }
+
 .hb-dice { grid-area: 6 / 6; display: grid; place-items: center; z-index: 3; }
 .hb-dice .die.big { --d: min(44px, 9vw); }
-.hc-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: 0; }
+/* Wer würfelt: in der freien Ecke seiner Farbe neben der Mitte */
+.hb-turn { z-index: 3; align-self: center; justify-self: center; display: grid; justify-items: center; gap: 1px; padding: 4px 8px; border-radius: 10px; background: rgba(255,255,255,.85);
+  color: #1A1A1A; text-align: center; line-height: 1.15; max-width: 100%; border: 2px solid var(--line-c, #333); }
+.hb-turn b { font-size: 13px; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hb-turn small { font-size: 11px; color: #3A3A3A; }
+.hc-line-0 { --line-c: #D32F2F; } .hc-line-1 { --line-c: #1E63D6; } .hc-line-2 { --line-c: #2E9E4F; } .hc-line-3 { --line-c: #C79F00; }
+.hc-dot { display: inline-grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; margin-right: 4px; vertical-align: -2px; background: var(--pc); }
+.hc-dot .cm { width: 9px; height: 9px; fill: #fff; display: none; }
+body.marks .hc-dot .cm { display: block; }
 .kg-huetchen .kg-main { background: radial-gradient(120% 90% at 50% 25%, #35544A, #1B2E28); }
 /* Am großen Tisch: Brett füllt die Mitte, so groß es geht */
 .kt-content .hb-wrap { width: min(100cqw, 100cqh, 640px); min-width: 0; }
+@media (max-width: 640px) { .hb-turn b { font-size: 11px; max-width: 64px; } .hb-turn small { display: none; } .hb-target b { font-size: 14px; } }

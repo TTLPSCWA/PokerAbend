@@ -1,10 +1,51 @@
-/* Mäxchen: Becher, Ansage, Aufdecken */
-.kg-announce, .kg-reveal, .kg-cup { display: grid; gap: 10px; justify-items: center; text-align: center; padding: var(--s-5); border-radius: var(--r-l); background: rgba(0,0,0,.28); min-width: min(100%, 360px); }
-.kg-announce b, .kg-reveal b, .kg-cup b { font-size: 26px; }
-.kg-announce > b { font-size: 40px; color: var(--gold-text); }
-.kg-cup { border: 2px dashed var(--gold); }
-.kg-reveal { border: 2px solid var(--gold); }
-.kg-say select { min-width: 140px; }
-.kg-say { display: flex; align-items: center; gap: 8px; }
+/* Mäxchen: Würfelbecher, Ansage-Knöpfe, Aufdecken, Rangliste */
 .kg-maexchen .kg-main { background: radial-gradient(120% 90% at 50% 25%, #6B3B2A, #3A1E14); }
 .lives { color: #F06A6A; letter-spacing: 1px; font-size: 13px; }
+
+/* Bühne: Filz mit zwei Würfeln, darüber der Becher. Offen = Becher angehoben und gekippt. */
+.mx-stage { position: relative; width: 170px; height: 160px; margin: 0 auto; }
+.mx-felt { position: absolute; left: 0; right: 0; bottom: 0; height: 64px; border-radius: 50%; background: radial-gradient(closest-side, rgba(0,0,0,.35), rgba(0,0,0,.12) 80%, transparent); }
+.mx-dice { position: absolute; left: 0; right: 0; bottom: 18px; display: flex; gap: 10px; justify-content: center; }
+.mx-dice .die.big { --d: 50px; }
+.mx-cup { position: absolute; left: 50%; bottom: 6px; width: 130px; margin-left: -65px; transform-origin: 20% 100%; transition: transform .32s ease; filter: drop-shadow(0 6px 8px rgba(0,0,0,.45)); }
+.mx-cup-svg { display: block; width: 100%; height: auto; }
+.mx-stage.open .mx-cup { transform: translate(-58px, -62px) rotate(-38deg); }
+.mx-stage.lifting .mx-cup { animation: mx-lift .35s ease-out; }
+@keyframes mx-lift { from { transform: none; } }
+
+.mx-stage:not(.open) .mx-dice { visibility: hidden; } /* unter dem geschlossenen Becher nichts erahnen */
+.mx-mine, .mx-said, .mx-reveal { display: grid; gap: 8px; justify-items: center; text-align: center; padding: 16px 22px; border-radius: var(--r-l); background: rgba(0,0,0,.26); min-width: min(100%, 340px); }
+.mx-said > b { font-size: 40px; color: var(--gold-text); line-height: 1.1; }
+.mx-said > b.mx-pasch { color: #FFD27A; }
+.mx-said > b.mx-max { color: #FFE08A; text-shadow: 0 0 14px rgba(255,200,90,.5); }
+.mx-lift { border: 2px dashed var(--gold); border-radius: var(--r-l); background: none; padding: 6px 14px 0; cursor: pointer; color: inherit; }
+.mx-lift[aria-pressed='true'] { border-style: solid; }
+.mx-val { font-size: 20px; color: var(--gold-text); }
+.mx-verdict { font-size: 44px; line-height: 1; letter-spacing: .02em; }
+.mx-verdict.lie { color: #FF8A80; }
+.mx-verdict.true { color: #8BE0A4; }
+.mx-reveal.fresh .mx-verdict { animation: mx-verdict .3s ease-out .3s both; }
+@keyframes mx-verdict { from { opacity: 0; transform: scale(.7); } }
+.mx-reveal p { margin: 0; color: #E9D9CF; }
+
+/* Ansage: große Knöpfe, nur höhere Werte; Päsche und Mäxchen hervorgehoben */
+.mx-say { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 6px; width: min(100%, 720px); margin: 0 auto; }
+.mx-v { min-height: 46px; font-size: 18px; font-weight: 800; padding: 4px; }
+.mx-v.mx-pasch { border-color: #C99A45; background: #3A2E18; }
+.mx-v.mx-max { border-color: #FFD27A; background: #6B4E12; color: #FFF3D6; grid-column: span 2; }
+.mx-v.real { box-shadow: 0 0 0 3px var(--info); }
+
+/* Rangliste der Würfe zum Aufklappen */
+.mx-ranks { width: min(100%, 340px); background: rgba(0,0,0,.22); border-radius: var(--r-m); padding: 6px 12px; }
+.mx-ranks summary { cursor: pointer; font-weight: 600; min-height: 32px; display: flex; align-items: center; }
+.mx-ranks ol { margin: 6px 0; padding-left: 26px; columns: 2; font-size: 14px; }
+.mx-ranks li.mx-max, .mx-ranks li.mx-pasch { font-weight: 700; color: #FFD27A; }
+.mx-ranks li.now { outline: 2px solid var(--gold); border-radius: 4px; }
+.mx-ranks small { color: #D9C2B5; font-weight: 400; }
+@media (max-width: 640px) {
+  .mx-stage { transform: scale(.85); margin: -10px auto; }
+  .mx-say { grid-template-columns: repeat(5, 1fr); gap: 4px; }
+  .mx-v { font-size: 15px; min-height: 44px; }
+  .mx-verdict { font-size: 36px; }
+}
+@media (pointer: coarse) { .mx-ranks summary { min-height: 44px; } }

@@ -1,7 +1,46 @@
-/* Phase 10: Zahlkarten in vier Farben, ausgelegte Gruppen */
-.kc-ze { color: #fff; font-size: calc(var(--w) * .42); border: 3px solid #fff; }
-.ze-r { background: #C8322D; } .ze-g { background: #2E8B4E; } .ze-b { background: #2D5FB8; } .ze-y { background: #D79A00; }
-.ze-j { background: linear-gradient(135deg, #6E3FB0, #B0408F); } .ze-s { background: #1F1F1F; }
+/* Phase 10: Karten in vier Farben im bekannten Aufbau (große Zahl, kleine Zahlen in den Ecken), Joker „J“, Aussetzen mit eigenem Zeichen */
+.kc-ze { color: #fff; border: 2px solid #1A1A1A; box-shadow: inset 0 0 0 calc(var(--w) * .07) #F8F4EA, 0 2px 6px rgba(0,0,0,.4); overflow: hidden; }
+.kc-ze .v { display: grid; justify-items: center; line-height: 1; }
+.kc-ze .v b { font-size: calc(var(--w) * .5); font-weight: 900; text-shadow: 0 2px 0 rgba(0,0,0,.25); }
+.kc-ze .v small { font-size: max(8px, calc(var(--w) * .13)); font-weight: 700; margin-top: 2px; }
+.kc-ze .cr { position: absolute; font-size: calc(var(--w) * .2); font-weight: 900; line-height: 1; }
+.kc-ze .tl { top: 9%; left: 11%; }
+.kc-ze .br { bottom: 9%; right: 11%; transform: rotate(180deg); }
+.kc-ze .cm { left: auto; right: 9%; top: 8%; }
+.kc-ze .sym { width: calc(var(--w) * .46); height: calc(var(--w) * .46); }
+.kc-ze .cr .sym { width: calc(var(--w) * .2); height: calc(var(--w) * .2); }
+.ze-r { background: #D32F2F; } .ze-g { background: #2E9E4F; } .ze-b { background: #1F63C6; } .ze-y { background: #E8B000; }
+.ze-j { color: #fff; }
+.kc-ze.ze-j { background: conic-gradient(from 45deg, #D32F2F 0 25%, #1F63C6 0 50%, #2E9E4F 0 75%, #E8B000 0); }
+.kc-ze.ze-j .v b { font-size: calc(var(--w) * .46); background: #1A1A1A; border-radius: 50%; width: calc(var(--w) * .62); aspect-ratio: 1; display: grid; place-items: center; text-shadow: none; }
+.kc-ze.ze-s { background: #1F1F1F; color: #F4F4F4; }
+/* In ausgelegten Gruppen klein: nur die große Zahl */
+.ze-cards .kc { --w: 34px; }
+.ze-cards .kc .cr, .ze-cards .kc small { display: none; }
+
+/* Eigene Phase groß mit Fortschritt 1–10 */
+.ze-phase { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; justify-content: center; padding: 10px 16px; border-radius: var(--r-m); background: rgba(0,0,0,.28); }
+.ze-phase small { display: block; color: #C9D6E8; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+.ze-phase b { font-size: 20px; }
+.ze-progress { display: flex; align-items: center; gap: 4px; }
+.ze-progress i { width: 14px; height: 14px; border-radius: 4px; border: 2px solid rgba(255,255,255,.4); }
+.ze-progress i.done { background: var(--gold); border-color: var(--gold); }
+.ze-progress i.now { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(201,154,69,.4); }
+.ze-progress span { margin-left: 6px; font-weight: 700; color: var(--gold-text); }
+
+/* Ausleg-Felder: leer mit Namen der Gruppe, ✓ wenn passend */
+.ze-slots { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; width: 100%; }
+.ze-slot { display: grid; gap: 6px; min-width: 200px; padding: 8px 10px; border-radius: var(--r-m); border: 2px dashed rgba(255,255,255,.35); background: rgba(0,0,0,.2); }
+.ze-slot.ok { border-style: solid; border-color: #8BE0A4; background: rgba(46,158,79,.18); }
+.ze-slot-head { display: flex; gap: 8px; align-items: baseline; justify-content: space-between; min-height: 36px; padding: 2px 6px; border: 0; border-radius: 8px; background: none; color: var(--text); text-align: left; cursor: pointer; }
+.ze-slot-head:disabled { cursor: default; }
+.ze-slot-head:not(:disabled) { background: rgba(201,154,69,.18); box-shadow: inset 0 0 0 2px var(--gold); }
+.ze-slot-head small { color: #C9D6E8; }
+.ze-ok { color: #8BE0A4; font-weight: 800; font-size: 13px; }
+.ze-slot-cards { display: flex; flex-wrap: wrap; gap: 4px; min-height: 52px; align-items: center; }
+.ze-slot-cards .kc { --w: 40px; }
+.ze-empty { color: #A9B8CC; font-size: 13px; padding: 0 4px; }
+
 .ze-table { display: grid; gap: 10px; width: 100%; }
 .ze-laid { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 12px; border-radius: var(--r-m); background: rgba(0,0,0,.25); }
 .ze-laid > b { min-width: 70px; }
@@ -9,7 +48,17 @@
 .ze-group.can { border-color: var(--gold); cursor: pointer; }
 .ze-group small { color: #D3E1DA; }
 .ze-cards { display: flex; gap: 3px; }
-.ze-cards .kc { --w: 34px; }
 .ze-list { columns: 2; }
+.ze-phases small.ze-ptext { display: block; color: var(--text-2); font-size: 12px; }
 .kg-zehnetappen .kg-main { background: radial-gradient(120% 90% at 50% 25%, #2F4A6B, #172539); place-items: start center; }
 .ze-table > .hint { text-align: center; color: #C9D6E8; }
+@media (max-width: 640px) {
+  .ze-slot { min-width: 0; flex: 1 1 150px; }
+  .ze-phase b { font-size: 16px; }
+  .ze-progress i { width: 10px; height: 10px; }
+  .ze-slot-cards .kc { --w: 32px; }
+}
+@media (pointer: coarse) { .ze-slot-head { min-height: 44px; } }
+/* Phase und Stapel nebeneinander (spart Höhe am Tisch) */
+.ze-top { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: center; }
+.ze-top .kc.big { --w: 70px; }

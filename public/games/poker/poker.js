@@ -39,14 +39,6 @@ $('#game-root').innerHTML = `<div id="game" class="game" hidden>
 
   <section class="dock" id="dock"></section>
 
-  <div class="hands-pop" id="hands-pop" hidden>
-    <div class="panel-head">
-      <h2>Pokerhände</h2>
-      <button class="icon-btn" data-hands aria-label="Schließen"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-    </div>
-    <div class="hands-body" id="hands-body"></div>
-  </div>
-
   <aside class="panel" id="panel" hidden aria-labelledby="panel-title">
     <button class="grip" id="panel-grip" aria-label="Schließen"></button>
     <div class="panel-head">
@@ -76,6 +68,8 @@ const HANDS = [
   [0, 'Höchste Karte', 'High Card', 'Nichts davon – die höchste Karte zählt', ['Ah', 'Qs', '6s', '5d', 'Tc'], 1],
 ];
 const HAND_NAME = Object.fromEntries(HANDS.map(([cat, name]) => [cat, name]));
+// Kleiner Balken: Name, Balken, Prozent – die Zahl steht immer dabei (nicht nur die Länge)
+const oddsBar = (name, p) => `<span class="odds-bar"><span class="ob-name">${esc(name)}</span><span class="ob-track"><i style="width:${Math.max(2, Math.min(100, p))}%"></i></span><b>${pct(p)}</b></span>`;
 function pct(p) { return p >= 99.95 ? 'sicher' : p < 1 ? '< 1 %' : Math.round(p) + ' %'; }
 
 // ---------- Persönliche Einstellungen (nur in diesem Browser) ----------
@@ -108,7 +102,6 @@ let clockOffset = 0;     // Server-Uhr minus Browser-Uhr
 let raiseValue = null;
 let raiseKey = null;
 let panel = null;
-let handsOpen = false;
 let actionSeq = 0;
 
 // ---------- Hilfen ----------
@@ -134,7 +127,7 @@ function chipClass(n) {
 // Chip-Stapel: 1–3 Chips je nach Höhe (in Big Blinds)
 function chipStack(n, max = 3) {
   const x = n / (S?.settings?.bigBlind || 100);
-  const count = Math.min(max, x < 2 ? 1 : x < 10 ? 2 : 3);
+  const count = Math.min(max, x < 2 ? 1 : x < 10 ? 2 : x < 30 ? 3 : x < 80 ? 4 : 5);
   return `<span class="stack" aria-hidden="true">${`<span class="chip ${chipClass(n)}"></span>`.repeat(count)}</span>`;
 }
 
@@ -298,7 +291,6 @@ function render() {
   // Erst jetzt steht die Tischgröße fest. Der Dealer-Puck bleibt dasselbe Element und gleitet deshalb.
   placeExtras(h && S.seats[h.button] ? h : null);
   if (panel) renderPanel();
-  if (handsOpen) renderHands();
   renderSeb();
   checkGifts();
 }
@@ -336,11 +328,12 @@ function renderTable() {
   const big = bigWin(h);
 
   // Pot: Main Pot und Side Pots als eigene Panels
-  const pots = h && !h.done ? h.pots : [];
-  $('#pot').innerHTML = pots.map((p, i) => {
-    const label = pots.length > 1 ? (i ? 'Side Pot' + (pots.length > 2 ? ' ' + i : '') : 'Main Pot') : 'Pot';
-    return `<div class="pot-box ${i ? 'side' : ''}">${chipStack(p, i ? 2 : 3)}<span class="pot-text"><small>${label}</small><b>${amt(p)}</b></span></div>`;
-  }).join('');
+  const pots = h && !h.done ? h.pots.filter((p) => p > 0) : [];
+  const onTable = h && !h.done ? S.seats.reduce((a, x) => a + (x?.bet || 0), 0) : 0;
+  const total = pots.reduce((a, p) => a + p, 0) + onTable;
+  // Großer Pot in der Mitte; Side Pots (wenn es welche gibt) klein daneben
+  $('#pot').innerHTML = total ? `<div class="pot-box main">${chipStack(total, 5)}<span class="pot-text"><small>Pot${onTable && pots.length ? ' mit Einsätzen' : ''}</small><b>${amt(total)}</b></span></div>`
+    + (pots.length > 1 ? pots.map((p, i) => `<div class="pot-box side">${chipStack(p, 2)}<span class="pot-text"><small>${i ? 'Side Pot' + (pots.length > 2 ? ' ' + i : '') : 'Main Pot'}</small><b>${amt(p)}</b></span></div>`).join('') : '') : '';
 
   // Board
   const board = h?.board || [];
@@ -475,10 +468,10 @@ function renderDock() {
   let chances = '';
   if (prefs.odds && S.odds && S.strengthCat !== null && h && !h.done && h.street !== 'river') {
     const better = HANDS.filter(([cat]) => cat > S.strengthCat && S.odds[cat] >= 1).sort((a, b) => S.odds[b[0]] - S.odds[a[0]]).slice(0, 2);
-    if (better.length) chances = `<small class="chances">Chance: ${better.map(([cat, name]) => `${name} ${pct(S.odds[cat])}`).join(' · ')}</small>`;
+    if (better.length) chances = `<span class="odds-bars" aria-label="Chancen bis zum River">${better.map(([cat, name]) => oddsBar(name, S.odds[cat])).join('')}</span>`;
   }
   const showName = prefs.strength && S.strength;
-  const strength = myCards && !foldedMine && (showName || chances) ? `<button class="strength" data-hands title="Alle Pokerhände und deine Chancen"><span>${showName ? esc(S.strength) : 'Deine Chancen'}</span><small>${STREET[h.street]}</small>${chances}</button>` : '';
+  const strength = myCards && !foldedMine && (showName || chances) ? `<button class="strength" data-panel-open="hands" title="Alle Pokerhände und deine Chancen"><span>${showName ? esc(S.strength) : 'Deine Chancen'}</span><small>${STREET[h.street]}</small>${chances}</button>` : '';
   const myChips = `<span class="me-chips"><span class="chip c5" aria-hidden="true"></span>${amt(me.stack)}</span>`;
   const left = `<div class="mine">${handsBtn()}<div class="cards ${foldedMine ? 'is-folded' : ''}">${cardsHTML}</div><div class="mine-info">${strength}${myChips}</div></div>`;
 
@@ -604,6 +597,9 @@ function cues(a, b) {
     if (document.hidden) { blinkTitle(true); notifyTurn(); }
   }
   if (!b.legal) blinkTitle(false);
+  // Neue Hand: mischen; neue Karten in der Mitte: Karten legen
+  if (a?.hand && a.hand.no !== b.hand.no) sfx('shuffle');
+  else if (a?.hand?.no === b.hand.no && (b.hand.board?.length || 0) > (a.hand.board?.length || 0)) sfx('card');
   const betsBefore = a?.hand && !a.hand.done ? a.hand.bets : 0;
   if (b.hand.bets > betsBefore) sounds.chips();
   if (b.hand.done && !(a?.hand?.done && a.hand.no === b.hand.no)) {
@@ -853,33 +849,26 @@ function renderSeb() {
 }
 
 // ---------- Pokerhände (klappt unten links nach oben auf) ----------
-const handsBtn = () => `<button class="hands-btn" data-hands aria-expanded="${handsOpen}" title="Welche Pokerhände gibt es?">Hände</button>`;
-function toggleHands(open = !handsOpen) {
-  handsOpen = open;
-  $('#hands-pop').hidden = !open;
-  $$('.hands-btn').forEach((b) => b.setAttribute('aria-expanded', String(open)));
-  if (open) { renderHands(); $('.hrank.now')?.scrollIntoView({ block: 'center' }); }
-}
-function renderHands() {
-  const odds = prefs.odds ? S.odds : null;
+const handsBtn = () => `<button class="hands-btn" data-panel-open="hands" aria-expanded="${panel === 'hands'}" title="Welche Pokerhände gibt es?">Hände</button>`;
+// Reiter „Hände“: Tabelle der Handwertungen, stärkste zuerst – mit deiner Hand und deinen Chancen, wenn erlaubt
+function renderHands(body) {
+  const h = S.hand;
+  const odds = prefs.odds && h && !h.done && h.street !== 'river' ? S.odds : null;
   const mine = S.strengthCat;
-  $('#hands-body').innerHTML = `<p class="hint" style="margin:0;color:var(--muted)">${odds
-    ? 'Prozent = so wahrscheinlich ist das am River deine Hand. Die Karten der anderen kennt keiner, die zählen nicht mit.'
-    : 'Von oben nach unten: die stärkste Hand zuerst. Haben zwei dasselbe, gewinnt die höhere Karte.'}</p>
-    <div class="hranks">${HANDS.map(([cat, name, en, desc, cards, used]) => {
-      const p = odds ? odds[cat] : null;
-      const tag = mine === cat ? '<span class="hr-now">Hast du</span>' : '';
-      const chance = p === null ? '' : `<span class="hr-pct ${p > 0 ? '' : 'none'}">${p > 0 ? pct(p) : '–'}</span>`;
-      return `<div class="hrank ${mine === cat ? 'now' : ''}">
-        <div class="hr-head"><b>${name}</b>${en !== name ? `<small>${en}</small>` : ''}${tag}${chance}</div>
-        <div class="hr-cards">${cards.map((c, i) => cardHTML(c, i >= used ? 'dim' : '')).join('')}</div>
-        <small class="hr-desc">${desc}</small>
-      </div>`;
-    }).join('')}</div>`;
+  body.innerHTML = `<p class="hint" style="margin:0">Von oben nach unten: die stärkste Hand zuerst. Haben zwei dasselbe, gewinnt die höhere Karte.
+      ${odds ? 'Die Balken zeigen, wie wahrscheinlich das am River deine Hand ist.' : ''}</p>
+    <table class="hands-table"><thead><tr><th class="num">#</th><th>Hand</th><th>Beispiel</th>${odds ? '<th>Chance</th>' : ''}</tr></thead><tbody>
+    ${HANDS.map(([cat, name, en, desc, cards, used], k) => {
+      const p = odds ? odds[cat] ?? 0 : null;
+      return `<tr class="${mine === cat ? 'now' : ''}"><td class="num">${k + 1}</td>
+        <td><b>${name}</b>${en !== name ? ` <small class="hr-en">${en}</small>` : ''}${mine === cat ? ' <span class="hr-now">Hast du</span>' : ''}<small class="hr-desc">${desc}</small></td>
+        <td><span class="hr-cards">${cards.map((c, i) => cardHTML(c, i >= used ? 'dim' : '')).join('')}</span></td>
+        ${odds ? `<td>${p > 0 ? oddsBar('', p) : '<span class="hr-pct none">–</span>'}</td>` : ''}</tr>`;
+    }).join('')}</tbody></table>`;
 }
 
 // ---------- Seitenleiste ----------
-const PANEL_TITLES = { log: 'Verlauf', stand: 'Stand des Abends', me: 'Meine Einstellungen', host: 'Host' };
+const PANEL_TITLES = { log: 'Verlauf', stand: 'Stand des Abends', hands: 'Pokerhände', me: 'Meine Einstellungen', host: 'Host' };
 function openPanel(name) {
   panel = panel === name ? null : name;
   $('#panel').hidden = !panel;
@@ -1000,7 +989,9 @@ function renderPanel(force = false) {
   // Formulare nicht neu zeichnen, während jemand tippt oder ein Menü offen ist
   if (!force && (panel === 'host' || panel === 'me') && body.contains(document.activeElement) && document.activeElement.matches('input, select, textarea')) return;
   if (!force && panel === 'host' && openMenu) return;
-  if (panel === 'log') {
+  if (panel === 'hands') {
+    renderHands(body);
+  } else if (panel === 'log') {
     renderLog(force);
   } else if (panel === 'stand') {
     const st = S.stats;
@@ -1031,7 +1022,8 @@ function renderPanel(force = false) {
       ${t('strength', 'Meine Hand anzeigen', S.settings.handStrength ? 'z. B. „Zwei Paare“ neben deinen Karten' : 'Der Host hat das an diesem Tisch ausgeschaltet')}
       ${t('odds', 'Gewinnchancen anzeigen', { off: 'Der Host hat die Chancen an diesem Tisch ausgeschaltet', own: 'Wie wahrscheinlich deine Hand bis zum River besser wird', after: 'An diesem Tisch erst nach dem Showdown, für alle gezeigten Hände' }[S.settings.oddsMode])}
       ${t('bb', 'Beträge in Big Blinds')}
-      ${t('sound', 'Töne', 'Signal, wenn du dran bist')}
+      ${t('sound', 'Töne', 'Mischen, Karten, Chips und ein Signal, wenn du dran bist')}
+      ${t('intros', 'Erste Schritte zeigen', 'Kurze Einführung beim ersten Spiel jeder Art. Einschalten zeigt sie wieder.')}
       ${t('keys', 'Tastenkürzel', 'F = Fold, C = Check/Call, R = Raise')}
       ${t('calm', 'Animationen aus')}
       ${t('notify', 'Benachrichtigung, wenn ich dran bin', 'Nur wenn der Tab im Hintergrund ist. Der Browser fragt einmal nach Erlaubnis.')}
@@ -1201,7 +1193,7 @@ document.addEventListener('click', async (e) => {
     }
     renderDock();
   } else if (t.dataset.react) socket.emit('react', { text: t.dataset.react });
-  else if (t.dataset.hands !== undefined) toggleHands();
+  else if (t.dataset.panelOpen) { openPanel(t.dataset.panelOpen); $('#panel-body tr.now')?.scrollIntoView({ block: 'center' }); }
   else if (t.dataset.sebToggle !== undefined) { sebSmall = !sebSmall; renderSeb(); }
   else if (t.dataset.hostTab) { hostTab = t.dataset.hostTab; openMenu = null; renderPanel(true); $(`[data-host-tab="${hostTab}"]`)?.focus(); }
   else if (t.dataset.menu) {
@@ -1268,6 +1260,7 @@ document.addEventListener('change', (e) => {
   if (t.dataset.pref) {
     prefs[t.dataset.pref] = t.type === 'checkbox' ? t.checked : t.value;
     if (t.dataset.pref === 'notify' && t.checked) askNotify();
+    if (t.dataset.pref === 'intros' && t.checked) resetIntros();
     savePrefs();
   }
   if (t.dataset.blind) {
@@ -1290,7 +1283,6 @@ document.addEventListener('change', (e) => {
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && !$('#dlg').open) {
     if (openMenu) { closeMenu(); return; }
-    if (handsOpen) { toggleHands(false); return; }
     if (panel) { openPanel(null); return; }
   }
   if ($('#dlg').open) return;
@@ -1357,7 +1349,15 @@ $('#copy-link').addEventListener('click', async () => {
 
 // ---------- Anmelden bei core.js ----------
 registerGame('poker', {
-  show() { $('#game').hidden = false; render(); },
+  show() {
+    $('#game').hidden = false; render();
+    // Erste Schritte beim ersten Poker-Abend in diesem Browser
+    setTimeout(() => { if (!$('#dlg').open) showIntro('poker', "Texas Hold'em", [
+      ['Am Tisch', 'Tipp auf einen freien Platz, um dich hinzusetzen. Der Host startet die Hand.'],
+      ['Am Zug', 'Unten stehen deine Karten und was du tun kannst: Fold, Check oder Call, Raise. Die Uhr zeigt, wie lange du noch hast.'],
+      ['Hilfe', '„Hände“ unten links zeigt alle Pokerhände von Royal Flush bis High Card, „?“ die Kurzregeln. Deine Einstellungen findest du unter „Ich“.'],
+    ]); }, 400);
+  },
   onState(st) {
     prevS = S; S = st;
     clockOffset = st.now - Date.now();

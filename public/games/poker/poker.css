@@ -37,6 +37,11 @@
 .pot-box .pot-text { display: grid; line-height: 1.05; }
 .pot-box small { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--text-2); font-weight: 600; }
 .pot-box b { font-size: clamp(18px, 2.6cqw, var(--fs-pot)); color: var(--gold-text); font-weight: 700; }
+/* Großer Pot in der Mitte mit hohem Chip-Stapel */
+.pot-box.main { padding: 8px 18px 8px 12px; border-width: 2px; }
+.pot-box.main b { font-size: clamp(22px, 3.4cqw, 34px); }
+.pot-box.main small { font-size: 12px; }
+.pot-box.main .stack .chip { width: 26px; height: 26px; }
 .pot-box.side { padding: 4px 10px 4px 8px; border-color: rgba(201,154,69,.35); }
 .pot-box.side b { font-size: clamp(14px, 1.7cqw, var(--fs-value)); }
 .pot.pulse .pot-box:first-child { animation: pulse .35s ease; }
@@ -249,13 +254,25 @@ input[type='range']::-moz-range-thumb { width: 18px; height: 18px; border-radius
 /* ---------- Hände-Knopf und Ausklapp-Liste ---------- */
 .hands-btn { align-self: stretch; min-width: 44px; writing-mode: vertical-rl; transform: rotate(180deg); background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-m); padding: 8px 4px; font-weight: 700; font-size: var(--fs-label); letter-spacing: .06em; color: var(--text-2); }
 .hands-btn:hover, .hands-btn[aria-expanded='true'] { color: var(--gold-text); border-color: var(--gold); }
-.hands-pop {
-  position: fixed; left: 16px; bottom: calc(var(--dock-h, 116px) + 8px); z-index: 45;
-  width: min(360px, calc(100vw - 32px)); max-height: calc(100dvh - var(--topbar, 57px) - var(--dock-h, 116px) - 24px);
-  display: grid; grid-template-rows: auto 1fr; background: var(--panel); border: 1px solid var(--line); border-top-color: var(--gold-line); border-radius: var(--r-l);
-  box-shadow: 0 -16px 40px rgba(0,0,0,.5); transform-origin: bottom left; animation: rise .2s ease-out;
-}
-.hands-body { overflow-y: auto; padding: 12px 14px 14px; display: grid; gap: 12px; align-content: start; }
+/* Reiter „Hände“: Tabelle der Handwertungen */
+.hands-table { width: 100%; border-collapse: collapse; }
+.hands-table th { text-align: left; font-size: var(--fs-label); color: var(--text-2); font-weight: 600; padding: 4px; }
+.hands-table td { padding: 8px 4px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.hands-table .num { text-align: right; color: var(--text-2); width: 24px; }
+.hands-table td small { color: var(--text-2); }
+.hands-table .hr-desc { display: block; font-size: 12px; margin-top: 2px; }
+.hands-table tr.now td { background: rgba(201,154,69,.12); }
+.hands-table tr.now td:first-child { box-shadow: inset 3px 0 0 var(--gold); }
+.hands-table .odds-bar { grid-template-columns: 1fr auto; min-width: 90px; }
+.hands-table .hr-cards { --card-w: 30px; }
+/* Chancen als kleine Balken: Name, Balken, Prozent */
+.odds-bars { display: grid; gap: 3px; margin-top: 4px; }
+.odds-bar { display: grid; grid-template-columns: auto 1fr auto; gap: 6px; align-items: center; font-size: 12px; }
+.ob-name { color: var(--text-2); white-space: nowrap; }
+.ob-name:empty { display: none; }
+.ob-track { height: 7px; min-width: 44px; border-radius: 4px; background: rgba(255,255,255,.12); overflow: hidden; }
+.ob-track i { display: block; height: 100%; border-radius: 4px; background: var(--gold); }
+.odds-bar b { color: var(--gold-text); font-weight: 700; min-width: 34px; text-align: right; }
 @keyframes rise { from { opacity: 0; transform: translateY(12px); } }
 .hranks { display: grid; gap: 6px; }
 .hrank { display: grid; gap: 6px; padding: 10px; border-radius: var(--r-m); background: var(--panel-2); border: 1px solid transparent; }
@@ -346,7 +363,13 @@ input[type='range']::-moz-range-thumb { width: 18px; height: 18px; border-radius
   .pot-box { padding: 4px 10px 4px 6px; }
   .pot-box b { font-size: 18px; }
   .pot-box.side b { font-size: 14px; }
-  .pot-box .stack { display: none; }
+  .pot-box.side .stack { display: none; }
+  .pot-box.main .stack .chip { width: 18px; height: 18px; }
+  .pot-box.main b { font-size: 22px; }
+  .hands-table .hr-en { display: none; }
+  .hands-table .hr-cards { --card-w: 22px; gap: 2px; }
+  .hands-table .odds-bar { min-width: 64px; }
+  .hands-table .ob-track { min-width: 24px; }
   .felt-msg { max-width: 66%; margin-top: 8px; }
   .felt-msg .big { font-size: 15px; }
   .felt-msg .sub { font-size: 13px; }
@@ -387,7 +410,6 @@ input[type='range']::-moz-range-thumb { width: 18px; height: 18px; border-radius
   .p-bet { font-size: 11px; font-weight: 700; color: var(--gold-text); line-height: 1.1; }
   .raise-box { width: 100%; }
   /* Seitenleisten als Schublade von unten */
-  .hands-pop { left: 8px; right: 8px; width: auto; }
   .seb-card { top: calc(var(--topbar, 57px) + 4px); bottom: auto; left: 50%; right: auto; transform: translateX(-50%); }
   .seb-card.intro { animation-name: seb-in-top; }
   @keyframes seb-in-top { from { opacity: 0; transform: translate(-50%, -12px); } }

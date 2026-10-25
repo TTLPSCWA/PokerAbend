@@ -1,10 +1,40 @@
-/* UNO: kräftige Farbkarten mit Symbol in der Mitte */
-.kc-fc { color: #fff; border: 3px solid #fff; }
-.kc-fc .v { display: grid; place-items: center; width: 72%; aspect-ratio: 1; border-radius: 50%; background: #fff; font-size: calc(var(--w) * .34); font-weight: 900; transform: rotate(-12deg); }
-.fc-r { background: #C8322D; } .fc-r .v { color: #C8322D; }
-.fc-y { background: #E8B21C; } .fc-y .v { color: #8A6200; }
-.fc-g { background: #2E8B4E; } .fc-g .v { color: #2E8B4E; }
-.fc-b { background: #2D5FB8; } .fc-b .v { color: #2D5FB8; }
-.fc-w { background: conic-gradient(#C8322D 0 25%, #E8B21C 0 50%, #2E8B4E 0 75%, #2D5FB8 0); } .fc-w .v { color: #1A1A1A; }
-.btn.wish.fc-r, .btn.wish.fc-y, .btn.wish.fc-g, .btn.wish.fc-b { color: #fff; border-color: transparent; text-shadow: 0 1px 2px rgba(0,0,0,.5); }
-.kg-farbenchaos .kg-main { background: radial-gradient(120% 90% at 50% 25%, #3A3F5C, #1C1F33); }
+/* UNO: Karten im bekannten Aufbau – kräftige Farbe, schwarzer Rand, Werte in zwei Ecken, groß im schrägen weißen Oval.
+   Selbst gebaut mit CSS/SVG, kein Original-Logo. */
+.kc-fc { --ink-c: #fff; color: #fff; border: 2px solid #111; box-shadow: inset 0 0 0 calc(var(--w) * .06) #fff, 0 2px 6px rgba(0,0,0,.4); overflow: hidden; }
+.kc-fc .oval { position: absolute; left: 50%; top: 50%; width: 74%; height: 56%; transform: translate(-50%, -50%) rotate(-28deg); border-radius: 50%; background: #fff; display: grid; place-items: center; }
+.kc-fc .v { transform: rotate(28deg); font-size: calc(var(--w) * .46); font-weight: 900; line-height: 1; -webkit-text-stroke: calc(var(--w) * .018) #111; display: grid; place-items: center; position: relative; }
+.kc-fc .v.ul { text-decoration: underline; text-decoration-thickness: calc(var(--w) * .03); text-underline-offset: calc(var(--w) * .04); } /* 6 und 9 unterscheidbar */
+.kc-fc .sym { width: calc(var(--w) * .46); height: calc(var(--w) * .46); }
+.kc-fc .cr { position: absolute; font-size: calc(var(--w) * .2); font-weight: 900; line-height: 1; color: #fff; text-shadow: 0 1px 0 #111, 0 0 2px #111; }
+.kc-fc .cr .sym { width: calc(var(--w) * .2); height: calc(var(--w) * .2); filter: drop-shadow(0 1px 0 #111); }
+.kc-fc .tl { top: 7%; left: 9%; }
+.kc-fc .br { bottom: 7%; right: 9%; transform: rotate(180deg); }
+.kc-fc .cm { left: auto; right: 6%; top: 6%; }
+.fc-r { background-color: #D32F2F; } .fc-r .v { color: #D32F2F; }
+.fc-y { background-color: #F2C200; } .fc-y .v { color: #F2C200; }
+.fc-g { background-color: #2E9E4F; } .fc-g .v { color: #2E9E4F; }
+.fc-b { background-color: #1F63C6; } .fc-b .v { color: #1F63C6; }
+.fc-w { background-color: #151515; } .fc-w .oval { background: #151515; box-shadow: inset 0 0 0 2px #fff; }
+/* Farbwahl: vierfarbiger Kreis */
+.wheel { display: block; width: calc(var(--w) * .42); aspect-ratio: 1; border-radius: 50%; background: conic-gradient(#D32F2F 0 25%, #1F63C6 0 50%, #2E9E4F 0 75%, #F2C200 0); box-shadow: 0 0 0 2px #fff; }
+.wheel.mini { width: calc(var(--w) * .18); box-shadow: 0 0 0 1px #fff; }
+.kc-fc .plus4 { position: absolute; font-size: calc(var(--w) * .3); color: #fff; -webkit-text-stroke: calc(var(--w) * .02) #111; }
+/* Tisch neutral dunkel, damit die Karten wirken */
+.kg-farbenchaos .kg-main { background: radial-gradient(120% 90% at 50% 25%, #33383E, #16181B); }
+/* Gewählte Farbe: leuchtender Ring um die Ablage */
+.wish-ring > .kc { outline: 5px solid var(--ring); outline-offset: 4px; box-shadow: 0 0 22px 6px var(--ring), 0 2px 6px rgba(0,0,0,.4); }
+.ring-r { --ring: #D32F2F; } .ring-y { --ring: #F2C200; } .ring-g { --ring: #2E9E4F; } .ring-b { --ring: #1F63C6; }
+/* Farbwahl: vier große Farbkreise */
+.btn.wish-circle { width: 76px; height: 76px; min-height: 76px; border-radius: 50%; padding: 0; display: grid; place-items: center; align-content: center; gap: 2px;
+  color: #fff; border: 3px solid #fff; font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,.6); box-shadow: 0 3px 10px rgba(0,0,0,.45); }
+.btn.wish-circle.fc-y { color: #2A2000; text-shadow: none; }
+.btn.wish-circle:hover:not(:disabled) { filter: brightness(1.1); background-color: inherit; }
+.btn.wish-circle.fc-r:hover:not(:disabled) { background: #D32F2F; } .btn.wish-circle.fc-y:hover:not(:disabled) { background: #F2C200; }
+.btn.wish-circle.fc-g:hover:not(:disabled) { background: #2E9E4F; } .btn.wish-circle.fc-b:hover:not(:disabled) { background: #1F63C6; }
+.wc-dot .cm { display: inline-block; width: 16px; height: 16px; fill: currentColor; }
+body:not(.marks) .wc-dot { display: none; }
+/* Großer roter „UNO!“-Knopf */
+.kg-farbenchaos .btn-call { background: #D32F2F; color: #fff; border-color: #fff; font-size: 22px; letter-spacing: .04em; box-shadow: 0 0 0 3px rgba(211,47,47,.35), 0 4px 12px rgba(0,0,0,.4); }
+.kg-farbenchaos .btn-call:hover:not(:disabled) { background: #E04242; }
+.kg-farbenchaos .btn-call.armed { background: #8E1E1E; }
+.kg-farbenchaos .btn-call.catch { font-size: 17px; }

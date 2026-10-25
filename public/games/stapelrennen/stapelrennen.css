@@ -1,16 +1,35 @@
-/* Skip-Bo: Baureihen, eigener Stapel, Ablagen */
-.kc-st { font-size: calc(var(--w) * .46); color: #fff; border: 3px solid #fff; }
-.st-1 { background: #2D5FB8; } .st-2 { background: #2E8B4E; } .st-3 { background: #C8322D; } .kc-st.joker { background: linear-gradient(135deg, #E8B21C, #E06D1C); }
-.kc.drop { box-shadow: 0 0 0 3px var(--gold); }
-.st-builds { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+/* Skip-Bo: Bau-Stapel in der Mitte, eigene Ablagen vorne, eigener Spielstapel rechts */
+/* Karten: 1–4 blau, 5–8 grün, 9–12 rot – große Zahl, kleine in den Ecken. Joker dunkel mit Goldstern. */
+.kc-st { color: #fff; border: 2px solid #1A1A1A; box-shadow: inset 0 0 0 calc(var(--w) * .07) #F8F4EA, 0 2px 6px rgba(0,0,0,.4); overflow: hidden; }
+.kc-st .v { font-size: calc(var(--w) * .48); font-weight: 900; line-height: 1; display: grid; justify-items: center; text-shadow: 0 2px 0 rgba(0,0,0,.25); }
+.kc-st .cr { position: absolute; font-size: calc(var(--w) * .19); font-weight: 900; line-height: 1; }
+.kc-st .tl { top: 9%; left: 11%; }
+.kc-st .br { bottom: 9%; right: 11%; transform: rotate(180deg); }
+.kc-st .cm { left: auto; right: 9%; top: 8%; }
+.st-1 { background: #1F63C6; } .st-2 { background: #2E9E4F; } .st-3 { background: #D32F2F; }
+.kc-st.joker { background: radial-gradient(circle at 50% 45%, #3A2A0A, #121212 70%); color: #FFD27A; border-color: #FFD27A; box-shadow: inset 0 0 0 calc(var(--w) * .07) #FFD27A, 0 2px 6px rgba(0,0,0,.45); }
+.kc-st.joker .v { font-size: calc(var(--w) * .5); text-shadow: 0 0 10px rgba(255,210,122,.7); }
+.kc-st.joker .v small { font-size: max(8px, calc(var(--w) * .14)); text-shadow: none; letter-spacing: .04em; }
+/* Ganz kleine Karten (Plätze am Tisch): nur die Zahl */
+.st-seat .kc .cr, .st-seat .kc small, .st-other .kc .cr, .st-other .kc small { display: none; }
+
+.kc.drop { box-shadow: 0 0 0 3px var(--gold), 0 0 14px 4px rgba(201,154,69,.6); }
+.st-builds { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; padding: 10px; border-radius: var(--r-l); background: rgba(0,0,0,.18); }
 .st-build { display: grid; gap: 6px; justify-items: center; padding: 8px; border-radius: var(--r-m); border: 2px dashed rgba(255,255,255,.3); background: rgba(0,0,0,.2); color: var(--text); }
 .st-build.can { border: 2px solid var(--gold); cursor: pointer; }
+.st-build small { font-size: 13px; }
+.st-need { font-size: 18px; color: var(--gold-text); }
 .st-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; justify-content: center; }
 .st-mine, .st-other { display: grid; gap: 6px; justify-items: center; padding: 10px; border-radius: var(--r-m); background: rgba(0,0,0,.22); }
+.st-mine > .st-row { align-items: center; gap: 22px; }
+.st-piles { display: grid; gap: 6px; justify-items: center; padding: 8px; border-radius: var(--r-m); border: 2px solid transparent; }
+/* Ablagen leuchten erst, wenn man mit einer Handkarte den Zug beenden kann */
+.st-piles.ending { border-color: var(--gold); background: rgba(201,154,69,.12); }
+.st-piles small b { color: var(--gold-text); }
 .st-others { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
 .st-other .kc { --w: 36px; }
 .st-stock, .st-pile { display: grid; gap: 4px; justify-items: center; }
-.st-stock { margin-right: 10px; }
+.st-stock small b { color: var(--gold-text); }
 .kg-stapelrennen .kg-main { background: radial-gradient(120% 90% at 50% 25%, #4A3A6B, #241B38); place-items: start center; }
 /* Platz am großen Tisch: Stapel mit Restanzahl, Ablagen klein */
 .st-seat { display: flex; gap: 8px; align-items: flex-end; }
@@ -18,3 +37,8 @@
 .st-seat-stock { display: grid; justify-items: center; gap: 2px; }
 .st-seat-piles { display: flex; gap: 3px; }
 .st-seat-piles .kc { --w: 22px; font-size: 11px; }
+@media (max-width: 640px) {
+  .st-mine > .st-row { gap: 10px; }
+  .st-builds { gap: 6px; padding: 6px; }
+  .st-build { padding: 6px 4px; }
+}

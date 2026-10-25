@@ -127,6 +127,76 @@ function beep(freq = 660, ms = 120, vol = 0.05, type = 'sine') {
   } catch { /* kein Ton */ }
 }
 
+// Kurze Spiel-Töne, alle per Web Audio erzeugt (keine Dateien): Karten, Würfel, Rufe. Schalter „Töne“ unter „Ich“.
+function noise(sec, freq, vol, type = 'bandpass', q = 1) {
+  if (!prefs.sound) return;
+  try {
+    audio = audio || new AudioContext();
+    const len = Math.max(1, Math.floor(audio.sampleRate * sec));
+    const buf = audio.createBuffer(1, len, audio.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len); // klingt von selbst aus
+    const src = audio.createBufferSource(); const f = audio.createBiquadFilter(); const g = audio.createGain();
+    src.buffer = buf; f.type = type; f.frequency.value = freq; f.Q.value = q; g.gain.value = vol;
+    src.connect(f); f.connect(g); g.connect(audio.destination);
+    src.start();
+  } catch { /* kein Ton */ }
+}
+const SFX = {
+  card: () => noise(0.06, 2600, 0.35),                                                       // Karte legen: kurzes Wischen
+  draw: () => noise(0.1, 1600, 0.22, 'bandpass', 0.7),                                       // Karte ziehen
+  shuffle: () => [0, 45, 90, 135, 180, 225].forEach((t) => setTimeout(() => noise(0.04, 3200, 0.2), t)), // Mischen
+  dice: () => [0, 55, 95, 150, 185].forEach((t, i) => setTimeout(() => noise(0.025, 1800 + i * 300, 0.5, 'bandpass', 4), t + Math.random() * 20)), // Würfelklappern
+  call: () => { beep(660, 110, 0.07, 'square'); setTimeout(() => beep(990, 170, 0.07, 'square'), 110); }, // „UNO!“ / „Mau!“
+  catch: () => { beep(180, 220, 0.08, 'sawtooth'); },                                          // Erwischt
+  hit: () => { beep(420, 90, 0.07, 'triangle'); setTimeout(() => beep(210, 160, 0.07, 'triangle'), 90); }, // Schlagen
+  skip: () => { beep(520, 90, 0.05); setTimeout(() => beep(390, 120, 0.05), 90); },          // Aussetzen
+  drum: () => noise(0.22, 300, 0.6, 'lowpass'),                                               // Aufdecken
+  done: () => [523, 659, 784].forEach((f, i) => setTimeout(() => beep(f, 140, 0.05), i * 90)), // Phase geschafft
+  win: () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 200, 0.055), i * 110)),
+  end: () => { beep(440, 160, 0.045); setTimeout(() => beep(330, 220, 0.045), 160); },
+};
+const sfx = (name) => SFX[name]?.();
+
+// ---------- Erste Schritte: beim ersten Spiel einer Art eine kurze Einführung in 3 Schritten ----------
+// Wird pro Browser gemerkt (poker:intro); unter „Ich“ abschaltbar (prefs.intros).
+usePrefs({ intros: true });
+function showIntro(gameId, title, steps, force = false) {
+  const seen = store.get('poker:intro', {});
+  if (!force && (!prefs.intros || seen[gameId] || !steps?.length)) return;
+  seen[gameId] = true;
+  store.set('poker:intro', seen);
+  let d = $('#intro-dlg');
+  if (!d) {
+    d = document.createElement('dialog');
+    d.id = 'intro-dlg'; d.className = 'dlg help-dlg intro-dlg';
+    d.setAttribute('aria-labelledby', 'intro-title');
+    document.body.append(d);
+  }
+  let k = 0;
+  const draw = () => {
+    const [head, text] = steps[k];
+    d.innerHTML = `<div class="help-body"><small class="intro-step">Erste Schritte · ${esc(title)} · Schritt ${k + 1} von ${steps.length}</small>
+      <h2 id="intro-title">${esc(head)}</h2><p class="intro-text">${text}</p>
+      <div class="intro-dots" aria-hidden="true">${steps.map((_, i) => `<i class="${i === k ? 'on' : ''}"></i>`).join('')}</div>
+      <label class="toggle intro-off"><span>Keine Einführungen mehr zeigen<small>Wieder einschalten unter „Ich“</small></span><input type="checkbox" role="switch" data-intro-off ${prefs.intros ? '' : 'checked'}></label>
+      <div class="dlg-actions"><button class="btn btn-ghost" data-intro="skip">${k ? 'Zurück' : 'Überspringen'}</button>
+        <button class="btn btn-brass" data-intro="next">${k === steps.length - 1 ? 'Los geht’s' : 'Weiter'}</button></div></div>`;
+    d.querySelector('[data-intro="next"]').focus();
+  };
+  d.onclick = (e) => {
+    const b = e.target.closest('[data-intro]');
+    if (!b) return;
+    if (b.dataset.intro === 'next') { if (k < steps.length - 1) { k++; draw(); } else d.close(); }
+    else if (k) { k--; draw(); } else d.close();
+  };
+  d.onchange = (e) => { if (e.target.matches('[data-intro-off]')) { prefs.intros = !e.target.checked; savePrefs(); } };
+  draw();
+  if (!d.open) d.showModal();
+}
+// Alle Einführungen wieder zeigen (Schalter unter „Ich“ wieder an)
+function resetIntros() { store.set('poker:intro', {}); }
+
 // ---------- Spielmodule ----------
 // Ein Modul ist ein Objekt mit show() (Spiel einblenden), onState(state) (neuer Stand vom Server)
 // und optional onPrefs() (persönliche Einstellungen geändert).

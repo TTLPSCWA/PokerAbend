@@ -9,6 +9,10 @@ const one = (list, rng) => list[Math.floor(rng() * list.length)];
 
 // Mau-Mau und UNO: passende Karte spielen, sonst ziehen, sonst weiter
 function shedding(room, id, rng) {
+  if (room.forgot && rng() < 0.5) {
+    const who = room.order.filter((p) => p !== room.forgot);
+    if (rng() < 0.3) room.lateCall(room.forgot); else room.catchForgot(one(who, rng));
+  }
   const v = room.gameView(id);
   if (v.playable.length) {
     const c = one(v.playable, rng);
