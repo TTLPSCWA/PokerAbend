@@ -1,0 +1,905 @@
+[
+ {
+  "id": "s001",
+  "q": "Wie viele Knochen hat ein erwachsener Mensch?",
+  "a": 206,
+  "unit": "Knochen",
+  "src": "Gray’s Anatomy; Britannica „Human skeleton“"
+ },
+ {
+  "id": "s002",
+  "q": "Wie viele Zähne hat ein vollständiges Erwachsenengebiss (mit Weisheitszähnen)?",
+  "a": 32,
+  "unit": "Zähne",
+  "src": "Britannica „Tooth“; Bundeszahnärztekammer"
+ },
+ {
+  "id": "s003",
+  "q": "Wie viele Zähne hat ein Kind im vollständigen Milchgebiss?",
+  "a": 20,
+  "unit": "Zähne",
+  "src": "Britannica „Tooth“; Bundeszahnärztekammer"
+ },
+ {
+  "id": "s004",
+  "q": "Wie viele Chromosomen hat eine menschliche Körperzelle?",
+  "a": 46,
+  "unit": "Chromosomen",
+  "src": "NIH National Human Genome Research Institute"
+ },
+ {
+  "id": "s005",
+  "q": "Wie viele Rippen hat ein Mensch insgesamt?",
+  "a": 24,
+  "unit": "Rippen",
+  "src": "Gray’s Anatomy (12 Rippenpaare)"
+ },
+ {
+  "id": "s006",
+  "q": "Wie viele Knochen hat ein einzelner menschlicher Fuß?",
+  "a": 26,
+  "unit": "Knochen",
+  "src": "Gray’s Anatomy"
+ },
+ {
+  "id": "s007",
+  "q": "Wie viele Knochen hat eine einzelne menschliche Hand (mit Handwurzel)?",
+  "a": 27,
+  "unit": "Knochen",
+  "src": "Gray’s Anatomy"
+ },
+ {
+  "id": "s008",
+  "q": "Wie viele Wochen dauert eine Schwangerschaft rechnerisch (ab dem ersten Tag der letzten Regel)?",
+  "a": 40,
+  "unit": "Wochen",
+  "src": "WHO"
+ },
+ {
+  "id": "s009",
+  "q": "Wie viele Halswirbel hat eine Giraffe?",
+  "a": 7,
+  "unit": "Wirbel",
+  "src": "Britannica „Giraffe“"
+ },
+ {
+  "id": "s010",
+  "q": "Wie viele Herzen hat ein Oktopus?",
+  "a": 3,
+  "unit": "Herzen",
+  "src": "Britannica „Octopus“; Smithsonian"
+ },
+ {
+  "id": "s011",
+  "q": "Wie viele Augen hat eine Honigbiene (Facetten- und Punktaugen zusammen)?",
+  "a": 5,
+  "unit": "Augen",
+  "src": "Britannica „Honeybee“"
+ },
+ {
+  "id": "s012",
+  "q": "Wie viele Monate dauert die Tragzeit bei einem Afrikanischen Elefanten?",
+  "a": 22,
+  "unit": "Monate",
+  "src": "Smithsonian’s National Zoo; WWF"
+ },
+ {
+  "id": "s013",
+  "q": "Wie viele Arme und Fangarme hat ein Kalmar zusammen?",
+  "a": 10,
+  "unit": "Arme",
+  "src": "Britannica „Squid“"
+ },
+ {
+  "id": "s014",
+  "q": "Wie viele Tasten hat ein Standard-Klavier?",
+  "a": 88,
+  "unit": "Tasten",
+  "src": "Steinway & Sons"
+ },
+ {
+  "id": "s015",
+  "q": "Aus wie vielen Feldern besteht ein Schachbrett?",
+  "a": 64,
+  "unit": "Felder",
+  "src": "FIDE-Schachregeln, Art. 2.1"
+ },
+ {
+  "id": "s016",
+  "q": "Wie viele Schachfiguren stehen zu Spielbeginn insgesamt auf dem Brett (beide Farben)?",
+  "a": 32,
+  "unit": "Figuren",
+  "src": "FIDE-Schachregeln, Art. 2"
+ },
+ {
+  "id": "s017",
+  "q": "Wie viele Karten hat ein Skatblatt?",
+  "a": 32,
+  "unit": "Karten",
+  "src": "Internationale Skatordnung (ISkO)"
+ },
+ {
+  "id": "s018",
+  "q": "Wie viele Karten hat ein Standard-UNO-Spiel?",
+  "a": 108,
+  "unit": "Karten",
+  "src": "Mattel (UNO-Spielregeln)"
+ },
+ {
+  "id": "s019",
+  "q": "Aus wie vielen Feldern besteht ein Monopoly-Spielplan?",
+  "a": 40,
+  "unit": "Felder",
+  "src": "Hasbro (Monopoly-Spielregeln)"
+ },
+ {
+  "id": "s020",
+  "q": "Wie viele Grundstücke (Straßen, Bahnhöfe und Werke) gibt es bei Monopoly?",
+  "a": 28,
+  "unit": "Grundstücke",
+  "src": "Hasbro (Monopoly-Spielregeln)"
+ },
+ {
+  "id": "s021",
+  "q": "Wie viele Zahlen gibt es beim europäischen Roulette (mit der Null)?",
+  "a": 37,
+  "unit": "Zahlen",
+  "src": "Britannica „Roulette“"
+ },
+ {
+  "id": "s022",
+  "q": "Wie viele Steine hat ein Domino-Satz mit Augen von 0 bis 6?",
+  "a": 28,
+  "unit": "Steine",
+  "src": "Rechnung: (7 × 8) / 2"
+ },
+ {
+  "id": "s023",
+  "q": "Wie viele Felder hat ein klassisches Sudoku?",
+  "a": 81,
+  "unit": "Felder",
+  "src": "Standardformat 9 × 9"
+ },
+ {
+  "id": "s024",
+  "q": "Wie viele Felder (Kategorien) hat ein Kniffelblock ohne Summenfelder?",
+  "a": 13,
+  "unit": "Felder",
+  "src": "Kniffel-Spielregeln (Schmidt Spiele)"
+ },
+ {
+  "id": "s025",
+  "q": "Wie viele mögliche Tipps gibt es beim Lotto „6 aus 49“?",
+  "a": 13983816,
+  "unit": "Kombinationen",
+  "src": "Rechnung: Binomialkoeffizient (49 über 6)"
+ },
+ {
+  "id": "s026",
+  "q": "Wie viele verschiedene 5-Karten-Hände gibt es in einem Kartenspiel mit 52 Karten?",
+  "a": 2598960,
+  "unit": "Hände",
+  "src": "Rechnung: Binomialkoeffizient (52 über 5)"
+ },
+ {
+  "id": "s027",
+  "q": "Wie viele Augen sind auf allen sechs Seiten eines Würfels zusammen?",
+  "a": 21,
+  "unit": "Augen",
+  "src": "Rechnung: 1 + 2 + 3 + 4 + 5 + 6"
+ },
+ {
+  "id": "s028",
+  "q": "Wie lang ist ein Marathonlauf?",
+  "a": 42.195,
+  "unit": "km",
+  "src": "World Athletics, Regel 55"
+ },
+ {
+  "id": "s029",
+  "q": "Wie breit ist ein Fußballtor (Innenmaß)?",
+  "a": 7.32,
+  "unit": "m",
+  "src": "IFAB-Spielregeln, Regel 1"
+ },
+ {
+  "id": "s030",
+  "q": "Wie hoch ist ein Fußballtor (Innenmaß)?",
+  "a": 2.44,
+  "unit": "m",
+  "src": "IFAB-Spielregeln, Regel 1"
+ },
+ {
+  "id": "s031",
+  "q": "In welcher Höhe hängt der Korb beim Basketball?",
+  "a": 3.05,
+  "unit": "m",
+  "src": "FIBA Official Basketball Rules"
+ },
+ {
+  "id": "s032",
+  "q": "Wie hoch ist das Volleyballnetz bei den Männern?",
+  "a": 2.43,
+  "unit": "m",
+  "src": "FIVB-Spielregeln"
+ },
+ {
+  "id": "s033",
+  "q": "Wie groß ist der Durchmesser eines Tischtennisballs?",
+  "a": 40,
+  "unit": "mm",
+  "src": "ITTF-Regeln"
+ },
+ {
+  "id": "s034",
+  "q": "Wie weit ist die Wurflinie (Oche) beim Steel-Darts von der Dartscheibe entfernt?",
+  "a": 2.37,
+  "unit": "m",
+  "src": "World Darts Federation (WDF), Spielregeln"
+ },
+ {
+  "id": "s035",
+  "q": "In welcher Höhe über dem Boden hängt beim Darts das Bullseye?",
+  "a": 1.73,
+  "unit": "m",
+  "src": "World Darts Federation (WDF), Spielregeln"
+ },
+ {
+  "id": "s036",
+  "q": "Wie viele Punkte sind mit drei Darts höchstens möglich?",
+  "a": 180,
+  "unit": "Punkte",
+  "src": "World Darts Federation (WDF), Spielregeln"
+ },
+ {
+  "id": "s037",
+  "q": "Wie viele Minuten dauert ein Rugby-Union-Spiel regulär?",
+  "a": 80,
+  "unit": "Minuten",
+  "src": "World Rugby, Law 5"
+ },
+ {
+  "id": "s038",
+  "q": "Wie viele Spieler hat ein Rugby-Union-Team auf dem Feld?",
+  "a": 15,
+  "unit": "Spieler",
+  "src": "World Rugby, Law 3"
+ },
+ {
+  "id": "s039",
+  "q": "Wie hoch hängt das Tennisnetz in der Mitte?",
+  "a": 91.4,
+  "unit": "cm",
+  "src": "ITF-Tennisregeln"
+ },
+ {
+  "id": "s040",
+  "q": "Wie viele Sekunden hat ein Tag?",
+  "a": 86400,
+  "unit": "Sekunden",
+  "src": "Rechnung: 24 × 60 × 60"
+ },
+ {
+  "id": "s041",
+  "q": "Wie viele Sekunden hat ein Jahr mit 365 Tagen?",
+  "a": 31536000,
+  "unit": "Sekunden",
+  "src": "Rechnung: 365 × 24 × 60 × 60"
+ },
+ {
+  "id": "s042",
+  "q": "Wie viele Minuten hat eine Woche?",
+  "a": 10080,
+  "unit": "Minuten",
+  "src": "Rechnung: 7 × 24 × 60"
+ },
+ {
+  "id": "s043",
+  "q": "Wie viele Tage sind eine Million Sekunden?",
+  "a": 11.574,
+  "unit": "Tage",
+  "src": "Rechnung: 1.000.000 / 86.400"
+ },
+ {
+  "id": "s044",
+  "q": "Wie viele Jahre sind eine Milliarde Sekunden (Jahr = 365 Tage)?",
+  "a": 31.709,
+  "unit": "Jahre",
+  "src": "Rechnung: 1.000.000.000 / 31.536.000"
+ },
+ {
+  "id": "s045",
+  "q": "Wie viele Tage hat ein voller Zyklus des gregorianischen Kalenders (400 Jahre)?",
+  "a": 146097,
+  "unit": "Tage",
+  "src": "Rechnung: 400 × 365 + 97 Schalttage"
+ },
+ {
+  "id": "s046",
+  "q": "Wie viele Meter ist eine Seemeile lang?",
+  "a": 1852,
+  "unit": "m",
+  "src": "Internationale Definition (1929); PTB"
+ },
+ {
+  "id": "s047",
+  "q": "Wie viele Zentimeter hat ein Zoll (Inch)?",
+  "a": 2.54,
+  "unit": "cm",
+  "src": "Internationale Yard-und-Pfund-Vereinbarung (1959)"
+ },
+ {
+  "id": "s048",
+  "q": "Bei wie viel Grad Fahrenheit gefriert Wasser?",
+  "a": 32,
+  "unit": "°F",
+  "src": "Fahrenheit-Skala (Normaldruck)"
+ },
+ {
+  "id": "s049",
+  "q": "Bei wie viel Grad Fahrenheit siedet Wasser?",
+  "a": 212,
+  "unit": "°F",
+  "src": "Fahrenheit-Skala (Normaldruck)"
+ },
+ {
+  "id": "s050",
+  "q": "Wie viel Grad Celsius hat der absolute Nullpunkt?",
+  "a": -273.15,
+  "unit": "°C",
+  "src": "SI-Broschüre des BIPM"
+ },
+ {
+  "id": "s051",
+  "q": "Wie schnell ist der Schall in Luft bei 20 °C?",
+  "a": 343,
+  "unit": "m/s",
+  "src": "PTB; NIST"
+ },
+ {
+  "id": "s052",
+  "q": "Wie groß ist die Fallbeschleunigung auf der Erde (Normwert, gerundet auf zwei Stellen)?",
+  "a": 9.81,
+  "unit": "m/s²",
+  "src": "ISO 80000-3 (9,80665 m/s²)"
+ },
+ {
+  "id": "s053",
+  "q": "Wie schnell ist das Licht im Vakuum (gerundet auf ganze km/s)?",
+  "a": 299792,
+  "unit": "km/s",
+  "src": "BIPM (299.792.458 m/s)"
+ },
+ {
+  "id": "s054",
+  "q": "Wie viele Pixel hat ein Full-HD-Bild (1920 × 1080)?",
+  "a": 2073600,
+  "unit": "Pixel",
+  "src": "Rechnung: 1920 × 1080"
+ },
+ {
+  "id": "s055",
+  "q": "Wie lang ist ein DIN-A4-Blatt?",
+  "a": 297,
+  "unit": "mm",
+  "src": "ISO 216"
+ },
+ {
+  "id": "s056",
+  "q": "Wie viele DIN-A4-Blätter ergeben zusammen die Fläche eines DIN-A0-Blatts?",
+  "a": 16,
+  "unit": "Blätter",
+  "src": "ISO 216"
+ },
+ {
+  "id": "s057",
+  "q": "Wie lang ist eine Europalette?",
+  "a": 1200,
+  "unit": "mm",
+  "src": "EPAL; UIC-Merkblatt 435-2"
+ },
+ {
+  "id": "s058",
+  "q": "Wie viele Liter fasst ein Euro-Standard-Bierfass?",
+  "a": 50,
+  "unit": "Liter",
+  "src": "DIN 6647-1 (Euro-KEG)"
+ },
+ {
+  "id": "s059",
+  "q": "Wie hoch ist die Mona Lisa im Original (ohne Rahmen)?",
+  "a": 77,
+  "unit": "cm",
+  "src": "Musée du Louvre"
+ },
+ {
+  "id": "s060",
+  "q": "Wie weit ist der Mond im Mittel von der Erde entfernt?",
+  "a": 384400,
+  "unit": "km",
+  "src": "NASA Moon Fact Sheet"
+ },
+ {
+  "id": "s061",
+  "q": "Wie weit ist die Erde im Mittel von der Sonne entfernt (eine Astronomische Einheit, gerundet auf ganze km)?",
+  "a": 149597871,
+  "unit": "km",
+  "src": "IAU-Resolution B2 (2012)"
+ },
+ {
+  "id": "s062",
+  "q": "Wie lang ist der Erdumfang am Äquator?",
+  "a": 40075,
+  "unit": "km",
+  "src": "NASA Earth Fact Sheet"
+ },
+ {
+  "id": "s063",
+  "q": "Wie groß ist der Durchmesser der Erde am Äquator?",
+  "a": 12756,
+  "unit": "km",
+  "src": "NASA Earth Fact Sheet"
+ },
+ {
+  "id": "s064",
+  "q": "Wie groß ist der Durchmesser der Sonne?",
+  "a": 1391400,
+  "unit": "km",
+  "src": "IAU 2015 (nominaler Sonnenradius 695.700 km)"
+ },
+ {
+  "id": "s065",
+  "q": "Wie heiß ist die Oberfläche der Sonne (gerundet auf Hunderter)?",
+  "a": 5500,
+  "unit": "°C",
+  "src": "NASA Sun Fact Sheet"
+ },
+ {
+  "id": "s066",
+  "q": "Wie viele Sekunden braucht das Licht von der Sonne zur Erde?",
+  "a": 499,
+  "unit": "Sekunden",
+  "src": "Rechnung: 1 AE / Lichtgeschwindigkeit"
+ },
+ {
+  "id": "s067",
+  "q": "Wie viele Sekunden braucht das Licht vom Mond zur Erde?",
+  "a": 1.28,
+  "unit": "Sekunden",
+  "src": "Rechnung: 384.400 km / Lichtgeschwindigkeit; NASA"
+ },
+ {
+  "id": "s068",
+  "q": "Wie viele Monde hat der Mars?",
+  "a": 2,
+  "unit": "Monde",
+  "src": "NASA (Phobos und Deimos)"
+ },
+ {
+  "id": "s069",
+  "q": "Wie viel Prozent der Luft sind Sauerstoff (gerundet)?",
+  "a": 21,
+  "unit": "%",
+  "src": "NOAA; NASA"
+ },
+ {
+  "id": "s070",
+  "q": "Wie viel Prozent der Luft sind Stickstoff (gerundet)?",
+  "a": 78,
+  "unit": "%",
+  "src": "NOAA; NASA"
+ },
+ {
+  "id": "s071",
+  "q": "Wie viel Prozent der Erdoberfläche sind mit Wasser bedeckt (gerundet)?",
+  "a": 71,
+  "unit": "%",
+  "src": "USGS"
+ },
+ {
+  "id": "s072",
+  "q": "Wie viele Erdkugeln würden dem Volumen nach in die Sonne passen (gerundet)?",
+  "a": 1300000,
+  "unit": "Erdkugeln",
+  "src": "NASA Sun Fact Sheet (etwa 1,3 Millionen)"
+ },
+ {
+  "id": "s073",
+  "q": "Wie viele Tage vergehen im Mittel von Neumond zu Neumond?",
+  "a": 29.53,
+  "unit": "Tage",
+  "src": "NASA"
+ },
+ {
+  "id": "s074",
+  "q": "Wie viele Elemente hat das Periodensystem (alle benannten)?",
+  "a": 118,
+  "unit": "Elemente",
+  "src": "IUPAC (seit 2016)"
+ },
+ {
+  "id": "s075",
+  "q": "Welche Ordnungszahl hat Gold im Periodensystem?",
+  "a": 79,
+  "unit": "Ordnungszahl",
+  "src": "IUPAC"
+ },
+ {
+  "id": "s076",
+  "q": "Welche Ordnungszahl hat Silber im Periodensystem?",
+  "a": 47,
+  "unit": "Ordnungszahl",
+  "src": "IUPAC"
+ },
+ {
+  "id": "s077",
+  "q": "Welche Ordnungszahl hat Eisen im Periodensystem?",
+  "a": 26,
+  "unit": "Ordnungszahl",
+  "src": "IUPAC"
+ },
+ {
+  "id": "s078",
+  "q": "Welche Ordnungszahl hat Uran im Periodensystem?",
+  "a": 92,
+  "unit": "Ordnungszahl",
+  "src": "IUPAC"
+ },
+ {
+  "id": "s079",
+  "q": "Welche Ordnungszahl hat Kupfer im Periodensystem?",
+  "a": 29,
+  "unit": "Ordnungszahl",
+  "src": "IUPAC"
+ },
+ {
+  "id": "s080",
+  "q": "Wie hoch ist die Zugspitze?",
+  "a": 2962,
+  "unit": "m",
+  "src": "Bayerische Vermessungsverwaltung (m ü. NHN)"
+ },
+ {
+  "id": "s081",
+  "q": "Wie hoch ist der Brocken im Harz?",
+  "a": 1141,
+  "unit": "m",
+  "src": "Nationalpark Harz"
+ },
+ {
+  "id": "s082",
+  "q": "Wie hoch ist der Feldberg im Schwarzwald?",
+  "a": 1493,
+  "unit": "m",
+  "src": "LUBW Baden-Württemberg"
+ },
+ {
+  "id": "s083",
+  "q": "Wie hoch ist der Großglockner?",
+  "a": 3798,
+  "unit": "m",
+  "src": "Bundesamt für Eich- und Vermessungswesen (BEV), Österreich"
+ },
+ {
+  "id": "s084",
+  "q": "Wie hoch ist das Matterhorn?",
+  "a": 4478,
+  "unit": "m",
+  "src": "swisstopo"
+ },
+ {
+  "id": "s085",
+  "q": "Wie hoch sind die Türme des Kölner Doms (gerundet)?",
+  "a": 157,
+  "unit": "m",
+  "src": "Kölner Domverwaltung (Nordturm 157,38 m, Südturm 157,31 m)"
+ },
+ {
+  "id": "s086",
+  "q": "Wie hoch ist der Berliner Fernsehturm mit Antenne?",
+  "a": 368,
+  "unit": "m",
+  "src": "Fernsehturm Berlin (368 m)"
+ },
+ {
+  "id": "s087",
+  "q": "Wie hoch ist die Freiheitsstatue von der Basis bis zur Fackel (ohne Sockel)?",
+  "a": 46,
+  "unit": "m",
+  "src": "U.S. National Park Service (46,05 m)"
+ },
+ {
+  "id": "s088",
+  "q": "Wie viele Stufen hat der Eiffelturm bis ganz nach oben?",
+  "a": 1665,
+  "unit": "Stufen",
+  "src": "Société d’Exploitation de la Tour Eiffel"
+ },
+ {
+  "id": "s089",
+  "q": "Wie lang ist die Nordschleife des Nürburgrings?",
+  "a": 20.832,
+  "unit": "km",
+  "src": "Nürburgring GmbH"
+ },
+ {
+  "id": "s090",
+  "q": "Wie viele Bundesländer hat Deutschland?",
+  "a": 16,
+  "unit": "Bundesländer",
+  "src": "Bundesregierung"
+ },
+ {
+  "id": "s091",
+  "q": "Wie viele Nachbarländer hat Deutschland?",
+  "a": 9,
+  "unit": "Länder",
+  "src": "Auswärtiges Amt"
+ },
+ {
+  "id": "s092",
+  "q": "In welchem Jahr wurde die Berliner Mauer gebaut?",
+  "a": 1961,
+  "unit": "Jahr",
+  "src": "Bundeszentrale für politische Bildung (13. August 1961)"
+ },
+ {
+  "id": "s093",
+  "q": "In welchem Jahr fiel die Berliner Mauer?",
+  "a": 1989,
+  "unit": "Jahr",
+  "src": "Bundeszentrale für politische Bildung (9. November 1989)"
+ },
+ {
+  "id": "s094",
+  "q": "In welchem Jahr wurde Deutschland wiedervereinigt?",
+  "a": 1990,
+  "unit": "Jahr",
+  "src": "Bundeszentrale für politische Bildung (3. Oktober 1990)"
+ },
+ {
+  "id": "s095",
+  "q": "In welchem Jahr wurde das Grundgesetz verkündet (Gründung der Bundesrepublik)?",
+  "a": 1949,
+  "unit": "Jahr",
+  "src": "Bundeszentrale für politische Bildung (23. Mai 1949)"
+ },
+ {
+  "id": "s096",
+  "q": "In welchem Jahr landeten die ersten Menschen auf dem Mond (Apollo 11)?",
+  "a": 1969,
+  "unit": "Jahr",
+  "src": "NASA"
+ },
+ {
+  "id": "s097",
+  "q": "In welchem Jahr flog Juri Gagarin als erster Mensch ins All?",
+  "a": 1961,
+  "unit": "Jahr",
+  "src": "ESA; NASA"
+ },
+ {
+  "id": "s098",
+  "q": "In welchem Jahr sank die Titanic?",
+  "a": 1912,
+  "unit": "Jahr",
+  "src": "Britannica „Titanic“"
+ },
+ {
+  "id": "s099",
+  "q": "In welchem Jahr fanden die ersten Olympischen Spiele der Neuzeit statt?",
+  "a": 1896,
+  "unit": "Jahr",
+  "src": "IOC (Athen)"
+ },
+ {
+  "id": "s100",
+  "q": "In welchem Jahr erreichte Kolumbus auf seiner ersten Reise Amerika?",
+  "a": 1492,
+  "unit": "Jahr",
+  "src": "Britannica „Christopher Columbus“"
+ },
+ {
+  "id": "s101",
+  "q": "In welchem Jahr wurde die Bastille gestürmt?",
+  "a": 1789,
+  "unit": "Jahr",
+  "src": "Britannica „Storming of the Bastille“"
+ },
+ {
+  "id": "s102",
+  "q": "In welchem Jahr begann der Erste Weltkrieg?",
+  "a": 1914,
+  "unit": "Jahr",
+  "src": "Bundeszentrale für politische Bildung"
+ },
+ {
+  "id": "s103",
+  "q": "In welchem Jahr begann der Zweite Weltkrieg?",
+  "a": 1939,
+  "unit": "Jahr",
+  "src": "Bundeszentrale für politische Bildung (Überfall auf Polen)"
+ },
+ {
+  "id": "s104",
+  "q": "In welchem Jahr endete der Zweite Weltkrieg in Europa?",
+  "a": 1945,
+  "unit": "Jahr",
+  "src": "Bundeszentrale für politische Bildung (8. Mai 1945)"
+ },
+ {
+  "id": "s105",
+  "q": "In welchem Jahr fuhr die erste Eisenbahn in Deutschland (Nürnberg–Fürth)?",
+  "a": 1835,
+  "unit": "Jahr",
+  "src": "DB Museum Nürnberg"
+ },
+ {
+  "id": "s106",
+  "q": "In welchem Jahr wurde in Deutschland das Euro-Bargeld eingeführt?",
+  "a": 2002,
+  "unit": "Jahr",
+  "src": "Europäische Zentralbank"
+ },
+ {
+  "id": "s107",
+  "q": "In welchem Jahr gelang den Brüdern Wright der erste Motorflug?",
+  "a": 1903,
+  "unit": "Jahr",
+  "src": "Smithsonian National Air and Space Museum"
+ },
+ {
+  "id": "s108",
+  "q": "In welchem Jahr ereignete sich der Reaktorunfall von Tschernobyl?",
+  "a": 1986,
+  "unit": "Jahr",
+  "src": "IAEA"
+ },
+ {
+  "id": "s109",
+  "q": "In welchem Jahr veröffentlichte Martin Luther der Überlieferung nach seine 95 Thesen?",
+  "a": 1517,
+  "unit": "Jahr",
+  "src": "Britannica „Ninety-five Theses“"
+ },
+ {
+  "id": "s110",
+  "q": "In welchem Jahr wurde der Westfälische Friede geschlossen?",
+  "a": 1648,
+  "unit": "Jahr",
+  "src": "Britannica „Peace of Westphalia“"
+ },
+ {
+  "id": "s111",
+  "q": "In welchem Jahr wurde Karl der Große zum Kaiser gekrönt?",
+  "a": 800,
+  "unit": "Jahr",
+  "src": "Britannica „Charlemagne“"
+ },
+ {
+  "id": "s112",
+  "q": "In welchem Jahr (n. Chr.) fand die Varusschlacht statt?",
+  "a": 9,
+  "unit": "Jahr n. Chr.",
+  "src": "Britannica „Battle of the Teutoburg Forest“"
+ },
+ {
+  "id": "s113",
+  "q": "In welchem Jahr (n. Chr.) wurde Pompeji durch den Vesuv verschüttet?",
+  "a": 79,
+  "unit": "Jahr n. Chr.",
+  "src": "Britannica „Pompeii“"
+ },
+ {
+  "id": "s114",
+  "q": "In welchem Jahr fand die erste Fußball-Weltmeisterschaft statt?",
+  "a": 1930,
+  "unit": "Jahr",
+  "src": "FIFA (Uruguay)"
+ },
+ {
+  "id": "s115",
+  "q": "In welchem Jahr startete die erste Saison der Fußball-Bundesliga?",
+  "a": 1963,
+  "unit": "Jahr",
+  "src": "DFB (Saison 1963/64)"
+ },
+ {
+  "id": "s116",
+  "q": "In welchem Jahr wurde die D-Mark eingeführt?",
+  "a": 1948,
+  "unit": "Jahr",
+  "src": "Deutsche Bundesbank (Währungsreform)"
+ },
+ {
+  "id": "s117",
+  "q": "In welchem Jahr wurde Wikipedia gegründet?",
+  "a": 2001,
+  "unit": "Jahr",
+  "src": "Wikimedia Foundation"
+ },
+ {
+  "id": "s118",
+  "q": "In welchem Jahr wurde Google gegründet?",
+  "a": 1998,
+  "unit": "Jahr",
+  "src": "Britannica „Google“"
+ },
+ {
+  "id": "s119",
+  "q": "In welchem Jahr wurde das erste iPhone vorgestellt?",
+  "a": 2007,
+  "unit": "Jahr",
+  "src": "Apple (9. Januar 2007)"
+ },
+ {
+  "id": "s120",
+  "q": "In welchem Jahr lief die erste Tagesschau im Fernsehen?",
+  "a": 1952,
+  "unit": "Jahr",
+  "src": "ARD (26. Dezember 1952)"
+ },
+ {
+  "id": "s121",
+  "q": "In welchem Jahr lief der erste Tatort im Fernsehen?",
+  "a": 1970,
+  "unit": "Jahr",
+  "src": "ARD (29. November 1970)"
+ },
+ {
+  "id": "s122",
+  "q": "In welchem Jahr wurde Wolfgang Amadeus Mozart geboren?",
+  "a": 1756,
+  "unit": "Jahr",
+  "src": "Britannica „Wolfgang Amadeus Mozart“"
+ },
+ {
+  "id": "s123",
+  "q": "In welchem Jahr wurde Johann Wolfgang von Goethe geboren?",
+  "a": 1749,
+  "unit": "Jahr",
+  "src": "Britannica „Johann Wolfgang von Goethe“"
+ },
+ {
+  "id": "s124",
+  "q": "In welchem Jahr wurde Albert Einstein geboren?",
+  "a": 1879,
+  "unit": "Jahr",
+  "src": "Britannica „Albert Einstein“"
+ },
+ {
+  "id": "s125",
+  "q": "In welchem Jahr erschien Goethes „Faust. Der Tragödie erster Teil“?",
+  "a": 1808,
+  "unit": "Jahr",
+  "src": "Goethe- und Schiller-Archiv Weimar"
+ },
+ {
+  "id": "s126",
+  "q": "In welchem Jahr erschien „Harry Potter und der Stein der Weisen“ in Großbritannien?",
+  "a": 1997,
+  "unit": "Jahr",
+  "src": "Bloomsbury Publishing"
+ },
+ {
+  "id": "s127",
+  "q": "Wie viele Sinfonien hat Ludwig van Beethoven komponiert?",
+  "a": 9,
+  "unit": "Sinfonien",
+  "src": "Britannica „Ludwig van Beethoven“"
+ },
+ {
+  "id": "s128",
+  "q": "Wie viele Märchen enthält die „Ausgabe letzter Hand“ (1857) der Kinder- und Hausmärchen der Brüder Grimm?",
+  "a": 200,
+  "unit": "Märchen",
+  "src": "Brüder Grimm-Museum Kassel"
+ },
+ {
+  "id": "s129",
+  "q": "Aus wie vielen Buchstaben besteht das deutsche Alphabet einschließlich Ä, Ö, Ü und ß?",
+  "a": 30,
+  "unit": "Buchstaben",
+  "src": "Duden"
+ }
+]

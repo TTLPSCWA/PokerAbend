@@ -1,0 +1,44 @@
+/* Schätzmeister: Zahlenstrahl mit den Schätzungen und der richtigen Antwort */
+.kg-schaetzmeister .kg-main { background: radial-gradient(120% 90% at 50% 20%, #2C4A5C, #14212B); }
+.sm-answer { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 2px 12px; text-align: center; padding: 8px 18px; border-radius: var(--r-l); background: rgba(0,0,0,.32); box-shadow: 0 0 0 3px var(--gold); width: 100%; }
+.sm-answer small { color: #D3E1DA; }
+.sm-answer b { font-size: clamp(26px, 6vw, 38px); line-height: 1.15; color: var(--gold-text); overflow-wrap: anywhere; }
+.sm-answer span { font-size: 16px; }
+
+/* Zahlenstrahl: Achse, Flagge bei der richtigen Antwort, Schätzungen als Avatar + Name in Bahnen (gegen Überlappen) */
+.sm-line { position: relative; width: 100%; margin: 4px 0 0; }
+.sm-axis { position: absolute; left: 3%; right: 3%; top: 30px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.35); }
+.sm-flag { position: absolute; top: 0; bottom: 0; width: 0; border-left: 3px solid var(--gold); z-index: 1; }
+.sm-flag span { position: absolute; top: -2px; left: 0; transform: translateX(-50%); white-space: nowrap; padding: 2px 8px; border-radius: 8px; background: var(--gold); color: #2A1B08; font-size: 12px; font-weight: 800; }
+.sm-m { position: absolute; transform: translateX(-50%); display: grid; justify-items: center; gap: 1px; width: 64px; z-index: 2; }
+.sm-m i { font-style: normal; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--panel); border: 2px solid var(--text-2); font-size: 18px; }
+.sm-m small { max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; color: #E3EBE6; }
+.sm-m.win i { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-line); }
+.sm-m.me i { border-style: double; border-width: 4px; }
+.sm-m.spec { opacity: .75; }
+.sm-m.spec i { border-style: dashed; }
+.sm-scale { margin: 0; text-align: center; font-size: 13px; color: #C9D8D1; }
+
+/* Auflösung: Reihenfolge nach Abstand zur richtigen Antwort */
+.sm-rank { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; width: 100%; }
+.sm-rank li { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto auto; align-items: center; gap: 10px; padding: 7px 12px; border-radius: var(--r-m); background: rgba(0,0,0,.28); border: 1px solid var(--line); }
+.sm-rank li.win { border-color: var(--gold); }
+.sm-rank li.me { background: rgba(201,154,69,.16); }
+.sm-rank .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+.sm-rank .val { text-align: right; font-weight: 700; }
+.sm-rank .val small { display: block; color: #C9D8D1; font-weight: 400; }
+.sm-src { margin: 0; text-align: center; font-size: 12px; color: #B8C7C0; }
+
+/* Aufdecken: Schätzungen springen nacheinander auf den Strahl (jede unter 400 ms, abschaltbar) */
+@keyframes sm-pop { from { opacity: 0; transform: translateX(-50%) translateY(10px) scale(.8); } to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
+@keyframes sm-flag { from { opacity: 0; } to { opacity: 1; } }
+.sm-m { animation: sm-pop .3s ease both; animation-delay: calc(var(--i, 0) * 70ms); }
+.sm-flag { animation: sm-flag .3s ease both; animation-delay: .1s; }
+body.calm .sm-m, body.calm .sm-flag { animation: none; }
+@media (prefers-reduced-motion: reduce) { .sm-m, .sm-flag { animation: none; } }
+@media (max-width: 640px) {
+  .sm-rank li { grid-template-columns: 30px minmax(0, 1fr) auto; }
+  .sm-rank .pts { grid-column: 3; grid-row: 1; }
+  .sm-rank .val { grid-column: 2 / 4; grid-row: 2; text-align: left; }
+  .sm-m { width: 52px; } .sm-m small { max-width: 52px; }
+}

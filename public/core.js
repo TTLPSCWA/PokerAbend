@@ -257,7 +257,7 @@ let lobbyTab = params.get('t') ? 'join' : 'create';
 let avatar = store.get('poker:avatar', AVATARS[Math.floor(Math.random() * AVATARS.length)]);
 let chosenGame = store.get('poker:game', 'poker');
 const gameInfo = () => account.games.find((g) => g.id === chosenGame) || account.games[0] || null;
-const GAME_CATEGORIES = [['karten', 'Kartenspiele'], ['wuerfel', 'Würfelspiele'], ['brett', 'Brettspiele']]; // wie games/index.js
+const GAME_CATEGORIES = [['karten', 'Kartenspiele'], ['wuerfel', 'Würfelspiele'], ['brett', 'Brettspiele'], ['party', 'Party Spiele']]; // wie games/index.js
 
 function showLobby(error = '') {
   $('#game-root').hidden = true;

@@ -11,7 +11,10 @@
 //   status(S, myTurn) → eigene Statuszeile oben, direction: false → keinen Richtungspfeil zeigen, afterRender(S) → nach dem Zeichnen (z. B. Animationen),
 //   prefs() → eigene Schalter im Reiter „Ich“, standExtra(S) → zusätzlicher Teil im Reiter „Stand“,
 //   intro: [[Überschrift, Text], …] → Erste Schritte beim ersten Spiel (3 Schritte), sounds(S, prev) → eigene Töne (Namen aus SFX),
-//   translate(text) → Texte vom Server anders benennen (z. B. deutsches Blatt), onClick(el, S) für Elemente mit data-g
+//   translate(text) → Texte vom Server anders benennen (z. B. deutsches Blatt), onClick(el, S) für Elemente mit data-g,
+//   ring: false → auch am großen Bildschirm die Spielerleiste oben statt Plätzen rund um den Tisch,
+//   roundWord → statt „Runde“ (Partyspiele: „Partie“), dockKey(S) → nur wenn sich der Schlüssel ändert, wird die Aktionsleiste neu gezeichnet
+//   (Eingabefelder behalten so ihren Text), watchDock(S) → Aktionen für Zuschauer, hostExtra(S) → zusätzlicher Teil im Host-Menü
 // Läuft nach /core.js ($, esc, send, toast, ask, beep, socket …).
 'use strict';
 
@@ -158,6 +161,7 @@ function kitGame(def) {
   const WIDE = matchMedia('(min-width: 900px) and (min-height: 620px)');
   WIDE.addEventListener('change', () => { if (isMine()) render(); });
   const FINE = matchMedia('(pointer: fine)');
+  let dockKeyPrev = null; // Schlüssel der zuletzt gezeichneten Aktionsleiste (dockKey)
   let resultClosed = 0; // Rundennummer, deren Ergebnisfenster weggeklickt wurde
   let peekKey = null;   // Handy: vergrößerte Karte in einer überlappenden Hand
 
@@ -165,6 +169,7 @@ function kitGame(def) {
   // Am eigenen Platz unten reicht die kurze Zeile – Hand, Stapel usw. liegen ohnehin vor dir
   const infoOf = (p, seat) => (S.phase !== 'lobby' && p.inRound !== undefined ? (seat && def.seat && p.id !== S.you?.id ? def.seat(p, S) : def.playerInfo?.(p, S)) || '' : '');
   const tr = (t) => (def.translate ? def.translate(t) : t);
+  const RW = def.roundWord || 'Runde';
   const lastAct = () => Math.max(0, ...Object.values(S.acts || {}).map((a) => a.n));
   const bubble = (p, cls) => {
     const a = S.acts?.[p.id];
@@ -247,15 +252,15 @@ function kitGame(def) {
     $('#kg-nav-host').hidden = !S.you?.isHost;
     const myTurn = S.turnId && S.turnId === S.you?.id;
     // status(S) darf das Spiel selbst liefern (z. B. „Schiffe setzen“, wenn niemand dran ist)
-    const status = (S.phase === 'playing' && def.status?.(S, myTurn)) || (S.phase === 'playing' ? `Runde #${S.roundNo} · ${myTurn ? '<b>Du bist dran</b>' : `${esc(nameOf(S.turnId))} ist dran`}`
-      : S.phase === 'over' ? `Runde #${S.roundNo} vorbei` : 'Noch nicht gestartet');
+    const status = (S.phase === 'playing' && def.status?.(S, myTurn)) || (S.phase === 'playing' ? `${RW} #${S.roundNo} · ${myTurn ? '<b>Du bist dran</b>' : `${esc(nameOf(S.turnId))} ist dran`}`
+      : S.phase === 'over' ? `${RW} #${S.roundNo} vorbei` : 'Noch nicht gestartet');
     // Zug-Timer: Restzeit (läuft im Sekundentakt weiter, siehe tickClock)
     const clock = S.phase === 'playing' && S.deadline ? ` · <span id="kg-clock" class="${myTurn ? 'mine' : ''}"></span>` : '';
     $('#kg-meta').innerHTML = `<div class="blinds">${esc(def.name)}</div><div class="meta-sub">${status}${clock}</div>`;
     tickClock();
     document.body.classList.toggle('kg-myturn', !!myTurn);
 
-    const ring = WIDE.matches;
+    const ring = WIDE.matches && def.ring !== false; // ring: false → immer die kompakte Spielerleiste (Partyspiele haben lange Auflösungen)
     $('#kg-players').hidden = ring;
     if (!ring) $('#kg-players').innerHTML = stripHTML();
 
@@ -267,7 +272,8 @@ function kitGame(def) {
     main.innerHTML = help + (ring ? ringHTML(center) : center) + (S.phase === 'over' && S.result && resultClosed !== S.roundNo ? resultHTML() : '');
 
     // Aktionsleiste
-    $('#kg-dock').innerHTML = dockHTML(myTurn);
+    const dkey = def.dockKey ? def.dockKey(S, myTurn) : null;
+    if (dkey === null || dkey !== dockKeyPrev || !$('#kg-dock').firstChild) { $('#kg-dock').innerHTML = dockHTML(myTurn); dockKeyPrev = dkey; }
     document.documentElement.style.setProperty('--dock-h', $('#kg-dock').offsetHeight + 'px');
     setupHand();
     if (panel) renderPanel();
@@ -320,13 +326,13 @@ function kitGame(def) {
     }).join('');
     const host = S.you?.isHost;
     return `<div class="kg-over" role="dialog" aria-labelledby="kg-over-title"><div class="kg-over-card">
-      <small class="kg-over-kicker">Runde #${S.roundNo} vorbei</small>
+      <small class="kg-over-kicker">${RW} #${S.roundNo} vorbei</small>
       <h2 id="kg-over-title">${esc(r.text)}</h2>
       ${rows ? `<table class="standings"><thead><tr><th>Name</th><th class="num">Runde</th><th class="num">Abend (${esc(S.scoreLabel)})</th></tr></thead><tbody>${rows}</tbody></table>
         <p class="hint" style="margin:0">${S.lowWins ? 'Wenig Punkte sind gut.' : 'Viel ist gut.'}</p>` : ''}
       <div class="kg-over-acts">
         <button class="btn btn-ghost" data-kit="closeResult">Schließen</button>
-        ${host ? `<button class="btn" data-kit="switchPanel">Spiel wechseln</button><button class="btn btn-brass" data-kit="start" ${seatedCount() >= S.minPlayers ? '' : 'disabled'}>Nächste Runde</button>`
+        ${host ? `<button class="btn" data-kit="switchPanel">Spiel wechseln</button><button class="btn btn-brass" data-kit="start" ${seatedCount() >= S.minPlayers ? '' : 'disabled'}>Nächste ${RW}</button>`
           : '<span class="waiting">Der Host startet die nächste Runde.</span>'}
       </div></div></div>`;
   }
@@ -348,6 +354,7 @@ function kitGame(def) {
       return `<div class="kg-dock-in">${hintRow(myTurn)}${html.includes('kg-acts') ? html : `<div class="kg-acts">${html}</div>`}</div>`;
     }
     const parts = [];
+    const watch = S.phase === 'playing' && def.watchDock ? def.watchDock(S) : '';
     if (me?.playing) {
       parts.push(`<span class="waiting">${S.phase === 'playing' ? 'Du spielst ab der nächsten Runde mit.' : 'Du spielst mit.'}</span>`);
       parts.push('<button class="btn btn-ghost" data-kit="stand">Zuschauen</button>');
@@ -357,10 +364,11 @@ function kitGame(def) {
     }
     if (me?.isHost && S.phase !== 'playing') {
       const enough = seatedCount() >= S.minPlayers;
-      parts.push(`<button class="btn btn-brass" data-kit="start" ${enough ? '' : `disabled title="Es müssen mindestens ${S.minPlayers} mitspielen"`}>${S.phase === 'over' ? 'Nochmal' : S.roundNo ? 'Nächste Runde' : 'Runde starten'}</button>`);
+      parts.push(`<button class="btn btn-brass" data-kit="start" ${enough ? '' : `disabled title="Es müssen mindestens ${S.minPlayers} mitspielen"`}>${S.phase === 'over' ? 'Nochmal' : S.roundNo ? `Nächste ${RW}` : `${RW} starten`}</button>`);
       if (S.phase === 'over') parts.push('<button class="btn" data-kit-panel="host">Anderes Spiel …</button>');
     }
-    return `<div class="kg-dock-row">${parts.join('')}</div>`;
+    const row = `<div class="kg-dock-row">${parts.join('')}</div>`;
+    return watch ? `<div class="kg-dock-in">${watch}${row}</div>` : row;
   }
 
   // ---------- Seitenleiste ----------
@@ -373,13 +381,13 @@ function kitGame(def) {
   }
   function renderPanel(force = false) {
     const body = $('#kg-panel-body');
-    if (!force && body.contains(document.activeElement) && document.activeElement.matches('input, select')) return;
+    if (!force && body.contains(document.activeElement) && document.activeElement.matches('input, select, textarea')) return;
     if (panel === 'log') {
       const list = fullLog || S.log;
       let round = null;
       const atBottom = body.scrollTop + body.clientHeight >= body.scrollHeight - 30;
       body.innerHTML = `<ul class="log">${list.filter((l) => l.cat !== 'hand').map((l) => {
-        const head = l.hand !== round ? `<li class="hand">${l.hand ? `Runde #${l.hand}` : 'Vor der ersten Runde'}</li>` : '';
+        const head = l.hand !== round ? `<li class="hand">${l.hand ? `${RW} #${l.hand}` : 'Vor der ersten Runde'}</li>` : '';
         round = l.hand;
         return `${head}<li class="${esc(l.kind)}">${esc(tr(l.text))}</li>`;
       }).join('')}</ul>
@@ -417,11 +425,12 @@ function kitGame(def) {
         <input type="checkbox" role="switch" data-kit-set="${o.key}" ${S.settings[o.key] ? 'checked' : ''} ${off}></label>`).join('');
       const fields = opts.length ? `${nums ? `<div class="host-grid">${nums}</div>` : ''}<div class="kg-switches">${bools}</div>` : '';
       body.innerHTML = `<div class="big-actions">
-          ${S.phase !== 'playing' ? `<button class="btn btn-brass" data-kit="start">${ICON.play} ${S.phase === 'over' ? 'Nochmal' : S.roundNo ? 'Nächste Runde' : 'Runde starten'}</button>` : ''}
+          ${S.phase !== 'playing' ? `<button class="btn btn-brass" data-kit="start">${ICON.play} ${S.phase === 'over' ? 'Nochmal' : S.roundNo ? `Nächste ${RW}` : `${RW} starten`}</button>` : ''}
           <button class="btn btn-outline-red" data-kit="newGame" ${S.phase === 'playing' ? 'disabled title="Geht nur zwischen zwei Runden"' : ''}>Neues Spiel (Punkte auf null)</button>
         </div>
         ${botControlsHTML(S, S.phase === 'playing')}
         ${fields ? `<h3>Regeln an diesem Tisch</h3>${fields}<p class="hint" style="margin:0">Änderungen gehen nur zwischen den Runden. Die Standardwerte sind unsere üblichen Hausregeln – alle sehen die aktiven Regeln unter „?“.</p>` : ''}
+        ${def.hostExtra ? def.hostExtra(S) : ''}
         ${switchGameHTML(def.id, S.phase === 'playing')}
         <h3>Leute im Raum</h3>
         <div class="plist">${others.map((p) => `<div class="prow"><span class="mini-av">${avatarHTML(p)}</span>

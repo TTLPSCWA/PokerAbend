@@ -39,6 +39,7 @@ export function nextBot(room) {
     return isBot(id) ? id : null;
   }
   if (room.phase !== 'playing') return null;
+  if (room.botDue) return room.botDue(); // Partyspiele: alle gleichzeitig, jeder Bot gibt seine Antwort ab
   if (room.game === 'schiffe' && room.step === 'place') return room.order.find((id) => isBot(id) && !room.ready.has(id)) || null;
   if (room.game === 'blackjack' && ['bet', 'insure'].includes(room.step)) return room.order.find((id) => isBot(id) && !room.decided.has(id)) || null;
   return isBot(room.currentId) ? room.currentId : null;

@@ -83,6 +83,7 @@ Tische und Chipstände liegen im Docker-Volume `poker-data` und überleben Neust
 | Vier gewinnt | 2 (+ Zuschauer) | 7 × 6, Steine fallen nach unten, vier in einer Reihe gewinnt (auch diagonal). Volles Feld = unentschieden, Anfang wechselt. Zeit pro Zug |
 | Zehntausend | 2–8 | Sechs Würfel, punktende Würfel herauslegen, weiterwürfeln oder sichern. Niete = Zug weg. Einstieg 350, wer das Ziel erreicht, löst die letzte Runde aus |
 | Mühle | 2 (+ Zuschauer) | Je 9 Steine setzen, ziehen, mit 3 Steinen springen. Mühle nimmt einen Stein, mit 2 Steinen oder ohne Zug verloren. Unentschieden nach 50 Zügen ohne Schlagen oder dreifacher Wiederholung |
+| Schätzmeister (Party Spiele) | 2–12 | Schätzfrage mit Zahl als Antwort, alle schätzen gleichzeitig. Danach Zahlenstrahl und richtige Antwort: am nächsten dran 3 Punkte, Zweiter 2, Dritter 1, genau richtig +2. Über 100 Fragen mit Quelle, eigene Fragen des Hosts möglich |
 | Schiffe versenken | 2 (+ Zuschauer) | Zwei Meere 10 × 10, Flotte setzen (nicht berühren), abwechselnd schießen: Wasser, Treffer, versenkt. Zeit pro Schuss. Die gegnerischen Schiffe sieht man erst nach Spielende |
 
 Die Startseite zeigt die Spiele nach Kategorien (Karten-, Würfel-, Brettspiele) – festgelegt mit `category` in `games/<spiel>/index.js`.
@@ -115,6 +116,7 @@ Gehen bei Skip-Bo während der Runde die Nachziehkarten aus, darf ein Spieler oh
 | Blackjack | Startchips (1000)<br>Mindesteinsatz (10)<br>Höchsteinsatz (500)<br>Dealer zieht auf Soft 17 (aus)<br>Versicherung anbieten, zahlt 2:1 (aus)<br>Verdoppeln nach dem Teilen (an)<br>Nachkaufen: wie oft, 0 = aus, 99 = unbegrenzt (99) |
 | Kniffel | Extra-Kniffel-Bonus: jeder weitere Kniffel +50 (aus)<br>Joker-Regel bei weiterem Kniffel (aus) |
 | Shut the Box | Runden (5)<br>Klappen 1–12 statt 1–9 (aus)<br>Ein-Würfel-Regel, wenn 7 bis zur höchsten Klappe zu sind (an)<br>Wertung: Ziffern hintereinander statt Summe (aus)<br>Zeit pro Zug in Sekunden, 0 = ohne (60) |
+| Schätzmeister | Anzahl Runden (10)<br>Zeit zum Antworten in Sekunden (30)<br>Punkte-Ziel, 0 = aus (0)<br>Zuschauer dürfen mitmachen (aus)<br>Wertung nach Abweichung in Prozent (aus) |
 | Vier gewinnt | Zeit pro Zug in Sekunden, 0 = ohne (60) |
 | Zehntausend | Zielpunktzahl (10000)<br>Einstieg ab Punkten, 0 = ohne (350)<br>Straße nur 1.500 statt 2.000 (aus)<br>Drei Paare zählen 1.500 (an)<br>Letzte Runde für die anderen (an)<br>Zeit pro Zug in Sekunden, 0 = ohne (60) |
 | Mühle | Springen mit 3 Steinen (an)<br>Unentschieden nach Zügen ohne Schlagen, 0 = aus (50)<br>Zeit pro Zug in Sekunden, 0 = ohne (60) |
@@ -234,6 +236,8 @@ games/             Spiele (Server-Teil)
     blinds.js          steigende Blinds
     sebastian.js       Easter Egg „Waiting for Sebastian“
     engine/            Poker-Regeln ohne Netzwerk: cards.js (Deck, Bewertung, Chancen), table.js (Setzrunden, Pots)
+  party-room.js      Grundklasse der Partyspiele: Stufen mit Uhr (Schreiben → Abstimmen → Auflösung), eigene Fragen, Geheimhaltung
+  schaetzmeister/    Partyspiel: room.js (Regeln), fragen.json (Katalog mit Quellen), index.js
   maumau/, farbenchaos/, maexchen/, schocken/, huetchen/, zehnetappen/, stapelrennen/
                      je index.js (Beschreibung, Ereignisse) und room.js (Regeln); UNO erweitert Mau-Mau
 public/            Browser
@@ -242,12 +246,22 @@ public/            Browser
   style.css          gemeinsames Aussehen (Tokens, Buttons, Leisten, Seitenleiste, Verlauf)
   games/poker/       poker.js (Tisch-Oberfläche) und poker.css
   games/kit.js       gemeinsamer Rahmen der Rundenspiele (Kopfzeile, Spielerleiste, Seitenleiste, Ablegespiel-Bedienung)
+  games/party-kit.*  gemeinsamer Baustein der Partyspiele: Fortschritt, Fragekarte, Eingabezeile, Rangliste (baut auf kit.js auf)
   games/<spiel>/     <spiel>.js und <spiel>.css – nur der eigene Tisch und die Aktionen
 scripts/           backup.sh – tägliche Sicherung des Daten-Volumes (siehe „Backups“)
 test/              node:test – Engine inkl. 100.000 Zufallshänden, Räume, Server, Sicherheit, Plattform
 ```
 
 Jede Testdatei mit eigenem Server hat einen eigenen Portbereich, weil `npm test` die Dateien parallel ausführt: `server` 4000–4049, `security` 4050–4099, `sebastian` 4100–4149, `away` 4150–4199, `codes` 4200–4249, `history` 4250–4299, `platform` 4300–4349. Neue Dateien bekommen den nächsten freien Fünfziger-Block.
+
+## Partyspiele (Schätzmeister, später Schlagfertig und Wer hat das gesagt?)
+
+Alle antworten gleichzeitig; pro Frage läuft eine Folge von Stufen mit eigener Uhr. Das Spiel erweitert `PartyRoom` aus `games/party-room.js` (statt `TurnRoom`) und füllt `flow`, `catalog`, `parseCustom`, `startQuestion`, `waiting`, `closeStage`, `enter`, `isReady`, `stageView` und `fallback` (Kopfkommentar der Datei). Fragen liegen als JSON im Spielordner. Der Browser-Teil ruft `partyGame({ … })` aus `public/games/party-kit.js` auf. Regeln, die für alle gelten:
+
+- **Geheimhaltung:** `stageView(viewerId)` darf nur Eigenes und anonyme Daten liefern – fremde Antworten, Stimmen und die richtige Lösung erst ab `reveal`. Die Tests schauen im JSON jeder Ansicht danach.
+- **Texte:** Eingaben laufen durch `cleanAnswer` (Steuerzeichen raus, höchstens 120 Zeichen) und werden im Browser nur mit `esc()` ausgegeben.
+- **Bots:** Ein Spiel liefert in `games/bots.js` einen Bot; `PartyRoom.botDue()` sagt dem Bot-Läufer, wer als Nächstes abgeben muss.
+- **Eigene Fragen:** Der Host trägt sie im Host-Menü ein (eine pro Zeile); sie gelten nur in diesem Raum und stehen nur zwischen den Partien in seiner Ansicht.
 
 ## Ein neues Spiel hinzufügen
 
