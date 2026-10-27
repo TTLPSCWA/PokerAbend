@@ -1060,6 +1060,7 @@ function renderPanel(force = false) {
       </div>
       <p class="hint" style="margin:0">„Sofort anhalten“ friert alles ein, auch den Zug-Timer. „Pause nach dieser Hand“ lässt die laufende Hand zu Ende spielen.</p>
       ${botControlsHTML(S, !!(S.hand && !S.hand.done))}
+      ${unlistedSwitchHTML(S)}
       ${switchGameHTML('poker', !!(S.hand && !S.hand.done))}`;
     } else if (hostTab === 'regeln') {
       inner = `<div class="notice" role="note">Änderungen gelten ab der nächsten Hand.</div>

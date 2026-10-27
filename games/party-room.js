@@ -185,6 +185,8 @@ export class PartyRoom extends TurnRoom {
   }
   onTimeout(id) { this.fallback(id); }
 
+  lobbyStatus() { return this.phase === 'playing' && this.total ? `Frage ${this.q + 1}/${this.total}` : super.lobbyStatus(); }
+
   // ---------- Bots ----------
   // Der Bot, der als Nächstes etwas abgeben muss (nextBot in server/bots.js fragt das für alle Partyspiele)
   botDue() {

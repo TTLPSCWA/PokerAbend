@@ -137,53 +137,18 @@ button { cursor: pointer; }
 }
 .wordmark { margin: 0; font-size: clamp(44px, 10vw, 60px); line-height: .95; font-weight: 800; letter-spacing: -.035em; color: var(--text); }
 .lobby-sub { margin: 10px 0 22px; color: #D3E1DA; max-width: 36ch; }
-.lobby-foot { text-align: center; color: var(--text-2); font-size: var(--fs-label); margin: 8px 0 0; }
-.tabs { display: grid; grid-template-columns: 1fr 1fr; background: rgba(0,0,0,.25); border-radius: var(--r-m); padding: 4px; margin-bottom: 18px; }
-.tab { border: 0; background: none; min-height: 40px; border-radius: 9px; font-weight: 600; color: #D3E1DA; }
-.tab[aria-selected='true'] { background: var(--paper); color: var(--ink); }
 .lobby-form { display: grid; gap: 14px; }
 .lobby-felt .field > span, .lobby-felt .field legend { color: #D3E1DA; }
 .lobby-felt .field input { background: rgba(0,0,0,.28); border-color: rgba(255,255,255,.14); }
 .lobby-felt .hint { color: #B9CDC4; }
-.code-input { text-transform: uppercase; letter-spacing: .3em; font-weight: 800; font-size: 20px; }
-.row3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .avatars { display: flex; flex-wrap: wrap; gap: 6px; }
 .avatar-opt { width: 44px; height: 44px; border-radius: 50%; border: 2px solid transparent; background: rgba(0,0,0,.25); font-size: 20px; padding: 0; }
 .avatar-opt[aria-pressed='true'] { border-color: var(--gold); background: rgba(201,154,69,.18); }
 
-/* Startseite: Spielauswahl */
-.games-pick { margin: 0 0 18px; }
 .bot-controls { display: grid; gap: 10px; border: 1px solid var(--line); border-radius: var(--r-m); padding: 12px; }
 .bot-controls .hint { margin: 0; }
 .bot-controls .btn { min-height: 44px; }
 .bot-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.pick-title { margin: 0 0 8px; font-size: var(--fs-label); text-transform: uppercase; letter-spacing: .08em; color: #D3E1DA; }
-/* Kompakt: zwei Spalten, nur das gewählte Spiel zeigt seine Beschreibung (über die ganze Breite) */
-.chosen-game { margin: 0 0 12px; color: var(--gold-text); font-weight: 600; overflow-wrap: anywhere; }
-.game-list { display: grid; gap: 8px; }
-.game-cat { border: 1px solid var(--line); border-radius: var(--r-m); background: rgba(0,0,0,.15); overflow: hidden; }
-.game-cat summary { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 10px 12px; cursor: pointer; list-style: none; font-weight: 600; }
-.game-cat summary::-webkit-details-marker { display: none; }
-.game-cat summary small { margin-left: auto; color: var(--text-2); font-weight: 400; white-space: nowrap; }
-.game-cat summary::after { content: '+'; width: 20px; text-align: center; color: var(--gold-text); font-size: 22px; }
-.game-cat[open] > summary::after { content: '−'; }
-.game-cat summary:hover { background: rgba(255,255,255,.05); }
-.game-cat summary:focus-visible { outline: 2px solid var(--gold); outline-offset: -3px; }
-.game-cat-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr)); gap: 8px; padding: 0 10px 10px; }
-.game-card {
-  display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; text-align: left; padding: 12px 14px; border-radius: var(--r-m);
-  background: rgba(0,0,0,.25); border: 2px solid rgba(255,255,255,.12); color: var(--text); cursor: pointer;
-}
-.game-card b { font-size: 17px; }
-.game-card small { color: #B9CDC4; align-self: center; }
-.game-card span { grid-column: 1 / -1; color: #C9D8D1; font-size: var(--fs-label); }
-.game-card[aria-checked='true'] { border-color: var(--gold); background: rgba(201,154,69,.14); grid-column: 1 / -1; }
-.game-card[aria-checked='false'] span { display: none; }
-.game-card[aria-checked='false'] { padding: 10px 12px; grid-template-columns: 1fr; }
-.game-card[aria-checked='false'] small { align-self: start; }
-.game-card[aria-checked='false'] b { font-size: 15px; }
-.game-card[aria-checked='true'] b::before { content: '✓ '; color: var(--gold-text); }
-.game-soon { display: none; }
 
 /* ---------- Spiel-Layout ---------- */
 .game { height: 100dvh; display: grid; grid-template-rows: auto 1fr auto; overflow: hidden; }
@@ -540,8 +505,6 @@ button.die { cursor: pointer; }
 .lb-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .lb-scroll { max-height: min(52dvh, 460px); overflow-y: auto; }
 .lb-table small { color: var(--text-2); font-weight: 400; }
-.lb-open { justify-self: start; margin-top: 8px; }
-.games-pick { display: grid; }
 
 /* ---------- Kurzregeln: „?“ am Tisch ---------- */
 .help-btn { position: absolute; top: 12px; right: 12px; z-index: 5; width: 44px; height: 44px; border-radius: 50%;

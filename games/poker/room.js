@@ -106,6 +106,13 @@ export class Room extends BaseRoom {
   // ---------- Haken für die gemeinsame Grundlage (server/base-room.js) ----------
   get round() { return this.table.handNo; }
   get busy() { return this.handRunning; }
+  // Liste der offenen Tische (Startseite): wer sitzt, Hand-Nummer – keine Karten, keine Chips
+  lobbyInfo() {
+    const seats = this.table.seats.filter(Boolean).map((s) => { const p = this.players.get(s.id); return { name: s.name, avatar: p?.avatar, bot: !!p?.bot }; });
+    const watchers = [...this.players.values()].filter((p) => !p.kicked && p.seat === null && !p.bot).length;
+    const status = this.handRunning ? `Hand #${this.table.handNo}` : this.table.handNo ? `Pause nach Hand #${this.table.handNo}` : 'wartet auf Start';
+    return { seats, max: this.settings.maxPlayers, watchers, status };
+  }
   playerFields() {
     return { seat: null, bank: this.settings.startStack, buyIn: this.settings.startStack, rebuys: 0, missed: 0, leaveAfterHand: false, seen: [] };
   }

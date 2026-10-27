@@ -64,6 +64,25 @@ Die Browserprüfungen benötigen lokal installiertes Chrome. Screenshots liegen 
 
 Tische und Chipstände liegen im Docker-Volume `poker-data` und überleben Neustarts. Gespeichert wird immer zwischen zwei Händen. Nach einem Neustart drückt der Host einmal auf „Spiel starten“.
 
+## Startseite
+
+Die Startseite ist ein Hub mit Navigation per URL-Hash (Zurück-Taste und Links funktionieren):
+
+| Adresse | Seite |
+| --- | --- |
+| `#start` | Begrüßung, „Weiterspielen“, offene Tische, Deine Spiele, Code-Feld |
+| `#tische` | alle offenen Tische |
+| `#spiele`, `#spiele/karten`, `/wuerfel`, `/brett`, `/party` | Spieleliste mit Filtern |
+| `#favoriten` | meine Favoriten |
+| `#bestenliste` | Bestenliste nach Spiel und Monat |
+
+- **Profil:** Beim ersten Besuch fragt ein Dialog nach Name und Avatar. Beides liegt im Browser (`poker:name`, `poker:avatar`) und wird beim Hosten und Beitreten verwendet. Ist der Name am Tisch schon vergeben, schlägt der Server einen freien vor („Tobi 2“).
+- **Offene Tische:** Der Server schickt die Liste an alle Angemeldeten (Socket-Ereignis `lobby`, Änderungen höchstens einmal pro Sekunde): Spiel, Code, Host, wer sitzt, Plätze, Stand – nie Tokens, Karten oder Spielstände. „Dazusetzen“ und „Zuschauen“ sind ein Klick mit dem Profil. Ein Tisch erscheint, solange mindestens ein Mensch online ist. Der Host kann am Tisch unter „Host“ einstellen: **Tisch nicht in der Liste zeigen** (privat, nur per Code oder Link). Die Grenze für neue Tische lässt sich zum Testen mit `CREATE_LIMIT` erhöhen (Standard 6 pro 10 Minuten und IP).
+- **Weiterspielen:** Hat der Browser ein Token für einen noch offenen Tisch (auch einen privaten), steht er ganz vorne mit „Zurück an den Tisch“.
+- **Spieleliste:** Filter (Favoriten, Spielerzahl, Kurz unter 15 Minuten), Liste oder Kacheln, Favoriten und „zuletzt gespielt“ (nur in diesem Browser: `poker:favs`, `poker:recent`, `poker:view`). Geplante Spiele stehen in `games/planned.js` und erscheinen ausgegraut mit „In Planung“. Ab 20 Spielen gibt es eine Suche.
+- **Hosten:** Seitenpanel rechts, am Handy eine Leiste von unten – nur mit den Lobby-Feldern des Spiels (`createFields`).
+- **Neues Spiel:** Ein Spielmodul bringt `minPlayers`, `maxPlayers`, `duration` (Minuten) und `art` (SVG, Bausteine in `games/art-kit.js`) mit; ein Test prüft, dass die Zahlen zum Raum passen.
+
 ## Spiele
 
 | Spiel | Spieler | Kurz |
@@ -86,7 +105,7 @@ Tische und Chipstände liegen im Docker-Volume `poker-data` und überleben Neust
 | Schätzmeister (Party Spiele) | 2–12 | Schätzfrage mit Zahl als Antwort, alle schätzen gleichzeitig. Danach Zahlenstrahl und richtige Antwort: am nächsten dran 3 Punkte, Zweiter 2, Dritter 1, genau richtig +2. Über 100 Fragen mit Quelle, eigene Fragen des Hosts möglich |
 | Schiffe versenken | 2 (+ Zuschauer) | Zwei Meere 10 × 10, Flotte setzen (nicht berühren), abwechselnd schießen: Wasser, Treffer, versenkt. Zeit pro Schuss. Die gegnerischen Schiffe sieht man erst nach Spielende |
 
-Die Startseite zeigt die Spiele nach Kategorien (Karten-, Würfel-, Brettspiele) – festgelegt mit `category` in `games/<spiel>/index.js`.
+Die Startseite ist ein Hub (siehe „Startseite“ weiter unten). Die Kategorie (`karten`, `wuerfel`, `brett`, `party`), Spielerzahl, Dauer und das Spielbild legt jedes Spiel in seinem `games/<spiel>/index.js` fest.
 
 Die genauen Regeln stehen im Spiel unter „Regeln“ und oben in `games/<spiel>/room.js`. Die Rundenspiele haben einen gemeinsamen Rahmen: Mitspielen/Zuschauen, der Host startet jede Runde, Punkte und Siege über den Abend unter „Stand“, Verlauf und Host-Menü.
 
@@ -136,7 +155,7 @@ Nach einer Runde kann der Host im Host-Menü unter „Spiel wechseln“ ein ande
 
 ### Bestenliste über alle Abende
 
-Auf der Startseite und unter „Stand“ in jedem Spiel: pro Spiel gespielte Partien, Siege (mit Quote) und Punkte – über alle Abende oder für einen Monat. Wiedererkannt wird man am Namen (Groß/Klein egal). Eine Partie ist beim Poker eine Hand (gezählt werden gewonnene/verlorene Chips), sonst eine Runde. Gespeichert in `data/leaderboard.json` im Daten-Volume.
+Auf der Startseite (Bestenliste) und unter „Stand“ in jedem Spiel: pro Spiel gespielte Partien, Siege (mit Quote) und Punkte – über alle Abende oder für einen Monat. Wiedererkannt wird man am Namen (Groß/Klein egal). Eine Partie ist beim Poker eine Hand (gezählt werden gewonnene/verlorene Chips), sonst eine Runde. Gespeichert in `data/leaderboard.json` im Daten-Volume.
 
 ### Als App aufs Handy
 
@@ -151,7 +170,7 @@ Dafür gibt es `public/manifest.webmanifest`, Icons in `public/icons/` und einen
 
 | Bereich | Funktionen |
 | --- | --- |
-| Lobby | Spiel wählen, Tisch erstellen, Einladungslink mit Code, Name + Avatar; Gruppenpasswort statt Benutzerkonto |
+| Startseite | Hub mit Profil, offenen Tischen, Spieleliste, Hosten-Panel, Einladungslink mit Code; Gruppenpasswort statt Benutzerkonto |
 | Spiel | Automatisches Mischen (Krypto-Zufall) und Austeilen, Blinds, Button wandert, Heads-up-Regeln, Big-Blind-Option |
 | Aktionen | Fold, Check, Call, Bet, Raise, All-in, Slider + ½ Pot / ¾ Pot / Pot / All-in, Tastenkürzel F / C / R, Controller (A / B / X, LB / RB, Start) |
 | Am Zug | „Du bist dran“ über der Aktionsleiste, große Restzeit (letzte 8 s rot), Ton, blinkender Tab-Titel, auf Wunsch Browser-Benachrichtigung |
@@ -241,8 +260,9 @@ games/             Spiele (Server-Teil)
   maumau/, farbenchaos/, maexchen/, schocken/, huetchen/, zehnetappen/, stapelrennen/
                      je index.js (Beschreibung, Ereignisse) und room.js (Regeln); UNO erweitert Mau-Mau
 public/            Browser
-  index.html         Startseite mit Spielauswahl, Dialoge
-  core.js            Startseite, Lobby, Verbindung, Dialoge, Hilfen – lädt das gewählte Spiel nach
+  index.html         Rahmen: Hub (Startseite), Profil-Dialog, Hosten-Panel, Dialoge
+  core.js            Verbindung, Dialoge, Hilfen, Bestenliste – lädt das gewählte Spiel nach
+  hub.js, hub.css    Startseite: Profil, Navigation per URL-Hash, offene Tische, Spieleliste, Hosten, Bestenliste
   style.css          gemeinsames Aussehen (Tokens, Buttons, Leisten, Seitenleiste, Verlauf)
   games/poker/       poker.js (Tisch-Oberfläche) und poker.css
   games/kit.js       gemeinsamer Rahmen der Rundenspiele (Kopfzeile, Spielerleiste, Seitenleiste, Ablegespiel-Bedienung)

@@ -23,6 +23,7 @@ export class BaseRoom {
     // mit data.to geht das Ereignis nur an diesen Spieler (z. B. Anstupsen)
     this.onChange = onChange || (() => {});
     this.lastActivity = Date.now();
+    this.unlisted = false;    // privater Tisch: erscheint nicht in der Liste der offenen Tische (nur per Code/Link)
   }
 
   // ---------- Haken für das Spiel ----------
@@ -33,6 +34,8 @@ export class BaseRoom {
   dispose() {}                       // Timer stoppen, wenn der Raum gelöscht wird
   afterChange() {}                   // nach jedem Ereignis: Timer nachziehen, automatische Züge …
   view() { return {}; }              // was ein Spieler sehen darf (nur das!)
+  // Für die Liste der offenen Tische – NUR Unbedenkliches: { seats: [{ name, avatar, bot }], max, watchers, status }. null = nicht listen.
+  lobbyInfo() { return null; }
   snapshot() { return {}; }          // Spielstand zum Speichern
 
   // ---------- Spieler ----------
@@ -40,7 +43,7 @@ export class BaseRoom {
   addPlayer(name, avatar) {
     name = cleanName(name);
     if (!name) throw new Error('Bitte gib einen Namen ein');
-    if ([...this.players.values()].some((p) => p.name.toLowerCase() === name.toLowerCase())) throw new Error('Der Name ist schon vergeben');
+    if (this.nameTaken(name)) throw Object.assign(new Error('Der Name ist schon vergeben'), { extra: { suggestion: this.uniqueName(name) } });
     if (this.players.size >= MAX_PEOPLE) throw new Error('Der Raum ist voll');
     const p = {
       id: randomBytes(6).toString('hex'), token: randomBytes(24).toString('hex'), name,
@@ -52,6 +55,17 @@ export class BaseRoom {
     if (!this.hostId) this.hostId = p.id;
     this.say(`${name} ist da`);
     return p;
+  }
+
+  nameTaken(name) { return [...this.players.values()].some((p) => p.name.toLowerCase() === name.toLowerCase()); }
+  // Freier Name zum Vorschlagen: „Tobi 2“, „Tobi 3“ … (höchstens 16 Zeichen)
+  uniqueName(name) {
+    for (let n = 2; n < 100; n++) {
+      const suffix = ` ${n}`;
+      const candidate = name.slice(0, 16 - suffix.length).trimEnd() + suffix;
+      if (!this.nameTaken(candidate)) return candidate;
+    }
+    return null;
   }
 
   byToken(token) {

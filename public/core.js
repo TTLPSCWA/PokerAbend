@@ -235,13 +235,14 @@ async function enterGame(r) {
   session = { code: r.code, token: r.token, game: r.game || 'poker' };
   store.set('poker:session:' + r.code, r.token);
   store.set('poker:last', r.code);
+  if (typeof markPlayed === 'function') markPlayed(session.game); // Startseite: „zuletzt gespielt“
   history.replaceState(null, '', '?t=' + r.code);
   try { current = await loadGame(session.game); } catch (e) { session = null; showLobby(e.message); return; }
   if (!session) return; // inzwischen rausgeflogen
   // Ein anderes Spiel war schon geladen: Seite neu laden, damit sich die Oberflächen nicht in die Quere kommen
   if (mounted && mounted !== session.game) { location.href = '/?t=' + session.code; return; }
   mounted = session.game;
-  $('#lobby').hidden = true;
+  $('#hub').hidden = true;
   $('#game-root').hidden = false;
   current.show();
   if (lastState) current.onState(lastState);
@@ -251,84 +252,9 @@ function leaveGame() {
   $('#game-root').hidden = true;
 }
 
-// ---------- Startseite: Spiele, Lobby beitreten, Spiel hosten ----------
+// ---------- Startseite ----------
+// Die Startseite (Hub) liegt in hub.js: Profil, Seitenleiste, Tische, Spiele, Hosten, Bestenliste.
 const params = new URLSearchParams(location.search);
-let lobbyTab = params.get('t') ? 'join' : 'create';
-let avatar = store.get('poker:avatar', AVATARS[Math.floor(Math.random() * AVATARS.length)]);
-let chosenGame = store.get('poker:game', 'poker');
-const gameInfo = () => account.games.find((g) => g.id === chosenGame) || account.games[0] || null;
-const GAME_CATEGORIES = [['karten', 'Kartenspiele'], ['wuerfel', 'Würfelspiele'], ['brett', 'Brettspiele'], ['party', 'Party Spiele']]; // wie games/index.js
-
-function showLobby(error = '') {
-  $('#game-root').hidden = true;
-  $('#lobby').hidden = false;
-  $('#lobby-error').textContent = error;
-  $('#f-name').value = store.get('poker:name', '');
-  if (params.get('t')) $('#f-code').value = params.get('t').toUpperCase();
-  $('#avatars').innerHTML = AVATARS.map((a) => `<button type="button" class="avatar-opt" data-a="${a}" aria-pressed="${a === avatar}" aria-label="Avatar ${a}">${a}</button>`).join('');
-  renderGames();
-  setTab(lobbyTab);
-}
-function renderGames() {
-  const list = account.games;
-  const openCategories = new Set($$('#game-list details[open]').map((el) => el.dataset.category));
-  const selected = gameInfo();
-  $('#chosen-game').textContent = selected ? `Gewählt: ${selected.name}` : 'Wähle ein Spiel';
-  // Nach Kategorien gruppiert (Karten, Würfel, Brett) – Kategorien ohne Spiel fallen weg
-  const card = (g) => `<button type="button" class="game-card" role="radio" data-game="${esc(g.id)}" aria-checked="${g.id === gameInfo()?.id}">
-      <b>${esc(g.name)}</b><small>${esc(g.players)}</small><span>${esc(g.description)}</span>
-    </button>`;
-  $('#game-list').innerHTML = GAME_CATEGORIES.map(([id, title]) => {
-    const games = list.filter((g) => (g.category || 'karten') === id);
-    return games.length ? `<details class="game-cat" data-category="${id}" ${openCategories.has(id) ? 'open' : ''}>
-      <summary><span>${title}</span><small>${games.length} Spiele</small></summary>
-      <div class="game-cat-list" role="group" aria-label="${title}">${games.map(card).join('')}</div></details>` : '';
-  }).join('');
-  const g = gameInfo();
-  $('#create-fields').innerHTML = (g?.createFields || []).map((f) => `<label class="field"><span>${esc(f.label)}</span>
-      <input data-cf="${esc(f.key)}" type="${f.type === 'number' ? 'number' : 'text'}" ${f.min !== undefined ? `min="${f.min}"` : ''} ${f.step ? `step="${f.step}"` : ''} value="${esc(f.value)}"></label>`).join('');
-  $('#create-hint').textContent = g?.createHint || '';
-}
-function setTab(tab) {
-  lobbyTab = tab;
-  $$('#lobby .tab').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === tab)));
-  $$('#lobby [data-for]').forEach((el) => {
-    el.hidden = el.dataset.for !== tab;
-    // Versteckte Felder dürfen weder Validierung noch Übermittlung beeinflussen.
-    $$('input, select, textarea', el).forEach((field) => { field.disabled = el.hidden; });
-  });
-  $('#f-submit').textContent = tab === 'join' ? 'Beitreten' : `${gameInfo()?.name || 'Spiel'} hosten`;
-  $('#f-code').required = tab === 'join';
-}
-$$('#lobby .tab').forEach((b) => b.addEventListener('click', () => setTab(b.dataset.tab)));
-$('#game-list').addEventListener('click', (e) => {
-  const b = e.target.closest('[data-game]'); if (!b) return;
-  chosenGame = b.dataset.game; store.set('poker:game', chosenGame);
-  renderGames(); setTab(lobbyTab);
-  $$('#game-list [data-game]').find((el) => el.dataset.game === chosenGame)?.focus({ preventScroll: true });
-});
-$('#avatars').addEventListener('click', (e) => {
-  const b = e.target.closest('.avatar-opt'); if (!b) return;
-  avatar = b.dataset.a; store.set('poker:avatar', avatar);
-  $$('.avatar-opt').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-});
-$('#lobby-form').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const name = $('#f-name').value.trim();
-  store.set('poker:name', name);
-  $('#lobby-error').textContent = '';
-  const done = (r) => {
-    if (!r?.ok) { $('#lobby-error').textContent = r?.error || 'Verbindung fehlgeschlagen'; return; }
-    enterGame(r);
-  };
-  if (lobbyTab === 'create') {
-    const settings = Object.fromEntries($$('#create-fields [data-cf]:enabled').map((el) => [el.dataset.cf, el.value]));
-    socket.emit('create', { game: gameInfo()?.id, name, avatar, settings }, done);
-  } else {
-    const code = $('#f-code').value.trim().toUpperCase();
-    socket.emit('join', { code, name, avatar, token: store.get('poker:session:' + code, null) }, done);
-  }
-});
 
 // Automatisch wieder in den Raum, wenn wir schon ein Token haben
 function tryResume() {
@@ -368,6 +294,32 @@ socket.on('state', (st) => {
 
 // ---------- Bestenliste über alle Abende ----------
 // Daten von /api/leaderboard; Spiel und Zeitraum (alle Abende oder ein Monat) wählbar
+// Daten holen und als HTML-Teil bauen (Filter + Tabelle) – gleich für den Dialog am Tisch und die Seite #bestenliste der Startseite.
+// pre = Präfix der Element-IDs (lb im Dialog, lbp auf der Seite), damit beide nie dieselben IDs haben.
+async function fetchLeaderboard(game, period = 'all') {
+  try {
+    const res = await fetch(`/api/leaderboard?game=${encodeURIComponent(game || '')}&period=${encodeURIComponent(period)}`, { credentials: 'same-origin' });
+    return await res.json();
+  } catch { toast('Die Bestenliste ist gerade nicht erreichbar', true); return null; }
+}
+function leaderboardInner(r, pre = 'lb') {
+  const info = r.games.find((g) => g.id === r.game);
+  const isPoker = r.game === 'poker';
+  const monthName = (m) => new Date(m + '-15T12:00:00').toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+  const months = r.months.includes(r.current) ? r.months : [r.current, ...r.months];
+  const fmtPoints = (n) => (isPoker ? `${n > 0 ? '+' : n < 0 ? '−' : '±'}${Math.abs(n).toLocaleString('de-DE')}` : n.toLocaleString('de-DE'));
+  const rows = r.rows.map((x, k) => `<tr><td><span class="rank ${k < 3 ? 'r' + (k + 1) : ''}" aria-label="Platz ${k + 1}">${k + 1}</span></td>
+    <td>${esc(x.name)}</td><td class="num">${x.played}</td>
+    <td class="num">${x.wins} <small>(${Math.round((100 * x.wins) / x.played)} %)</small></td>
+    <td class="num ${isPoker ? (x.points > 0 ? 'pos' : x.points < 0 ? 'neg' : '') : ''}">${fmtPoints(x.points)}</td></tr>`).join('');
+  return `<div class="lb-filters">
+      <label class="field"><span>Spiel</span><select id="${pre}-game" class="input" data-${pre}>${r.games.map((g) => `<option value="${esc(g.id)}" ${g.id === r.game ? 'selected' : ''}>${esc(g.name)}</option>`).join('')}</select></label>
+      <label class="field"><span>Zeitraum</span><select id="${pre}-period" class="input" data-${pre}><option value="all">Alle Abende</option>${months.map((m) => `<option value="${m}" ${m === r.period ? 'selected' : ''}>${monthName(m)}</option>`).join('')}</select></label>
+    </div>
+    ${rows ? `<div class="lb-scroll"><table class="standings lb-table"><thead><tr><th></th><th>Name</th><th class="num">${isPoker ? 'Hände' : 'Partien'}</th><th class="num">Siege</th><th class="num">${esc(info?.scoreLabel || 'Punkte')}</th></tr></thead><tbody>${rows}</tbody></table></div>`
+      : '<p class="hint">In diesem Zeitraum wurde das noch nicht gespielt.</p>'}
+    <p class="hint" style="margin:0">Sortiert nach Siegen. ${isPoker ? 'Eine Partie ist eine Hand, gezählt werden gewonnene und verlorene Chips.' : `Eine Partie ist eine Runde. ${info?.lowWins ? 'Punkte: wenig ist gut.' : ''}`} Wiedererkannt wird man am Namen.</p>`;
+}
 async function showLeaderboard(game, period = 'all') {
   let d = $('#lb-dlg');
   if (!d) {
@@ -378,34 +330,15 @@ async function showLeaderboard(game, period = 'all') {
     d.addEventListener('click', (e) => { if (e.target === d || e.target.closest('[data-lb-close]')) d.close(); });
     d.addEventListener('change', (e) => { if (e.target.matches('[data-lb]')) showLeaderboard($('#lb-game').value, $('#lb-period').value); });
   }
-  let r;
-  try {
-    const res = await fetch(`/api/leaderboard?game=${encodeURIComponent(game || '')}&period=${encodeURIComponent(period)}`, { credentials: 'same-origin' });
-    r = await res.json();
-  } catch { toast('Die Bestenliste ist gerade nicht erreichbar', true); return; }
-  const info = r.games.find((g) => g.id === r.game);
-  const isPoker = r.game === 'poker';
-  const monthName = (m) => new Date(m + '-15T12:00:00').toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
-  const months = r.months.includes(r.current) ? r.months : [r.current, ...r.months];
-  const fmtPoints = (n) => (isPoker ? `${n > 0 ? '+' : n < 0 ? '−' : '±'}${Math.abs(n).toLocaleString('de-DE')}` : n.toLocaleString('de-DE'));
-  const rows = r.rows.map((x, k) => `<tr><td><span class="rank ${k < 3 ? 'r' + (k + 1) : ''}" aria-label="Platz ${k + 1}">${k + 1}</span></td>
-    <td>${esc(x.name)}</td><td class="num">${x.played}</td>
-    <td class="num">${x.wins} <small>(${Math.round((100 * x.wins) / x.played)} %)</small></td>
-    <td class="num ${isPoker ? (x.points > 0 ? 'pos' : x.points < 0 ? 'neg' : '') : ''}">${fmtPoints(x.points)}</td></tr>`).join('');
-  d.innerHTML = `<div class="help-body"><h2 id="lb-title">Bestenliste aller Abende</h2>
-    <div class="lb-filters">
-      <label class="field"><span>Spiel</span><select id="lb-game" class="input" data-lb>${r.games.map((g) => `<option value="${esc(g.id)}" ${g.id === r.game ? 'selected' : ''}>${esc(g.name)}</option>`).join('')}</select></label>
-      <label class="field"><span>Zeitraum</span><select id="lb-period" class="input" data-lb><option value="all">Alle Abende</option>${months.map((m) => `<option value="${m}" ${m === r.period ? 'selected' : ''}>${monthName(m)}</option>`).join('')}</select></label>
-    </div>
-    ${rows ? `<div class="lb-scroll"><table class="standings lb-table"><thead><tr><th></th><th>Name</th><th class="num">${isPoker ? 'Hände' : 'Partien'}</th><th class="num">Siege</th><th class="num">${esc(info?.scoreLabel || 'Punkte')}</th></tr></thead><tbody>${rows}</tbody></table></div>`
-      : '<p class="hint">In diesem Zeitraum wurde das noch nicht gespielt.</p>'}
-    <p class="hint" style="margin:0">Sortiert nach Siegen. ${isPoker ? 'Eine Partie ist eine Hand, gezählt werden gewonnene und verlorene Chips.' : `Eine Partie ist eine Runde. ${info?.lowWins ? 'Punkte: wenig ist gut.' : ''}`} Wiedererkannt wird man am Namen.</p>
+  const r = await fetchLeaderboard(game, period);
+  if (!r) return;
+  d.innerHTML = `<div class="help-body"><h2 id="lb-title">Bestenliste aller Abende</h2>${leaderboardInner(r, 'lb')}
     <div class="dlg-actions"><span></span><button class="btn btn-brass" data-lb-close>Schließen</button></div></div>`;
   if (!d.open) d.showModal();
 }
 document.addEventListener('click', (e) => {
   const t = e.target.closest('[data-leaderboard]');
-  if (t) showLeaderboard(t.dataset.leaderboard || chosenGame);
+  if (t) showLeaderboard(t.dataset.leaderboard || 'poker');
 });
 
 // Optionale Computer-Mitspieler, für Poker und alle Rundenspiele gleich.
@@ -422,6 +355,16 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('[data-add-bot]:not(:disabled)')) send('addBot');
   const remove = e.target.closest('[data-remove-bot]:not(:disabled)');
   if (remove) send('removeBot', { id: remove.dataset.removeBot });
+});
+
+// Host-Schalter: Tisch nicht in der Liste der offenen Tische zeigen (privat, nur per Code/Link). Für Poker und alle Rundenspiele gleich.
+function unlistedSwitchHTML(state) {
+  return `<label class="toggle"><span>Tisch nicht in der Liste zeigen<small>Privat: nur per Code oder Link erreichbar</small></span>
+    <input type="checkbox" role="switch" data-unlisted ${state.unlisted ? 'checked' : ''}></label>`;
+}
+document.addEventListener('change', (e) => {
+  const t = e.target.closest?.('[data-unlisted]');
+  if (t) send('unlisted', { value: t.checked }).then((r) => { if (r?.ok) toast(t.checked ? 'Tisch ist jetzt privat – nur per Code oder Link' : 'Tisch steht wieder in der Liste'); else t.checked = !t.checked; });
 });
 
 // Host-Menü: in ein anderes Spiel wechseln (gleicher Raum, alle bleiben drin)

@@ -1,6 +1,7 @@
 // Spielmodul Texas Hold'em. Die Plattform (server/index.js) kennt nur diese Beschreibung:
 // Name und Felder für die Startseite, wie ein Raum entsteht oder geladen wird, und welche Ereignisse das Spiel versteht.
 import { Room } from './room.js';
+import { cardsChip } from '../art-kit.js';
 
 const str = (v, max = 40) => String(v ?? '').slice(0, max);
 
@@ -9,6 +10,8 @@ export default {
   name: "Texas Hold'em",
   description: 'No Limit mit Spielgeld: Blinds, Side Pots, steigende Blinds, Abendstand.',
   category: 'karten', // Karten, Würfel oder Brett – gruppiert die Startseite
+  minPlayers: 2, maxPlayers: 9, duration: 60, // Spielerzahl und ungefähre Dauer in Minuten – für Filter und Anzeige auf der Startseite
+  art: cardsChip({ kind: 'diamond' }, { kind: 'dot', color: '#1A1A1A' }, '#C99A45'), // Spielbild für die Startseite (siehe games/art-kit.js)
   players: '2–9 Spieler',
   // Felder beim Hosten (alles andere stellt der Host am Tisch ein)
   createFields: [

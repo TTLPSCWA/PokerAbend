@@ -21,9 +21,10 @@ export const GAMES = Object.fromEntries([poker, maumau, farbenchaos, maexchen, s
 export const DEFAULT_GAME = 'poker'; // alte Spielstände ohne Spielart sind Poker
 
 // Was die Startseite über die Spiele wissen muss
-export const gameList = () => Object.values(GAMES).map(({ id, name, description, players, category = 'karten', createFields, createHint, options = [] }) => ({
-  id, name, description, players, category, createFields, createHint, options,
+export const gameList = () => Object.values(GAMES).map(({ id, name, description, players, category = 'karten', minPlayers, maxPlayers, duration, art, createFields, createHint, options = [] }) => ({
+  id, name, description, players, category, minPlayers, maxPlayers, duration, art, createFields, createHint, options,
 }));
+export { PLANNED } from './planned.js';
 // Kategorien der Startseite, in dieser Reihenfolge
 export const CATEGORIES = [['karten', 'Kartenspiele'], ['wuerfel', 'Würfelspiele'], ['brett', 'Brettspiele'], ['party', 'Party Spiele']];
 

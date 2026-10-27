@@ -45,6 +45,13 @@ export class TurnRoom extends BaseRoom {
 
   // ---------- Grundlage ----------
   get round() { return this.roundNo; }
+  // Liste der offenen Tische (Startseite): wer sitzt, wie viele Plätze, wie weit das Spiel ist – nichts vom Spielstand
+  lobbyInfo() {
+    const seated = this.seats.map((id) => this.players.get(id)).filter((p) => p && !p.kicked);
+    const watchers = [...this.players.values()].filter((p) => !p.kicked && !this.seats.includes(p.id) && !p.bot).length;
+    return { seats: seated.map((p) => ({ name: p.name, avatar: p.avatar, bot: !!p.bot })), max: this.opts.maxPlayers, watchers, status: this.lobbyStatus() };
+  }
+  lobbyStatus() { return this.phase === 'playing' ? `Runde #${this.roundNo} läuft` : this.phase === 'over' ? `Runde #${this.roundNo} vorbei` : 'wartet auf Start'; }
   get busy() { return this.phase === 'playing'; }
   get currentId() { return this.phase === 'playing' ? this.order[this.turn] ?? null : null; }
   get current() { return this.players.get(this.currentId); }

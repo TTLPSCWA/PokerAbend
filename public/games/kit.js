@@ -429,6 +429,7 @@ function kitGame(def) {
           <button class="btn btn-outline-red" data-kit="newGame" ${S.phase === 'playing' ? 'disabled title="Geht nur zwischen zwei Runden"' : ''}>Neues Spiel (Punkte auf null)</button>
         </div>
         ${botControlsHTML(S, S.phase === 'playing')}
+        ${unlistedSwitchHTML(S)}
         ${fields ? `<h3>Regeln an diesem Tisch</h3>${fields}<p class="hint" style="margin:0">Änderungen gehen nur zwischen den Runden. Die Standardwerte sind unsere üblichen Hausregeln – alle sehen die aktiven Regeln unter „?“.</p>` : ''}
         ${def.hostExtra ? def.hostExtra(S) : ''}
         ${switchGameHTML(def.id, S.phase === 'playing')}

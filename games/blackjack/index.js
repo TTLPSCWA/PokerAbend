@@ -1,12 +1,15 @@
 // Spielmodul Blackjack – Regeln in room.js
 import { Room } from './room.js';
 import { turnGame } from '../../server/turn-game.js';
+import { cardsChip } from '../art-kit.js';
 
 export default turnGame(Room, {
   id: 'blackjack',
   name: 'Blackjack',
   description: 'Gegen den Dealer: so nah wie möglich an 21, ohne drüber. Karte, Stehen, Verdoppeln, Teilen – Blackjack zahlt 3:2.',
   category: 'karten', // Karten, Würfel oder Brett – gruppiert die Startseite
+  minPlayers: 1, maxPlayers: 7, duration: 20, // Spielerzahl und ungefähre Dauer in Minuten – für Filter und Anzeige auf der Startseite
+  art: cardsChip({ kind: 'dot', color: '#1A1A1A' }, { kind: 'heart' }, '#1C7A43'), // Spielbild für die Startseite (siehe games/art-kit.js)
   players: '1–7 Spieler',
   createFields: [
     { key: 'startStack', label: 'Startchips', type: 'number', min: 100, step: 100, value: 1000 },

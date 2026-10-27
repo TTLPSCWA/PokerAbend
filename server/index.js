@@ -7,7 +7,7 @@ import { Server } from 'socket.io';
 import { readFileSync, writeFileSync, renameSync, mkdirSync, existsSync, unlinkSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { GAMES, DEFAULT_GAME, gameList, gameEvents } from '../games/index.js';
+import { GAMES, DEFAULT_GAME, gameList, gameEvents, PLANNED } from '../games/index.js';
 import {
   COOKIE, loadSecret, createAuth, parseCookies, cookieHeader, limiter, bucket,
   securityHeaders, sameOrigin, clientIp, safeNext,
@@ -39,7 +39,7 @@ else console.warn('⚠ Kein SITE_PASSWORD eingerichtet – jeder mit dem Link ko
 // Grenzen gegen Raten und Spam (pro IP)
 const limits = {
   login: limiter({ windowMs: 15 * 60e3, max: 8 }),     // falsche Passwörter
-  create: limiter({ windowMs: 10 * 60e3, max: 6 }),    // neue Tische
+  create: limiter({ windowMs: 10 * 60e3, max: Number(process.env.CREATE_LIMIT || 6) }),    // neue Tische (Tests setzen CREATE_LIMIT höher)    // neue Tische
   badCode: limiter({ windowMs: 10 * 60e3, max: 20 }),  // falsche Tisch-Codes
   newPlayer: limiter({ windowMs: 10 * 60e3, max: 15 }), // neue Namen
 };
@@ -107,7 +107,7 @@ app.use((req, res, next) => {
 });
 app.get('/me', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
-  res.json({ mode: MODE, games: gameList() });
+  res.json({ mode: MODE, games: gameList(), planned: PLANNED });
 });
 // Bestenliste über alle Abende: ?game=maumau&period=all|2026-10 (nur angemeldet)
 const GAME_INFO = Object.fromEntries(Object.values(GAMES).map((g) => {
@@ -164,7 +164,7 @@ function save() {
     try {
       mkdirSync(DATA_DIR, { recursive: true });
       // Nur Räume ohne laufende Runde haben einen sauberen Stand – alle anderen bleiben beim letzten Stand
-      for (const r of rooms.values()) if (!r.busy) r.lastSnapshot = snapshotOf(r);
+      for (const r of rooms.values()) { if (!r.busy) r.lastSnapshot = snapshotOf(r); else if (r.lastSnapshot) r.lastSnapshot.unlisted = !!r.unlisted; } // Privat-Schalter gilt auch mitten in der Runde
       const data = [...rooms.values()].map((r) => r.lastSnapshot).filter(Boolean);
       writeFileSync(SAVE_FILE + '.tmp', JSON.stringify(data));
       renameSync(SAVE_FILE + '.tmp', SAVE_FILE);
@@ -183,6 +183,7 @@ function load() {
       if (!codes.claim(d.code, game.id)) continue; // doppelter Code in der Datei: zweiten Raum nicht laden
       const r = game.restore(d, (kind, data) => onRoomChange(r, kind, data));
       r.game = game.id;
+      r.unlisted = d.unlisted === true;
       r.lastSnapshot = d;
       if (existsSync(historyFile(r.code))) {
         try { r.loadHistory(JSON.parse(readFileSync(historyFile(r.code), 'utf8'))); r.say('Server neu gestartet – Host startet weiter'); }
@@ -210,7 +211,7 @@ function onRoomChange(room, kind, data) {
   if (kind === 'handDone') save();
   broadcast(room);
 }
-const snapshotOf = (r) => ({ ...r.snapshot(), game: r.game, code: r.code });
+const snapshotOf = (r) => ({ ...r.snapshot(), game: r.game, code: r.code, unlisted: !!r.unlisted });
 
 // ---------- Spiel wechseln (gleicher Raum, gleicher Code, alle bleiben drin) ----------
 // Gleiche Spieler-IDs und Tokens, damit Reconnect weiter klappt. Wer mitgespielt hat, sitzt wieder.
@@ -228,6 +229,7 @@ function switchRoom(old, game) {
       bot: !!op.bot, connected: op.connected, socketId: op.socketId, offlineSince: op.offlineSince });
   }
   next.hostId = next.players.has(old.hostId) ? old.hostId : [...next.players.keys()][0];
+  next.unlisted = !!old.unlisted;
   next.say(`Jetzt: ${game.name} (vorher ${before}${summary ? ` – ${summary}` : ''})`, 'summary');
   // Menschen zuerst hinsetzen; Bots, für die kein Platz mehr ist, verlassen den Raum (zuschauen bringt ihnen nichts)
   const isBot = (id) => next.players.get(id)?.bot;
@@ -249,8 +251,44 @@ function broadcast(room) {
   bots.sync(room);
   const botPlayers = [...room.players.values()].filter((p) => p.bot && !p.kicked).map(({ id, name }) => ({ id, name }));
   for (const p of room.players.values()) {
-    if (p.socketId) io.to(p.socketId).emit('state', { ...room.view(p.id), game: room.game, bots: botPlayers }); // Spielart, damit der Browser bei einem Wechsel umschaltet
+    if (p.socketId) io.to(p.socketId).emit('state', { ...room.view(p.id), game: room.game, bots: botPlayers, unlisted: !!room.unlisted }); // Spielart, damit der Browser bei einem Wechsel umschaltet
   }
+  scheduleLobby();
+}
+
+// ---------- Offene Tische (Startseite) ----------
+// Pro Tisch nur: Spiel, Code, Host, wer sitzt (Name, Avatar), Plätze, Stand. Keine Tokens, IDs, Karten oder Spielstände.
+// Private Tische (Host-Schalter) und Tische ohne einen verbundenen Menschen fehlen. Wer die Liste abonniert, bekommt Änderungen höchstens einmal pro Sekunde.
+function lobbyList() {
+  const out = [];
+  for (const r of rooms.values()) {
+    if (r.unlisted || r.abandoned) continue;
+    if (![...r.players.values()].some((p) => !p.bot && !p.kicked && p.connected)) continue;
+    const info = r.lobbyInfo?.();
+    if (!info) continue;
+    const game = GAMES[r.game];
+    const host = r.players.get(r.hostId);
+    out.push({
+      code: r.code, game: r.game, gameName: game.name, category: game.category || 'karten',
+      host: host ? { name: host.name, avatar: host.avatar } : null,
+      seats: info.seats.map((s) => ({ name: s.name, avatar: s.avatar, bot: !!s.bot })), max: info.max, watchers: info.watchers, status: info.status,
+    });
+  }
+  return out.sort((a, b) => a.gameName.localeCompare(b.gameName, 'de') || a.code.localeCompare(b.code));
+}
+let lobbyTimer = null;
+let lobbyLast = '';
+function scheduleLobby() {
+  if (lobbyTimer) return;
+  lobbyTimer = setTimeout(() => {
+    lobbyTimer = null;
+    const list = lobbyList();
+    const json = JSON.stringify(list);
+    if (json === lobbyLast) return;
+    lobbyLast = json;
+    io.to('lobby').emit('lobby', list);
+  }, 1000);
+  lobbyTimer.unref?.();
 }
 
 function getRoom(code) {
@@ -309,7 +347,7 @@ io.on('connection', (socket) => {
         if (r) { r.afterChange(); broadcast(r); if (!r.busy) save(); }
         cb({ ok: true, ...(res?.reply || {}) });
       } catch (e) {
-        cb({ ok: false, error: e.message });
+        cb({ ok: false, error: e.message, ...(e.extra || {}) }); // extra: z. B. ein Namensvorschlag
       }
     });
   };
@@ -348,6 +386,28 @@ io.on('connection', (socket) => {
     attach(socket, room, p);
     return { room, reply: { code: room.code, token: p.token, game: room.game } };
   }, { needRoom: false });
+
+  // Startseite: Liste der offenen Tische abonnieren (Antwort = aktueller Stand, danach kommen Änderungen als „lobby“)
+  on('lobby', ({ off }) => {
+    if (off) { socket.leave('lobby'); return {}; }
+    socket.join('lobby');
+    return { reply: { tables: lobbyList() } };
+  }, { needRoom: false });
+
+  // Startseite „Weiterspielen“: gibt es meinen Tisch noch? Nur mit gültigem Token, zeigt dasselbe wie die Liste
+  on('peek', ({ code, token }) => {
+    const room = rooms.get(String(code || '').toUpperCase());
+    const p = room && typeof token === 'string' && token ? room.byToken(token) : null;
+    if (!p || p.bot || p.kicked) return { reply: { found: false } };
+    const info = room.lobbyInfo?.();
+    if (!info) return { reply: { found: false } };
+    const host = room.players.get(room.hostId);
+    return { reply: { found: true, code: room.code, game: room.game, gameName: GAMES[room.game].name, category: GAMES[room.game].category || 'karten',
+      host: host ? { name: host.name, avatar: host.avatar } : null, seats: info.seats, max: info.max, watchers: info.watchers, status: info.status } };
+  }, { needRoom: false });
+
+  // Host: Tisch privat machen (nicht in der Liste der offenen Tische)
+  on('unlisted', ({ value }, room, p) => { room.requireHost(p.id); room.unlisted = !!value; save(); });
 
   // Ereignisse der Spiele: jedes Spiel bekommt nur seine eigenen
   for (const event of gameEvents()) {
@@ -423,7 +483,7 @@ setInterval(() => {
     if (!anyone && (r.abandoned || Date.now() - r.lastActivity > ROOM_TTL_MIN * 60000)) {
       bots.stop(r);
       r.dispose();
-      rooms.delete(code); codes.release(code); dropHistory(code); changed = true;
+      rooms.delete(code); codes.release(code); dropHistory(code); changed = true; scheduleLobby();
     }
   }
   if (changed) save();
@@ -434,7 +494,7 @@ process.on('uncaughtException', (e) => console.error('Unerwarteter Fehler:', e))
 process.on('unhandledRejection', (e) => console.error('Unerwarteter Fehler:', e));
 
 // Ein Spiel darf keine Plattform-Ereignisse überschreiben
-const RESERVED = ['create', 'join', 'kick', 'makeHost', 'history', 'react', 'switchGame', 'disconnect', 'addBot', 'removeBot'];
+const RESERVED = ['create', 'join', 'kick', 'makeHost', 'history', 'react', 'switchGame', 'disconnect', 'addBot', 'removeBot', 'lobby', 'peek', 'unlisted'];
 for (const g of Object.values(GAMES)) {
   const clash = Object.keys(g.events).filter((e) => RESERVED.includes(e));
   if (clash.length) throw new Error(`Spiel ${g.id}: Ereignisse ${clash.join(', ')} gehören der Plattform`);
@@ -445,7 +505,7 @@ http.listen(PORT, () => console.log(`Spieleabend läuft auf http://localhost:${P
 
 for (const sig of ['SIGINT', 'SIGTERM']) {
   process.on(sig, () => {
-    for (const r of rooms.values()) if (!r.busy) r.lastSnapshot = snapshotOf(r);
+    for (const r of rooms.values()) { if (!r.busy) r.lastSnapshot = snapshotOf(r); else if (r.lastSnapshot) r.lastSnapshot.unlisted = !!r.unlisted; } // Privat-Schalter gilt auch mitten in der Runde
     try {
       mkdirSync(DATA_DIR, { recursive: true });
       writeFileSync(SAVE_FILE, JSON.stringify([...rooms.values()].map((r) => r.lastSnapshot).filter(Boolean)));
