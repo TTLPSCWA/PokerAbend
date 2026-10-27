@@ -48,7 +48,8 @@ Die Browserprüfungen benötigen lokal installiertes Chrome. Screenshots liegen 
    ```
 
    Alternativ das Repo auf GitHub legen (z. B. [https://github.com/TTLPSCWA/PokerAbend](https://github.com/TTLPSCWA/PokerAbend)): Der Workflow in `.github/workflows/docker.yml` testet bei jedem Push auf `main` und schiebt das Image automatisch nach `ghcr.io`.
-   Die Dateien `docker-compose.yml`, `docker-compose.prod.yml`, `Caddyfile` und `.env.example` hochladen.
+   Voraussetzung auf dem Server: ein zentraler Traefik-Proxy mit dem externen Docker-Netz `proxy` (Entrypoint `websecure`, certresolver `letsencrypt`). Das Netz muss existieren, sonst startet der Tisch nicht (`docker network create proxy`).
+   Die Dateien `docker-compose.yml`, `docker-compose.prod.yml` und `.env.example` hochladen.
 
    ```bash
    cp .env.example .env            # DOMAIN und IMAGE eintragen
@@ -56,7 +57,7 @@ Die Browserprüfungen benötigen lokal installiertes Chrome. Screenshots liegen 
    docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
    ```
 
-   Die Domain muss per DNS-A-Record auf den Server zeigen. Caddy holt das HTTPS-Zertifikat dann automatisch.
+   Die Domain muss per DNS-A-Record auf den Server zeigen. Traefik erkennt den Container an seinen Labels (`Host(DOMAIN)`, Port 3000) und holt das HTTPS-Zertifikat automatisch; die App selbst ist nicht direkt von außen erreichbar (nur `expose`, kein `ports`).
 
 //3. **Update einspielen:** neues Image pushen, auf dem Server wieder `pull` und `up -d`.
 

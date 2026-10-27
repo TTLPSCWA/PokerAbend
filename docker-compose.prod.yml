@@ -1,5 +1,6 @@
 # Auf dem Server:  docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-# Caddy holt automatisch ein HTTPS-Zertifikat für DOMAIN (aus der .env).
+# HTTPS und Zertifikate kommen vom zentralen Traefik-Proxy auf dem Server (externes Docker-Netz "proxy",
+# Entrypoint "websecure", certresolver "letsencrypt"). Die App selbst bleibt auf Port 3000.
 services:
   poker:
     build: !reset null
@@ -9,23 +10,20 @@ services:
     environment:
       # Ohne Gruppenpasswort startet auf dem Server nichts
       SITE_PASSWORD: ${SITE_PASSWORD:?Bitte SITE_PASSWORD in der .env setzen}
-      TRUST_PROXY: "1"   # echte IPs und HTTPS hinter Caddy
+      TRUST_PROXY: "1"   # echte IPs und HTTPS hinter Traefik
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=proxy
+      - traefik.http.routers.poker.rule=Host(`${DOMAIN:?Bitte DOMAIN in der .env setzen}`)
+      - traefik.http.routers.poker.entrypoints=websecure
+      - traefik.http.routers.poker.tls=true
+      - traefik.http.routers.poker.tls.certresolver=letsencrypt
+      - traefik.http.services.poker.loadbalancer.server.port=3000
+    networks:
+      - default
+      - proxy
 
-  caddy:
-    image: caddy:2-alpine
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    environment:
-      DOMAIN: ${DOMAIN:?Bitte DOMAIN in der .env setzen}
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy-data:/data
-      - caddy-config:/config
-    depends_on:
-      - poker
-
-volumes:
-  caddy-data:
-  caddy-config:
+networks:
+  proxy:
+    external: true
+    name: proxy
