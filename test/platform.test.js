@@ -52,7 +52,7 @@ test('Spielmodule: Beschreibung für die Startseite, eigene Ereignisse, gemeinsa
 
 test('Erstellen und Beitreten melden die Spielart, unbekannte Spiele gibt es nicht', async () => {
   const a = client(); const b = client();
-  assert.match((await a.ask('create', { game: 'schach', name: 'Anna' })).error, /gibt es nicht/);
+  assert.match((await a.ask('create', { game: 'gibt-es-nicht', name: 'Anna' })).error, /gibt es nicht/);
   const c = await a.ask('create', { game: 'poker', name: 'Anna', settings: { autoNext: false } });
   assert.ok(c.ok, c.error);
   assert.equal(c.game, 'poker');
@@ -102,7 +102,7 @@ test('Spiel wechseln im selben Raum: gleicher Code, alle bleiben, Mitspieler sit
   await c.ask('join', { code: r.code, name: 'Zoe' }); // schaut nur zu
   await a.ask('sit', { seat: 0 }); await b.ask('sit', { seat: 1 });
   assert.match((await b.ask('switchGame', { game: 'maumau' })).error, /Nur der Host/);
-  assert.match((await a.ask('switchGame', { game: 'schach' })).error, /gibt es nicht/);
+  assert.match((await a.ask('switchGame', { game: 'gibt-es-nicht' })).error, /gibt es nicht/);
   assert.match((await a.ask('switchGame', { game: 'poker' })).error, /schon gespielt/);
   await a.ask('start');
   assert.match((await a.ask('switchGame', { game: 'maumau' })).error, /Runde vorbei/, 'nicht mitten in der Hand');

@@ -52,3 +52,40 @@ export const numberLine = () => wrap(`<rect x="6" y="36" width="52" height="4" r
   ${[[14, '#F7F3E8'], [27, '#9DB7E8'], [49, '#7FD39A']].map(([x, f]) => `<circle cx="${x}" cy="48" r="5" fill="${f}" stroke="rgba(0,0,0,.4)"/>`).join('')}`);
 // Sprechblasen (für kommende Partyspiele)
 export const bubbles = () => wrap(`<path d="M8 12h30a4 4 0 0 1 4 4v14a4 4 0 0 1-4 4H22l-8 7v-7H8a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4z" fill="${PAPER}" stroke="rgba(0,0,0,.4)"/><path d="M26 30h30a4 4 0 0 1 4 4v14a4 4 0 0 1-4 4h-2v7l-8-7H26a4 4 0 0 1-4-4V34a4 4 0 0 1 4-4z" fill="#C99A45" stroke="rgba(0,0,0,.4)"/>`);
+
+// ---------- Weitere Bretter und Symbole (für geplante Spiele) ----------
+const disc = (x, y, f, r = 4.6) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${f}" stroke="rgba(0,0,0,.45)" stroke-width="1"/>`;
+export const reversi = () => wrap(`<rect x="8" y="8" width="48" height="48" rx="5" fill="#1C7A43"/><g stroke="rgba(0,0,0,.3)">${[20, 32, 44].map((p) => `<path d="M8 ${p}H56M${p} 8V56"/>`).join('')}</g>${disc(26, 26, INK)}${disc(38, 26, PAPER)}${disc(26, 38, PAPER)}${disc(38, 38, INK)}${disc(14, 14, INK)}`);
+export const checkers = () => wrap(`<rect x="8" y="8" width="48" height="48" rx="4" fill="#E3C08A"/>${[0, 1, 2, 3].flatMap((r) => [0, 1, 2, 3].map((c) => ((r + c) % 2 ? `<rect x="${8 + c * 12}" y="${8 + r * 12}" width="12" height="12" fill="#7A5238"/>` : ''))).join('')}${disc(20, 20, '#D33B35')}${disc(44, 20, '#D33B35')}${disc(20, 44, PAPER)}${disc(44, 44, PAPER)}`);
+export const dominoes = () => wrap(`<g transform="rotate(-14 24 34)"><rect x="12" y="18" width="24" height="32" rx="4" fill="${PAPER}" stroke="rgba(0,0,0,.4)"/><path d="M12 34h24" stroke="rgba(0,0,0,.4)"/>${disc(24, 26, INK, 2.2)}${disc(19, 42, INK, 2.2)}${disc(29, 42, INK, 2.2)}</g><g transform="rotate(12 42 32)"><rect x="32" y="14" width="22" height="30" rx="4" fill="${PAPER}" stroke="rgba(0,0,0,.4)"/><path d="M32 29h22" stroke="rgba(0,0,0,.4)"/>${disc(43, 21, INK, 2.2)}${disc(43, 37, INK, 2.2)}</g>`);
+const hex = (cx, cy, r, f) => `<path d="${[0, 1, 2, 3, 4, 5].map((k) => `${k ? 'L' : 'M'}${(cx + r * Math.cos(Math.PI / 6 + (k * Math.PI) / 3)).toFixed(1)} ${(cy + r * Math.sin(Math.PI / 6 + (k * Math.PI) / 3)).toFixed(1)}`).join('')}Z" fill="${f}" stroke="rgba(0,0,0,.4)"/>`;
+export const hexBoard = (colors = ['#1F57C3', '#D33B35', '#F7F3E8', '#7FD39A', '#C99A45', '#9DB7E8', '#E3C08A']) => wrap([[32, 32], [32, 14], [47, 23], [47, 41], [32, 50], [17, 41], [17, 23]].map(([x, y], k) => hex(x, y, 9, colors[k % colors.length])).join(''));
+export const chess = () => wrap(`<rect x="8" y="8" width="48" height="48" rx="3" fill="#E3C08A"/>${[0, 1, 2, 3].flatMap((r) => [0, 1, 2, 3].map((c) => ((r + c) % 2 ? `<rect x="${8 + c * 12}" y="${8 + r * 12}" width="12" height="12" fill="#7A5238"/>` : ''))).join('')}<path d="M26 46h14l-2-6c4-3 6-8 2-13l3-5-6 2c-6-4-14 2-13 8l-4 4 4 2z" fill="${INK}" stroke="${PAPER}" stroke-width="1.5" stroke-linejoin="round"/>`);
+export const territory = () => wrap(`<path d="M8 20l14-10 14 4 12-6 8 14-6 14 4 12-16 6-12-6-14 2z" fill="#7FB4E8" stroke="rgba(0,0,0,.4)"/><path d="M22 10l4 20-14 6M36 14l-6 22 16 8M48 8l-4 22" fill="none" stroke="rgba(0,0,0,.4)" stroke-width="1.5"/>${disc(20, 24, '#D33B35')}${disc(38, 28, '#1F57C3')}${disc(44, 46, '#F2C230')}`);
+// Rundes Symbol für Partyspiele (Name aus GLYPHS)
+const GLYPHS = {
+  gift: '<rect x="21" y="31" width="22" height="14"/><rect x="19" y="26" width="26" height="6"/><path d="M32 26v19M32 26c-5-7-10-3-6 0M32 26c5-7 10-3 6 0"/>',
+  note: '<path d="M26 40V22l14-4v18"/><circle cx="23" cy="41" r="4" fill="#F7F3E8"/><circle cx="37" cy="37" r="4" fill="#F7F3E8"/>',
+  puzzle: '<path d="M20 22h10v-3a3 3 0 0 1 6 0v3h8v8h-3a3 3 0 0 0 0 6h3v8H20z"/>',
+  letters: '<rect x="19" y="19" width="12" height="12"/><rect x="33" y="19" width="12" height="12"/><rect x="19" y="33" width="12" height="12"/><rect x="33" y="33" width="12" height="12"/>',
+  mines: '<circle cx="32" cy="34" r="8" fill="#F7F3E8"/><path d="M32 20v6M32 42v6M18 34h6M40 34h6M22 24l4 4M42 24l-4 4M22 44l4-4M42 44l-4-4"/>',
+  maze: '<path d="M20 20h24v24H20zM28 20v14h8M28 44V38"/>',
+  push: '<ellipse cx="32" cy="42" rx="16" ry="5"/><path d="M22 30h14M32 24l6 6-6 6"/>',
+  spotlight: '<path d="M32 18l12 24H20z"/><circle cx="32" cy="47" r="3" fill="#F7F3E8"/>',
+  agent: '<path d="M18 28h28M24 28v-6h16v6"/><circle cx="26" cy="38" r="5"/><circle cx="38" cy="38" r="5"/><path d="M31 38h2"/>',
+  mask: '<path d="M20 26h24v8c0 8-6 12-12 12s-12-4-12-12z"/><circle cx="27" cy="32" r="2" fill="#F7F3E8"/><circle cx="37" cy="32" r="2" fill="#F7F3E8"/>',
+  bridge: '<path d="M16 38h32M20 38v-8M44 38v-8M16 30c8-8 24-8 32 0M24 38v6M32 38v6M40 38v6"/>',
+  rope: '<path d="M16 36c6-14 26-14 32 0"/><circle cx="16" cy="36" r="3" fill="#F7F3E8"/><circle cx="48" cy="36" r="3" fill="#F7F3E8"/>',
+  figure: '<circle cx="32" cy="22" r="5"/><path d="M32 27v12M24 32h16M32 39l-6 9M32 39l6 9"/>',
+  shovel: '<path d="M38 18l8 8M20 44l16-16M16 48l6-2-4-4z"/>',
+  crown: '<path d="M18 42V26l8 8 6-12 6 12 8-8v16z" fill="#C99A45"/>',
+  bomb: '<circle cx="30" cy="38" r="10" fill="#1A1A1A"/><path d="M36 30l6-8M42 22l4-2M44 24l3 1"/>',
+  arrows: '<path d="M32 16v10M26 22l6-6 6 6M32 48V38M26 42l6 6 6-6M16 32h10M20 26l-6 6 6 6M48 32H38M44 26l6 6-6 6"/>',
+  paw: '<circle cx="32" cy="38" r="8"/><circle cx="22" cy="28" r="3.5"/><circle cx="29" cy="22" r="3.5"/><circle cx="37" cy="22" r="3.5"/><circle cx="43" cy="28" r="3.5"/>',
+  pot: '<path d="M20 30h24v8a10 10 0 0 1-10 10h-4a10 10 0 0 1-10-10z"/><path d="M16 32h4M44 32h4M26 22c0-4 4-4 4-8M34 22c0-4 4-4 4-8"/>',
+  bars: '<rect x="20" y="36" width="6" height="10"/><rect x="29" y="28" width="6" height="18"/><rect x="38" y="20" width="6" height="26"/>',
+  laser: '<path d="M16 24h32M16 40h32" stroke-dasharray="4 4"/><circle cx="32" cy="32" r="5" fill="#F7F3E8"/>',
+  floor: '<path d="M18 40l7-4 7 4 7-4 7 4-7 4-7-4-7 4z"/><path d="M26 44l4 6M38 44l-3 7"/>',
+};
+export const glyph = (name, bg = '#5A468F') => wrap(`<circle cx="32" cy="32" r="26" fill="${bg}" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/><g fill="none" stroke="${PAPER}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">${GLYPHS[name] || GLYPHS.crown}</g>`);
+export const GLYPH_NAMES = Object.keys(GLYPHS);

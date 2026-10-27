@@ -7,7 +7,7 @@ import { Server } from 'socket.io';
 import { readFileSync, writeFileSync, renameSync, mkdirSync, existsSync, unlinkSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { GAMES, DEFAULT_GAME, gameList, gameEvents, PLANNED } from '../games/index.js';
+import { GAMES, DEFAULT_GAME, gameList, gameEvents, PLANNED, plannedGames } from '../games/index.js';
 import {
   COOKIE, loadSecret, createAuth, parseCookies, cookieHeader, limiter, bucket,
   securityHeaders, sameOrigin, clientIp, safeNext,
@@ -107,7 +107,7 @@ app.use((req, res, next) => {
 });
 app.get('/me', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
-  res.json({ mode: MODE, games: gameList(), planned: PLANNED });
+  res.json({ mode: MODE, games: gameList(), planned: plannedGames() }); // geplante Spiele (ohne Funktionen) – der Browser zeigt „Bald“ und, auf Wunsch, alle
 });
 // Bestenliste über alle Abende: ?game=maumau&period=all|2026-10 (nur angemeldet)
 const GAME_INFO = Object.fromEntries(Object.values(GAMES).map((g) => {
@@ -247,6 +247,8 @@ function switchRoom(old, game) {
 }
 
 // ---------- Hilfen ----------
+// Geplante Spiele und Funktionen (games/planned.js) lassen sich nicht hosten oder auswählen
+const notPlayable = (id) => (PLANNED.some((e) => e.id === String(id)) ? 'Das gibt es noch nicht – es steht auf der Liste der geplanten Spiele' : 'Dieses Spiel gibt es nicht');
 function broadcast(room) {
   bots.sync(room);
   const botPlayers = [...room.players.values()].filter((p) => p.bot && !p.kicked).map(({ id, name }) => ({ id, name }));
@@ -354,7 +356,7 @@ io.on('connection', (socket) => {
 
   on('create', ({ game: gameId = DEFAULT_GAME, name, avatar, settings }) => {
     const game = GAMES[gameId];
-    if (!game) throw new Error('Dieses Spiel gibt es nicht');
+    if (!game) throw new Error(notPlayable(gameId));
     if (rooms.size >= MAX_ROOMS) throw new Error('Gerade sind zu viele Tische offen');
     if (!limits.create.hit(ip)) throw new Error('Du hast gerade sehr viele Tische erstellt. Warte ein paar Minuten.');
     const code = codes.take(game.id);
@@ -422,7 +424,7 @@ io.on('connection', (socket) => {
   on('switchGame', ({ game: gameId }, room, p) => {
     room.requireHost(p.id);
     const game = GAMES[String(gameId || '')];
-    if (!game) throw new Error('Dieses Spiel gibt es nicht');
+    if (!game) throw new Error(notPlayable(gameId));
     if (game.id === room.game) throw new Error('Das wird hier schon gespielt');
     if (room.busy) throw new Error('Wechseln geht erst, wenn die Runde vorbei ist');
     return { room: switchRoom(room, game) };

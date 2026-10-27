@@ -212,12 +212,29 @@ test('Jedes Spiel bringt Spielerzahl, Dauer und Spielbild mit – passend zu den
   }
 });
 
-test('Geplante Spiele: eigene Liste, nicht spielbar, mit Spielerzahl und Bild', () => {
-  assert.ok(Array.isArray(PLANNED));
-  for (const p of PLANNED) {
-    assert.ok(!(p.id in GAMES), `${p.id} ist schon gebaut – aus planned.js streichen`);
-    assert.equal(p.category, 'party');
-    assert.ok(Number.isInteger(p.minPlayers) && Number.isInteger(p.maxPlayers) && p.duration > 0 && p.art.startsWith('<svg'));
+
+// ---------- Geplante Spiele (Backlog) ----------
+test('Geplante Spiele und Funktionen lassen sich nicht hosten oder auswählen; /me liefert nur Spiele, ohne Funktionen', async () => {
+  const c = client();
+  const games = PLANNED.filter((e) => e.type !== 'feature');
+  const features = PLANNED.filter((e) => e.type === 'feature');
+  for (const e of [games[0], games.at(-1), features[0], features.at(-1)]) {
+    const r = await c.ask('create', { game: e.id, name: 'Test' });
+    assert.equal(r.ok, false, `${e.id} lässt sich hosten`);
+    assert.match(r.error, /noch nicht|Liste der geplanten/, e.id);
   }
-  assert.ok(!gameList().some((g) => PLANNED.some((p) => p.id === g.id)));
+  assert.match((await c.ask('create', { game: 'gibt-es-nicht', name: 'Test' })).error, /gibt es nicht/, 'unbekannt bleibt unbekannt');
+  // Spielwechsel zu einem geplanten Spiel
+  const host = client();
+  await host.ask('create', { game: 'maumau', name: 'Hella' });
+  const sw = await host.ask('switchGame', { game: games[0].id });
+  assert.equal(sw.ok, false);
+  assert.match(sw.error, /noch nicht/);
+  // Die Startseite bekommt Spiele (mit Status), aber keine Funktionen
+  const me = await (await fetch(URL + '/me')).json();
+  assert.equal(me.planned.length, games.length);
+  assert.ok(me.planned.every((p) => p.type !== 'feature' && ['next', 'planned'].includes(p.status) && Array.isArray(p.rules)));
+  assert.ok(!me.planned.some((p) => features.some((f) => f.id === p.id)), 'Funktionen sind nicht dabei');
+  assert.deepEqual(me.planned.filter((p) => p.status === 'next').map((p) => p.id).sort(), PLANNED.filter((e) => e.status === 'next').map((e) => e.id).sort(), 'nur „next“ ist standardmäßig zu sehen – der Rest wartet auf den Schalter');
+  assert.ok(me.games.every((g) => !me.planned.some((p) => p.id === g.id)));
 });

@@ -26,10 +26,12 @@ function openProfile(first = false) {
   const d = $('#profile-dlg');
   if (d.open) return;
   profileChoice = profile.name ? profile.avatar : AVATARS[Math.floor(Math.random() * AVATARS.length)];
-  $('#profile-title').textContent = first ? 'Wie heißt du?' : 'Profil ändern';
+  $('#profile-title').textContent = first ? 'Wie heißt du?' : 'Ich';
   $('#p-name').value = profile.name;
   $('#p-error').textContent = '';
   $('#p-cancel').hidden = first;
+  $('#p-showplanned').checked = !!store.get('poker:showplanned', false);
+  $('#p-showplanned-row').hidden = first;
   d.dataset.first = first ? '1' : '';
   $('#p-avatars').innerHTML = AVATARS.map((a) => `<button type="button" class="avatar-opt" data-a="${a}" aria-pressed="${a === profileChoice}" aria-label="Avatar ${a}">${a}</button>`).join('');
   d.showModal();
@@ -50,6 +52,7 @@ $('#profile-form').addEventListener('submit', (e) => {
   if (hubVisible()) renderHub();
 });
 $('#p-cancel').addEventListener('click', () => $('#profile-dlg').close());
+$('#p-showplanned').addEventListener('change', (e) => { store.set('poker:showplanned', e.target.checked); if (hubVisible()) renderHub(); });
 $('#profile-dlg').addEventListener('cancel', (e) => { if ($('#profile-dlg').dataset.first) e.preventDefault(); }); // Esc
 $('#profile-chip').addEventListener('click', () => openProfile(false));
 $('#profile-avatar').addEventListener('click', () => openProfile(false));
@@ -213,7 +216,13 @@ const CHIPS = [['all', 'Alle'], ['fav', '★ Favoriten'], ['p2', '2 Spieler'], [
 const RANGES = { p2: [2, 2], p34: [3, 4], p56: [5, 6], p7: [7, 99] };
 const SEARCH_FROM = 20; // Suche ab so vielen Spielen
 const catTitle = (id) => (GAME_CATEGORIES.find(([c]) => c === id) || [, ''])[1];
-const allGames = () => [...(account.games || []), ...(account.planned || []).map((p) => ({ ...p, planned: true }))];
+const showPlanned = () => !!store.get('poker:showplanned', false); // Schalter „Geplante Spiele zeigen“ (Profil-Dialog „Ich“), Standard aus
+const plannedAll = () => account.planned || [];
+// Immer sichtbar: Einträge mit status 'next' („Bald“). Status 'planned' erscheint nur mit dem Schalter, gruppiert nach Päckchen. Funktionen (type 'feature') kommen nie hierher.
+const allGames = () => [...(account.games || []), ...plannedAll().filter((p) => p.status === 'next').map((p) => ({ ...p, planned: true }))];
+const extraGames = () => (showPlanned() ? plannedAll().filter((p) => p.status !== 'next').map((p) => ({ ...p, planned: true })) : []);
+const PKG_ORDER = ['4', '5', '6', '7', '8', 'spaeter', 'gross'];
+const PKG_NAME = { 4: 'Päckchen 4', 5: 'Päckchen 5', 6: 'Päckchen 6', 7: 'Päckchen 7', 8: 'Päckchen 8', spaeter: 'Später', gross: 'Große Projekte' };
 const playersText = (g) => (g.minPlayers === g.maxPlayers ? `${g.maxPlayers} Spieler` : `${g.minPlayers}–${g.maxPlayers} Spieler`);
 
 // Sortierung: Favoriten zuerst, dann zuletzt gespielt, dann alphabetisch; Geplantes ans Ende
@@ -221,11 +230,12 @@ function sortGames(list) {
   const f = favs(), r = recent();
   return [...list].sort((a, b) => (a.planned ? 1 : 0) - (b.planned ? 1 : 0) || f.has(b.id) - f.has(a.id) || (r[b.id] || 0) - (r[a.id] || 0) || a.name.localeCompare(b.name, 'de'));
 }
-function visibleGames() {
+const visibleGames = () => filterGames(allGames());
+function filterGames(list) {
   const f = favs();
   const filter = route.page === 'favoriten' ? 'fav' : gamesFilter;
   const q = gamesQuery.trim().toLowerCase();
-  return sortGames(allGames().filter((g) => {
+  return sortGames(list.filter((g) => {
     if (route.sub && (g.category || 'karten') !== route.sub) return false;
     if (filter === 'fav') return !g.planned && f.has(g.id);
     if (RANGES[filter]) return g.minPlayers <= RANGES[filter][1] && g.maxPlayers >= RANGES[filter][0];
@@ -237,11 +247,12 @@ function gameHTML(g, tiles) {
   const fav = favs().has(g.id);
   const meta = `${catTitle(g.category)} · ${playersText(g)} · ${g.duration} Min.`;
   const star = g.planned ? '' : `<button type="button" class="star" data-fav="${esc(g.id)}" aria-pressed="${fav}" aria-label="${esc(g.name)} ${fav ? 'aus den Favoriten nehmen' : 'zu den Favoriten'}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg></button>`;
-  const action = g.planned ? '<span class="soon">In Planung</span>' : `<button type="button" class="btn btn-brass" data-host="${esc(g.id)}" aria-label="${esc(g.name)} hosten">Hosten</button>`;
-  return `<li class="game-${tiles ? 'tile' : 'row'} cat-${esc(g.category)}${g.planned ? ' planned' : ''}" ${g.planned ? 'aria-disabled="true"' : ''}>
+  const detail = g.planned ? `<button type="button" class="btn btn-ghost" data-plan="${esc(g.id)}" aria-label="${esc(g.name)}: Beschreibung und Regeln">Regeln</button>` : '';
+  const action = g.planned ? `<span class="soon">${g.status === 'next' ? 'Bald' : 'Geplant'}</span>` : `<button type="button" class="btn btn-brass" data-host="${esc(g.id)}" aria-label="${esc(g.name)} hosten">Hosten</button>`;
+  return `<li class="game-${tiles ? 'tile' : 'row'} cat-${esc(g.category)}${g.planned ? ' planned' : ''}" data-id="${esc(g.id)}" ${g.planned ? 'aria-disabled="true"' : ''}>
       <div class="ga">${g.art}</div>
       <div class="gr-main"><b>${esc(g.name)}${fav ? ' <span class="fav-mark" aria-label="Favorit">★</span>' : ''}</b><small>${esc(meta)}</small><span class="gr-desc">${esc(g.description)}</span></div>
-      <div class="gr-actions">${star}${action}</div></li>`;
+      <div class="gr-actions">${g.planned ? detail : star}${action}</div></li>`;
 }
 function gamesToolbarHTML() {
   const filter = route.page === 'favoriten' ? 'fav' : gamesFilter;
@@ -259,9 +270,36 @@ function pageGames() {
   const search = allGames().length >= SEARCH_FROM ? `<label class="search"><span class="sr-only">Spiel suchen</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="games-search" type="search" placeholder="Spiel suchen" value="${esc(gamesQuery)}" autocomplete="off"></label>` : '';
   return `<section class="hub-head"><h1>${esc(title)}</h1><p>Such dir ein Spiel aus und mach einen Tisch auf – die anderen kommen per Link oder Code dazu.</p></section>
     <div class="games-tools"><div id="games-toolbar" class="toolbar">${gamesToolbarHTML()}</div>${search}</div>
-    <div id="games-body">${gamesBodyHTML()}</div>`;
+    <div id="games-body">${gamesBodyHTML()}</div>
+    <div id="planned-body">${plannedGroupsHTML()}</div>`;
 }
-function refreshGames() { $('#games-toolbar').innerHTML = gamesToolbarHTML(); $('#games-body').innerHTML = gamesBodyHTML(); }
+function plannedGroupsHTML() {
+  if (!showPlanned() || route.page === 'favoriten') return '';
+  const list = filterGames(extraGames());
+  if (!list.length) return '<p class="hint">Mit diesem Filter gibt es keine geplanten Spiele.</p>';
+  const groups = PKG_ORDER.map((k) => [k, list.filter((g) => String(g.paeckchen) === k)]).filter(([, l]) => l.length);
+  return `<section class="hub-block planned-block"><div class="hub-block-head"><h2>Geplante Spiele</h2></div>${groups.map(([k, l]) => `<h3 class="pkg-title">${PKG_NAME[k]}</h3><ul class="games ${gamesView === 'tiles' ? 'tiles' : 'rows'}">${l.map((g) => gameHTML(g, gamesView === 'tiles')).join('')}</ul>`).join('')}</section>`;
+}
+function refreshGames() { $('#games-toolbar').innerHTML = gamesToolbarHTML(); $('#games-body').innerHTML = gamesBodyHTML(); $('#planned-body').innerHTML = plannedGroupsHTML(); }
+// Beschreibung und Regeln eines noch nicht spielbaren Spiels (im gleichen Panel wie „Hosten“)
+function openPlan(id) {
+  const g = plannedAll().find((x) => x.id === id);
+  if (!g) return;
+  const list = (items) => `<ul class="plan-rules">${items.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>`;
+  const d = $('#host-dlg');
+  d.innerHTML = `<div class="plan-detail">
+      <button type="button" class="host-close" data-host-close aria-label="Schließen">✕</button>
+      <div class="host-art cat-${esc(g.category)}">${g.art}</div>
+      <div><h2 id="host-title">${esc(g.name)}</h2><p class="host-meta">${esc(catTitle(g.category))} · ${esc(playersText(g))} · ca. ${g.duration} Min.</p></div>
+      <p><span class="soon">${g.status === 'next' ? 'Bald' : 'Geplant'}</span> Noch nicht spielbar.</p>
+      <p>${esc(g.description)}</p>
+      ${g.vorbild ? `<p class="hint">Vorbild (nur die Mechanik): ${esc(g.vorbild)}</p>` : ''}
+      <h3>Regeln</h3>${list(g.rules || [])}
+      ${g.houseRules?.length ? `<h3>Mögliche Hausregeln</h3>${list(g.houseRules)}` : ''}
+      <button type="button" class="btn btn-ghost" data-host-close>Schließen</button></div>`;
+  d.dataset.game = '';
+  d.showModal();
+}
 // Start: die ersten Spiele (Favoriten, zuletzt gespielt) als Kacheln
 function gamesPreviewHTML() {
   const list = sortGames(allGames().filter((g) => !g.planned)).slice(0, 6);
@@ -315,6 +353,10 @@ document.addEventListener('click', (e) => {
   if (!hubVisible()) return;
   const host = e.target.closest('[data-host]');
   if (host) { openHost(host.dataset.host); return; }
+  const plan = e.target.closest('[data-plan]');
+  if (plan) { openPlan(plan.dataset.plan); return; }
+  const row = e.target.closest('li.planned');
+  if (row && !e.target.closest('button, a')) { openPlan(row.dataset.id); return; }
   const fav = e.target.closest('[data-fav]');
   if (fav) { toggleFav(fav.dataset.fav); route.page === 'start' ? renderHub() : refreshGames(); $$('[data-fav]').find((x) => x.dataset.fav === fav.dataset.fav)?.focus({ preventScroll: true }); return; }
   const chip = e.target.closest('[data-chip]');
@@ -400,6 +442,7 @@ document.addEventListener('input', (e) => {
   if (e.target.id !== 'games-search') return;
   gamesQuery = e.target.value;
   $('#games-body').innerHTML = gamesBodyHTML();
+  $('#planned-body').innerHTML = plannedGroupsHTML();
 });
 
 // Tablet: Seitenleiste ein-/ausklappen (nur Symbole ↔ mit Text), Wahl wird gemerkt

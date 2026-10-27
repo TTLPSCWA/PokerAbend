@@ -80,7 +80,7 @@ Die Startseite ist ein Hub mit Navigation per URL-Hash (Zurück-Taste und Links 
 - **Profil:** Beim ersten Besuch fragt ein Dialog nach Name und Avatar. Beides liegt im Browser (`poker:name`, `poker:avatar`) und wird beim Hosten und Beitreten verwendet. Ist der Name am Tisch schon vergeben, schlägt der Server einen freien vor („Tobi 2“).
 - **Offene Tische:** Der Server schickt die Liste an alle Angemeldeten (Socket-Ereignis `lobby`, Änderungen höchstens einmal pro Sekunde): Spiel, Code, Host, wer sitzt, Plätze, Stand – nie Tokens, Karten oder Spielstände. „Dazusetzen“ und „Zuschauen“ sind ein Klick mit dem Profil. Ein Tisch erscheint, solange mindestens ein Mensch online ist. Der Host kann am Tisch unter „Host“ einstellen: **Tisch nicht in der Liste zeigen** (privat, nur per Code oder Link). Die Grenze für neue Tische lässt sich zum Testen mit `CREATE_LIMIT` erhöhen (Standard 6 pro 10 Minuten und IP).
 - **Weiterspielen:** Hat der Browser ein Token für einen noch offenen Tisch (auch einen privaten), steht er ganz vorne mit „Zurück an den Tisch“.
-- **Spieleliste:** Filter (Favoriten, Spielerzahl, Kurz unter 15 Minuten), Liste oder Kacheln, Favoriten und „zuletzt gespielt“ (nur in diesem Browser: `poker:favs`, `poker:recent`, `poker:view`). Geplante Spiele stehen in `games/planned.js` und erscheinen ausgegraut mit „In Planung“. Ab 20 Spielen gibt es eine Suche.
+- **Spieleliste:** Filter (Favoriten, Spielerzahl, Kurz unter 15 Minuten), Liste oder Kacheln, Favoriten und „zuletzt gespielt“ (nur in diesem Browser: `poker:favs`, `poker:recent`, `poker:view`). Noch nicht gebaute Spiele stehen in `games/planned.js` (siehe „Backlog“ unten): Einträge mit `status: 'next'` erscheinen in ihrer Kategorie ausgegraut mit „Bald“ (Klick zeigt Beschreibung, Regeln und mögliche Hausregeln, kein Hosten), alles andere erst, wenn unter „Ich“ der Schalter „Geplante Spiele zeigen“ an ist (nach Päckchen gruppiert). Funktionen (`type: 'feature'`) erscheinen nie als Spiel. Ab 20 Spielen gibt es eine Suche.
 - **Hosten:** Seitenpanel rechts, am Handy eine Leiste von unten – nur mit den Lobby-Feldern des Spiels (`createFields`).
 - **Neues Spiel:** Ein Spielmodul bringt `minPlayers`, `maxPlayers`, `duration` (Minuten) und `art` (SVG, Bausteine in `games/art-kit.js`) mit; ein Test prüft, dass die Zahlen zum Raum passen.
 
@@ -343,9 +343,20 @@ Beispiel Mau-Mau mit der ID `maumau` (nur Kleinbuchstaben, Ziffern und Bindestri
 
 5. **Docker:** nichts zu tun, `games/` und `public/` werden komplett kopiert.
 
+### Backlog: `games/planned.js`
+
+Die Datei ist die zentrale Arbeitsliste für alle noch geplanten Spiele und Party-Funktionen. Ein Spiel-Eintrag hat `id`, `name`, `description`, `category` (`karten`, `wuerfel`, `brett`, `party`), `minPlayers`, `maxPlayers`, `duration` (Minuten), `status` (`next` oder `planned`), `paeckchen`, `rules` (3–8 Stichpunkte mit den Standardregeln), optional `houseRules`, `vorbild` (nur die Mechanik) und `art`; Partyspiele haben zusätzlich `bauart`: **A** Runden/Text, **B** gleichzeitig solo (gleicher Seed, jeder spielt lokal, der Server prüft das Ergebnis) oder **C** Echtzeit zusammen. Funktionen (`type: 'feature'`) haben `id`, `name`, `paeckchen`, `status` und `beschreibung`. Ein Test (`test/planned.test.js`) prüft Pflichtfelder, eindeutige IDs und die Vollständigkeit der Päckchen.
+
+Regeln für die Zukunft:
+
+- **Wird ein Spiel umgesetzt:** Modul unter `games/<id>/` anlegen, in `games/index.js` registrieren und den Eintrag aus `planned.js` entfernen (der Test schlägt sonst an, weil die ID doppelt vorkommt).
+- **Ist ein Päckchen fertig:** die Einträge des nächsten Päckchens auf `status: 'next'` setzen. Es steht immer nur ein Päckchen auf `next`.
+- **Neue Ideen** werden nur noch in `planned.js` eingetragen, nicht mehr in dieser README.
+- Geplante Spiele und Funktionen lassen sich nicht hosten oder auswählen; der Server lehnt sie ab.
+
 ### Weitere Ideen
 
-Mögliche nächste Spiele: Schwimmen/31, Blackjack mit unseren Chips, Würfelpoker mit Punkteblatt, Werwolf, Montagsmaler.
+Mögliche nächste Spiele stehen im Backlog (`games/planned.js`).
 
 **Wichtig für die Fairness:** Der Browser bekommt nur seine eigenen Karten. Gegnerkarten verlassen den Server erst beim Showdown. Das prüft `test/server.test.js`. Das gilt für jedes Spiel: Was ein Spieler nicht sehen darf, gehört nicht in `view()`.
 

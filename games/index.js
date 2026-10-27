@@ -26,7 +26,7 @@ export const DEFAULT_GAME = 'poker'; // alte Spielstände ohne Spielart sind Pok
 export const gameList = () => Object.values(GAMES).map(({ id, name, description, players, category = 'karten', minPlayers, maxPlayers, duration, art, createFields, createHint, options = [] }) => ({
   id, name, description, players, category, minPlayers, maxPlayers, duration, art, createFields, createHint, options,
 }));
-export { PLANNED } from './planned.js';
+export { PLANNED, plannedGames } from './planned.js';
 // Kategorien der Startseite, in dieser Reihenfolge
 export const CATEGORIES = [['karten', 'Kartenspiele'], ['wuerfel', 'Würfelspiele'], ['brett', 'Brettspiele'], ['party', 'Party Spiele']];
 

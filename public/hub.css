@@ -187,3 +187,15 @@ li.cat-party .ga { background: linear-gradient(160deg, #5A468F, #382B66); }
 .host-art.cat-brett { background: linear-gradient(160deg, #3A5B73, #243C4E); }
 .host-art.cat-party { background: linear-gradient(160deg, #5A468F, #382B66); }
 .host-meta { color: var(--gold-text) !important; font-size: 14px; margin-top: 2px !important; }
+
+/* ---------- Geplante Spiele: „Bald“, Details, nach Päckchen gruppiert ---------- */
+.games > li.planned { cursor: pointer; }
+.pkg-title { margin: 22px 0 10px; font-size: 16px; color: var(--gold-text); }
+.planned-block .pkg-title:first-of-type { margin-top: 4px; }
+.plan-detail { display: grid; gap: 14px; }
+.plan-detail h2 { margin: 0; font-size: 26px; }
+.plan-detail h3 { margin: 4px 0 -6px; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-2); }
+.plan-detail p { margin: 0; color: #D3E1DA; }
+.plan-detail .btn { min-height: 44px; justify-self: start; }
+.plan-rules { margin: 0; padding-left: 20px; display: grid; gap: 6px; color: #D3E1DA; }
+#p-showplanned-row { margin-top: 6px; }
