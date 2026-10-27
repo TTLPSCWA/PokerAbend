@@ -15,8 +15,9 @@ const pkName = (S, id) => pkPlayer(S, id)?.name ?? '?';
 const pkAvatar = (S, id) => `<span class="pk-av" aria-hidden="true">${avatarHTML(pkPlayer(S, id))}</span>`;
 
 // Eingabezeile für die Aktionsleiste: ein Textfeld und „Senden“. max = Zeichen (Server kürzt ebenfalls auf 120).
-function pkForm({ kind, label, placeholder = '', value = '', max = 120, inputmode = 'text', button = 'Senden', note = '', counter = false }) {
-  return `<form class="pk-form" data-pk="${esc(kind)}" autocomplete="off">
+function pkForm({ kind, label, placeholder = '', value = '', max = 120, inputmode = 'text', button = 'Senden', note = '', counter = false, data = {} }) {
+  const attrs = Object.entries(data).map(([k, v]) => ` data-${esc(k)}="${esc(v)}"`).join(''); // z. B. data-task für die Aufgabe, zu der die Antwort gehört
+  return `<form class="pk-form" data-pk="${esc(kind)}"${attrs} autocomplete="off">
     <label class="sr-only" for="pk-in">${esc(label)}</label>
     <input id="pk-in" class="pk-input" type="text" inputmode="${esc(inputmode)}" enterkeyhint="send" maxlength="${max}" placeholder="${esc(placeholder)}" value="${esc(value)}" autocomplete="off" autocorrect="off" spellcheck="false">
     <button class="btn btn-brass pk-send" type="submit">${esc(button)}</button>
@@ -24,6 +25,28 @@ function pkForm({ kind, label, placeholder = '', value = '', max = 120, inputmod
     ${note ? `<small class="pk-note">${note}</small>` : ''}
   </form>`;
 }
+
+// Anstupser (Server-Ereignis „nudge“): große Einblendung mit Spruch, Ton und Vibration. Nur in Partyspielen – beim Poker zeigt poker.js den Anstupser.
+const PARTY_IDS = new Set();
+let pkNudgeTimer = null;
+socket.on('nudge', ({ from, text }) => {
+  if (!PARTY_IDS.has(session?.game)) return;
+  let el = $('#pk-nudge');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'pk-nudge'; el.className = 'pk-nudge-pop'; el.setAttribute('role', 'alert');
+    el.addEventListener('click', () => { el.hidden = true; });
+    document.body.appendChild(el);
+  }
+  el.innerHTML = '<span class="pk-nudge-hand" aria-hidden="true">👉</span><b></b><small></small>';
+  el.querySelector('b').textContent = text; // immer als Text, nie als HTML
+  el.querySelector('small').textContent = from ? `${from} stupst dich an` : 'Die Zeit läuft gleich ab';
+  el.hidden = false;
+  el.classList.remove('go'); void el.offsetWidth; el.classList.add('go');
+  if (prefs.sound) [880, 660, 880].forEach((f, i) => setTimeout(() => beep(f, 110, 0.07, 'square'), i * 150));
+  try { navigator.vibrate?.([120, 80, 120]); } catch { /* egal */ }
+  clearTimeout(pkNudgeTimer); pkNudgeTimer = setTimeout(() => { el.hidden = true; }, 3500);
+});
 
 // Tastatur am Handy: Die Aktionsleiste mit Eingabefeld und „Senden“ bleibt über der Tastatur sichtbar.
 // visualViewport meldet, wie viel Platz wirklich da ist (Android/iOS legen die Tastatur oft nur über die Seite).
@@ -47,7 +70,10 @@ function pkForm({ kind, label, placeholder = '', value = '', max = 120, inputmod
 })();
 
 function partyGame(def) {
-  const T = { unit: 'Frage', write: 'Schreiben', vote: 'Abstimmen', waitWrite: 'schreibt …', waitVote: 'stimmt ab …', ...def.terms };
+  const T = { unit: 'Frage', write: 'Schreiben', vote: 'Abstimmen', waitWrite: 'schreibt …', waitVote: 'stimmt ab …', step: 'Aufgabe', ...def.terms };
+  PARTY_IDS.add(def.id);
+  const NOUN = def.custom?.noun || 'Frage';
+  const PLURAL = def.custom?.plural || 'Fragen';
   const STAGE = { write: T.write, vote: T.vote, reveal: 'Auflösung' };
   let customDraft = null; // ungespeicherter Text im Feld „Eigene Fragen“
   let focusKey = null;    // für welche Stufe das Eingabefeld schon automatisch den Fokus hatte (nur am Computer)
@@ -63,9 +89,20 @@ function partyGame(def) {
     return `<div class="pk-progress" role="status">
       <b>${esc(T.unit)} ${G.q} von ${G.of}</b>
       <span class="pk-stage">${esc(STAGE[G.stage])}</span>
+      ${G.stage === 'vote' && G.steps > 1 ? `<span class="pk-step">${esc(T.step)} ${G.step} von ${G.steps}</span>` : ''}
       ${counting ? `<span class="pk-done">${done} von ${players.length} fertig</span>` : ''}
       <div class="pk-bar" role="progressbar" aria-label="Fortschritt" aria-valuemin="1" aria-valuemax="${G.of}" aria-valuenow="${G.q}"><i style="width:${Math.round((G.q / G.of) * 100)}%"></i></div>
     </div>`;
+  };
+
+  // Anstupsen (Hausregel „nudge“, Server schickt S.settings.nudge): wer fertig ist, kann Trödler antippen
+  const nudgeRow = (S) => {
+    if (!S.settings?.nudge || S.g.stage === 'reveal') return '';
+    const me = S.players.find((p) => p.id === S.you?.id);
+    if (!me?.inRound || !me.ready) return '';
+    const slow = S.players.filter((p) => p.inRound && !p.ready && p.id !== me.id);
+    if (!slow.length) return '';
+    return `<div class="pk-nudges" role="group" aria-label="Trödler anstupsen"><span>Noch nicht fertig:</span>${slow.map((p) => `<button type="button" class="pk-nudge-btn" data-g="pk-nudge" data-id="${esc(p.id)}" aria-label="${esc(p.name)} anstupsen"><span aria-hidden="true">👉</span> ${esc(p.name)}</button>`).join('')}</div>`;
   };
 
   // Ende der Partie: Rangliste mit den Punkten dieser Partie
@@ -103,7 +140,7 @@ function partyGame(def) {
     },
     main(S) {
       if (!inGame(S)) return finalHTML(S);
-      return `<div class="kg-table pk-table">${progress(S)}${def.question(S)}${S.g.stage === 'reveal' ? def.reveal(S) : def.board?.(S) || ''}</div>`;
+      return `<div class="kg-table pk-table">${progress(S)}${nudgeRow(S)}${def.question(S)}${S.g.stage === 'reveal' ? def.reveal(S) : def.board?.(S) || ''}</div>`;
     },
     dock(S) { return inGame(S) ? stageDock(S) : ''; },
     // Zuschauer dürfen mitmachen, wenn der Host es erlaubt hat (Server sendet canAnswer)
@@ -120,7 +157,7 @@ function partyGame(def) {
     },
     afterRender(S) {
       // Am Computer gleich ins Eingabefeld; am Handy nicht (die Tastatur würde die Frage verdecken)
-      const key = inGame(S) ? `${S.roundNo}:${S.g.q}:${S.g.stage}:${S.g.sub}` : null;
+      const key = inGame(S) ? `${S.roundNo}:${S.g.q}:${S.g.stage}:${S.g.sub}:${def.focusKey?.(S) ?? ''}` : null;
       if (key && key !== focusKey && matchMedia('(pointer: fine)').matches && !$('#dlg')?.open && !document.activeElement?.closest?.('#kg-panel')) {
         const input = $('#kg-dock .pk-input');
         if (input) { focusKey = key; input.focus({ preventScroll: true }); }
@@ -131,12 +168,12 @@ function partyGame(def) {
       if (!def.custom) return '';
       const off = S.phase === 'playing';
       const saved = S.custom || [];
-      return `<section class="pk-custom" aria-label="Eigene Fragen"><h3>Eigene Fragen für diesen Abend</h3>
+      return `<section class="pk-custom" aria-label="Eigene ${esc(PLURAL)}"><h3>${esc(def.custom.title || 'Eigene Fragen für diesen Abend')}</h3>
         <p class="hint" style="margin:0">${def.custom.help}</p>
-        <label class="field"><span class="sr-only">Eigene Fragen, eine pro Zeile</span>
+        <label class="field"><span class="sr-only">Eigene ${esc(PLURAL)}, eine pro Zeile</span>
           <textarea id="pk-custom" class="pk-text" rows="6" maxlength="20000" placeholder="${esc(def.custom.example)}" ${off ? 'disabled' : ''}>${esc(customDraft ?? saved.join('\n'))}</textarea></label>
-        <button type="button" class="btn" data-g="pk-save" ${off ? 'disabled' : ''}>Fragen speichern</button>
-        <p class="hint" style="margin:0">${saved.length ? `${saved.length} eigene Frage${saved.length === 1 ? '' : 'n'} gespeichert` : 'Noch keine eigenen Fragen'} – sie gelten nur in diesem Raum${off ? ' und lassen sich zwischen den Partien ändern' : ''}.</p></section>`;
+        <button type="button" class="btn" data-g="pk-save" ${off ? 'disabled' : ''}>${esc(PLURAL)} speichern</button>
+        <p class="hint" style="margin:0">${saved.length ? `${saved.length} ${saved.length === 1 ? `eigene ${NOUN}` : `eigene ${PLURAL}`} gespeichert` : `Noch keine eigenen ${PLURAL}`} – sie gelten nur in diesem Raum${off ? ' und lassen sich zwischen den Partien ändern' : ''}.</p></section>`;
     },
     async onClick(el, S, e) {
       const g = el.dataset.g;
@@ -144,8 +181,9 @@ function partyGame(def) {
       else if (g === 'pk-save') {
         const text = $('#pk-custom')?.value ?? '';
         const r = await send('custom', { text });
-        if (r?.ok) { customDraft = null; toast(r.count ? `${r.count} Frage${r.count === 1 ? '' : 'n'} gespeichert${r.skipped ? ` – ${r.skipped} Zeile${r.skipped === 1 ? '' : 'n'} nicht lesbar` : ''}` : 'Eigene Fragen entfernt'); kit.render(); }
-      } else def.onClick?.(el, S, e);
+        if (r?.ok) { customDraft = null; toast(r.count ? `${r.count} ${r.count === 1 ? NOUN : PLURAL} gespeichert${r.skipped ? ` – ${r.skipped} Zeile${r.skipped === 1 ? '' : 'n'} nicht lesbar` : ''}` : `Eigene ${PLURAL} entfernt`); kit.render(); }
+      } else if (g === 'pk-nudge') send('nudge', { id: el.dataset.id }).then((r) => r?.ok && toast('Angestupst 👉'));
+      else def.onClick?.(el, S, e);
     },
   });
 

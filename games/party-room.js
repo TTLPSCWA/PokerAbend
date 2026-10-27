@@ -16,10 +16,21 @@
 import { TurnRoom } from '../server/turn-room.js';
 import { cleanText } from '../server/security.js';
 import { shuffle } from '../server/random.js';
+import { DEFAULT_SETTINGS as POKER_DEFAULTS } from './poker/room.js';
 
 export const MAX_ANSWER = 120;      // Zeichen pro Antwort
 export const MAX_CUSTOM = 100;      // eigene Fragen des Hosts pro Raum
 export const MAX_CUSTOM_LEN = 200;  // Zeichen pro eigener Frage
+export const NO_ANSWER = '(keine Antwort)';
+// Anstupsen für Trödler: dieselben Sprüche wie beim Poker (ohne die Kartenwitze)
+const NUDGE_LINES = POKER_DEFAULTS.nudgeLines.filter((l) => !/Karten/.test(l));
+const NUDGE_GAP = 10000;          // pro Spieler höchstens einmal so oft anstupsen bzw. angestupst werden
+const AUTO_NUDGE_BEFORE = 15000;  // so lange vor Stufenende stupst das Spiel Trödler selbst an
+// Platzhalter-Antworten für Bots und Tests (keine Fantasie nötig, nur etwas Text)
+export const PLACEHOLDERS = ['Kartoffelsalat', 'Onkel Heinz', 'Ein sprechender Toaster', 'Dienstagabend', 'Gummistiefel', 'Zu viele Socken', 'Die rote Tür', 'Kaffee, aber lauwarm', 'Opa Willi', 'Ein Hamster im Anzug',
+  'Sofa-Olympiade', 'Gurkenwasser', 'Montag', 'Ein Pinguin mit Rucksack', 'Tante Erna', 'Papierflieger', 'Doppelt hält besser', 'Das Fahrrad meiner Nachbarin', 'Käsekuchen', 'Eine sehr lange Schlange',
+  'Regenschirm im Keller', 'Schlaf', 'Ein Wellensittich namens Bernd', 'Taschenrechner', 'Nudeln mit Ketchup', 'Mamas Rezept', 'Der Mond', 'Ein Kissen aus Stein', 'Heute Nacht', 'Waschbär',
+  'Gartenzwerg', 'Ein Sack Flöhe', 'Bärenmarke', 'Zitronenfalter', 'Eine Runde Mau-Mau', 'Pantoffeln', 'Der Wecker', 'Brezel', 'Ein Haufen Wäsche', 'Opas Hut'];
 export const REVEAL_SECS = 15;      // so lange bleibt die Auflösung stehen, wenn der Host nicht „Weiter“ tippt
 // Antworten: Steuerzeichen und unsichtbare Tricks raus, höchstens 120 Zeichen. Ausgegeben wird immer als Text, nie als HTML.
 export const cleanAnswer = (text) => cleanText(text, MAX_ANSWER);
@@ -61,8 +72,9 @@ export class PartyRoom extends TurnRoom {
   isReady() { return false; }
   stageView() { return {}; }
   fallback() {}
+  revealTime() { return this.revealSecs; } // Haken: Spiele mit langer Auflösung geben mehr Zeit
   stageSecs(stage) {
-    if (stage === 'reveal') return this.revealSecs;
+    if (stage === 'reveal') return this.revealTime();
     return Number(stage === 'write' ? this.settings.writeSecs : this.settings.voteSecs) || 0;
   }
 
@@ -86,8 +98,9 @@ export class PartyRoom extends TurnRoom {
     this.q = 0;
     this.beginQuestion();
   }
+  pickQuestions(n) { return this.draw(n); }
   // Eigene Fragen zuerst, danach aus dem Katalog – ohne Wiederholung, bis alles einmal dran war
-  pickQuestions(n) {
+  draw(n) {
     const own = shuffle([...this.custom]).slice(0, n);
     const picks = [...own];
     if (!this.customOnly() && picks.length < n) {
@@ -168,12 +181,17 @@ export class PartyRoom extends TurnRoom {
   syncTimer() {
     const key = this.phase === 'playing' && this.stage ? `${this.roundNo}:${this.q}:${this.stage}:${this.sub}` : null;
     if (key === this.timerKey) return;
-    clearTimeout(this.turnTimer);
-    this.turnTimer = null; this.deadline = null; this.timerKey = key;
+    clearTimeout(this.turnTimer); clearTimeout(this.nudgeTimer);
+    this.turnTimer = null; this.nudgeTimer = null; this.deadline = null; this.timerKey = key;
     if (!key) return;
     const secs = this.stageSecs(this.stage);
     if (!(secs > 0)) return;
     this.deadline = Date.now() + secs * 1000;
+    clearTimeout(this.nudgeTimer); this.nudgeTimer = null;
+    if (this.settings.nudge && this.stage !== 'reveal' && secs * 1000 > AUTO_NUDGE_BEFORE + 5000) {
+      this.nudgeTimer = setTimeout(() => { if (this.timerKey === key) this.autoNudge(); }, secs * 1000 - AUTO_NUDGE_BEFORE);
+      this.nudgeTimer.unref?.();
+    }
     this.turnTimer = setTimeout(() => {
       this.turnTimer = null;
       if (this.timerKey !== key) return;
@@ -185,7 +203,34 @@ export class PartyRoom extends TurnRoom {
   }
   onTimeout(id) { this.fallback(id); }
 
-  lobbyStatus() { return this.phase === 'playing' && this.total ? `Frage ${this.q + 1}/${this.total}` : super.lobbyStatus(); }
+  // ---------- Anstupsen (Hausregel „nudge“, nur Spiele, die sie als Option führen) ----------
+  nudge(fromId, targetId) {
+    if (!this.settings.nudge) throw new Error('Anstupsen ist an diesem Tisch aus');
+    if (this.phase !== 'playing' || !this.stage || this.stage === 'reveal') throw new Error('Gerade gibt es niemanden anzustupsen');
+    const from = this.players.get(fromId), target = this.players.get(targetId);
+    if (!from || !target || fromId === targetId) throw new Error('Das geht nicht');
+    if (!this.order.includes(fromId) || !this.order.includes(targetId)) throw new Error('Nur Mitspieler können anstupsen');
+    if (!this.isReady(fromId)) throw new Error('Erst selbst fertig werden, dann anstupsen');
+    const now = Date.now();
+    if (now - (from.nudgeSentAt || 0) < NUDGE_GAP) throw new Error('Nicht so schnell – höchstens alle 10 Sekunden');
+    if (!this.waiting(this.stage).includes(targetId)) return; // wer nichts mehr zu tun hat (z. B. Autor in der Abstimmung): nichts senden, nichts verraten
+    if (!this.sendNudge(target, from.name)) throw new Error(`${target.name} wurde gerade erst angestupst`);
+    from.nudgeSentAt = now;
+    this.say(`${from.name} stupst ${target.name} an`, 'react');
+  }
+  sendNudge(target, fromName) {
+    const now = Date.now();
+    if (now - (target.nudgedAt || 0) < NUDGE_GAP) return false;
+    target.nudgedAt = now;
+    this.onChange('nudge', { to: target.id, from: fromName, text: NUDGE_LINES[Math.floor(Math.random() * NUDGE_LINES.length)] });
+    return true;
+  }
+  autoNudge() {
+    if (this.phase !== 'playing' || !this.stage || this.stage === 'reveal') return;
+    for (const id of this.waiting(this.stage)) { const p = this.players.get(id); if (p && !p.bot && p.connected) this.sendNudge(p, null); }
+  }
+
+  lobbyStatus() { return this.phase === 'playing' && this.total ? `${this.unit || 'Frage'} ${this.q + 1}/${this.total}` : super.lobbyStatus(); }
 
   // ---------- Bots ----------
   // Der Bot, der als Nächstes etwas abgeben muss (nextBot in server/bots.js fragt das für alle Partyspiele)
@@ -232,11 +277,12 @@ export class PartyRoom extends TurnRoom {
     return v;
   }
 
-  dispose() { super.dispose(); }
+  dispose() { super.dispose(); clearTimeout(this.nudgeTimer); this.nudgeTimer = null; }
 }
 
 // Ereignisse, die alle Partyspiele zusätzlich verstehen
 export const partyEvents = {
   next: (room, p) => room.next(p.id),
+  nudge: (room, p, { id }) => room.nudge(p.id, String(id ?? '').slice(0, 40)),
   custom: (room, p, { text }) => room.setCustom(p.id, typeof text === 'string' ? text.slice(0, 40000) : ''),
 };

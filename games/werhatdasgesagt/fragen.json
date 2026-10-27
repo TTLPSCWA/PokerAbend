@@ -1,0 +1,450 @@
+[
+ {
+  "id": "f001",
+  "q": "Was war dein erstes Handy?"
+ },
+ {
+  "id": "f002",
+  "q": "Was würdest du mit 1 Mio. € als Erstes kaufen?"
+ },
+ {
+  "id": "f003",
+  "q": "Welches Tier wärst du gern für einen Tag?"
+ },
+ {
+  "id": "f004",
+  "q": "Was war dein Lieblingsessen als Kind?"
+ },
+ {
+  "id": "f005",
+  "q": "Welche Serie hast du zuletzt am Stück geschaut?"
+ },
+ {
+  "id": "f006",
+  "q": "Wie sieht dein perfektes Frühstück aus?"
+ },
+ {
+  "id": "f007",
+  "q": "Welches Lied singst du heimlich mit?"
+ },
+ {
+  "id": "f008",
+  "q": "Was war dein Lieblingsfilm als Kind?"
+ },
+ {
+  "id": "f009",
+  "q": "Was war dein erstes Fahrrad oder Auto?"
+ },
+ {
+  "id": "f010",
+  "q": "Welchen Beruf wolltest du als Kind werden?"
+ },
+ {
+  "id": "f011",
+  "q": "Welche Superkraft hättest du gern?"
+ },
+ {
+  "id": "f012",
+  "q": "Wohin würdest du morgen reisen, wenn alles möglich wäre?"
+ },
+ {
+  "id": "f013",
+  "q": "Was ist deine Lieblingsjahreszeit?"
+ },
+ {
+  "id": "f014",
+  "q": "Welche Pizza bestellst du am liebsten?"
+ },
+ {
+  "id": "f015",
+  "q": "Was machst du an einem freien Sonntag am liebsten?"
+ },
+ {
+  "id": "f016",
+  "q": "Welches Brettspiel magst du am meisten?"
+ },
+ {
+  "id": "f017",
+  "q": "Welches Schulfach mochtest du am wenigsten?"
+ },
+ {
+  "id": "f018",
+  "q": "Welches Schulfach mochtest du am meisten?"
+ },
+ {
+  "id": "f019",
+  "q": "Was hast du als Kind gesammelt?"
+ },
+ {
+  "id": "f020",
+  "q": "Was ist dein Lieblingsgeruch?"
+ },
+ {
+  "id": "f021",
+  "q": "Was ist dein Lieblingswort?"
+ },
+ {
+  "id": "f022",
+  "q": "Welches Instrument würdest du gern spielen können?"
+ },
+ {
+  "id": "f023",
+  "q": "Welcher Film geht bei dir immer auf dem Sofa?"
+ },
+ {
+  "id": "f024",
+  "q": "Welche Eissorte nimmst du fast immer?"
+ },
+ {
+  "id": "f025",
+  "q": "Was isst du, wenn du keine Lust zu kochen hast?"
+ },
+ {
+  "id": "f026",
+  "q": "Mit welcher berühmten Person würdest du gern essen gehen?"
+ },
+ {
+  "id": "f027",
+  "q": "Welches Spielzeug hast du als Kind geliebt?"
+ },
+ {
+  "id": "f028",
+  "q": "Was war dein Lieblingsplatz in der Kindheit?"
+ },
+ {
+  "id": "f029",
+  "q": "Was ist dein Lieblingsfeiertag?"
+ },
+ {
+  "id": "f030",
+  "q": "Strand oder Berge – und warum?"
+ },
+ {
+  "id": "f031",
+  "q": "Was würdest du auf eine einsame Insel mitnehmen?"
+ },
+ {
+  "id": "f032",
+  "q": "Welches Talent hättest du gern?"
+ },
+ {
+  "id": "f033",
+  "q": "Welche Sprache würdest du gern fließend sprechen?"
+ },
+ {
+  "id": "f034",
+  "q": "Was ist dein Lieblingsgetränk am Abend?"
+ },
+ {
+  "id": "f035",
+  "q": "Was nervt dich im Straßenverkehr am meisten?"
+ },
+ {
+  "id": "f036",
+  "q": "Was ist dein liebster Snack beim Filmabend?"
+ },
+ {
+  "id": "f037",
+  "q": "Welches Videospiel hast du am längsten gespielt?"
+ },
+ {
+  "id": "f038",
+  "q": "Welche Frisur hattest du früher?"
+ },
+ {
+  "id": "f039",
+  "q": "Was ist dein Lieblingsort in deiner Stadt?"
+ },
+ {
+  "id": "f040",
+  "q": "Welche App nutzt du am häufigsten?"
+ },
+ {
+  "id": "f041",
+  "q": "Welchen Ohrwurm wirst du nicht los?"
+ },
+ {
+  "id": "f042",
+  "q": "Als was würdest du dich auf einer Party verkleiden?"
+ },
+ {
+  "id": "f043",
+  "q": "Welches Gericht kannst du am besten kochen?"
+ },
+ {
+  "id": "f044",
+  "q": "Was würdest du gern lernen?"
+ },
+ {
+  "id": "f045",
+  "q": "Welches Märchen magst du am liebsten?"
+ },
+ {
+  "id": "f046",
+  "q": "Was ist deine liebste Pizza-Zutat?"
+ },
+ {
+  "id": "f047",
+  "q": "Welches Tier magst du gar nicht?"
+ },
+ {
+  "id": "f048",
+  "q": "Was hast du zuletzt zum ersten Mal gemacht?"
+ },
+ {
+  "id": "f049",
+  "q": "Was ist dein Lieblingsbuch?"
+ },
+ {
+  "id": "f050",
+  "q": "In welche Zeit würdest du gern reisen?"
+ },
+ {
+  "id": "f051",
+  "q": "Was ist dein Lieblingsgeräusch?"
+ },
+ {
+  "id": "f052",
+  "q": "Welchen Spitznamen hattest du als Kind?"
+ },
+ {
+  "id": "f053",
+  "q": "Welches Fortbewegungsmittel magst du am liebsten?"
+ },
+ {
+  "id": "f054",
+  "q": "Was war dein bester Urlaub bisher?"
+ },
+ {
+  "id": "f055",
+  "q": "Was ist dein Lieblingsmöbelstück?"
+ },
+ {
+  "id": "f056",
+  "q": "Was bringst du immer zu einer Party mit?"
+ },
+ {
+  "id": "f057",
+  "q": "Was ist dein Lieblingsspiel auf Partys?"
+ },
+ {
+  "id": "f058",
+  "q": "Welche Süßigkeit aus deiner Kindheit vermisst du?"
+ },
+ {
+  "id": "f059",
+  "q": "Was kaufst du im Supermarkt immer zu viel?"
+ },
+ {
+  "id": "f060",
+  "q": "Was ist dein Lieblingsgetränk im Sommer?"
+ },
+ {
+  "id": "f061",
+  "q": "Auf welches Gadget könntest du nicht mehr verzichten?"
+ },
+ {
+  "id": "f062",
+  "q": "Was ist dein Lieblingswitz?"
+ },
+ {
+  "id": "f063",
+  "q": "Welche Ausrede benutzt du am häufigsten?"
+ },
+ {
+  "id": "f064",
+  "q": "Was würdest du dir wünschen, wenn es nichts kosten würde?"
+ },
+ {
+  "id": "f065",
+  "q": "Welche Märchenfigur wärst du?"
+ },
+ {
+  "id": "f066",
+  "q": "Welchen Film kannst du fast auswendig?"
+ },
+ {
+  "id": "f067",
+  "q": "Wie hieß dein Lieblingskuscheltier?"
+ },
+ {
+  "id": "f068",
+  "q": "Was ist dein Lieblingskuchen?"
+ },
+ {
+  "id": "f069",
+  "q": "Welche Stadt würdest du gern besuchen?"
+ },
+ {
+  "id": "f070",
+  "q": "Was war das erste Konzert, auf dem du warst?"
+ },
+ {
+  "id": "f071",
+  "q": "Welches Wort sagst du zu oft?"
+ },
+ {
+  "id": "f072",
+  "q": "Welchen Superhelden magst du am liebsten?"
+ },
+ {
+  "id": "f073",
+  "q": "Welche Sportart würdest du gern können?"
+ },
+ {
+  "id": "f074",
+  "q": "Was ist dein Lieblingswetter?"
+ },
+ {
+  "id": "f075",
+  "q": "Was machst du an einem Regentag?"
+ },
+ {
+  "id": "f076",
+  "q": "Welcher Wochentag ist dein liebster?"
+ },
+ {
+  "id": "f077",
+  "q": "Welche Eigenschaft ist dir bei Freunden wichtig?"
+ },
+ {
+  "id": "f078",
+  "q": "Was machst du, wenn du dich langweilst?"
+ },
+ {
+  "id": "f079",
+  "q": "Welches Spiel hast du als Kind am liebsten gespielt?"
+ },
+ {
+  "id": "f080",
+  "q": "Welche Pflanze hättest du gern im Garten?"
+ },
+ {
+  "id": "f081",
+  "q": "Was ist dein Lieblingstier im Zoo?"
+ },
+ {
+  "id": "f082",
+  "q": "Was ist dein Lieblingsgemüse?"
+ },
+ {
+  "id": "f083",
+  "q": "Was ist dein Lieblingsobst?"
+ },
+ {
+  "id": "f084",
+  "q": "Wie trinkst du deinen Kaffee oder Tee?"
+ },
+ {
+  "id": "f085",
+  "q": "Was ist dein Lieblingsgeräusch in der Natur?"
+ },
+ {
+  "id": "f086",
+  "q": "Wo schaust du am liebsten Filme?"
+ },
+ {
+  "id": "f087",
+  "q": "Welches Fahrzeug ist dein Traum – Auto, Fahrrad oder etwas ganz anderes?"
+ },
+ {
+  "id": "f088",
+  "q": "Was rufst du, wenn etwas danebengeht?"
+ },
+ {
+  "id": "f089",
+  "q": "Was war dein Lieblingsessen in der Schulkantine?"
+ },
+ {
+  "id": "f090",
+  "q": "Welche Musik hörst du beim Aufräumen?"
+ },
+ {
+  "id": "f091",
+  "q": "Wofür stehst du morgens am liebsten auf?"
+ },
+ {
+  "id": "f092",
+  "q": "Welches Land hat dich am meisten überrascht?"
+ },
+ {
+  "id": "f093",
+  "q": "Welche Mahlzeit könntest du jeden Tag essen?"
+ },
+ {
+  "id": "f094",
+  "q": "Wo liest du am liebsten?"
+ },
+ {
+  "id": "f095",
+  "q": "Welches Hobby würdest du gern ausprobieren?"
+ },
+ {
+  "id": "f096",
+  "q": "Wie sieht dein perfekter Samstagabend aus?"
+ },
+ {
+  "id": "f097",
+  "q": "Welches Wort beschreibt dich am besten?"
+ },
+ {
+  "id": "f098",
+  "q": "Was ist dein liebstes Kartenspiel?"
+ },
+ {
+  "id": "f099",
+  "q": "Welche Zeichentrickserie hast du als Kind geliebt?"
+ },
+ {
+  "id": "f100",
+  "q": "Was ist das Verrückteste, das du je gegessen hast?"
+ },
+ {
+  "id": "f101",
+  "q": "Worüber hast du dich zuletzt über ein Geschenk gefreut?"
+ },
+ {
+  "id": "f102",
+  "q": "Was ist dein Lieblingsmonat?"
+ },
+ {
+  "id": "f103",
+  "q": "Welches Kleidungsstück trägst du am liebsten?"
+ },
+ {
+  "id": "f104",
+  "q": "Was ist dein Lieblingsplatz im Haus?"
+ },
+ {
+  "id": "f105",
+  "q": "Welche Zahl ist deine Glückszahl?"
+ },
+ {
+  "id": "f106",
+  "q": "Welches Tier würdest du gern als Haustier haben?"
+ },
+ {
+  "id": "f107",
+  "q": "Was war dein Lieblingslied als Teenager?"
+ },
+ {
+  "id": "f108",
+  "q": "Was ist dein liebstes Frühstücksgetränk?"
+ },
+ {
+  "id": "f109",
+  "q": "Welches Tier wärst du im Wald?"
+ },
+ {
+  "id": "f110",
+  "q": "Was würdest du in einem Freizeitpark zuerst ausprobieren?"
+ },
+ {
+  "id": "f111",
+  "q": "Welches Dessert bestellst du immer?"
+ },
+ {
+  "id": "f112",
+  "q": "Was war dein Lieblingsfach im Sport?"
+ }
+]

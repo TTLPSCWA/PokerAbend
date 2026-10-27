@@ -376,5 +376,7 @@ function muehle(room, id, rng) {
 
 // Schätzmeister: richtige Antwort mit Zufallsfaktor (siehe Room.botGuess); Partyspiele geben ihre Antworten gleichzeitig ab
 function schaetzmeister(room, id, rng) { return room.guess(id, room.botGuess(rng)); }
+// Schlagfertig, Wer hat das gesagt?: Platzhalter-Antworten schreiben und zufällig abstimmen/raten (siehe botStep im Raum)
+const partyBot = (room, id, rng) => room.botStep(id, rng);
 
-export const BOTS = { poker, maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, schiffe, blackjack, kniffel, viergewinnt, shutthebox, zehntausend, muehle, schaetzmeister };
+export const BOTS = { poker, maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, schiffe, blackjack, kniffel, viergewinnt, shutthebox, zehntausend, muehle, schaetzmeister, schlagfertig: partyBot, werhatdasgesagt: partyBot };

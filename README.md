@@ -104,6 +104,8 @@ Die Startseite ist ein Hub mit Navigation per URL-Hash (Zurück-Taste und Links 
 | Zehntausend | 2–8 | Sechs Würfel, punktende Würfel herauslegen, weiterwürfeln oder sichern. Niete = Zug weg. Einstieg 350, wer das Ziel erreicht, löst die letzte Runde aus |
 | Mühle | 2 (+ Zuschauer) | Je 9 Steine setzen, ziehen, mit 3 Steinen springen. Mühle nimmt einen Stein, mit 2 Steinen oder ohne Zug verloren. Unentschieden nach 50 Zügen ohne Schlagen oder dreifacher Wiederholung |
 | Schätzmeister (Party Spiele) | 2–12 | Schätzfrage mit Zahl als Antwort, alle schätzen gleichzeitig. Danach Zahlenstrahl und richtige Antwort: am nächsten dran 3 Punkte, Zweiter 2, Dritter 1, genau richtig +2. Über 100 Fragen mit Quelle, eigene Fragen des Hosts möglich |
+| Schlagfertig (Party Spiele) | 3–8 | Jede Runde 2 lustige Aufgaben je Spieler, jede Aufgabe an genau 2 Spieler. Beide Antworten stehen ohne Namen nebeneinander, die anderen stimmen ab: Stimme = 100 Punkte, alle Stimmen für eine Antwort = Volltreffer +200. Letzte Runde: Finale mit einer Aufgabe für alle und 3 Stimmen. 182 Aufgaben, eigene möglich |
+| Wer hat das gesagt? (Party Spiele) | 3–10 | Eine lockere, persönliche Frage pro Runde, alle antworten anonym. Dann wird jede Antwort einzeln gezeigt und der Autor in der Spielerliste getippt: richtig +100, der Autor +50 je Fehltipp. 112 Fragen, eigene möglich (auch „nur eigene Fragen“) |
 | Schiffe versenken | 2 (+ Zuschauer) | Zwei Meere 10 × 10, Flotte setzen (nicht berühren), abwechselnd schießen: Wasser, Treffer, versenkt. Zeit pro Schuss. Die gegnerischen Schiffe sieht man erst nach Spielende |
 
 Die Startseite ist ein Hub (siehe „Startseite“ weiter unten). Die Kategorie (`karten`, `wuerfel`, `brett`, `party`), Spielerzahl, Dauer und das Spielbild legt jedes Spiel in seinem `games/<spiel>/index.js` fest.
@@ -137,6 +139,8 @@ Gehen bei Skip-Bo während der Runde die Nachziehkarten aus, darf ein Spieler oh
 | Kniffel | Extra-Kniffel-Bonus: jeder weitere Kniffel +50 (aus)<br>Joker-Regel bei weiterem Kniffel (aus) |
 | Shut the Box | Runden (5)<br>Klappen 1–12 statt 1–9 (aus)<br>Ein-Würfel-Regel, wenn 7 bis zur höchsten Klappe zu sind (an)<br>Wertung: Ziffern hintereinander statt Summe (aus)<br>Zeit pro Zug in Sekunden, 0 = ohne (60) |
 | Schätzmeister | Anzahl Runden (10)<br>Zeit zum Antworten in Sekunden (30)<br>Punkte-Ziel, 0 = aus (0)<br>Zuschauer dürfen mitmachen (aus)<br>Wertung nach Abweichung in Prozent (aus) |
+| Schlagfertig | Anzahl Runden, die letzte ist das Finale (3)<br>Zeit zum Schreiben in Sekunden (60)<br>Zeit zum Abstimmen in Sekunden (30)<br>Punkte-Ziel, 0 = aus (0)<br>Zuschauer dürfen mitmachen (aus)<br>Anstupsen für Trödler mit Sprüchen (an) |
+| Wer hat das gesagt? | Anzahl Runden (5)<br>Zeit zum Schreiben in Sekunden (60)<br>Zeit zum Raten in Sekunden (30)<br>Punkte-Ziel, 0 = aus (0)<br>Zuschauer dürfen mitmachen (aus)<br>Nur Fragen aus der eigenen Liste des Hosts (aus) |
 | Vier gewinnt | Zeit pro Zug in Sekunden, 0 = ohne (60) |
 | Zehntausend | Zielpunktzahl (10000)<br>Einstieg ab Punkten, 0 = ohne (350)<br>Straße nur 1.500 statt 2.000 (aus)<br>Drei Paare zählen 1.500 (an)<br>Letzte Runde für die anderen (an)<br>Zeit pro Zug in Sekunden, 0 = ohne (60) |
 | Mühle | Springen mit 3 Steinen (an)<br>Unentschieden nach Zügen ohne Schlagen, 0 = aus (50)<br>Zeit pro Zug in Sekunden, 0 = ohne (60) |
@@ -275,7 +279,7 @@ test/              node:test – Engine inkl. 100.000 Zufallshänden, Räume, Se
 
 Jede Testdatei mit eigenem Server hat einen eigenen Portbereich, weil `npm test` die Dateien parallel ausführt: `server` 4000–4049, `security` 4050–4099, `sebastian` 4100–4149, `away` 4150–4199, `codes` 4200–4249, `history` 4250–4299, `platform` 4300–4349. Neue Dateien bekommen den nächsten freien Fünfziger-Block.
 
-## Partyspiele (Schätzmeister, später Schlagfertig und Wer hat das gesagt?)
+## Partyspiele (Schätzmeister, Schlagfertig, Wer hat das gesagt?)
 
 Alle antworten gleichzeitig; pro Frage läuft eine Folge von Stufen mit eigener Uhr. Das Spiel erweitert `PartyRoom` aus `games/party-room.js` (statt `TurnRoom`) und füllt `flow`, `catalog`, `parseCustom`, `startQuestion`, `waiting`, `closeStage`, `enter`, `isReady`, `stageView` und `fallback` (Kopfkommentar der Datei). Fragen liegen als JSON im Spielordner. Der Browser-Teil ruft `partyGame({ … })` aus `public/games/party-kit.js` auf. Regeln, die für alle gelten:
 
@@ -283,6 +287,9 @@ Alle antworten gleichzeitig; pro Frage läuft eine Folge von Stufen mit eigener 
 - **Texte:** Eingaben laufen durch `cleanAnswer` (Steuerzeichen raus, höchstens 120 Zeichen) und werden im Browser nur mit `esc()` ausgegeben.
 - **Bots:** Ein Spiel liefert in `games/bots.js` einen Bot; `PartyRoom.botDue()` sagt dem Bot-Läufer, wer als Nächstes abgeben muss.
 - **Eigene Fragen:** Der Host trägt sie im Host-Menü ein (eine pro Zeile); sie gelten nur in diesem Raum und stehen nur zwischen den Partien in seiner Ansicht.
+- **Mehrere Abstimm-Schritte:** Ein Spiel kann in einer Stufe mehrere Schritte haben (`moreSteps`, z. B. eine Abstimmung pro Aufgabe); die Uhr startet pro Schritt neu. Die Ansicht darf die Basisfelder `q`, `of`, `stage`, `sub` nicht überschreiben (ein Test prüft das) – Texte der Frage heißen `prompt`.
+- **Anstupsen:** Spiele, die die Option `nudge` führen (Schlagfertig), stupsen Trödler 15 Sekunden vor Stufenende selbst an; wer fertig ist, kann andere anstupsen (höchstens alle 10 Sekunden, Sprüche wie beim Poker). Wer in der Abstimmung Autor ist, bleibt dabei unverraten.
+- **Bots:** Platzhalter-Antworten und zufällige Stimmen über `botStep` im Raum (`games/bots.js`).
 
 ## Ein neues Spiel hinzufügen
 

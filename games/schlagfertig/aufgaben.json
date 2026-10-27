@@ -1,0 +1,730 @@
+[
+ {
+  "id": "a001",
+  "q": "Der schlechteste Name für ein Haustier: ___"
+ },
+ {
+  "id": "a002",
+  "q": "Der schlechteste Name für ein Restaurant: ___"
+ },
+ {
+  "id": "a003",
+  "q": "Ein schlechter Name für ein Kreuzfahrtschiff: ___"
+ },
+ {
+  "id": "a004",
+  "q": "Der schlechteste Name für einen Superhelden: ___"
+ },
+ {
+  "id": "a005",
+  "q": "Ein passender Name für eine Katzenband: ___"
+ },
+ {
+  "id": "a006",
+  "q": "Ein ungeeigneter Name für eine Bäckerei: ___"
+ },
+ {
+  "id": "a007",
+  "q": "Ein Name für ein Parfüm, das nach Kaffee riecht: ___"
+ },
+ {
+  "id": "a008",
+  "q": "Ein Titel für die Autobiografie meines Kühlschranks: ___"
+ },
+ {
+  "id": "a009",
+  "q": "Der Titel eines Films, den niemand sehen will: ___"
+ },
+ {
+  "id": "a010",
+  "q": "Der Titel eines Liebesliedes über einen Toaster: ___"
+ },
+ {
+  "id": "a011",
+  "q": "Der Titel eines Lieds über einen Wäscheständer: ___"
+ },
+ {
+  "id": "a012",
+  "q": "Ein Name für eine Schule für Zauberer, die nur schlechte Tricks können: ___"
+ },
+ {
+  "id": "a013",
+  "q": "Ein Name für ein Fitnessstudio für Faultiere: ___"
+ },
+ {
+  "id": "a014",
+  "q": "Ein passender Name für einen Papagei mit schlechter Laune: ___"
+ },
+ {
+  "id": "a015",
+  "q": "Ein Name für ein Eis mit Spinat-Geschmack: ___"
+ },
+ {
+  "id": "a016",
+  "q": "Der schlechteste Name für ein Baby-Nilpferd: ___"
+ },
+ {
+  "id": "a017",
+  "q": "Der schlechteste Name für ein Pferd: ___"
+ },
+ {
+  "id": "a018",
+  "q": "Der schlechteste Name für einen Fisch: ___"
+ },
+ {
+  "id": "a019",
+  "q": "Die schlechteste Ausrede, zu spät zu kommen: ___"
+ },
+ {
+  "id": "a020",
+  "q": "Die schlechteste Ausrede für nicht gemachte Hausaufgaben: ___"
+ },
+ {
+  "id": "a021",
+  "q": "Die schlechteste Ausrede, ein Treffen abzusagen: ___"
+ },
+ {
+  "id": "a022",
+  "q": "Eine Ausrede, warum der Kuchen schon weg ist: ___"
+ },
+ {
+  "id": "a023",
+  "q": "Die schlechteste Ausrede, warum der Abwasch noch nicht gemacht ist: ___"
+ },
+ {
+  "id": "a024",
+  "q": "Was man dem Chef sagt, wenn man verschlafen hat: ___"
+ },
+ {
+  "id": "a025",
+  "q": "Eine Ausrede, warum man leider nicht tanzen kann: ___"
+ },
+ {
+  "id": "a026",
+  "q": "Das Letzte, was man im Vorstellungsgespräch sagen sollte: ___"
+ },
+ {
+  "id": "a027",
+  "q": "Eine unpassende Antwort auf „Wo sehen Sie sich in fünf Jahren?“: ___"
+ },
+ {
+  "id": "a028",
+  "q": "Eine Stärke, die man im Lebenslauf lieber nicht angeben sollte: ___"
+ },
+ {
+  "id": "a029",
+  "q": "Der schlechteste Spruch auf einer Betriebsfeier: ___"
+ },
+ {
+  "id": "a030",
+  "q": "Ein Satz, den im Büro niemand hören will: ___"
+ },
+ {
+  "id": "a031",
+  "q": "Die schlechteste Eröffnung für eine Präsentation: ___"
+ },
+ {
+  "id": "a032",
+  "q": "Ein ehrlicher Name für den Pausenraum: ___"
+ },
+ {
+  "id": "a033",
+  "q": "Eine ungewöhnliche Superkraft: ___"
+ },
+ {
+  "id": "a034",
+  "q": "Die nutzloseste Superkraft: ___"
+ },
+ {
+  "id": "a035",
+  "q": "Die unnötigste Erfindung aller Zeiten: ___"
+ },
+ {
+  "id": "a036",
+  "q": "Eine Erfindung, die das Leben von Katzen verbessert: ___"
+ },
+ {
+  "id": "a037",
+  "q": "Eine Erfindung, die Montage erträglicher macht: ___"
+ },
+ {
+  "id": "a038",
+  "q": "Ein Gadget, das keiner braucht, aber alle wollen: ___"
+ },
+ {
+  "id": "a039",
+  "q": "Ein Haushaltsgerät, das es noch nicht gibt: ___"
+ },
+ {
+  "id": "a040",
+  "q": "Eine App, die garantiert niemand herunterlädt: ___"
+ },
+ {
+  "id": "a041",
+  "q": "Eine App, die dir morgens sagt, was du anziehen sollst – ihr Name: ___"
+ },
+ {
+  "id": "a042",
+  "q": "Eine Funktion, die jedes Auto haben sollte: ___"
+ },
+ {
+  "id": "a043",
+  "q": "Eine Regel, die in jedem Büro gelten sollte: ___"
+ },
+ {
+  "id": "a044",
+  "q": "Ein Feiertag, der noch fehlt: ___"
+ },
+ {
+  "id": "a045",
+  "q": "Eine neue olympische Disziplin: ___"
+ },
+ {
+  "id": "a046",
+  "q": "Ein neues Schulfach, das alle lieben würden: ___"
+ },
+ {
+  "id": "a047",
+  "q": "Eine neue Sportart für Faule: ___"
+ },
+ {
+  "id": "a048",
+  "q": "Der schlechteste Werbeslogan für Zahnpasta: ___"
+ },
+ {
+  "id": "a049",
+  "q": "Ein Werbeslogan für ein Hotel, das niemand buchen will: ___"
+ },
+ {
+  "id": "a050",
+  "q": "Ein Werbeslogan für Gurkenwasser: ___"
+ },
+ {
+  "id": "a051",
+  "q": "Ein Werbespruch für einen Regenschirm mit Loch: ___"
+ },
+ {
+  "id": "a052",
+  "q": "Der Slogan einer Fluggesellschaft, bei der alles schiefgeht: ___"
+ },
+ {
+  "id": "a053",
+  "q": "Ein Slogan für einen Wecker, der nie klingelt: ___"
+ },
+ {
+  "id": "a054",
+  "q": "Ein Slogan für den langsamsten Lieferdienst der Welt: ___"
+ },
+ {
+  "id": "a055",
+  "q": "Ein Slogan für Socken, die nie zusammenpassen: ___"
+ },
+ {
+  "id": "a056",
+  "q": "Ein Spruch für ein T-Shirt, das man nur zu Hause trägt: ___"
+ },
+ {
+  "id": "a057",
+  "q": "Ein Spruch auf einer Kaffeetasse im Büro: ___"
+ },
+ {
+  "id": "a058",
+  "q": "Was der Hund wirklich denkt, wenn er dich ansieht: ___"
+ },
+ {
+  "id": "a059",
+  "q": "Was die Katze nachts wirklich macht: ___"
+ },
+ {
+  "id": "a060",
+  "q": "Was der Kühlschrank um 3 Uhr nachts denkt: ___"
+ },
+ {
+  "id": "a061",
+  "q": "Was das Navi gern mal sagen würde: ___"
+ },
+ {
+  "id": "a062",
+  "q": "Was der Wecker morgens eigentlich sagen will: ___"
+ },
+ {
+  "id": "a063",
+  "q": "Das erste Wort eines Papageis, der alles nachspricht: ___"
+ },
+ {
+  "id": "a064",
+  "q": "Was eine Taube den ganzen Tag denkt: ___"
+ },
+ {
+  "id": "a065",
+  "q": "Was ein Schaf denkt, das gezählt wird: ___"
+ },
+ {
+  "id": "a066",
+  "q": "Was der Mond abends zur Sonne sagt: ___"
+ },
+ {
+  "id": "a067",
+  "q": "Ein Satz, den man nie in einem Aufzug sagen sollte: ___"
+ },
+ {
+  "id": "a068",
+  "q": "Der schlechteste erste Satz bei einem Kennenlernen: ___"
+ },
+ {
+  "id": "a069",
+  "q": "Ein Satz, den Eltern im Supermarkt am häufigsten sagen: ___"
+ },
+ {
+  "id": "a070",
+  "q": "Ein Satz, den man im Restaurant lieber nicht hören möchte: ___"
+ },
+ {
+  "id": "a071",
+  "q": "Ein Satz, den man beim Friseur lieber nicht hört: ___"
+ },
+ {
+  "id": "a072",
+  "q": "Ein Satz, den man im Flugzeug lieber nicht hört: ___"
+ },
+ {
+  "id": "a073",
+  "q": "Der schlechteste Satz auf einer Geburtstagsfeier: ___"
+ },
+ {
+  "id": "a074",
+  "q": "Ein Satz, der in jedem Familienurlaub fällt: ___"
+ },
+ {
+  "id": "a075",
+  "q": "Eine Nachricht auf einem Zettel am Kühlschrank in einer WG: ___"
+ },
+ {
+  "id": "a076",
+  "q": "Das schlechteste Geschenk zum Geburtstag: ___"
+ },
+ {
+  "id": "a077",
+  "q": "Das schlechteste Mitbringsel zu einer Party: ___"
+ },
+ {
+  "id": "a078",
+  "q": "Ein Geschenk für jemanden, der schon alles hat: ___"
+ },
+ {
+  "id": "a079",
+  "q": "Das Letzte, was man in den Einkaufswagen legt: ___"
+ },
+ {
+  "id": "a080",
+  "q": "Das Erste, was man bei einem Umzug vergisst: ___"
+ },
+ {
+  "id": "a081",
+  "q": "Das Erste, was ich auf einer einsamen Insel vermissen würde: ___"
+ },
+ {
+  "id": "a082",
+  "q": "Das Letzte, was man auf eine einsame Insel mitnehmen würde: ___"
+ },
+ {
+  "id": "a083",
+  "q": "Ein sinnloser Gegenstand, den jeder im Haus hat: ___"
+ },
+ {
+  "id": "a084",
+  "q": "Etwas, das sich in jeder Schublade findet: ___"
+ },
+ {
+  "id": "a085",
+  "q": "Etwas, das man in jeder Jackentasche findet: ___"
+ },
+ {
+  "id": "a086",
+  "q": "Das merkwürdigste Souvenir aus dem Urlaub: ___"
+ },
+ {
+  "id": "a087",
+  "q": "Das unpassendste Ding im Reisegepäck: ___"
+ },
+ {
+  "id": "a088",
+  "q": "Die merkwürdigste Eissorte: ___"
+ },
+ {
+  "id": "a089",
+  "q": "Die schlechteste Pizza-Zutat: ___"
+ },
+ {
+  "id": "a090",
+  "q": "Ein Gericht, das nur im Dunkeln schmeckt: ___"
+ },
+ {
+  "id": "a091",
+  "q": "Das Gericht, das ich einem Außerirdischen als Erstes servieren würde: ___"
+ },
+ {
+  "id": "a092",
+  "q": "Die schlimmste Kombination aus Essen und Trinken: ___"
+ },
+ {
+  "id": "a093",
+  "q": "Ein Name für ein Gericht aus Resten: ___"
+ },
+ {
+  "id": "a094",
+  "q": "Die Geheimzutat von Omas Suppe: ___"
+ },
+ {
+  "id": "a095",
+  "q": "Der Nachtisch, der alles wieder gutmacht: ___"
+ },
+ {
+  "id": "a096",
+  "q": "Ein Sandwich, das niemand bestellen würde: ___"
+ },
+ {
+  "id": "a097",
+  "q": "Ein neues Tier aus zwei bekannten – wie heißt es? ___"
+ },
+ {
+  "id": "a098",
+  "q": "Was der Hamster im Rad wirklich plant: ___"
+ },
+ {
+  "id": "a099",
+  "q": "Der ideale Beruf für eine Giraffe: ___"
+ },
+ {
+  "id": "a100",
+  "q": "Der ideale Beruf für einen Pinguin: ___"
+ },
+ {
+  "id": "a101",
+  "q": "Die Hobbys eines Faultiers: ___"
+ },
+ {
+  "id": "a102",
+  "q": "Ein guter Rat von Oma, der keiner ist: ___"
+ },
+ {
+  "id": "a103",
+  "q": "Eine Lebensweisheit, die man auf eine Fußmatte sticken könnte: ___"
+ },
+ {
+  "id": "a104",
+  "q": "Ein schlechter Tipp für den ersten Arbeitstag: ___"
+ },
+ {
+  "id": "a105",
+  "q": "Ein schlechter Rat vor einer Prüfung: ___"
+ },
+ {
+  "id": "a106",
+  "q": "Der unnötigste Tipp zum Sparen: ___"
+ },
+ {
+  "id": "a107",
+  "q": "Ein Tipp, wie man morgens besser aus dem Bett kommt: ___"
+ },
+ {
+  "id": "a108",
+  "q": "Ein Motto fürs Wochenende: ___"
+ },
+ {
+  "id": "a109",
+  "q": "Ein Motto für den Montag: ___"
+ },
+ {
+  "id": "a110",
+  "q": "Ein Motto für Faulenzer: ___"
+ },
+ {
+  "id": "a111",
+  "q": "Eine Schlagzeile, die man morgen in der Zeitung lesen möchte: ___"
+ },
+ {
+  "id": "a112",
+  "q": "Eine erfundene Schlagzeile aus dem Tierreich: ___"
+ },
+ {
+  "id": "a113",
+  "q": "Eine seltsame Schlagzeile aus einer Kleinstadt: ___"
+ },
+ {
+  "id": "a114",
+  "q": "Die Nachricht des Tages in Entenhausen: ___"
+ },
+ {
+  "id": "a115",
+  "q": "Eine Bewertung für ein Hotel mit nur einem Stern: ___"
+ },
+ {
+  "id": "a116",
+  "q": "Eine Bewertung für ein Restaurant, die nur aus einem Satz besteht: ___"
+ },
+ {
+  "id": "a117",
+  "q": "Eine Produktbewertung für einen Regenschirm im Sturm: ___"
+ },
+ {
+  "id": "a118",
+  "q": "Eine Wegbeschreibung, der man nicht folgen sollte: ___"
+ },
+ {
+  "id": "a119",
+  "q": "Eine Ansage im Zug, die niemand hören will: ___"
+ },
+ {
+  "id": "a120",
+  "q": "Eine Durchsage im Supermarkt: ___"
+ },
+ {
+  "id": "a121",
+  "q": "Eine Ansage vom Piloten kurz vor dem Start: ___"
+ },
+ {
+  "id": "a122",
+  "q": "Ein Hinweisschild, das es geben sollte: ___"
+ },
+ {
+  "id": "a123",
+  "q": "Ein Schild vor einer Wiese: ___"
+ },
+ {
+  "id": "a124",
+  "q": "Ein Warnschild am Kühlschrank: ___"
+ },
+ {
+  "id": "a125",
+  "q": "Die Gebrauchsanweisung für einen Menschen: ___"
+ },
+ {
+  "id": "a126",
+  "q": "Die Bedienungsanleitung für den Montag: ___"
+ },
+ {
+  "id": "a127",
+  "q": "Eine Warnung auf einer Packung Kekse: ___"
+ },
+ {
+  "id": "a128",
+  "q": "Das Kleingedruckte im Vertrag mit dem Weihnachtsmann: ___"
+ },
+ {
+  "id": "a129",
+  "q": "Die Hausordnung im Haus der sieben Zwerge: ___"
+ },
+ {
+  "id": "a130",
+  "q": "Eine Regel im Club der Frühaufsteher: ___"
+ },
+ {
+  "id": "a131",
+  "q": "Eine Regel im Club der Langschläfer: ___"
+ },
+ {
+  "id": "a132",
+  "q": "Eine Regel in der WG von Superhelden: ___"
+ },
+ {
+  "id": "a133",
+  "q": "Die erste Regel im Club der Schnecken: ___"
+ },
+ {
+  "id": "a134",
+  "q": "Der Fehler, den ein Zauberer nie machen sollte: ___"
+ },
+ {
+  "id": "a135",
+  "q": "Ein Zauberspruch, der nur halb funktioniert: ___"
+ },
+ {
+  "id": "a136",
+  "q": "Ein Zauberspruch, um verlorene Socken wiederzufinden: ___"
+ },
+ {
+  "id": "a137",
+  "q": "Ein Rezept für gute Laune: ___"
+ },
+ {
+  "id": "a138",
+  "q": "Ein Rezept für schlechte Laune: ___"
+ },
+ {
+  "id": "a139",
+  "q": "Eine Zutat, die in keinem Zaubertrank fehlen darf: ___"
+ },
+ {
+  "id": "a140",
+  "q": "Der erste Satz in meinem Roman über einen Hamster: ___"
+ },
+ {
+  "id": "a141",
+  "q": "Der schlechteste Anfang für ein Märchen: ___"
+ },
+ {
+  "id": "a142",
+  "q": "Das Ende eines Märchens, das keiner erwartet: ___"
+ },
+ {
+  "id": "a143",
+  "q": "Was die Prinzessin wirklich zum Frosch sagt: ___"
+ },
+ {
+  "id": "a144",
+  "q": "Eine Szene aus dem Alltag eines Gartenzwergs: ___"
+ },
+ {
+  "id": "a145",
+  "q": "Der Tagesablauf einer Wolke: ___"
+ },
+ {
+  "id": "a146",
+  "q": "Der Terminkalender des Weihnachtsmanns im Sommer: ___"
+ },
+ {
+  "id": "a147",
+  "q": "Ein Punkt auf der To-do-Liste eines Superschurken: ___"
+ },
+ {
+  "id": "a148",
+  "q": "Ein Hobby, das man lieber geheim hält: ___"
+ },
+ {
+  "id": "a149",
+  "q": "Ein Talent, das man nur im Schlaf hat: ___"
+ },
+ {
+  "id": "a150",
+  "q": "Ein Talent, das niemand braucht: ___"
+ },
+ {
+  "id": "a151",
+  "q": "Ein Talent, das beim Kennenlernen Eindruck macht: ___"
+ },
+ {
+  "id": "a152",
+  "q": "Der Name eines Tanzes, der nur im Sitzen geht: ___"
+ },
+ {
+  "id": "a153",
+  "q": "Der Name eines neuen Modetanzes: ___"
+ },
+ {
+  "id": "a154",
+  "q": "Ein Name für einen Berg, der eigentlich ein Hügel ist: ___"
+ },
+ {
+  "id": "a155",
+  "q": "Ein Name für eine Wolke, die immer Pech hat: ___"
+ },
+ {
+  "id": "a156",
+  "q": "Ein Name für einen Ort, an dem man nie sein will: ___"
+ },
+ {
+  "id": "a157",
+  "q": "Der Name einer Insel, auf der nur Katzen leben: ___"
+ },
+ {
+  "id": "a158",
+  "q": "Ein Name für einen Fluss, der rückwärts fließt: ___"
+ },
+ {
+  "id": "a159",
+  "q": "Ein Name für ein Land, das nur aus einem Sofa besteht: ___"
+ },
+ {
+  "id": "a160",
+  "q": "Ein Name für einen Planeten voller Pudding: ___"
+ },
+ {
+  "id": "a161",
+  "q": "Ein Name für den Außerirdischen, der bei uns einzieht: ___"
+ },
+ {
+  "id": "a162",
+  "q": "Das Erste, was ein Außerirdischer über uns sagen würde: ___"
+ },
+ {
+  "id": "a163",
+  "q": "Was ein Außerirdischer an unserem Alltag nicht versteht: ___"
+ },
+ {
+  "id": "a164",
+  "q": "Eine Frage, die ein Außerirdischer im Supermarkt stellt: ___"
+ },
+ {
+  "id": "a165",
+  "q": "Das, was ein Zeitreisender als Erstes erklären muss: ___"
+ },
+ {
+  "id": "a166",
+  "q": "Ein Mitbringsel aus der Zukunft: ___"
+ },
+ {
+  "id": "a167",
+  "q": "Eine Erfindung, die im Jahr 3000 ganz normal ist: ___"
+ },
+ {
+  "id": "a168",
+  "q": "Ein Beruf, den es im Jahr 3000 gibt: ___"
+ },
+ {
+  "id": "a169",
+  "q": "Eine Mode, die es hoffentlich nie wieder gibt: ___"
+ },
+ {
+  "id": "a170",
+  "q": "Ein Kleidungsstück, das niemand braucht: ___"
+ },
+ {
+  "id": "a171",
+  "q": "Der schlechteste Name für ein Kleidungsgeschäft: ___"
+ },
+ {
+  "id": "a172",
+  "q": "Ein schwedisch klingender Name für ein Möbelstück: ___"
+ },
+ {
+  "id": "a173",
+  "q": "Ein Name für ein Regal, das ständig umfällt: ___"
+ },
+ {
+  "id": "a174",
+  "q": "Ein Name für den Staubsauger-Roboter: ___"
+ },
+ {
+  "id": "a175",
+  "q": "Ein Name für den Drucker, der nie funktioniert: ___"
+ },
+ {
+  "id": "a176",
+  "q": "Ein Name für das WLAN in einer WG: ___"
+ },
+ {
+  "id": "a177",
+  "q": "Ein Name für den Kaffeeautomaten im Büro: ___"
+ },
+ {
+  "id": "a178",
+  "q": "Ein Name für das Auto, das nicht anspringt: ___"
+ },
+ {
+  "id": "a179",
+  "q": "Ein Name für ein Fahrrad mit platten Reifen: ___"
+ },
+ {
+  "id": "a180",
+  "q": "Der schlechteste Name für eine Zahnarztpraxis – ohne Zahnschmerzen: ___"
+ },
+ {
+  "id": "a181",
+  "q": "Ein Titel für eine Dokumentation über Büroklammern: ___"
+ },
+ {
+  "id": "a182",
+  "q": "Ein Name für ein Café, in dem alles zu langsam geht: ___"
+ }
+]

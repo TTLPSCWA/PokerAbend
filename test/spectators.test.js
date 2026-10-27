@@ -20,6 +20,7 @@ for (const g of Object.values(GAMES)) {
   test(`Zuschauen bei ${g.name}: nichts Verdecktes, Einstieg zur nächsten Runde`, () => {
     const r = g.create('ZUSCH', {}, () => {});
     const [a, b] = ['Anna', 'Ben'].map((n) => { const p = r.addPlayer(n, null); r.sit(p.id); return p.id; });
+    if (r.opts.minPlayers > 2) { const p = r.addPlayer('Cem', null); r.sit(p.id); } // Spiele ab drei Spielern
     const z = r.addPlayer('Zoe', null).id; // schaut nur zu
     r.start(a);
     if (g.id === 'maexchen') r.throwDice(r.currentId); // ein verdeckter Wurf liegt unter dem Becher

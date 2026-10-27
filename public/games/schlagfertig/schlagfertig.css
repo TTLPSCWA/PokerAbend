@@ -1,0 +1,52 @@
+/* Schlagfertig: Aufgabenkarten, Duell mit zwei anonymen Antworten, Finale mit Auswahl, Auflösung mit Namen und Stimmen */
+.kg-schlagfertig .kg-main { background: radial-gradient(120% 90% at 50% 15%, #4A3A7A, #1F1838); }
+.sl-blank { display: inline-block; min-width: 3.2em; margin: 0 .15em; border-bottom: 3px solid var(--gold); transform: translateY(-.1em); }
+
+/* Meine Aufgaben (Schreibphase) */
+.sl-tasks { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; width: 100%; }
+.sl-task { flex: 1 1 220px; max-width: 360px; display: grid; gap: 2px; min-height: 64px; padding: 10px 14px; text-align: left; border-radius: var(--r-m); background: rgba(0,0,0,.3); border: 2px solid rgba(255,255,255,.16); color: var(--text); }
+.sl-task small { color: #D8CFF0; }
+.sl-task span { overflow-wrap: anywhere; }
+.sl-task[aria-pressed='true'] { border-color: var(--gold); background: rgba(201,154,69,.16); }
+
+/* Abstimmung: zwei Antworten nebeneinander (Handy: untereinander), Finale als Raster */
+.sl-answers { display: grid; gap: 12px; width: 100%; }
+.sl-answers.duel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.sl-answers.final { grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); }
+.sl-ans { display: grid; align-content: space-between; gap: 10px; min-height: 120px; padding: 16px; text-align: left; border-radius: var(--r-l); background: var(--paper); color: var(--ink); border: 3px solid transparent; box-shadow: var(--shadow-1); }
+.sl-ans .sl-text { font-size: clamp(18px, 3.6vw, 24px); font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
+.sl-ans small { color: #4A4A42; font-weight: 700; min-height: 1.2em; }
+.sl-ans:not(:disabled):hover { border-color: var(--gold); }
+.sl-ans.on { border-color: var(--gold); box-shadow: 0 0 0 4px rgba(201,154,69,.45), var(--shadow-1); }
+.sl-ans.on small { color: #7A4F00; }
+.sl-ans.mine { background: #E4DEEF; }
+.sl-ans.empty .sl-text { font-style: italic; color: #6A6A60; font-weight: 400; }
+.sl-ans:disabled { cursor: default; opacity: 1; }
+
+/* Auflösung */
+.sl-result { width: 100%; display: grid; gap: 8px; }
+.sl-result h3 { margin: 0; text-align: center; font-size: 17px; color: #E7DFFA; overflow-wrap: anywhere; }
+.sl-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.sl-pair.final { grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); }
+.sl-card { display: grid; align-content: start; gap: 6px; padding: 12px 14px; border-radius: var(--r-l); background: var(--paper); color: var(--ink); animation: sl-in .3s ease both; }
+.sl-card.hit { box-shadow: 0 0 0 4px var(--gold); }
+.sl-card .sl-text { margin: 0; font-size: 19px; font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
+.sl-who { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.sl-who b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sl-card .pk-av { background: rgba(0,0,0,.1); }
+.sl-votes { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 14px; }
+.sl-voters { display: inline-flex; gap: 2px; font-size: 18px; }
+.sl-pts { margin: 0; font-weight: 800; font-size: 20px; color: #7A4F00; }
+.sl-badge { display: inline-block; margin-left: 6px; padding: 2px 10px; border-radius: 999px; background: var(--gold); color: #2A1B08; font-size: 13px; font-weight: 800; }
+.sl-gains { width: min(100%, 460px); display: grid; gap: 8px; }
+.sl-gains h3 { margin: 0; text-align: center; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; color: #E7DFFA; }
+.sl-gains ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.sl-gains li { display: flex; align-items: center; gap: 10px; padding: 7px 12px; border-radius: var(--r-m); background: rgba(0,0,0,.3); }
+.sl-gains li b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@keyframes sl-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+body.calm .sl-card { animation: none; }
+@media (prefers-reduced-motion: reduce) { .sl-card { animation: none; } }
+@media (max-width: 640px) {
+  .sl-answers.duel, .sl-pair { grid-template-columns: minmax(0, 1fr); }
+  .sl-ans { min-height: 96px; padding: 12px 14px; }
+}

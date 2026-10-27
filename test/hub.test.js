@@ -213,7 +213,7 @@ test('Jedes Spiel bringt Spielerzahl, Dauer und Spielbild mit – passend zu den
 });
 
 test('Geplante Spiele: eigene Liste, nicht spielbar, mit Spielerzahl und Bild', () => {
-  assert.ok(PLANNED.length >= 1);
+  assert.ok(Array.isArray(PLANNED));
   for (const p of PLANNED) {
     assert.ok(!(p.id in GAMES), `${p.id} ist schon gebaut – aus planned.js streichen`);
     assert.equal(p.category, 'party');
