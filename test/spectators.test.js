@@ -46,10 +46,11 @@ for (const g of Object.values(GAMES)) {
       assert.throws(() => r.sit(z), /Mehr als 2/);
       r.stand(b);
     }
+    const midRound = r.phase === 'playing'; // eine Runde kann schon beim Geben enden (z. B. 31 bei Schwimmen)
     r.sit(z);
     assert.ok(r.seats.includes(z));
     assert.ok(!r.order.includes(z));
-    if (r.opts.maxPlayers > 2) assert.ok(r.log.some((l) => l.text === 'Zoe spielt ab der nächsten Runde mit'));
+    if (r.opts.maxPlayers > 2) assert.ok(r.log.some((l) => l.text === (midRound ? 'Zoe spielt ab der nächsten Runde mit' : 'Zoe spielt mit')));
     r.phase = 'over'; // Runde vorbei (für den Test abgekürzt)
     r.start(a);
     assert.ok(r.order.includes(z), 'in der nächsten Runde dabei');
