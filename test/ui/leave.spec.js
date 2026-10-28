@@ -9,6 +9,7 @@ async function start(page, app, name = 'Anna') {
         localStorage.setItem('poker:name', JSON.stringify(n));
         localStorage.setItem('poker:avatar', JSON.stringify('🦉'));
         localStorage.setItem('poker:prefs', JSON.stringify({ intros: false }));
+        localStorage.setItem('poker:favs', JSON.stringify(['maumau'])); // die Startseite zeigt nur die ersten sechs Spiele
       }
     } catch { /* egal */ }
   }, name);

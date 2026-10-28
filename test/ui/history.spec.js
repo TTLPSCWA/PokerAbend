@@ -15,11 +15,12 @@ async function start(page, app, name = 'Anna', withProfile = true) {
           localStorage.setItem('poker:name', JSON.stringify(n));
           localStorage.setItem('poker:avatar', JSON.stringify('🦉'));
           localStorage.setItem('poker:prefs', JSON.stringify({ intros: false }));
+          localStorage.setItem('poker:favs', JSON.stringify(['maumau'])); // die Startseite zeigt nur die ersten sechs Spiele
         }
       } catch { /* egal */ }
     }, name);
   } else {
-    await page.addInitScript(() => { try { localStorage.setItem('poker:prefs', JSON.stringify({ intros: false })); } catch { /* egal */ } });
+    await page.addInitScript(() => { try { localStorage.setItem('poker:prefs', JSON.stringify({ intros: false })); localStorage.setItem('poker:favs', JSON.stringify(['maumau'])); } catch { /* egal */ } });
   }
   await page.goto(app.url);
   await page.getByLabel('Passwort').fill(app.password);
