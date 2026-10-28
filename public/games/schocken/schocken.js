@@ -10,6 +10,11 @@
 
   const kit = kitGame({
     id: 'schocken',
+    look(S) {
+      const g = S.g;
+      const ids = Object.keys(g.dice).filter((id) => g.dice[id] && g.dice[id].length);
+      return [{ title: 'Würfel auf dem Tisch', html: ids.length ? `<ul class="look-list">${ids.map((id) => `<li><b>${esc(S.players.find((p) => p.id === id)?.name ?? '?')}</b> <span class="sc-mini">${g.dice[id].map((v) => dieHTML(v, {})).join('')}</span> ${esc(g.judged[id])}${g.done.includes(id) ? ' ✓' : ''}</li>`).join('')}</ul>` : '<p class="hint">Noch hat niemand gewürfelt.</p>' }];
+    },
     name: 'Schocken',
     // Erste Schritte beim ersten Spiel (3 Schritte, abschaltbar unter „Ich“)
     intro: [

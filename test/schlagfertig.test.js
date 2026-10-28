@@ -276,7 +276,9 @@ test('Massentest Schlagfertig: 300 zufällige Partien mit 3–8 Spielern, Lücke
       if (r.stage === 'vote' && r.settings.spectators && rng() < 0.5) { try { r.vote(z, r.isFinal ? [0] : 0); } catch { /* schon vorbei */ } }
       if (`${r.q}:${r.stage}:${r.sub}` === key && (r.stage === 'write' || r.stage === 'vote')) {
         // Niemand sieht fremde Antworten oder Autoren
-        const json = JSON.stringify(r.view(z).g);
+        const { past, ...open } = r.view(z).g; // frühere, schon aufgelöste Fragen sind offen
+        assert.ok((past || []).every((x) => x.q < r.q + 1), 'nur frühere Fragen');
+        const json = JSON.stringify(open);
         assert.ok(!/"author"|"authors"|"voters"/.test(json));
         r.next(ids[0]);
       }

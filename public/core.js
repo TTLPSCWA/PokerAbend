@@ -262,23 +262,125 @@ async function enterGame(r) {
   current.show();
   if (lastState) current.onState(lastState);
 }
+// Gemeinsamer Teil des Host-Menüs „Spiel beenden“: zwei Knöpfe mit eigenen Bestätigungsdialogen
+function endGameHTML(running, noun = 'Runde') {
+  return `<h3>Spiel beenden</h3>
+    <div class="danger-zone">
+      <button class="btn btn-outline-red" data-end="abort" ${running ? '' : 'disabled title="Gerade läuft keine ' + noun + '"'}>Aktive ${noun} abbrechen</button>
+      <p class="hint" style="margin:0">Die ${noun} endet sofort ohne Wertung. Karten, Einsätze und Chips gehen zurück auf den Stand davor.</p>
+      <button class="btn btn-outline-red" data-end="close">Tisch schließen</button>
+      <p class="hint" style="margin:0">Alle landen auf der Startseite, der Tisch und sein Code sind danach weg. Schon eingetragene Ergebnisse bleiben in der Bestenliste.</p>
+    </div>`;
+}
+async function endGameClick(kind, noun = 'Runde') {
+  if (kind === 'abort') {
+    if (await ask({ title: `Aktive ${noun} abbrechen?`, text: `Die ${noun} endet sofort ohne Wertung. Einsätze und Chips gehen zurück, danach wartet der Tisch auf den Start.`, ok: `${noun} abbrechen`, danger: true })) {
+      socket.emit('abortRound', {}, (r) => { if (r && !r.ok) toast(r.error, true); else toast(`${noun} abgebrochen`); });
+    }
+  } else if (kind === 'close') {
+    if (await ask({ title: 'Tisch schließen?', text: 'Alle gehen zur Startseite, der Tisch wird gelöscht und der Code wird frei. Ergebnisse bleiben in der Bestenliste.', ok: 'Tisch schließen', danger: true })) {
+      socket.emit('closeTable', {}, (r) => { if (r && !r.ok) toast(r.error, true); });
+    }
+  }
+}
+// Der Host hat den Tisch geschlossen (oder man selbst): Token vergessen, zur Startseite
+socket.on('closed', (c) => {
+  if (!session) return;
+  const code = session.code;
+  store.set('poker:session:' + code, null);
+  if (store.get('poker:last', null) === code) store.set('poker:last', null);
+  leaveGame();
+  showHub();
+  toast(c?.text || 'Der Tisch wurde geschlossen', true);
+});
 function leaveGame() {
   session = null; lastState = null; parked = false;
   $('#game-root').hidden = true;
 }
+// ---------- „Ansehen“: gemeinsame Ansicht für offene Informationen (Stapel, Züge, Blätter) ----------
+// Zeigt nur, was alle am Tisch ohnehin sehen dürfen. Am Handy als Blatt von unten, am großen Bildschirm mittig.
+// Schließen: Knopf, Klick daneben oder Esc. sections: [{ title, note?, html }] (HTML aus dem Spielcode, Texte von Spielern vorher mit esc())
+function openLook({ title = 'Ansehen', sections = [] }) {
+  let d = $('#look-dlg');
+  if (!d) {
+    d = document.createElement('dialog');
+    d.id = 'look-dlg'; d.className = 'look-dlg'; d.setAttribute('aria-labelledby', 'look-title');
+    d.addEventListener('click', (e) => { if (e.target === d || e.target.closest('[data-look-close]')) d.close(); });
+    document.body.append(d);
+  }
+  d.innerHTML = `<div class="look-grip" aria-hidden="true"></div>
+    <div class="look-head"><h2 id="look-title">${esc(title)}</h2>
+      <button type="button" class="icon-btn" data-look-close aria-label="Schließen">${svg('<path d="M6 6l12 12M18 6L6 18"/>')}</button></div>
+    <div class="look-body">${sections.map((s) => `<section class="look-sec"><h3>${esc(s.title)}</h3>${s.note ? `<p class="hint">${esc(s.note)}</p>` : ''}${s.html}</section>`).join('') || '<p class="hint">Noch nichts zu sehen.</p>'}</div>`;
+  if (!d.open) d.showModal();
+  d.querySelector('[data-look-close]').focus();
+}
+// Fächer: Karten von unten nach oben, die oberste ist hervorgehoben und beschriftet
+function lookFan(cardsHTML, { topLabel = 'oben' } = {}) {
+  if (!cardsHTML.length) return '<p class="hint">leer</p>';
+  return `<div class="look-fan" role="list">${cardsHTML.map((c, i) => `<div class="look-card${i === cardsHTML.length - 1 ? ' top' : ''}" role="listitem">${c}${i === cardsHTML.length - 1 ? `<small>${esc(topLabel)}</small>` : ''}</div>`).join('')}</div>`;
+}
+// Liste der Züge dieser Runde (neuester oben): die letzten n offen, der Rest ausklappbar. detail(m) darf HTML liefern.
+function lookMoves(moves, { filter = null, n = 10, detail = null } = {}) {
+  const list = (moves || []).filter((m) => (filter ? filter(m) : true)).slice().reverse();
+  if (!list.length) return '<p class="hint">Noch keine Züge in dieser Runde.</p>';
+  const row = (m) => `<li><b>${esc(m.n)}</b> ${esc(m.t)}${detail ? ' ' + (detail(m) || '') : ''}</li>`;
+  return `<ol class="look-moves">${list.slice(0, n).map(row).join('')}</ol>${list.length > n ? `<details><summary>Alle ${list.length} Züge</summary><ol class="look-moves">${list.slice(n).map(row).join('')}</ol></details>` : ''}`;
+}
+
+// Home-Knopf oben links in jedem Spiel: Startseite mit Platz behalten, oder den Tisch ganz verlassen
+const homeButtonHTML = () => `<button class="home-btn" data-home="open" title="Zur Startseite" aria-label="Zur Startseite">${svg('<path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/><path d="M10 20v-6h4v6"/>')}<span>Start</span></button>`;
+// Platz behalten: der Server behandelt uns wie bei einem Verbindungsabbruch (Zug-Timer, Pause), der Tisch steht unter „Weiterspielen“
+function parkRoom() {
+  if (!session || parked) return;
+  parked = true;
+  socket.emit('park', {});
+  showHub();
+}
+// Tisch endgültig verlassen: Token vergessen, Server räumt die Runde auf (und schließt den Raum, wenn niemand mehr da ist)
+function leaveTable() {
+  if (!session) return;
+  const code = session.code;
+  socket.emit('leave', {}, () => {});
+  store.set('poker:session:' + code, null);
+  if (store.get('poker:last', null) === code) store.set('poker:last', null);
+  leaveGame();
+  showHub();
+}
+function openHomeDialog() {
+  const d = $('#home-dlg');
+  if (d.open) return;
+  d.returnValue = '';
+  d.showModal();
+}
+document.addEventListener('click', (e) => {
+  if (e.target.closest('[data-home="open"]')) { openHomeDialog(); return; }
+  const a = e.target.closest('#home-dlg [data-home-do]');
+  if (!a) return;
+  $('#home-dlg').close();
+  if (a.dataset.homeDo === 'park') {
+    parkRoom();
+  } else if (a.dataset.homeDo === 'leave') {
+    leaveTable();
+  }
+});
 // Vor/Zurück im Browser: Startseite ↔ Raum
 function returnToRoom() {
-  parked = false;
-  if (mounted !== session.game) { location.reload(); return; } // der Host hat das Spiel gewechselt, während wir auf der Startseite waren
-  $('#hub').hidden = true;
-  $('#game-root').hidden = false;
-  if (lastState) current.onState(lastState);
+  if (mounted !== session.game) { parked = false; location.reload(); return; } // der Host hat das Spiel gewechselt, während wir auf der Startseite waren
+  // Zurück an den Tisch: mit dem Token wieder anmelden, der Server schickt den frischen Stand
+  socket.emit('join', { code: session.code, token: session.token }, (r) => {
+    if (!r?.ok) { store.set('poker:session:' + session.code, null); toast(r?.error, true); leaveGame(); showHub(); return; }
+    parked = false;
+    $('#hub').hidden = true;
+    $('#game-root').hidden = false;
+    if (lastState) current.onState(lastState);
+  });
 }
 window.addEventListener('popstate', () => {
   const code = roomCodeFromUrl();
   if (!code) {
     if (hubVisible()) return; // nur eine Seite der Startseite (Hash) – das zeichnet hub.js
-    if (session) parked = true; // Platz am Tisch behalten
+    if (session) { parkRoom(); return; } // Platz am Tisch behalten
     showHub('', { keepUrl: true });
     return;
   }
@@ -315,7 +417,7 @@ function openRoomByUrl() {
 // ---------- Verbindung ----------
 socket.on('connect', () => {
   $('#offline').hidden = true;
-  if (session) socket.emit('join', { code: session.code, token: session.token }, (r) => { if (!r?.ok) { toast(r?.error, true); leaveGame(); showLobby(); } });
+  if (session && !parked) socket.emit('join', { code: session.code, token: session.token }, (r) => { if (!r?.ok) { toast(r?.error, true); leaveGame(); showLobby(); } });
 });
 socket.on('disconnect', () => { if (session) $('#offline').hidden = false; });
 // Verbindung abgelehnt? Dann ist meist das Passwort-Cookie abgelaufen → zur Passwort-Seite

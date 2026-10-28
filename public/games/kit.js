@@ -117,10 +117,17 @@ function kitGame(def) {
   let fullLog = null; // ganzer Verlauf, wenn geladen
   const isMine = () => current === mod && S;
 
+  // Was „Ansehen“ zeigt: die Teile des Spiels (def.look) und die letzten Züge – alles aus dem öffentlichen Zustand
+  function lookSheet(st) {
+    return { title: `${def.name} ansehen`, sections: [...(def.look?.(st) || []), { title: 'Letzte Züge', html: lookMoves(st.moves, { detail: def.moveDetail ? (m) => def.moveDetail(m, st) : null }) }] };
+  }
+  mod.lookSheet = lookSheet;
+
   function mount() {
     $('#game-root').innerHTML = `<div id="kg" class="kg kg-${def.id}">
       <header class="topbar">
         <div class="top-left">
+          ${homeButtonHTML()}
           <button class="code-chip" data-kit="copy" title="Einladungslink kopieren" aria-label="Einladungslink kopieren">
             <span class="code-label">Raum</span> <b id="kg-code">-----</b>
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
@@ -130,6 +137,7 @@ function kitGame(def) {
         <div class="top-right">
           <nav class="topnav" aria-label="Seitenleisten">
             <button class="nav-btn" data-kit-panel="log">${svg('<path d="M4 6h16M4 12h16M4 18h10"/>')}<span>Verlauf</span></button>
+            <button class="nav-btn" data-kit="look" id="kg-nav-look" hidden aria-label="Ansehen">${svg('<circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/>')}<span>Ansehen</span></button>
             <button class="nav-btn" data-kit-panel="stand">${svg('<path d="M5 20V11M12 20V5M19 20v-6"/>')}<span>Stand</span></button>
             <button class="nav-btn" data-kit-panel="rules">${svg('<path d="M5 4h11l3 3v13H5z"/><path d="M9 10h6M9 14h6"/>')}<span>Regeln</span></button>
             <button class="nav-btn" data-kit-panel="me">${svg('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>')}<span>Ich</span></button>
@@ -250,6 +258,7 @@ function kitGame(def) {
     document.body.classList.toggle('marks', !!prefs.marks);
     $('#kg-code').textContent = S.code;
     $('#kg-nav-host').hidden = !S.you?.isHost;
+    $('#kg-nav-look').hidden = S.phase === 'lobby';
     const myTurn = S.turnId && S.turnId === S.you?.id;
     // status(S) darf das Spiel selbst liefern (z. B. „Schiffe setzen“, wenn niemand dran ist)
     const status = (S.phase === 'playing' && def.status?.(S, myTurn)) || (S.phase === 'playing' ? `${RW} #${S.roundNo} · ${myTurn ? '<b>Du bist dran</b>' : `${esc(nameOf(S.turnId))} ist dran`}`
@@ -433,6 +442,7 @@ function kitGame(def) {
         ${fields ? `<h3>Regeln an diesem Tisch</h3>${fields}<p class="hint" style="margin:0">Änderungen gehen nur zwischen den Runden. Die Standardwerte sind unsere üblichen Hausregeln – alle sehen die aktiven Regeln unter „?“.</p>` : ''}
         ${def.hostExtra ? def.hostExtra(S) : ''}
         ${switchGameHTML(def.id, S.phase === 'playing')}
+        ${endGameHTML(S.phase === 'playing', RW)}
         <h3>Leute im Raum</h3>
         <div class="plist">${others.map((p) => `<div class="prow"><span class="mini-av">${avatarHTML(p)}</span>
           <div class="who"><b>${esc(p.name)}</b><small>${p.seated ? 'spielt mit' : 'schaut zu'}${p.connected ? '' : ' · offline'}</small></div>
@@ -444,8 +454,9 @@ function kitGame(def) {
   // ---------- Eingaben ----------
   document.addEventListener('click', async (e) => {
     if (!isMine()) return;
-    const t = e.target.closest('[data-kit], [data-kit-panel], [data-kit-kick], [data-kit-host], [data-g]');
+    const t = e.target.closest('[data-kit], [data-end], [data-kit-panel], [data-kit-kick], [data-kit-host], [data-g]');
     if (!t || t.disabled) return;
+    if (t.dataset.end) return endGameClick(t.dataset.end, RW);
     if (t.dataset.kitPanel) return openPanel(t.dataset.kitPanel);
     if (t.dataset.kitKick) {
       const name = nameOf(t.dataset.kitKick);
@@ -480,7 +491,8 @@ function kitGame(def) {
       send('stand');
     } else if (k === 'help') {
       showHelp({ title: `${def.name} – kurz erklärt`, short: def.short || [], house: [...optionLines(), ...(def.house?.(S) || [])], more: () => openPanel('rules', true) });
-    } else if (k === 'start') send('start');
+    } else if (k === 'look') openLook(lookSheet(S));
+    else if (k === 'start') send('start');
     else if (k === 'newGame') {
       if (await ask({ title: 'Neues Spiel starten?', text: 'Alle Punkte und Siege gehen auf null. Der alte Stand kommt in den Verlauf.', ok: 'Neues Spiel', danger: true })) send('newGame');
     } else if (k === 'history') {
@@ -572,7 +584,7 @@ function kitGame(def) {
     onPrefs() { if (S) sortHand(S); render(); },
   });
   registerGame(def.id, mod);
-  return { render, get S() { return S; } };
+  return { render, get S() { return S; }, lookSheet };
 }
 
 // ---------- Ablegespiele (Mau-Mau, UNO): gleiche Bedienung, andere Karten ----------
@@ -582,6 +594,8 @@ function kitShedding(opts) {
   let callArmed = false; // „Mau“/„UNO“ für den nächsten Zug angesagt
   const kit = kitGame({
     id: opts.id, name: opts.name, house: opts.house, sort: opts.sort, prefs: opts.prefs, translate: opts.translate, intro: opts.intro,
+    look: (S) => [{ title: 'Zuletzt gelegt', html: lookMoves(S.moves, { filter: (m) => /^legt /.test(m.t), n: 10 }) }],
+    moveDetail: () => '',
     get rules() { return opts.rules; },
     get short() { return opts.short; },
     peek: true,

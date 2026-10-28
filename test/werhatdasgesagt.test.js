@@ -208,7 +208,7 @@ test('Massentest Wer hat das gesagt?: 300 zufällige Partien mit 3–10 Spielern
       }
       if (r.stage === 'vote' && r.settings.spectators && rng() < 0.5) { try { r.guess(z, ids[0]); } catch { /* schon vorbei */ } }
       if (`${r.q}:${r.stage}:${r.sub}` === key && (r.stage === 'write' || r.stage === 'vote')) {
-        assert.ok(!/"author"|"guesses"/.test(JSON.stringify(r.view(z).g)), 'Autor oder Tipps vor der Auflösung sichtbar');
+        assert.ok(!/"author"|"guesses"/.test(JSON.stringify((({ past, ...open }) => open)(r.view(z).g))), 'Autor oder Tipps vor der Auflösung sichtbar');
         r.next(ids[0]);
       }
       for (const id of ids) assert.ok((r.gamePts[id] ?? 0) >= 0);

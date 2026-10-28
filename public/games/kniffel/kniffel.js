@@ -18,6 +18,15 @@
 
   const kit = kitGame({
     id: 'kniffel',
+    look(S) {
+      const g = S.g;
+      const ids = Object.keys(g.sheets);
+      const cell = (id, f) => { const v = g.sheets[id][f]; return `<td class="num">${v === null ? '' : v === 0 ? '–' : v}</td>`; };
+      const row = (f) => `<tr><th scope="row">${NAME[f]}</th>${ids.map((id) => cell(id, f)).join('')}</tr>`;
+      const head = ids.map((id) => `<th class="num" scope="col">${nameOf(S, id)}</th>`).join('');
+      const sum = (label, fn) => `<tr class="kn-sum"><th scope="row">${label}</th>${ids.map((id) => `<td class="num"><b>${fn(g.totals[id])}</b></td>`).join('')}</tr>`;
+      return [{ title: 'Punkteblätter aller', html: `<div class="look-table"><table class="look-big"><thead><tr><th></th>${head}</tr></thead><tbody>${UPPER.map(row).join('')}${sum('Summe oben', (t) => t.upper)}${LOWER.map(row).join('')}${sum('Gesamt', (t) => t.total)}</tbody></table></div>` }];
+    },
     name: 'Kniffel',
     direction: false,
     // Erste Schritte beim ersten Spiel (3 Schritte, abschaltbar unter „Ich“)

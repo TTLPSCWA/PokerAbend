@@ -89,6 +89,20 @@ export class Room extends TurnRoom {
     return Object.values(this.hands).flat().reduce((a, h) => a + h.bet, 0) + Object.values(this.insured).reduce((a, b) => a + b, 0);
   }
 
+  // Abbruch: Einsätze und Versicherungen zurück an die Spieler, ausgeteilte Karten zurück in den Ablagestapel
+  onAbort() {
+    if (!this.settled) {
+      if (this.step === 'bet') for (const [id, n] of Object.entries(this.bets)) this.stacks[id] += n;
+      else {
+        for (const [id, hs] of Object.entries(this.hands)) for (const h of hs) this.stacks[id] += h.bet;
+        for (const [id, n] of Object.entries(this.insured)) this.stacks[id] += n;
+      }
+    }
+    for (const hs of Object.values(this.hands)) for (const h of hs) this.used.push(...h.cards);
+    this.used.push(...this.dealer);
+    this.resetHand();
+  }
+
   // ---------- Schlitten ----------
   draw() {
     if (!this.shoe.length) { this.shoe = shuffle(this.used); this.used = []; }

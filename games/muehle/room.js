@@ -99,7 +99,7 @@ export class Room extends TurnRoom {
       this.act(id, 'Mühle!');
       return;
     }
-    this.act(id, from === null ? 'setzt' : 'zieht');
+    this.act(id, from === null ? 'setzt' : 'zieht', { from, to });
     this.endTurn(id, false);
   }
   // Stein schlagen (heißt nicht remove – das ist in BaseRoom das Entfernen eines Spielers)

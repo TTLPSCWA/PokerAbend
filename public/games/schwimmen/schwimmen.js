@@ -20,6 +20,9 @@
 
   const kit = kitGame({
     id: 'schwimmen',
+    look: (S) => [{ title: 'Tausche in dieser Runde', note: 'Links die Karten, die abgegeben wurden, rechts die genommenen – alle liegen offen in der Mitte.',
+      html: lookMoves(S.moves, { filter: (m) => /^tauscht/.test(m.t), n: 20, detail: (m) => (m.d ? `<span class="sw-mini">${m.d.gave.map((c) => deckCard(c, { attrs: 'disabled tabindex="-1"' })).join('')}</span> → <span class="sw-mini">${m.d.took.map((c) => deckCard(c, { attrs: 'disabled tabindex="-1"' })).join('')}</span>` : '') }) }],
+    moveDetail: () => '',
     name: 'Schwimmen',
     // Erste Schritte beim ersten Spiel (3 Schritte, abschaltbar unter „Ich“)
     intro: [

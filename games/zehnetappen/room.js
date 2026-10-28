@@ -154,7 +154,7 @@ export class Room extends TurnRoom {
       if (c.c === 's') throw new Error('Aussetzen darf man nicht aufnehmen');
       this.discard.pop();
       this.say(`${this.name(id)} nimmt von der Ablage`, 'info', 'action');
-      this.act(id, 'nimmt Ablage');
+      this.act(id, 'nimmt Ablage', c);
     } else {
       if (!this.deck.length) { const top = this.discard.pop(); this.deck = shuffle(this.discard); this.discard = top ? [top] : []; }
       c = this.deck.pop();
@@ -208,7 +208,7 @@ export class Room extends TurnRoom {
       this.skip.add(target);
       this.say(`${this.name(id)} lässt ${this.name(target)} aussetzen`, 'react');
       this.act(id, `${this.name(target)} setzt aus`);
-    } else { this.say(`${this.name(id)} wirft ab`, 'info', 'action'); this.act(id, 'wirft ab'); }
+    } else { this.say(`${this.name(id)} wirft ab`, 'info', 'action'); this.act(id, 'wirft ab', c); }
     this.removeCards(id, [c]);
     this.discard.push(c);
     if (!this.hands[id].length) return this.endRound(id);

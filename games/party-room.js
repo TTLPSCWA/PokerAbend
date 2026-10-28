@@ -53,6 +53,7 @@ export class PartyRoom extends TurnRoom {
     this.total = 0;
     this.picks = [];
     this.cur = null;
+    this.past = [];           // Auflösungen früherer Fragen dieser Partie (offen für alle)
     this.gamePts = {};        // Punkte dieser Partie (die Abendpunkte stehen in scores)
     this.custom = [];         // eigene Fragen des Hosts (nur für diesen Raum)
     this.used = new Set();    // schon gespielte Fragen, damit sich nichts wiederholt
@@ -93,6 +94,7 @@ export class PartyRoom extends TurnRoom {
 
   setupRound() {
     this.gamePts = Object.fromEntries(this.order.map((id) => [id, 0]));
+    this.past = [];
     this.picks = this.pickQuestions(this.settings.rounds);
     this.total = this.picks.length;
     this.q = 0;
@@ -115,7 +117,7 @@ export class PartyRoom extends TurnRoom {
     this.cur = this.picks[this.q];
     this.stage = this.flow[0]; this.sub = 0;
     this.startQuestion();
-    this.enter(this.stage);
+    this.enterStage(this.stage);
     this.moveNo++;
   }
 
@@ -124,9 +126,9 @@ export class PartyRoom extends TurnRoom {
     if (this.phase !== 'playing' || !this.stage) return;
     this.closeStage(this.stage);
     this.acts = {}; // Sprechblasen („✓ fertig“) gehören zur Stufe, die gerade endet
-    if (this.stage !== 'reveal' && this.moreSteps(this.stage)) { this.sub++; this.enter(this.stage); this.moveNo++; return; }
+    if (this.stage !== 'reveal' && this.moreSteps(this.stage)) { this.sub++; this.enterStage(this.stage); this.moveNo++; return; }
     const i = this.flow.indexOf(this.stage);
-    if (i + 1 < this.flow.length) { this.stage = this.flow[i + 1]; this.sub = 0; this.enter(this.stage); this.moveNo++; return; }
+    if (i + 1 < this.flow.length) { this.stage = this.flow[i + 1]; this.sub = 0; this.enterStage(this.stage); this.moveNo++; return; }
     this.q++;
     if (this.q >= this.total || this.targetReached()) return this.finishGame();
     this.beginQuestion();
@@ -259,6 +261,11 @@ export class PartyRoom extends TurnRoom {
     this.custom = (extra?.custom || []).slice(0, MAX_CUSTOM).map((raw, i) => { const c = this.parseCustom(String(raw), i); return c && { ...c, raw: String(raw) }; }).filter(Boolean);
   }
 
+  // Stufe beginnt; die Auflösung (offen für alle) merkt sich der Raum für „Frühere Runden ansehen“
+  enterStage(stage) {
+    this.enter(stage);
+    if (stage === 'reveal') this.past.push({ q: this.q + 1, ...this.stageView(null) });
+  }
   // ---------- Ansicht ----------
   publicPlayer(p) {
     return { ready: this.phase === 'playing' && this.stage !== 'reveal' && this.order.includes(p.id) && !!this.isReady(p.id), pts: this.gamePts[p.id] ?? 0 };
@@ -266,6 +273,7 @@ export class PartyRoom extends TurnRoom {
   gameView(viewerId) {
     return {
       stage: this.stage, q: this.q + 1, of: this.total, sub: this.sub,
+      past: this.past.slice(0, this.stage === 'reveal' ? -1 : undefined), // frühere Auflösungen (die aktuelle steht ohnehin da)
       canAnswer: this.canAnswer(viewerId),
       ...(this.stage ? this.stageView(viewerId) : {}),
     };
@@ -277,6 +285,7 @@ export class PartyRoom extends TurnRoom {
     return v;
   }
 
+  onAbort() { this.past = []; this.stage = null; this.cur = null; this.gamePts = {}; clearTimeout(this.turnTimer); clearTimeout(this.nudgeTimer); this.turnTimer = null; this.nudgeTimer = null; this.deadline = null; this.timerKey = null; }
   dispose() { super.dispose(); clearTimeout(this.nudgeTimer); this.nudgeTimer = null; }
 }
 

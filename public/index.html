@@ -66,6 +66,17 @@
       </div>
     </form>
   </dialog>
+  <dialog class="dlg" id="home-dlg" aria-labelledby="home-title">
+    <form method="dialog">
+      <h2 id="home-title">Zur Startseite?</h2>
+      <p>„Platz behalten“: Du bleibst am Tisch angemeldet und findest ihn auf der Startseite unter „Weiterspielen“. Für die anderen giltst du als offline. „Tisch verlassen“: Du steigst aus der Runde aus und gibst deinen Platz auf.</p>
+      <div class="dlg-actions home-actions">
+        <button class="btn btn-ghost" value="cancel">Abbrechen</button>
+        <button class="btn btn-danger" type="button" data-home-do="leave">Tisch verlassen</button>
+        <button class="btn btn-brass" type="button" data-home-do="park">Platz behalten</button>
+      </div>
+    </form>
+  </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div id="offline" class="offline" hidden>Verbindung weg – verbinde neu …</div>
   <!-- Statt eines schwarzen Bildschirms, wenn der Raum sichtbar ist, aber nichts gemountet oder keine Verbindung da ist -->

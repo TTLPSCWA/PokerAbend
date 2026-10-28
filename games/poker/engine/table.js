@@ -60,6 +60,7 @@ export class Table {
     const seats = this.eligibleSeats();
     if (seats.length < 2) throw new Error('Mindestens 2 Spieler mit Chips nötig');
 
+    this.button0 = this.button;
     this.button = this.button < 0 ? seats[0] : this.nextFrom(this.button, seats);
     const headsUp = seats.length === 2;
     const sb = headsUp ? this.button : this.nextFrom(this.button, seats);
@@ -78,8 +79,10 @@ export class Table {
       for (let n = 0; n < seats.length; n++) { players[i].cards.push(deck.pop()); i = this.nextFrom(i, seats); }
     }
 
+    const prevButton = this.button0;
     this.handNo++;
     this.hand = {
+      prevButton,
       no: this.handNo, deck, board: [], street: 'preflop', button: this.button, sb, bb, headsUp,
       seats, players, currentBet: 0, lastRaise: this.bigBlind, fullRaises: 0, raises: 1,
       toAct: -1, lastAggressor: -1, done: false, result: null, shown: new Set(),
@@ -218,6 +221,17 @@ export class Table {
     this.log({ type: 'fold', seat });
     if (this.live().length === 1) this.finish();
     else this.afterAction();
+  }
+
+  // Host bricht die Hand ab: jeder bekommt zurück, was er in dieser Hand gesetzt hat – die Chipsumme bleibt gleich
+  abort() {
+    const h = this.hand;
+    if (!h || h.done) throw new Error('Es läuft keine Hand');
+    for (const i of h.seats) { const s = this.seats[i]; if (s) s.stack += h.players[i].total; }
+    this.button = h.prevButton;
+    this.handNo--;
+    this.hand = null;
+    this.log({ type: 'abort' });
   }
 
   live() {

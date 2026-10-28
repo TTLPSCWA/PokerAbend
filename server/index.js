@@ -299,6 +299,38 @@ function getRoom(code) {
   return r;
 }
 
+// Spieler gilt als offline (Verbindungsabbruch oder „Platz behalten“): Zug-Timer verkürzt sich, Host-Rolle wandert nach 30 s weiter
+function goOffline(room, p, message) {
+  p.connected = false;
+  p.socketId = null;
+  p.offlineSince = Date.now();
+  room.say(message);
+  room.afterChange();
+  broadcast(room);
+  if (room.hostId === p.id) {
+    setTimeout(() => {
+      if (room.hostId === p.id && !p.connected) { room.transferHost(); broadcast(room); }
+    }, 30000);
+  }
+}
+// Die Verbindung gehört danach zu keinem Tisch mehr (Startseite, Raum verlassen)
+function detach(socket, room) {
+  socket.leave(room.code);
+  socket.data.code = null;
+  socket.data.playerId = null;
+}
+// Raum endgültig schließen: Timer und Bots stoppen, Code frei, Verlauf und Stand weg. Die Bestenliste bleibt (wird beim Rundenende geschrieben).
+function closeRoom(room) {
+  bots.stop(room);
+  room.dispose();
+  rooms.delete(room.code);
+  codes.release(room.code);
+  dropHistory(room.code);
+  scheduleLobby();
+  save();
+}
+const humansIn = (room) => [...room.players.values()].filter((p) => !p.bot && !p.kicked);
+
 function attach(socket, room, player) {
   if (player.socketId && player.socketId !== socket.id) {
     // Zweiter Tab: nur die neueste Verbindung darf spielen
@@ -345,7 +377,7 @@ io.on('connection', (socket) => {
           if (!room || !player) throw new Error('Du bist an keinem Tisch');
         }
         const res = fn(payload || {}, room, player);
-        const r = res?.room || room;
+        const r = res?.closed ? null : (res?.room || room);
         if (r) { r.afterChange(); broadcast(r); if (!r.busy) save(); }
         cb({ ok: true, ...(res?.reply || {}) });
       } catch (e) {
@@ -431,6 +463,40 @@ io.on('connection', (socket) => {
   });
 
   // Für alle Spiele gleich: Host-Rechte
+  // Zur Startseite, Platz behalten: wie ein Verbindungsabbruch (Zug-Timer, Pause), der Tisch bleibt unter „Weiterspielen“.
+  // Zurück an den Tisch geht mit dem Token (join).
+  on('park', (_d, room, p) => {
+    detach(socket, room);
+    goOffline(room, p, `${p.name} ist kurz auf der Startseite`);
+    return { closed: true }; // goOffline hat schon neu gezeichnet
+  });
+
+  // Tisch endgültig verlassen: aus der Runde aussteigen (wie Aufstehen), Host-Rolle weitergeben, Ergebnisse bleiben in der Bestenliste.
+  // Sind danach alle anderen offline oder weg, schließt der Raum sofort.
+  on('leave', (_d, room, p) => {
+    room.remove(p.id, `${p.name} hat den Tisch verlassen`);
+    detach(socket, room);
+    if (!humansIn(room).some((h) => h.connected)) { closeRoom(room); return { closed: true }; }
+    return {};
+  });
+
+  // Host: laufende Runde ohne Wertung abbrechen (Einsätze zurück)
+  on('abortRound', (_d, room, p) => { room.abortRound(p.id); });
+
+  // Host: Tisch schließen. Alle landen auf der Startseite, der Raum ist weg und der Code frei. Ergebnisse stehen schon in der Bestenliste.
+  on('closeTable', (_d, room, p) => {
+    room.requireHost(p.id);
+    for (const sid of [...(io.sockets.adapter.rooms.get(room.code) || [])]) {
+      const s = io.sockets.sockets.get(sid);
+      if (!s) continue;
+      s.emit('closed', { text: 'Der Host hat den Tisch geschlossen' });
+      s.leave(room.code);
+      s.data.code = null; s.data.playerId = null;
+    }
+    closeRoom(room);
+    return { closed: true };
+  }, { needRoom: true });
+
   on('kick', ({ id }, room, p) => { room.requireHost(p.id); if (id === p.id) throw new Error('Du kannst dich nicht selbst entfernen'); const target = room.players.get(id); room.remove(id); if (target?.socketId && !room.players.has(id)) io.to(target.socketId).emit('kicked'); });
   on('makeHost', ({ id }, room, p) => { room.requireHost(p.id); const t = room.players.get(id); if (!t || t.bot) throw new Error('Ein Mensch muss Host bleiben'); room.hostId = id; room.say(`${t.name} ist jetzt Host`); });
   on('addBot', (_data, room, p) => { addBot(room, p.id); });
@@ -462,17 +528,7 @@ io.on('connection', (socket) => {
     const room = rooms.get(socket.data.code);
     const p = room?.players.get(socket.data.playerId);
     if (!p || p.socketId !== socket.id) return;
-    p.connected = false;
-    p.socketId = null;
-    p.offlineSince = Date.now();
-    room.say(`${p.name} ist offline`);
-    room.afterChange(); // kürzerer Timer, falls er gerade dran ist
-    broadcast(room);
-    if (room.hostId === p.id) {
-      setTimeout(() => {
-        if (room.hostId === p.id && !p.connected) { room.transferHost(); broadcast(room); }
-      }, 30000);
-    }
+    goOffline(room, p, `${p.name} ist offline`);
   });
 });
 
@@ -483,9 +539,7 @@ setInterval(() => {
     if (r.dropAway(AWAY_MIN * 60000)) { r.afterChange(); broadcast(r); changed = true; }
     const anyone = [...r.players.values()].some((p) => p.connected && !p.bot);
     if (!anyone && (r.abandoned || Date.now() - r.lastActivity > ROOM_TTL_MIN * 60000)) {
-      bots.stop(r);
-      r.dispose();
-      rooms.delete(code); codes.release(code); dropHistory(code); changed = true; scheduleLobby();
+      closeRoom(r); changed = true;
     }
   }
   if (changed) save();
@@ -496,7 +550,7 @@ process.on('uncaughtException', (e) => console.error('Unerwarteter Fehler:', e))
 process.on('unhandledRejection', (e) => console.error('Unerwarteter Fehler:', e));
 
 // Ein Spiel darf keine Plattform-Ereignisse überschreiben
-const RESERVED = ['create', 'join', 'kick', 'makeHost', 'history', 'react', 'switchGame', 'disconnect', 'addBot', 'removeBot', 'lobby', 'peek', 'unlisted'];
+const RESERVED = ['create', 'join', 'kick', 'makeHost', 'history', 'react', 'switchGame', 'disconnect', 'addBot', 'removeBot', 'lobby', 'peek', 'unlisted', 'park', 'leave', 'abortRound', 'closeTable', 'look'];
 for (const g of Object.values(GAMES)) {
   const clash = Object.keys(g.events).filter((e) => RESERVED.includes(e));
   if (clash.length) throw new Error(`Spiel ${g.id}: Ereignisse ${clash.join(', ')} gehören der Plattform`);

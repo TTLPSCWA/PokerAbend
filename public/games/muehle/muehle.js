@@ -23,6 +23,7 @@
 
   const kit = kitGame({
     id: 'muehle',
+    moveDetail: (m) => (m.d && m.d.to !== undefined ? `<span class="look-d">${m.d.from === null || m.d.from === undefined ? '' : `Punkt ${m.d.from + 1} → `}Punkt ${m.d.to + 1}</span>` : ''),
     name: 'Mühle',
     direction: false,
     // Erste Schritte beim ersten Spiel (3 Schritte, abschaltbar unter „Ich“)

@@ -27,6 +27,14 @@
 
   const kit = kitGame({
     id: 'shutthebox',
+    look(S) {
+      const g = S.g;
+      return Object.keys(g.boxes).map((id) => ({
+        title: nameOf(S, id).replace(/&amp;/g, '&') + (id === S.you?.id ? ' (du)' : ''),
+        note: (g.results[id] || []).length ? `Ergebnisse: ${g.results[id].join(' · ')}` : 'Noch kein Ergebnis',
+        html: box(S, id, false),
+      }));
+    },
     name: 'Shut the Box',
     direction: false,
     // Erste Schritte beim ersten Spiel (3 Schritte, abschaltbar unter „Ich“)

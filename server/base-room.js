@@ -105,6 +105,8 @@ export class BaseRoom {
     if (next) { this.hostId = next.id; this.say(`${next.name} ist jetzt Host`); }
   }
 
+  // Host-Menü „Spiel“: laufende Runde abbrechen (Spiele überschreiben das)
+  abortRound() { throw new Error('Dieses Spiel kann keine Runde abbrechen'); }
   requireHost(id) { if (id !== this.hostId) throw new Error('Nur der Host darf das'); }
 
   // ---------- Verlauf ----------

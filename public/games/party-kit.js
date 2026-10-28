@@ -125,6 +125,7 @@ function partyGame(def) {
   const kit = kitGame({
     id: def.id, name: def.name, rules: def.rules, short: def.short, intro: def.intro,
     roundWord: 'Partie', direction: false, ring: false,
+    look: (S) => (S.g?.past || []).length ? [{ title: 'Frühere Runden', note: 'Die Auflösungen der Fragen davor.', html: (S.g.past || []).slice().reverse().map((p) => `<details><summary>Frage ${p.q}</summary>${def.reveal({ ...S, g: { ...S.g, ...p, stage: 'reveal' } })}</details>`).join('') }] : [],
     house: () => [],
     playerInfo(p, S) {
       if (!inGame(S) || p.inRound === undefined) return '';

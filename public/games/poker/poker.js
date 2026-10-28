@@ -6,6 +6,7 @@
 $('#game-root').innerHTML = `<div id="game" class="game" hidden>
   <header class="topbar">
     <div class="top-left">
+      ${homeButtonHTML()}
       <button class="code-chip" id="copy-link" title="Einladungslink kopieren" aria-label="Einladungslink kopieren">
         <span class="code-label">Tisch</span> <b id="room-code">-----</b>
         <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
@@ -1061,7 +1062,8 @@ function renderPanel(force = false) {
       <p class="hint" style="margin:0">„Sofort anhalten“ friert alles ein, auch den Zug-Timer. „Pause nach dieser Hand“ lässt die laufende Hand zu Ende spielen.</p>
       ${botControlsHTML(S, !!(S.hand && !S.hand.done))}
       ${unlistedSwitchHTML(S)}
-      ${switchGameHTML('poker', !!(S.hand && !S.hand.done))}`;
+      ${switchGameHTML('poker', !!(S.hand && !S.hand.done))}
+      ${endGameHTML(!!(S.hand && !S.hand.done))}`;
     } else if (hostTab === 'regeln') {
       inner = `<div class="notice" role="note">Änderungen gelten ab der nächsten Hand.</div>
         ${group('blinds', 'Blinds &amp; Chips', `<div class="host-grid">
@@ -1185,6 +1187,7 @@ document.addEventListener('click', async (e) => {
       send('newGame').then((r) => r?.ok && toast('Neues Spiel – viel Glück!'));
     }
   }
+  else if (t.dataset.end) endGameClick(t.dataset.end);
   else if (t.dataset.sit !== undefined) send('sit', { seat: Number(t.dataset.sit) });
   else if (t.dataset.preset) {
     const L = S.legal; const h = S.hand;

@@ -43,6 +43,13 @@
 
   const kit = kitGame({
     id: 'zehnetappen',
+    look(S) {
+      const laid = Object.entries(S.g.laid).filter(([, gs]) => gs.length).map(([id, gs]) => `<div class="look-pile"><h4>${esc(S.players.find((p) => p.id === id)?.name ?? '?')} · Phase ${S.players.find((p) => p.id === id)?.phase ?? ''}</h4>${gs.map((gr) => `<p class="hint" style="margin:6px 0 2px">${TYPE[gr.type]}</p>${lookFan(gr.cards.map((c) => card(c, { tag: 'span' })), { topLabel: '' })}`).join('')}</div>`).join('');
+      const thrown = S.moves.filter((m) => m.t === 'wirft ab' && m.d).slice(-5).map((m) => card(m.d, { tag: 'span' }));
+      return [{ title: 'Ausgelegte Phasen', html: laid || '<p class="hint">Noch hat niemand eine Phase ausgelegt.</p>' },
+        { title: 'Ablage – die letzten 5 Karten', note: 'Ganz rechts liegt die oberste Karte.', html: lookFan(thrown, { topLabel: 'oben' }) }];
+    },
+    moveDetail: (m) => (m.d && m.d.c ? `<span class="look-d">${m.d.c === 'j' ? 'Joker' : m.d.c === 's' ? 'Aussetzen' : `${COLOR[m.d.c]} ${m.d.n}`}</span>` : ''),
     name: 'Phase 10',
     // Erste Schritte beim ersten Spiel (3 Schritte, abschaltbar unter „Ich“)
     intro: [

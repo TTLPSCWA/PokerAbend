@@ -14,6 +14,16 @@
 
   const kit = kitGame({
     id: 'stapelrennen',
+    look(S) {
+      const g = S.g;
+      const topCard = (c) => (c === null || c === undefined ? '' : num(c, { tag: 'span' }));
+      const builds = `<ul class="look-list">${g.build.map((b, i) => `<li><b>Reihe ${i + 1}:</b> ${b.count ? `1–${b.count}${b.jokers.length ? ` (★ als ${b.jokers.map((j) => j + 1).join(', ')})` : ''}` : 'leer'} · nächste: <b>${b.next}</b></li>`).join('')}</ul>`;
+      const people = S.players.filter((p) => p.inRound).sort((a, b) => (b.id === S.you?.id) - (a.id === S.you?.id));
+      return [{ title: 'Baureihen in der Mitte', html: builds }, ...people.map((p) => ({
+        title: p.id === S.you?.id ? 'Deine Ablagen' : `Ablagen von ${p.name}`,
+        html: `<p class="look-stock">Stapel: <b>${p.stock} Karte${p.stock === 1 ? '' : 'n'}</b>${p.stock ? ' · oben:' : ''} ${topCard(p.stockTop)}</p>${(p.piles || []).map((pile, i) => `<div class="look-pile"><h4>Ablage ${i + 1} · ${pile.length} Karte${pile.length === 1 ? '' : 'n'}</h4>${lookFan(pile.map((c) => num(c, { tag: 'span' })), { topLabel: 'oben – spielbar' })}</div>`).join('')}`,
+      }))];
+    },
     name: 'Skip-Bo',
     // Erste Schritte beim ersten Spiel (3 Schritte, abschaltbar unter „Ich“)
     intro: [
@@ -64,12 +74,12 @@
           : `<button type="button" class="kc kc-empty ${canDrop ? 'drop' : ''}" ${canDrop ? `data-g="drop" data-i="${i}"` : 'disabled'} aria-label="leere Ablage ${i + 1}"></button>`}
           <small>${pile.length > 1 ? `${pile.length} Karten` : ''}</small></div>`;
       }).join('');
-      const others = S.players.filter((p) => p.inRound && p.id !== S.you?.id).map((p) => `<div class="st-other"><b>${esc(p.name)}</b>
+      const others = S.players.filter((p) => p.inRound && p.id !== S.you?.id).map((p) => `<div class="st-other"><b>${esc(p.name)}</b> <button type="button" class="look-btn" data-g="look" aria-label="Ablagen von ${esc(p.name)} ansehen">${svg('<circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/>')}</button>
         <div class="st-row"><div class="st-stock">${p.stock ? num(p.stockTop, { attrs: 'disabled' }) : '<span class="kc kc-empty"></span>'}<small>Stapel ${p.stock}</small></div>${piles(p, false)}</div></div>`).join('');
       // Wie am echten Tisch: deine vier Ablagen vorne, dein Spielstapel rechts daneben
       const ending = mine && sel?.kind === 'hand';
       const mineHTML = me?.inRound ? `<div class="st-mine"><div class="st-row">
-        <div class="st-piles ${ending ? 'ending' : ''}"><div class="st-row">${piles(me, true)}</div><small>${ending ? '<b>Handkarte auf eine Ablage = Zug beenden</b>' : 'Deine Ablagen'}</small></div>
+        <div class="st-piles ${ending ? 'ending' : ''}"><div class="st-row">${piles(me, true)}</div><small>${ending ? '<b>Handkarte auf eine Ablage = Zug beenden</b>' : 'Deine Ablagen'} <button type="button" class="look-btn" data-g="look" aria-label="Alle Ablagen ansehen">${svg('<circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/>')}</button></small></div>
         <div class="st-stock">${me.stock ? num(me.stockTop, { cls: `big ${same(sel, { kind: 'stock' }) ? 'sel' : ''}`, attrs: mine ? 'data-g="pick" data-kind="stock" data-drag="stock"' : 'disabled' }) : '<span class="kc kc-empty big"></span>'}<small>Dein Stapel: <b>${me.stock}</b></small></div>
         </div></div>` : '';
       // Am großen Tisch sitzen die Gegner mit Stapel und Ablagen an ihren Plätzen
@@ -89,6 +99,7 @@
       } else if (g === 'build' && sel) { send('play', { from: sel, to: Number(t.dataset.i) }); sel = null; }
       else if (g === 'drop' && sel?.kind === 'hand') { send('discard', { index: sel.index, pile: Number(t.dataset.i) }); sel = null; }
       else if (g === 'pass') { send('pass'); sel = null; }
+      else if (g === 'look') openLook(kit.lookSheet(kit.S));
     },
     rules: `<p>Wer zuerst seinen eigenen <b>Stapel</b> los ist, gewinnt.</p>
       <ul>

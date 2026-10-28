@@ -345,6 +345,20 @@ export class Room extends BaseRoom {
     this.say(`Host-Korrektur: ${p.name} ${fmt(old)} → ${fmt(n)}`, 'warn');
   }
 
+  // Host bricht die laufende Hand ab: Einsätze zurück, danach wartet der Tisch auf „Start“
+  abortRound(id) {
+    this.requireHost(id);
+    if (!this.handRunning) throw new Error('Gerade läuft keine Hand');
+    this.table.abort();
+    this.flushEvents();
+    clearTimeout(this.turnTimer); this.turnTimer = null; this.turnKey = null; this.deadline = null;
+    clearTimeout(this.nudgeTimer); this.nudgeTimer = null; this.nudgeKey = null;
+    clearTimeout(this.nextTimer); this.nextTimer = null; this.nextAt = null;
+    for (const p of this.players.values()) { p.pre = null; p.preNote = null; }
+    this.started = false; this.frozen = null;
+    this.say('Runde vom Host abgebrochen', 'warn');
+  }
+
   start(id) {
     this.requireHost(id);
     if (this.handRunning) return;

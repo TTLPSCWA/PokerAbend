@@ -19,6 +19,7 @@ export class TurnRoom extends BaseRoom {
     this.result = null;   // Ergebnis der letzten Runde
     this.acts = {};       // ID → { text, n }: letzte Aktion je Spieler in dieser Runde (Sprechblase am Platz)
     this.actSeq = 0;
+    this.moves = [];      // Züge dieser Runde für „Ansehen“: { n: Name, t: Text, d?: Einzelheiten }. Nur, was alle ohnehin als Sprechblase sehen.
     // Zug-Timer (nur Spiele mit der Einstellung turnTime, Sekunden, 0 = aus): wer zu lange braucht, für den entscheidet onTimeout
     this.turnTimer = null; this.timerKey = null; this.deadline = null;
     this.moveNo = 0;      // zählt Züge – ein neuer Zug startet die Uhr neu, auch wenn derselbe nochmal dran ist
@@ -57,7 +58,12 @@ export class TurnRoom extends BaseRoom {
   get current() { return this.players.get(this.currentId); }
   name(id) { return this.players.get(id)?.name ?? '?'; }
   // Kurz, was jemand gerade getan hat („zieht 2“, „sagt 52“) – erscheint als Sprechblase an seinem Platz
-  act(id, text) { if (id) this.acts[id] = { text, n: ++this.actSeq }; this.moveNo++; }
+  act(id, text, detail) {
+    if (id) this.acts[id] = { text, n: ++this.actSeq };
+    this.moves.push({ n: id ? this.name(id) : '', t: text, ...(detail !== undefined ? { d: detail } : {}) });
+    if (this.moves.length > 80) this.moves.shift();
+    this.moveNo++;
+  }
 
   // ---------- Zug-Timer ----------
   timerActive() { return true; }   // Haken: läuft die Uhr gerade? (z. B. nicht beim Schiffe-Setzen)
@@ -140,7 +146,7 @@ export class TurnRoom extends BaseRoom {
     this.turn = 0; this.dir = 1;
     this.phase = 'playing';
     this.result = null;
-    this.acts = {};
+    this.acts = {}; this.moves = [];
     this.say(`Runde #${this.roundNo}`, 'hand');
     this.setupRound();
     this.roundPlayers = [...this.order]; // für die Bestenliste (auch wer unterwegs ausscheidet)
@@ -176,6 +182,19 @@ export class TurnRoom extends BaseRoom {
     this.onChange('handDone');
   }
 
+  // Host bricht die laufende Runde ab: ohne Wertung, alles zurück auf den Stand vor der Runde, danach Wartezustand
+  abortRound(id) {
+    this.requireHost(id);
+    if (this.phase !== 'playing') throw new Error('Gerade läuft keine Runde');
+    this.onAbort();
+    this.phase = 'lobby';
+    this.roundNo = Math.max(0, this.roundNo - 1); // die abgebrochene Runde zählt nicht (auch nicht für den Startspieler)
+    this.result = null; this.acts = {}; this.moves = [];
+    this.moveNo++;
+    this.say('Runde vom Host abgebrochen', 'warn');
+  }
+  onAbort() {} // Haken: Einsätze zurückgeben, Zwischenstände der Runde verwerfen (Punkte werden erst am Rundenende gebucht)
+
   newGame(id) {
     this.requireHost(id);
     if (this.phase === 'playing') throw new Error('Ein neues Spiel geht nur zwischen zwei Runden');
@@ -209,7 +228,7 @@ export class TurnRoom extends BaseRoom {
     return {
       code: this.code, game: this.game, now: Date.now(),
       you: me ? { id: me.id, name: me.name, isHost: me.id === this.hostId, playing: this.seats.includes(me.id), inRound: this.order.includes(me.id) } : null,
-      hostId: this.hostId, settings: this.settings, phase: this.phase, roundNo: this.roundNo, turnId: this.currentId, deadline: this.deadline, dir: this.dir, acts: this.phase === 'lobby' ? {} : this.acts,
+      hostId: this.hostId, settings: this.settings, phase: this.phase, roundNo: this.roundNo, turnId: this.currentId, deadline: this.deadline, dir: this.dir, acts: this.phase === 'lobby' ? {} : this.acts, moves: this.phase === 'lobby' ? [] : this.moves.slice(-40),
       minPlayers: this.opts.minPlayers, maxPlayers: this.opts.maxPlayers, scoreLabel: this.opts.scoreLabel, lowWins: this.opts.lowWins,
       players: people.map((p) => ({
         id: p.id, name: p.name, avatar: p.avatar, bot: !!p.bot, connected: p.connected, isHost: p.id === this.hostId,

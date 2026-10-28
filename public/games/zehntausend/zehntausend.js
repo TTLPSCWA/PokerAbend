@@ -38,6 +38,11 @@
 
   const kit = kitGame({
     id: 'zehntausend',
+    look(S) {
+      const g = S.g;
+      const ids = Object.keys(g.banked).sort((a, b) => g.banked[b] - g.banked[a]);
+      return [{ title: 'Punkte aller', note: `Ziel: ${fmt(g.target)}`, html: `<ul class="look-list">${ids.map((id) => `<li><b>${esc(S.players.find((p) => p.id === id)?.name ?? '?')}</b>: ${fmt(g.banked[id])}${g.entered.includes(id) ? '' : ' · noch nicht drin'}</li>`).join('')}</ul>` }];
+    },
     name: 'Zehntausend',
     direction: false,
     // Erste Schritte beim ersten Spiel (3 Schritte, abschaltbar unter „Ich“)

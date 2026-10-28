@@ -122,7 +122,7 @@ export class Room extends TurnRoom {
 
   gameView(viewerId) {
     return {
-      build: this.build.map((b) => ({ next: b.length + 1, count: b.length })),
+      build: this.build.map((b) => ({ next: b.length + 1, count: b.length, jokers: b.map((c, i) => (c === JOKER ? i : -1)).filter((i) => i >= 0) })),
       hand: this.hand[viewerId] ? [...this.hand[viewerId]] : null,
       deck: this.deck.length,
       canPass: this.phase === 'playing' && this.currentId === viewerId && !this.hand[viewerId]?.length && !this.deck.length && !this.used.length,

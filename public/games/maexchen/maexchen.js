@@ -25,6 +25,8 @@
 
   const kit = kitGame({
     id: 'maexchen',
+    look: (S) => [{ title: 'Ansagen in dieser Runde', note: 'Nur das, was gesagt wurde – die echten Würfel bleiben unter dem Becher.',
+      html: lookMoves(S.moves, { filter: (m) => /^(sagt|ungesehen|zweifelt|lässt)/.test(m.t), n: 20 }) }],
     name: 'Mäxchen',
     // Erste Schritte beim ersten Spiel (3 Schritte, abschaltbar unter „Ich“)
     intro: [

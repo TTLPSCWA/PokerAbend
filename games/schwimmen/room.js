@@ -74,18 +74,20 @@ export class Room extends TurnRoom {
     this.requireTurn(id);
     const h = Number(handIndex), m = Number(midIndex);
     if (!(h >= 0 && h < 3 && m >= 0 && m < 3)) throw new Error('Diese Karte gibt es nicht');
+    const gave = this.hands[id][h], took = this.middle[m];
     [this.hands[id][h], this.middle[m]] = [this.middle[m], this.hands[id][h]];
     this.say(`${this.name(id)} tauscht eine Karte`, 'info', 'action');
-    this.act(id, 'tauscht eine');
+    this.act(id, 'tauscht eine', { gave: [gave], took: [took] });
     this.passStreak = 0;
     this.endTurn(id);
   }
 
   swapAll(id) {
     this.requireTurn(id);
+    const gave = [...this.hands[id]], took = [...this.middle];
     [this.hands[id], this.middle] = [this.middle, this.hands[id]];
     this.say(`${this.name(id)} tauscht alle drei`, 'info', 'action');
-    this.act(id, 'tauscht alle drei');
+    this.act(id, 'tauscht alle drei', { gave, took });
     this.passStreak = 0;
     this.endTurn(id);
   }
