@@ -105,6 +105,20 @@ export function bestHand(cards) {
   return { score: best, cards: bestCards, name: describe(best), category: best[0] };
 }
 
+// Omaha: genau zwei der eigenen und genau drei der Gemeinschaftskarten zählen. Ab dem Flop (3 Karten) bewertbar.
+export function omahaBest(hole, board) {
+  if (board.length < 3) return bestHand(hole);
+  let best = null, bestCards = null;
+  for (const h of combinations(hole, 2)) {
+    for (const b of combinations(board, 3)) {
+      const combo = [...h, ...b];
+      const s = eval5(combo);
+      if (!best || compareScores(s, best) > 0) { best = s; bestCards = combo; }
+    }
+  }
+  return { score: best, cards: bestCards, name: describe(best), category: best[0] };
+}
+
 // Nur die Kategorie einer 5–7-Karten-Hand – deutlich schneller als bestHand, für Wahrscheinlichkeiten
 function straightTop(mask) {
   if ((mask & 0x403c) === 0x403c) mask |= 2; // Ass zählt auch als 1 (A-2-3-4-5)
@@ -206,6 +220,13 @@ export function score7(cards) {
   }
   if (pairs.length) return pack(1, [pairs[0], ...topBits(mask & ~(1 << pairs[0]), 3)]);
   return pack(0, topBits(mask, 5));
+}
+
+// Omaha-Hand als eine Zahl (wie score7): beste Kombination aus 2 eigenen + 3 Gemeinschaftskarten, für Bots
+export function omahaScore(hole, board) {
+  let best = -1;
+  for (const h of combinations(hole, 2)) for (const b of combinations(board, 3)) { const s = score7([...h, ...b]); if (s > best) best = s; }
+  return best;
 }
 
 // Gewinnchancen bekannter Hände gegeneinander (z. B. nach dem Showdown). Split zählt anteilig.

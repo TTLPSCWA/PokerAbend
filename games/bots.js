@@ -8,7 +8,7 @@ import { UPPER } from './kniffel/room.js';
 import { handValue } from './schwimmen/room.js';
 import { randomFleet, around, SIZE } from './schiffe/room.js';
 import { total as bjTotal, cardValue } from './blackjack/room.js';
-import { newDeck, score7 } from './poker/engine/cards.js';
+import { newDeck, score7, omahaScore } from './poker/engine/cards.js';
 import { GOAL, TRACK } from './huetchen/room.js';
 import { judge } from './schocken/room.js';
 import { botColumn } from './viergewinnt/room.js';
@@ -335,6 +335,8 @@ export function pokerDecision(view, rng = Math.random) {
   const own = view.seats[view.you.seat].cards;
   const board = view.hand.board;
   const opponents = view.seats.filter((p) => p && p.inHand && !p.folded && p.id !== view.you.id).length;
+  const omaha = own.length === 4;
+  const rank = (hole, river) => (omaha ? omahaScore(hole, river) : score7([...hole, ...river]));
   const unseen = newDeck().filter((c) => !own.includes(c) && !board.includes(c));
   let wins = 0;
   for (let trial = 0; trial < 80; trial++) {
@@ -342,10 +344,10 @@ export function pokerDecision(view, rng = Math.random) {
     const draw = () => deck.splice(Math.floor(rng() * deck.length), 1)[0];
     const river = [...board];
     while (river.length < 5) river.push(draw());
-    const score = score7([...own, ...river]);
+    const score = rank(own, river);
     let ties = 1, lost = false;
     for (let i = 0; i < opponents; i++) {
-      const other = score7([draw(), draw(), ...river]);
+      const other = rank(omaha ? [draw(), draw(), draw(), draw()] : [draw(), draw()], river);
       if (other > score) lost = true;
       if (other === score) ties++;
     }
@@ -379,4 +381,54 @@ function schaetzmeister(room, id, rng) { return room.guess(id, room.botGuess(rng
 // Schlagfertig, Wer hat das gesagt?: Platzhalter-Antworten schreiben und zufällig abstimmen/raten (siehe botStep im Raum)
 const partyBot = (room, id, rng) => room.botStep(id, rng);
 
-export const BOTS = { poker, maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, schiffe, blackjack, kniffel, viergewinnt, shutthebox, zehntausend, muehle, schaetzmeister, schlagfertig: partyBot, werhatdasgesagt: partyBot };
+
+// Mogeln: ehrlich legen, wenn der Wert da ist, sonst eine Karte bluffen. Zweifeln, wenn es unmöglich ist oder der Vorgänger fast fertig ist.
+function mogeln(room, id, rng) {
+  const hand = room.hands[id];
+  const L = room.last;
+  if (L && L.by !== id) {
+    const mine = hand.filter((c) => c[0] === L.rank).length;
+    const nearlyOut = room.hands[L.by].length <= 2;
+    if (L.count + mine > 4 || rng() < (nearlyOut ? 0.5 : room.pile.length > 12 ? 0.03 : 0.07)) return room.call(id);
+  }
+  const good = hand.filter((c) => c[0] === room.need);
+  if (hand.length <= room.settings.maxCards && hand.length > 0 && rng() < 0.7) return room.play(id, [...hand]); // alles auf einmal loswerden (auch geblufft)
+  if (good.length) return room.play(id, good.slice(0, Math.max(1, Math.min(room.settings.maxCards, good.length))));
+  return room.play(id, [one(hand, rng)]);
+}
+
+// Präsident: aufsteigend ausspielen, überbieten mit der kleinsten passenden Gruppe, sonst passen
+function praesident(room, id, rng) {
+  const hand = room.hands[id];
+  const groups = {};
+  for (const c of hand) (groups[c[0]] ||= []).push(c);
+  const ranks = Object.keys(groups).sort((a, b) => ORDER_P.indexOf(a) - ORDER_P.indexOf(b));
+  const t = room.pile;
+  if (!t) { const r = ranks[0]; return room.play(id, groups[r]); }
+  const fit = ranks.find((r) => ORDER_P.indexOf(r) > ORDER_P.indexOf(t.rank) && groups[r].length >= t.count);
+  if (fit && rng() < 0.92) return room.play(id, groups[fit].slice(0, t.count));
+  return room.pass(id);
+}
+
+// Durak: billigste schlagende Karte, Trumpf möglichst sparen; angreifen mit niedrigen Karten
+function durak(room, id, rng) {
+  const hand = room.hands[id];
+  const tr = room.trump;
+  const cost = (c) => rankDurak(c) + (c[1] === tr ? 20 : 0);
+  if (id === room.defender && !room.taking) {
+    const idx = room.board.findIndex((p) => !p.d);
+    if (idx < 0) return room.pass(id);
+    const beat = hand.filter((c) => room.beats(c, room.board[idx].a)).sort((a, b) => cost(a) - cost(b));
+    if (beat.length && !(beat[0][1] === tr && room.deck.length > 4 && rng() < 0.3)) return room.defend(id, beat[0], idx);
+    return room.take(id);
+  }
+  const ranks = room.ranksOnTable();
+  const legal = hand.filter((c) => !room.board.length || ranks.has(c[0])).sort((a, b) => cost(a) - cost(b));
+  if (!room.board.length) return room.attack(id, legal[0]);
+  if (legal.length && room.canAdd(id) && (legal[0][1] !== tr) && rng() < (id === room.attacker ? 0.85 : 0.5)) return room.attack(id, legal[0]);
+  return room.pass(id);
+}
+const ORDER_P = ['3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A', '2'];
+const rankDurak = (c) => ['6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'].indexOf(c[0]);
+
+export const BOTS = { omaha: poker, mogeln, praesident, durak, poker, maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, schiffe, blackjack, kniffel, viergewinnt, shutthebox, zehntausend, muehle, schaetzmeister, schlagfertig: partyBot, werhatdasgesagt: partyBot };

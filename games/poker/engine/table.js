@@ -1,6 +1,6 @@
 // Texas-Hold'em-Engine (No-Limit). Kein Netzwerk, keine Oberfläche – nur Regeln.
 // Der Server ruft startHand(), act(), forceFold() auf und liest den Zustand aus.
-import { newDeck, shuffle, bestHand, compareScores } from './cards.js';
+import { newDeck, shuffle, bestHand, omahaBest, compareScores } from './cards.js';
 
 export const SEATS = 9;
 const STREETS = ['preflop', 'flop', 'turn', 'river'];
@@ -8,7 +8,9 @@ const STREETS = ['preflop', 'flop', 'turn', 'river'];
 export const MAX_RAISES = 3;
 
 export class Table {
-  constructor({ smallBlind = 50, bigBlind = 100, rng } = {}) {
+  constructor({ smallBlind = 50, bigBlind = 100, rng, holeCards = 2, potLimit = false } = {}) {
+    this.holeCards = holeCards;  // 2 = Hold'em, 4 = Omaha
+    this.potLimit = potLimit;    // Erhöhen höchstens um die Potgröße
     this.seats = Array(SEATS).fill(null); // { id, name, stack, sittingOut }
     this.smallBlind = smallBlind;
     this.bigBlind = bigBlind;
@@ -74,7 +76,7 @@ export class Table {
       players[i] = { seat: i, cards: [], folded: false, allIn: false, bet: 0, total: 0, acted: false, actedAt: -1, lastAction: null };
     }
     // Austeilen wie am echten Tisch: reihum ab Small Blind
-    for (let round = 0; round < 2; round++) {
+    for (let round = 0; round < this.holeCards; round++) {
       let i = sb;
       for (let n = 0; n < seats.length; n++) { players[i].cards.push(deck.pop()); i = this.nextFrom(i, seats); }
     }
@@ -120,13 +122,19 @@ export class Table {
     return list.length ? this.nextFrom(from, list) : -1;
   }
 
+  // Beste Hand: Hold'em aus allen sieben, Omaha genau zwei eigene + drei Gemeinschaftskarten
+  evaluate(hole, board) { return this.holeCards === 4 ? omahaBest(hole, board) : bestHand([...hole, ...board]); }
+
   // ---------- Erlaubte Aktionen ----------
   legal(seat) {
     const h = this.hand;
     if (!h || h.done || h.toAct !== seat) return null;
     const p = h.players[seat];
     const stack = this.seats[seat].stack;
-    const maxTo = p.bet + stack;
+    const stackTo = p.bet + stack;
+    // Pot-Limit: höchstens so hoch erhöhen, wie der Pot nach dem Mitgehen groß wäre
+    const pot = h.seats.reduce((a, i) => a + h.players[i].total, 0);
+    const maxTo = this.potLimit ? Math.min(stackTo, h.currentBet + pot + (h.currentBet - p.bet)) : stackTo;
     const toCall = Math.min(h.currentBet - p.bet, stack);
     const othersCanAct = h.seats.some((i) => i !== seat && this.canAct(i));
     const reopened = !p.acted || p.actedAt < h.fullRaises;
@@ -139,6 +147,8 @@ export class Table {
       isBet: h.currentBet === 0,
       minTo: Math.min(minTo, maxTo),
       maxTo,
+      stackTo,
+      potLimit: this.potLimit,
       bet: p.bet,
     };
   }
@@ -178,7 +188,7 @@ export class Table {
         if (!L.canRaise) throw new Error('Erhöhen ist gerade nicht erlaubt');
         const to = Math.floor(Number(action.amount));
         if (!Number.isFinite(to)) throw new Error('Ungültiger Betrag');
-        if (to > L.maxTo) throw new Error('So viele Chips hast du nicht');
+        if (to > L.maxTo) throw new Error(to > L.stackTo ? 'So viele Chips hast du nicht' : `Pot-Limit: höchstens ${L.maxTo}`);
         if (to < L.minTo && to !== L.maxTo) throw new Error(`Mindestens ${L.minTo}`);
         if (to <= h.currentBet) throw new Error('Das ist keine Erhöhung');
         const increment = to - h.currentBet;
@@ -343,7 +353,7 @@ export class Table {
     const evals = {};
     if (showdown) {
       while (h.board.length < 5) { h.deck.pop(); h.board.push(h.deck.pop()); }
-      for (const i of live) evals[i] = bestHand([...h.players[i].cards, ...h.board]);
+      for (const i of live) evals[i] = this.evaluate(h.players[i].cards, h.board);
       for (const i of live) h.shown.add(i);
     }
     // Reihenfolge links vom Button (für unteilbare Rest-Chips)

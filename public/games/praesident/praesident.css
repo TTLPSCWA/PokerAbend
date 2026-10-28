@@ -1,0 +1,10 @@
+/* Präsident: gelegte Karten offen in der Mitte */
+.kg-praesident .kg-main { background: radial-gradient(120% 90% at 50% 25%, #5A2A3A, #2A1220); }
+.pr-wrap { display: grid; justify-items: center; gap: 14px; }
+.pr-table { display: grid; justify-items: center; gap: 8px; padding: 14px 20px; border-radius: var(--r-l); background: rgba(0,0,0,.28); min-width: 220px; }
+.pr-table small { color: #F0D5DC; }
+.pr-cards { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.kg-praesident .kg-hand .kc { --w: 46px; }
+.kg-praesident .kg-hand .kc.can { outline: 2px solid rgba(240, 195, 90, .55); outline-offset: 1px; }
+.kc.mini { --w: 30px; vertical-align: middle; box-shadow: none; }
+@media (max-width: 640px) { .kg-praesident .kg-hand .kc { --w: 42px; } }

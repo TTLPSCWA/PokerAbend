@@ -96,6 +96,17 @@ export const INVARIANTS = {
       if (r.ships[id]) assert.equal(r.ships[id].length, r.fleet().length, 'Flotte');
     }
   },
+  mogeln: (r) => assert.equal(sum([r.pile, ...Object.values(r.hands)]), 52, 'Karten'),
+  praesident: (r) => {
+    const all = Object.values(r.hands).flat();
+    assert.equal(new Set(all).size, all.length, 'Karte doppelt');
+    assert.ok(all.length <= 52);
+  },
+  durak: (r) => {
+    const cards = [...r.deck, ...r.discard, ...Object.values(r.hands).flat(), ...r.board.flatMap((p) => [p.a, ...(p.d ? [p.d] : [])])];
+    assert.equal(cards.length, 36, 'Karten');
+    assert.equal(new Set(cards).size, 36, 'Karte doppelt');
+  },
   schwimmen: (r) => {
     const cards = [...r.deck, ...r.middle, ...Object.values(r.hands).flat()];
     assert.equal(cards.length, 32, 'Karten');
@@ -123,5 +134,8 @@ export const PLAN = {
   // Flacher Bot (1 Zug voraus) statt der vollen Suche: hier zählen die Regeln, nicht die Spielstärke
   viergewinnt: { games: 2000, players: [2, 2], settings: {}, maxSteps: 50, bot: (r, id, rng) => r.drop(id, botColumn(r.board, id, r.order.find((p) => p !== id), rng, 1)) },
   kniffel: { games: 600, players: [1, 6], settings: {}, maxSteps: 400 },
+  mogeln: { games: 800, players: [3, 8], settings: {}, maxSteps: 4000 },
+  praesident: { games: 800, players: [3, 8], settings: {}, maxSteps: 4000 },
+  durak: { games: 800, players: [2, 6], settings: {}, maxSteps: 4000 },
   blackjack: { games: 300, rounds: 20, players: [1, 7], settings: {}, maxSteps: 400 }, // 20 Hände je Tisch – Chips und Schlitten laufen weiter
 };

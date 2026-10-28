@@ -10,7 +10,7 @@
 // 'planned' erscheint nirgends – außer jemand schaltet unter „Ich“ „Geplante Spiele zeigen“ an (dann ausgegraut, nach Päckchen gruppiert).
 //
 // Ablauf: Wird ein Spiel gebaut, kommt es nach games/<id>/, wird in games/index.js registriert und fliegt hier raus.
-// Ist ein Päckchen fertig, werden die Einträge des nächsten Päckchens auf status 'next' gesetzt. (Päckchen 2b – Schlagfertig, Wer hat das gesagt? – ist fertig.)
+// Ist ein Päckchen fertig, werden die Einträge des nächsten Päckchens auf status 'next' gesetzt. (Fertig: Päckchen 2b – Schlagfertig, Wer hat das gesagt? – und Päckchen 4 – Mogeln, Präsident, Durak, Omaha.)
 import { fan, cardsChip, dice, stairs, swim, bubbles, numberLine, flapBox, battle, mill, connect4, pawns, reversi, checkers, dominoes, hexBoard, chess, territory, glyph } from './art-kit.js';
 
 const spiel = (o) => ({ type: 'game', status: 'planned', houseRules: [], ...o });
@@ -18,65 +18,9 @@ const funktion = (o) => ({ type: 'feature', status: 'planned', ...o });
 const CARD = { fill: '#F7F3E8' };
 
 export const PLANNED = [
-  // ---------- Päckchen 4 (als Nächstes) ----------
+  // ---------- Päckchen 5 (als Nächstes) ----------
   spiel({
-    id: 'praesident', name: 'Präsident', category: 'karten', minPlayers: 3, maxPlayers: 8, duration: 20, status: 'next', paeckchen: '4',
-    description: 'Wer zuerst alle Karten los ist, wird Präsident – wer zuletzt übrig bleibt, hat das Nachsehen.',
-    rules: [
-      'Das ganze Blatt wird verteilt (Skat- oder Rommé-Blatt); die Zwei ist die höchste Karte, danach Ass, König … bis zur Drei.',
-      'Der Starter spielt Karten gleichen Werts: eine einzelne, ein Paar, einen Drilling oder einen Vierling.',
-      'Reihum muss man mit gleich vielen Karten höheren Werts überbieten – oder passen.',
-      'Haben alle gepasst, räumt der letzte Spieler den Stapel ab und spielt neu aus.',
-      'Wer keine Karten mehr hat, belegt den nächsten Rang: Präsident, Vizepräsident, … bis zum Schlusslicht.',
-      'In der nächsten Runde gibt das Schlusslicht seine beste Karte an den Präsidenten und bekommt dessen schlechteste.',
-    ],
-    houseRules: ['Revolution: Ein Vierling dreht die Rangfolge um', 'Die Zwei beendet den Stich sofort', 'Joker als höchste Karte', 'Gleiche Karte „sperrt“ den Nächsten'],
-    art: fan([{ ...CARD, kind: 'bars', color: '#C99A45' }, { ...CARD, kind: 'diamond' }, { ...CARD, kind: 'dot', color: '#1A1A1A' }]),
-  }),
-  spiel({
-    id: 'durak', name: 'Durak', category: 'karten', minPlayers: 2, maxPlayers: 6, duration: 20, status: 'next', paeckchen: '4',
-    description: 'Russisches Angriffs- und Abwehrspiel: Wer am Ende noch Karten hat, ist der Durak.',
-    rules: [
-      'Gespielt wird mit 36 Karten (Sechs bis Ass); jeder bekommt 6 Karten, die unterste Karte des Stapels bestimmt die Trumpffarbe.',
-      'Der Angreifer legt eine Karte aus, der Verteidiger muss sie mit einer höheren der gleichen Farbe oder mit Trumpf schlagen.',
-      'Der Angreifer (und die Nachbarn) dürfen weitere Karten ausspielen, deren Wert schon auf dem Tisch liegt.',
-      'Kann oder will der Verteidiger nicht schlagen, nimmt er alle Karten auf und setzt eine Runde aus.',
-      'Danach wird auf 6 Karten aufgefüllt, zuerst der Angreifer.',
-      'Wer als Letzter Karten auf der Hand hat, ist der Durak (Verlierer).',
-    ],
-    houseRules: ['Weiterschieben: der Verteidiger gibt den Angriff mit einer gleichwertigen Karte weiter', 'Mehr als sechs Karten bei einem Angriff', 'Teamspiel zu viert'],
-    art: fan([{ fill: '#1F57C3' }, { ...CARD, kind: 'heart' }, { ...CARD, kind: 'dot', color: '#1A1A1A' }]),
-  }),
-  spiel({
-    id: 'mogeln', name: 'Mogeln', category: 'karten', minPlayers: 3, maxPlayers: 8, duration: 15, status: 'next', paeckchen: '4',
-    description: 'Karten verdeckt ablegen, den Wert ansagen – und hoffen, dass niemand die Lüge durchschaut.',
-    rules: [
-      'Ein 52er-Blatt wird ganz verteilt; reihum wird in aufsteigender Reihenfolge angesagt: Ass, Zwei, Drei … Dame, König, wieder Ass.',
-      'Wer dran ist, legt 1 bis 4 Karten verdeckt ab und sagt den vorgegebenen Wert an – ob es stimmt, ist egal.',
-      'Jeder andere darf „Mogeln!“ rufen. Dann wird die zuletzt abgelegte Gruppe aufgedeckt.',
-      'Stimmte die Ansage nicht, nimmt der Lügner den ganzen Stapel auf. Stimmte sie, bekommt ihn der Zweifler.',
-      'Wer zuerst alle Karten los ist, gewinnt.',
-    ],
-    houseRules: ['Nur eine Karte pro Zug', 'Bluffkarte: eine feste Zahl darf nie angesagt werden', 'Zweifeln kostet nichts, falsch zweifeln = zwei Strafkarten'],
-    art: fan([{ fill: '#1F57C3', kind: 'bars', color: '#F7F3E8' }, { fill: '#1F57C3', kind: 'bars', color: '#F7F3E8' }, { ...CARD, kind: 'diamond' }]),
-  }),
-  spiel({
-    id: 'omaha', name: 'Omaha', category: 'karten', minPlayers: 2, maxPlayers: 9, duration: 60, status: 'next', paeckchen: '4',
-    description: 'Poker wie Texas Hold’em, aber mit vier eigenen Karten – genau zwei davon zählen.',
-    rules: [
-      'Jeder bekommt vier verdeckte Karten, fünf Gemeinschaftskarten folgen (Flop, Turn, River) wie beim Hold’em.',
-      'Die Hand muss aus genau zwei eigenen und genau drei Gemeinschaftskarten bestehen.',
-      'Blinds und vier Setzrunden: Pre-Flop, Flop, Turn, River – wie beim Poker an diesem Tisch.',
-      'Üblich ist Pot-Limit: Man darf höchstens so viel erhöhen, wie der Pot groß ist.',
-      'Am Ende gewinnt die beste Fünf-Karten-Hand den Pot, Side Pots wie beim Hold’em.',
-    ],
-    houseRules: ['No Limit statt Pot Limit', 'Hi/Lo: der Pot wird zwischen bester und niedrigster Hand geteilt (Omaha 8)', 'Fünf Karten (Big O)'],
-    art: cardsChip({ kind: 'diamond' }, { kind: 'dot', color: '#1A1A1A' }, '#D33B35'),
-  }),
-
-  // ---------- Päckchen 5 ----------
-  spiel({
-    id: 'wuerfelpoker', name: 'Würfelpoker', category: 'wuerfel', minPlayers: 2, maxPlayers: 6, duration: 10, paeckchen: '5',
+    id: 'wuerfelpoker', name: 'Würfelpoker', category: 'wuerfel', minPlayers: 2, maxPlayers: 6, duration: 10, status: 'next', paeckchen: '5',
     description: 'Mit fünf Würfeln die beste Pokerhand werfen – bis zu dreimal pro Zug.',
     rules: [
       'Fünf Würfel, pro Zug bis zu drei Würfe; nach jedem Wurf darf man beliebige Würfel beiseitelegen und den Rest neu würfeln.',
@@ -89,7 +33,7 @@ export const PLANNED = [
     art: dice([{ x: 4, y: 8, n: 6, s: 18, rot: -10 }, { x: 24, y: 6, n: 6, s: 18, rot: 8 }, { x: 44, y: 10, n: 6, s: 16, rot: -6 }, { x: 14, y: 36, n: 3, s: 18, rot: 6 }, { x: 36, y: 36, n: 6, s: 18, rot: -8 }]),
   }),
   spiel({
-    id: 'luegenwuerfel', name: 'Lügenwürfel', category: 'wuerfel', minPlayers: 2, maxPlayers: 6, duration: 15, paeckchen: '5',
+    id: 'luegenwuerfel', name: 'Lügenwürfel', category: 'wuerfel', minPlayers: 2, maxPlayers: 6, duration: 15, status: 'next', paeckchen: '5',
     description: 'Verdeckt würfeln, Gebote über alle Würfel am Tisch abgeben und Lügen aufdecken.',
     rules: [
       'Jeder hat fünf Würfel unter einem Becher und schaut nur seine eigenen an.',
@@ -103,7 +47,7 @@ export const PLANNED = [
     art: dice([{ x: 10, y: 20, n: 4, s: 20, rot: -8, fill: '#2A2A2A', pip: '#F7F3E8' }, { x: 34, y: 18, n: 2, s: 20, rot: 10, fill: '#2A2A2A', pip: '#F7F3E8' }]),
   }),
   spiel({
-    id: 'chicago', name: 'Chicago', category: 'wuerfel', minPlayers: 2, maxPlayers: 6, duration: 15, paeckchen: '5',
+    id: 'chicago', name: 'Chicago', category: 'wuerfel', minPlayers: 2, maxPlayers: 6, duration: 15, status: 'next', paeckchen: '5',
     description: 'Elf Runden, zwei Würfel: Wer die Rundenzahl trifft, sammelt Punkte.',
     rules: [
       'Gespielt werden elf Runden mit den Zielzahlen 2 bis 12, in dieser Reihenfolge.',
@@ -115,7 +59,7 @@ export const PLANNED = [
     art: dice([{ x: 10, y: 22, n: 6, s: 20, rot: -10 }, { x: 34, y: 20, n: 6, s: 20, rot: 8 }]),
   }),
   spiel({
-    id: 'reversi', name: 'Reversi', category: 'brett', minPlayers: 2, maxPlayers: 2, duration: 15, paeckchen: '5',
+    id: 'reversi', name: 'Reversi', category: 'brett', minPlayers: 2, maxPlayers: 2, duration: 15, status: 'next', paeckchen: '5',
     description: 'Gegnerische Steine einschließen und umdrehen – am Ende zählt, wem mehr Steine gehören.',
     rules: [
       'Auf dem 8×8-Brett liegen am Anfang je zwei schwarze und weiße Steine diagonal in der Mitte; Schwarz beginnt.',
@@ -128,7 +72,7 @@ export const PLANNED = [
     art: reversi(),
   }),
   spiel({
-    id: 'dame', name: 'Dame', category: 'brett', minPlayers: 2, maxPlayers: 2, duration: 20, paeckchen: '5',
+    id: 'dame', name: 'Dame', category: 'brett', minPlayers: 2, maxPlayers: 2, duration: 20, status: 'next', paeckchen: '5',
     description: 'Deutsche Dame auf dem 8×8-Brett: schlagen, bis nichts mehr geht.',
     rules: [
       'Jeder hat zwölf Steine auf den dunklen Feldern der ersten drei Reihen; Weiß beginnt.',
@@ -141,7 +85,7 @@ export const PLANNED = [
     art: checkers(),
   }),
   spiel({
-    id: 'domino', name: 'Domino', category: 'brett', minPlayers: 2, maxPlayers: 4, duration: 15, paeckchen: '5',
+    id: 'domino', name: 'Domino', category: 'brett', minPlayers: 2, maxPlayers: 4, duration: 15, status: 'next', paeckchen: '5',
     description: 'Steine mit gleichen Augen aneinanderlegen – wer zuerst alle los ist, gewinnt die Runde.',
     rules: [
       'Der Satz hat 28 Steine (0–6); bei zwei Spielern bekommt jeder sieben, bei drei oder vier ebenfalls sieben, der Rest bleibt als Vorrat.',

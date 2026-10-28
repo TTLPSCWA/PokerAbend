@@ -2,7 +2,7 @@
 // Die Regeln selbst stecken in engine/table.js – hier geht es um Menschen und Zeit.
 import { randomBytes } from 'node:crypto';
 import { Table, SEATS } from './engine/table.js';
-import { bestHand, compareScores, outlook, equity } from './engine/cards.js';
+import { bestHand, omahaBest, compareScores, outlook, equity } from './engine/cards.js';
 import { BLIND_MODES, BLIND_PRESETS, blindLevels, levelIndex, untilNext, parseBlindList } from './blinds.js';
 import { cleanText } from '../../server/security.js';
 import { BaseRoom, AVATARS, HISTORY_ROUNDS } from '../../server/base-room.js';
@@ -18,6 +18,8 @@ export const DEFAULT_SETTINGS = {
   autoNext: true,
   handStrength: true, // Spieler dürfen sich ihre Hand anzeigen lassen
   maxPlayers: 9,
+  variant: 'holdem',  // 'holdem' | 'omaha' (steht beim Anlegen des Tisches fest)
+  potLimit: false,    // Erhöhen höchstens um die Potgröße (Omaha: an)
   oddsMode: 'own',    // Gewinnchancen: 'off' | 'own' (eigene, während der Hand) | 'after' (nach dem Showdown, nur gezeigte Hände)
   blindMode: 'off',   // Blinds erhöhen: 'off' | 'minutes' | 'hands'
   blindEvery: 12,     // alle X Minuten bzw. Hände
@@ -61,6 +63,8 @@ export function clampSettings(input, base = DEFAULT_SETTINGS) {
   if ('autoNext' in input) s.autoNext = !!input.autoNext;
   if ('handStrength' in input) s.handStrength = !!input.handStrength;
   if ('maxPlayers' in input) s.maxPlayers = int(input.maxPlayers, 2, SEATS, s.maxPlayers);
+  if ('variant' in input && base === DEFAULT_SETTINGS) s.variant = ['holdem', 'omaha'].includes(input.variant) ? input.variant : s.variant;
+  if ('potLimit' in input) s.potLimit = !!input.potLimit;
   if ('oddsMode' in input) s.oddsMode = ['off', 'own', 'after'].includes(input.oddsMode) ? input.oddsMode : s.oddsMode;
   if ('blindMode' in input) s.blindMode = BLIND_MODES.includes(input.blindMode) ? input.blindMode : s.blindMode;
   if ('blindEvery' in input) s.blindEvery = int(input.blindEvery, 1, 240, s.blindEvery);
@@ -84,7 +88,7 @@ export class Room extends BaseRoom {
   constructor(code, settings, onChange) {
     super(code, onChange);
     this.settings = clampSettings(settings);
-    this.table = new Table({ smallBlind: this.settings.smallBlind, bigBlind: this.settings.bigBlind });
+    this.table = new Table({ smallBlind: this.settings.smallBlind, bigBlind: this.settings.bigBlind, holeCards: this.settings.variant === 'omaha' ? 4 : 2, potLimit: this.settings.potLimit });
     this.started = false;
     this.paused = false;
     this.frozen = null; // Host hat sofort angehalten: { turnLeft, turnKey, nextLeft } in ms
@@ -210,6 +214,7 @@ export class Room extends BaseRoom {
     this.blindTick();
     const oldMode = this.settings.blindMode;
     this.settings = clampSettings(input, this.settings);
+    this.table.potLimit = this.settings.potLimit;
     if (this.settings.blindMode !== oldMode) this.resetBlinds();
     this.blindTick();
     if (!this.handRunning) this.applyBlinds();
@@ -561,7 +566,7 @@ export class Room extends BaseRoom {
         this.blind.hands++;
         this.recordStats(h);
         this.reportResult(h);
-        if (this.settings.oddsMode === 'after') this.logAfterOdds(h);
+        if (this.settings.oddsMode === 'after' && this.settings.variant !== 'omaha') this.logAfterOdds(h);
         this.onChange('handDone');
       }
       if (this.started && !this.paused && !this.frozen && this.settings.autoNext && !this.nextTimer) this.scheduleNext(this.settings.nextDelay * 1000);
@@ -655,7 +660,7 @@ export class Room extends BaseRoom {
     }
     if (h.result.showdown) {
       for (const seat of h.shown) {
-        const e = bestHand([...h.players[seat].cards, ...h.board]);
+        const e = this.table.evaluate(h.players[seat].cards, h.board);
         const best = this.stats.bestHand;
         if (!best || compareScores(e.score, best.score) > 0) {
           this.stats.bestHand = { score: e.score, name: this.playerAt(seat)?.name, hand: e.name };
@@ -710,7 +715,7 @@ export class Room extends BaseRoom {
       let cards = null;
       if (hp && (!hp.folded || i === mySeat)) {
         const visible = i === mySeat || (h.done && h.shown.has(i));
-        cards = visible ? hp.cards : ['??', '??'];
+        cards = visible ? hp.cards : Array(this.table.holeCards).fill('??');
       }
       return {
         seat: i, id: s.id, name: s.name, avatar: p?.avatar, bot: !!p?.bot, stack: s.stack,
@@ -738,7 +743,7 @@ export class Room extends BaseRoom {
         pots: h.done ? [] : t.potsDisplay().map((p) => p.amount),
         bets: h.done ? 0 : h.seats.reduce((a, i) => a + h.players[i].bet, 0),
         deadline: this.deadline, frozenLeft: this.frozen?.turnLeft ?? null, turnTime: this.settings.turnTime, result,
-        afterOdds: h.done && this.settings.oddsMode === 'after' ? this.afterOdds(h) : null,
+        afterOdds: h.done && this.settings.oddsMode === 'after' && this.settings.variant !== 'omaha' ? this.afterOdds(h) : null,
       };
     }
 
@@ -749,9 +754,9 @@ export class Room extends BaseRoom {
     if (mySeat !== null && h) {
       if (!h.done && !this.frozen && h.toAct === mySeat) legal = t.legal(mySeat);
       const hp = h.players[mySeat];
-      const ownOdds = this.settings.oddsMode === 'own';
+      const ownOdds = this.settings.oddsMode === 'own' && this.settings.variant !== 'omaha'; // Gewinnchancen gibt es nur beim Hold'em
       if (hp && !hp.folded && (this.settings.handStrength || ownOdds)) {
-        const e = bestHand([...hp.cards, ...h.board]);
+        const e = this.table.evaluate(hp.cards, h.board);
         strengthCat = e.category;
         if (this.settings.handStrength) strength = e.name;
         // Nur aus den eigenen Karten und dem Board – fremde Karten fließen nie ein

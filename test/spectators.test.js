@@ -12,11 +12,14 @@ const SECRETS = {
   stapelrennen: (r, id) => (r.hand[id].length ? [`"hand":[${r.hand[id].join(',')}]`] : []),
   maexchen: (r, id) => (r.cup && r.currentId === id ? [`"cup":[${r.cup.join(',')}]`] : []),
   schwimmen: (r, id) => (r.lastDeal ? [] : r.hands[id]), // gleich beim Geben 31: dann wurde zu Recht aufgedeckt (Karten des alten Durchgangs)
+  mogeln: (r, id) => r.hands[id],
+  praesident: (r, id) => r.hands[id],
+  durak: (r, id) => r.hands[id],
   schiffe: (r, id) => r.ships[id].map((s) => JSON.stringify(s.cells)), // Schiffspositionen
 };
 
 for (const g of Object.values(GAMES)) {
-  if (g.id === 'poker') continue; // Poker: test/server.test.js und room.test.js
+  if (g.id === 'poker' || g.id === 'omaha') continue; // Poker: test/server.test.js und room.test.js
   test(`Zuschauen bei ${g.name}: nichts Verdecktes, Einstieg zur nächsten Runde`, () => {
     const r = g.create('ZUSCH', {}, () => {});
     const [a, b] = ['Anna', 'Ben'].map((n) => { const p = r.addPlayer(n, null); r.sit(p.id); return p.id; });

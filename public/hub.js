@@ -79,7 +79,7 @@ async function joinAndEnter(code, mode = '') {
   if (!r?.ok) { toast(r?.error || 'Verbindung fehlgeschlagen', true); return false; }
   if (mode === 'sit') {
     // Poker braucht einen bestimmten Platz – den sucht man am Tisch aus
-    if (r.game === 'poker') toast('Such dir am Tisch einen freien Platz aus');
+    if (r.game === 'poker' || r.game === 'omaha') toast('Such dir am Tisch einen freien Platz aus');
     else socket.emit('sit', {}, (s) => { if (!s?.ok) toast(s?.error || 'Der Platz ist leider schon weg – du schaust zu', true); });
   }
   enterGame(r);

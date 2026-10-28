@@ -1,0 +1,17 @@
+/* Durak: Angriffskarten mit Gegenkarte schräg darüber, Trumpfkarte quer neben dem Stapel */
+.kg-durak .kg-main { background: radial-gradient(120% 90% at 50% 25%, #2A4A3A, #12241C); }
+.du-wrap { display: grid; justify-items: center; gap: 14px; }
+.du-table { display: flex; flex-wrap: wrap; gap: 14px 12px; justify-content: center; min-height: 100px; padding: 10px; border-radius: var(--r-l); background: rgba(0,0,0,.24); min-width: min(100%, 320px); }
+.du-pair { position: relative; width: 72px; height: 90px; }
+.du-atk { background: none; border: 0; padding: 0; position: absolute; left: 0; top: 0; }
+.du-def { position: absolute; left: 14px; top: 16px; transform: rotate(8deg); }
+.du-pair .kc { --w: 56px; }
+.du-pair .kc.can { outline: 3px solid var(--gold); outline-offset: 1px; }
+.du-deck { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.du-deck .kc { --w: 44px; box-shadow: none; }
+.du-deck small { color: #CFE6D6; }
+.du-trump { color: var(--gold-text); }
+.kc.sideways { transform: rotate(90deg); margin: 0 10px; }
+.kg-durak .kg-hand .kc { --w: 48px; }
+.kg-durak .kg-hand .kc.trump { box-shadow: 0 0 0 2px rgba(240, 195, 90, .6); }
+@media (max-width: 640px) { .kg-durak .kg-hand .kc { --w: 42px; } }

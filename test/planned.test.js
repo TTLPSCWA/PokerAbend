@@ -54,7 +54,6 @@ test('IDs sind eindeutig und kollidieren nicht mit gebauten Spielen oder Spiel-E
 
 test('Alle Spiele und Funktionen der Liste sind eingetragen – im richtigen Päckchen', () => {
   const want = {
-    4: ['praesident', 'durak', 'mogeln', 'omaha'],
     5: ['wuerfelpoker', 'luegenwuerfel', 'chicago', 'reversi', 'dame', 'domino'],
     6: ['bauart-b-baustein', 'zahlenzoo', 'gedaechtnis-kueche', 'pfeilfieber', 'sortierstation', 'tickendes-paket'],
     7: ['party-mix', 'party-turnier', 'eigene-playlist', 'team-duell'],
@@ -80,6 +79,6 @@ test('Nur das nächste Päckchen steht auf „next“, alles andere auf „plann
   const next = PLANNED.filter((e) => e.status === 'next');
   assert.ok(next.length >= 1);
   assert.equal(new Set(next.map((e) => e.paeckchen)).size, 1, 'nur ein Päckchen gleichzeitig');
-  assert.deepEqual(next.map((e) => e.id), ['praesident', 'durak', 'mogeln', 'omaha'], 'Päckchen 2b ist fertig, Päckchen 4 ist dran');
+  assert.deepEqual(next.map((e) => e.id), ['wuerfelpoker', 'luegenwuerfel', 'chicago', 'reversi', 'dame', 'domino'], 'Päckchen 4 ist fertig, Päckchen 5 ist dran');
   assert.ok(PLANNED.filter((e) => e.status !== 'next').every((e) => e.status === 'planned'));
 });

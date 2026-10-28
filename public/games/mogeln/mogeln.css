@@ -1,0 +1,15 @@
+/* Mogeln: angesagter Wert groß, verdeckter Stapel, aufgedeckte Gruppe nach „Mogeln!“ */
+.kg-mogeln .kg-main { background: radial-gradient(120% 90% at 50% 25%, #3A2B52, #1C1530); }
+.mg-table { display: grid; justify-items: center; gap: 14px; }
+.mg-need { display: grid; justify-items: center; padding: 10px 26px; border-radius: var(--r-l); background: rgba(0,0,0,.3); }
+.mg-need small { color: #D9CCEF; text-transform: uppercase; letter-spacing: .06em; font-size: 12px; }
+.mg-need b { font-size: 38px; line-height: 1.1; color: var(--gold-text); }
+.mg-pile { display: grid; justify-items: center; gap: 6px; }
+.mg-pile small { color: #D9CCEF; }
+.mg-reveal { display: grid; justify-items: center; gap: 6px; padding: 10px 16px; border-radius: var(--r-m); background: rgba(0,0,0,.3); border: 2px solid var(--gold); }
+.mg-reveal.lie { border-color: #D9534F; }
+.mg-reveal.true { border-color: #4FA36B; }
+.mg-cards { display: flex; gap: 6px; }
+.mg-cards .kc { --w: 44px; box-shadow: none; }
+.kg-mogeln .kg-hand .kc { --w: 46px; }
+@media (max-width: 640px) { .mg-need b { font-size: 30px; } .kg-mogeln .kg-hand .kc { --w: 42px; } }

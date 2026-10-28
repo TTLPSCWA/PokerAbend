@@ -205,7 +205,7 @@ test('Jedes Spiel bringt Spielerzahl, Dauer und Spielbild mit – passend zu den
     assert.ok(!/<script|on\w+=|href=|<image|<foreignObject/i.test(g.art), `${g.id}: Spielbild ohne Skripte und externe Bilder`);
     // stimmt mit dem Raum überein (Poker: Plätze am Tisch)
     const r = GAMES[g.id].create('META', {}, () => {});
-    const [lo, hi] = g.id === 'poker' ? [2, r.settings.maxPlayers] : [r.opts.minPlayers, r.opts.maxPlayers];
+    const [lo, hi] = ['poker', 'omaha'].includes(g.id) ? [2, r.settings.maxPlayers] : [r.opts.minPlayers, r.opts.maxPlayers];
     assert.equal(g.maxPlayers, hi, `${g.id}: maxPlayers`);
     assert.equal(g.minPlayers, lo, `${g.id}: minPlayers`);
     r.dispose();

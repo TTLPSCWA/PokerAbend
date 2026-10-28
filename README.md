@@ -1,6 +1,6 @@
 # Spieleabend
 
-Spielesammlung für die Freundesgruppe, im Browser und online spielbar: Texas Hold'em, Mau-Mau, UNO, Mäxchen, Schocken, Mensch ärgere Dich nicht, Phase 10 und Skip-Bo. Der Server ist Geber und Schiedsrichter: Er mischt, teilt aus, würfelt, prüft jeden Zug und rechnet ab.
+Spielesammlung für die Freundesgruppe, im Browser und online spielbar: Texas Hold'em, Mau-Mau, UNO, Mäxchen, Schocken, Mensch ärgere Dich nicht, Phase 10, Skip-Bo und viele weitere. Der Server ist Geber und Schiedsrichter: Er mischt, teilt aus, würfelt, prüft jeden Zug und rechnet ab.
 
 > **Name:** Sichtbar heißt die Seite „Spieleabend“. Technisch bleibt „pokerabend“ – Repo, Docker-Image `ghcr.io/ttlpscwa/pokerabend`, Container, Volume `poker-data`, Paketname, Cookie `pa_auth` und die Browser-Speicherschlüssel `poker:…`. Sonst brechen Deployment und laufende Sitzungen.
 
@@ -109,6 +109,10 @@ Die Startseite ist ein Hub mit Navigation per URL-Hash (Zurück-Taste und Links 
 | Schlagfertig (Party Spiele) | 3–8 | Jede Runde 2 lustige Aufgaben je Spieler, jede Aufgabe an genau 2 Spieler. Beide Antworten stehen ohne Namen nebeneinander, die anderen stimmen ab: Stimme = 100 Punkte, alle Stimmen für eine Antwort = Volltreffer +200. Letzte Runde: Finale mit einer Aufgabe für alle und 3 Stimmen. 182 Aufgaben, eigene möglich |
 | Wer hat das gesagt? (Party Spiele) | 3–10 | Eine lockere, persönliche Frage pro Runde, alle antworten anonym. Dann wird jede Antwort einzeln gezeigt und der Autor in der Spielerliste getippt: richtig +100, der Autor +50 je Fehltipp. 112 Fragen, eigene möglich (auch „nur eigene Fragen“) |
 | Schiffe versenken | 2 (+ Zuschauer) | Zwei Meere 10 × 10, Flotte setzen (nicht berühren), abwechselnd schießen: Wasser, Treffer, versenkt. Zeit pro Schuss. Die gegnerischen Schiffe sieht man erst nach Spielende |
+| Omaha | 2–9 | Poker wie Hold'em (gleicher Tisch, Host-Menü, Bots), aber 4 eigene Karten, von denen genau 2 zählen, und Pot-Limit (Erhöhen höchstens um die Potgröße). Keine Gewinnchancen-Anzeige |
+| Mogeln | 3–8 | 52 Karten, Ansage in fester Folge (Ass, 2 … König), 1–4 Karten verdeckt ablegen, „Mogeln!“ rufen: der Lügner bzw. der Zweifler nimmt den Stapel. Wer zuerst keine Karten hat und nicht erwischt wird, gewinnt |
+| Präsident | 3–8 | 52 Karten, 2 am höchsten, gleich viele höhere Karten legen oder passen, Tisch frei, wenn alle passen. Plätze Präsident bis Schlusslicht mit Punkten, ab Runde 2 Kartentausch |
+| Durak | 2–6 | 36 Karten, Trumpf = unterste Karte, angreifen und schlagen, Nachlegen aller Mitspieler (höchstens 6), Aufnehmen, Auffüllen. Wer zuletzt Karten hat, ist der Durak |
 
 Die Startseite ist ein Hub (siehe „Startseite“ weiter unten). Die Kategorie (`karten`, `wuerfel`, `brett`, `party`), Spielerzahl, Dauer und das Spielbild legt jedes Spiel in seinem `games/<spiel>/index.js` fest.
 

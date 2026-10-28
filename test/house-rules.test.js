@@ -19,7 +19,7 @@ const seq = (...vals) => () => { if (!vals.length) throw new Error('Würfel aufg
 
 test('Optionen: jedes Spiel beschreibt sie, Host ändert sie nur zwischen den Runden, Unsinn wird ignoriert', () => {
   for (const g of Object.values(GAMES)) {
-    if (g.id === 'poker') continue;
+    if (g.id === 'poker' || g.id === 'omaha') continue;
     const r = g.create('X', {}, () => {});
     for (const o of g.options) {
       assert.ok(o.label && ['bool', 'number'].includes(o.type), `${g.id}.${o.key}`);

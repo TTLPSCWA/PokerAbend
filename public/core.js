@@ -208,9 +208,12 @@ let current = null;   // laufendes Spielmodul
 let mounted = null;   // dessen Oberfläche gerade in #game-root steckt
 let lastState = null; // letzter Stand vom Server – kommt oft, bevor das Modul geladen ist
 function registerGame(id, mod) { GAME_MODULES[id] = mod; }
+// Spielarten, die die Oberfläche eines anderen Spiels nutzen (Omaha ist Poker mit vier Karten)
+const GAME_FILES = { omaha: 'poker' };
 function loadGame(id) {
   if (GAME_MODULES[id]) return Promise.resolve(GAME_MODULES[id]);
   if (!/^[a-z0-9-]{1,30}$/.test(id)) return Promise.reject(new Error('Dieses Spiel gibt es nicht'));
+  if (GAME_FILES[id]) return loadGame(GAME_FILES[id]).then((m) => (GAME_MODULES[id] = m));
   gameLoads[id] ||= new Promise((res, rej) => {
     const css = document.createElement('link');
     css.rel = 'stylesheet'; css.href = `/games/${id}/${id}.css`;
@@ -451,7 +454,7 @@ async function fetchLeaderboard(game, period = 'all') {
 }
 function leaderboardInner(r, pre = 'lb') {
   const info = r.games.find((g) => g.id === r.game);
-  const isPoker = r.game === 'poker';
+  const isPoker = r.game === 'poker' || r.game === 'omaha';
   const monthName = (m) => new Date(m + '-15T12:00:00').toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
   const months = r.months.includes(r.current) ? r.months : [r.current, ...r.months];
   const fmtPoints = (n) => (isPoker ? `${n > 0 ? '+' : n < 0 ? '−' : '±'}${Math.abs(n).toLocaleString('de-DE')}` : n.toLocaleString('de-DE'));

@@ -494,7 +494,7 @@ function renderDock() {
           <button class="btn btn-sm" data-preset="0.5">½ Pot</button>
           <button class="btn btn-sm" data-preset="0.75">¾ Pot</button>
           <button class="btn btn-sm" data-preset="1">Pot</button>
-          <button class="btn btn-sm" data-preset="all">All-in</button>
+          <button class="btn btn-sm" data-preset="all">${L.potLimit && L.maxTo < L.stackTo ? 'Max (Pot)' : 'All-in'}</button>
         </div>
         <div class="raise-line">
           <input type="range" id="raise-range" min="${L.minTo}" max="${L.maxTo}" step="${Math.max(1, Math.floor(S.settings.smallBlind))}" value="${raiseValue}" aria-label="Betrag">
@@ -548,7 +548,7 @@ function preActionsHTML(me) {
 function raiseInner(v) {
   const L = S.legal;
   const val = Math.min(L.maxTo, Math.max(L.minTo, v));
-  return `<small>${L.isBet ? 'Bet' : 'Raise auf'}${val === L.maxTo ? ' · All-in' : ''} ${prefs.keys ? '<kbd>R</kbd>' : ''}</small><span class="amt">${amt(val)}</span>`;
+  return `<small>${L.isBet ? 'Bet' : 'Raise auf'}${val === L.maxTo ? (L.potLimit && L.maxTo < L.stackTo ? ' · Pot-Limit' : ' · All-in') : ''} ${prefs.keys ? '<kbd>R</kbd>' : ''}</small><span class="amt">${amt(val)}</span>`;
 }
 
 // Timer und Countdown laufen ohne komplettes Neuzeichnen
@@ -1117,10 +1117,16 @@ function pokerHelp() {
   const rebuy = s.rebuy === 'unlimited' ? 'unbegrenzt' : s.rebuy === 'off' ? 'aus' : `höchstens ${s.rebuy}×`;
   const onOff = (v) => (v ? 'an' : 'aus');
   showHelp({
-    title: "Texas Hold'em – kurz erklärt",
+    title: s.variant === 'omaha' ? 'Omaha – kurz erklärt' : "Texas Hold'em – kurz erklärt",
     short: [
-      'Jeder bekommt 2 verdeckte Karten. In die Mitte kommen nach und nach 5 offene: Flop (3), Turn, River.',
-      'Die beste Hand aus 5 der 7 Karten gewinnt – die Reihenfolge zeigt „Hände“ unten links.',
+      ...(s.variant === 'omaha' ? [
+        'Jeder bekommt 4 verdeckte Karten. In die Mitte kommen nach und nach 5 offene: Flop (3), Turn, River.',
+        'Zählen dürfen genau 2 deiner Karten und genau 3 aus der Mitte – die beste solche Hand gewinnt (Reihenfolge unter „Hände“).',
+        ...(s.potLimit ? ['Pot-Limit: Du darfst höchstens so hoch erhöhen, wie der Pot nach deinem Mitgehen groß wäre.'] : []),
+      ] : [
+        'Jeder bekommt 2 verdeckte Karten. In die Mitte kommen nach und nach 5 offene: Flop (3), Turn, River.',
+        'Die beste Hand aus 5 der 7 Karten gewinnt – die Reihenfolge zeigt „Hände“ unten links.',
+      ]),
       'Vor jeder neuen Karte wird gesetzt: Check (nichts), Call (mitgehen), Raise (erhöhen) oder Fold (aussteigen).',
       'Small und Big Blind sind Pflichteinsätze und wandern jede Hand einen Platz weiter.',
       'Wer All-in ist, spielt nur um den Teil des Pots, den er abdecken kann (Side Pots).',
@@ -1357,7 +1363,7 @@ registerGame('poker', {
   show() {
     $('#game').hidden = false; render();
     // Erste Schritte beim ersten Poker-Abend in diesem Browser
-    setTimeout(() => { if (!$('#dlg').open) showIntro('poker', "Texas Hold'em", [
+    setTimeout(() => { if (!$('#dlg').open) showIntro('poker', S?.game === 'omaha' ? 'Omaha' : "Texas Hold'em", [
       ['Am Tisch', 'Tipp auf einen freien Platz, um dich hinzusetzen. Der Host startet die Hand.'],
       ['Am Zug', 'Unten stehen deine Karten und was du tun kannst: Fold, Check oder Call, Raise. Die Uhr zeigt, wie lange du noch hast.'],
       ['Hilfe', '„Hände“ unten links zeigt alle Pokerhände von Royal Flush bis High Card, „?“ die Kurzregeln. Deine Einstellungen findest du unter „Ich“.'],
