@@ -86,6 +86,21 @@ export const PLANNED = [
     houseRules: ['Sichtbarer Countdown statt Zufallszeit', 'Eigene Kategorien des Hosts'],
     art: glyph('bomb', '#7A5238'),
   }),
+  spiel({
+    id: 'werwolf', name: 'Werwolf', category: 'party', bauart: 'A', minPlayers: 6, maxPlayers: 18, duration: 30, status: 'next', paeckchen: '6',
+    vorbild: 'Die Werwolf-Spielform „Die Werwölfe vom Düsterwald“ – nur die Mechanik',
+    description: 'Dorf gegen Werwölfe: Nachts wird gejagt, tagsüber diskutiert und abgestimmt. Der Server ist Spielleiter.',
+    rules: [
+      'Der Server verteilt die Rollen verdeckt und schickt jedem nur seine eigene Rolle; Tote sehen alles, dürfen aber nichts mehr verraten.',
+      'Nacht: Die Werwölfe einigen sich im Chat auf ein Opfer. Die Seherin sieht die Rolle eines Spielers. Die Hexe hat je einen Heil- und einen Gifttrank.',
+      'In der ersten Nacht verliebt Amor zwei Spieler: Stirbt einer, stirbt auch der andere.',
+      'Tag: Alle erfahren, wer gestorben ist, und diskutieren (per Voice am Tisch). Danach stimmt das Dorf ab; wer die meisten Stimmen hat, wird hingerichtet.',
+      'Stirbt der Jäger, nimmt er sofort einen Spieler mit in den Tod.',
+      'Das Dorf gewinnt, wenn alle Werwölfe tot sind; die Werwölfe gewinnen, wenn sie mindestens so viele sind wie das Dorf.',
+    ],
+    houseRules: ['Rollen-Auswahl durch den Host (welche Sonderrollen im Spiel sind)', 'Zeit pro Phase (Nacht, Diskussion, Abstimmung)', 'Rolle bei Tod aufdecken: an oder aus'],
+    art: glyph('mask', '#4A3A6B'),
+  }),
 
   // ---------- Päckchen 7 ----------
   funktion({ id: 'party-mix', name: 'Party-Mix', type: 'feature', paeckchen: '7', beschreibung: 'Ein Tisch spielt hintereinander zufällig oder vom Host gewählte Partyspiele, ohne dass man zwischendurch wechseln muss; die Punkte laufen über alle Spiele.' }),
@@ -145,6 +160,21 @@ export const PLANNED = [
     ],
     houseRules: ['Verdopplerwürfel', 'Jacoby-Regel', 'Spiel auf mehrere Gewinnspiele'],
     art: flapBox(),
+  }),
+  spiel({
+    id: 'scrabble', name: 'Scrabble', category: 'brett', minPlayers: 2, maxPlayers: 4, duration: 60, paeckchen: 'spaeter',
+    vorbild: 'Wortlegespiele wie Scrabble – nur die Mechanik, eigene Gestaltung',
+    description: 'Wörter auf dem 15×15-Brett legen und mit Buchstabenwerten und Prämienfeldern Punkte sammeln.',
+    rules: [
+      'Das Brett hat 15×15 Felder mit Prämienfeldern (doppelter und dreifacher Buchstaben- bzw. Wortwert); die Mitte ist das Startfeld.',
+      'Gespielt wird mit der deutschen Buchstabenverteilung und den deutschen Buchstabenwerten; jeder hat 7 Steine auf der Bank und füllt nach jedem Zug aus dem Beutel auf.',
+      'Man legt Steine in einer Reihe so an, dass ein gültiges Wort entsteht und alle neuen Kreuzungswörter ebenfalls; das erste Wort liegt auf dem Startfeld.',
+      'Wertung: Buchstabenwerte mit Prämienfeldern; wer alle 7 Steine in einem Zug legt, bekommt einen Bonus.',
+      'Ein Wörterbuch gibt es nicht: Jedes gelegte Wort kann angezweifelt werden, dann stimmen alle anderen ab. Ist es abgelehnt, nimmt der Spieler die Steine zurück und setzt aus.',
+      'Das Spiel endet, wenn der Beutel leer ist und jemand alle Steine los ist oder alle nacheinander passen; Reststeine zählen als Abzug.',
+    ],
+    houseRules: ['Zeitlimit pro Zug', 'Joker (Blanko-Steine) mit oder ohne', 'Tauschen von Steinen statt Legen'],
+    art: glyph('letters', '#8A6A2F'),
   }),
   spiel({
     id: 'hearts', name: 'Hearts', category: 'karten', minPlayers: 4, maxPlayers: 4, duration: 25, paeckchen: 'spaeter',
@@ -425,6 +455,21 @@ export const PLANNED = [
     ],
     houseRules: ['Hochzeit', 'Schweine', 'Solo-Spiele', 'Pflichtsolo'],
     art: fan([{ ...CARD, kind: 'dot', color: '#1A1A1A' }, { ...CARD, kind: 'diamond' }, { ...CARD, kind: 'bars', color: '#C99A45' }, { ...CARD, kind: 'heart' }]),
+  }),
+  spiel({
+    id: 'scotland-yard', name: 'Scotland Yard', category: 'brett', minPlayers: 3, maxPlayers: 6, duration: 60, paeckchen: 'gross',
+    vorbild: 'Fahndungsspiele wie Scotland Yard – nur die Mechanik; der Stadtplan ist eine eigene Erfindung, kein Original-Plan',
+    description: 'Eine Gruppe Detektive jagt Mr. X durch die Stadt, dessen Position fast immer verborgen bleibt.',
+    rules: [
+      'Ein Spieler ist Mr. X und bewegt sich verdeckt, alle anderen sind Detektive. Gespielt wird auf einem eigenen Stadtplan mit nummerierten Haltestellen.',
+      'Gezogen wird mit Taxi-, Bus- und U-Bahn-Tickets, die je Verkehrsmittel begrenzt sind; die Detektive sehen, welches Ticket Mr. X benutzt hat, aber nicht, wohin er gefahren ist.',
+      'In festen Runden (zum Beispiel 3, 8, 13 und 18) zeigt sich Mr. X und nennt seine Haltestelle.',
+      'Mr. X hat Black-Tickets, die das Verkehrsmittel verbergen, und Doppelzug-Tickets für zwei Züge hintereinander.',
+      'Die Detektive gewinnen, wenn einer von ihnen auf Mr. Xs Haltestelle zieht oder Mr. X nicht mehr ziehen kann; Mr. X gewinnt, wenn er alle Runden überlebt.',
+      'Der Server kennt Mr. Xs Position und schickt sie nie an die Detektive; erst bei Auftauchen oder Spielende erfahren sie sie.',
+    ],
+    houseRules: ['Mr. X kann auch ein Detektiv-Team gegen mehrere Mr. X sein', 'Anzahl der Auftauch-Runden', 'Zeit pro Zug', 'Weniger Tickets für schnellere Spiele'],
+    art: glyph('agent', '#2E3F57'),
   }),
   spiel({
     id: 'schach', name: 'Schach', category: 'brett', minPlayers: 2, maxPlayers: 2, duration: 30, paeckchen: 'gross',

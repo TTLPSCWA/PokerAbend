@@ -16,7 +16,7 @@ test('Spiel-Einträge haben alle Pflichtfelder', () => {
     assert.ok(g.name && g.name.length <= 40, `${w}: name`);
     assert.ok(typeof g.description === 'string' && g.description.length >= 15 && g.description.length <= 200, `${w}: description`);
     assert.ok(CATEGORIES.includes(g.category), `${w}: category`);
-    assert.ok(Number.isInteger(g.minPlayers) && Number.isInteger(g.maxPlayers) && g.minPlayers >= 1 && g.minPlayers <= g.maxPlayers && g.maxPlayers <= 12, `${w}: Spielerzahl`);
+    assert.ok(Number.isInteger(g.minPlayers) && Number.isInteger(g.maxPlayers) && g.minPlayers >= 1 && g.minPlayers <= g.maxPlayers && g.maxPlayers <= 18, `${w}: Spielerzahl`);
     assert.ok(Number.isInteger(g.duration) && g.duration > 0 && g.duration <= 180, `${w}: duration`);
     assert.ok(['next', 'planned'].includes(g.status), `${w}: status`);
     assert.ok(PACKAGES.includes(g.paeckchen), `${w}: paeckchen ${g.paeckchen}`);
@@ -54,11 +54,11 @@ test('IDs sind eindeutig und kollidieren nicht mit gebauten Spielen oder Spiel-E
 
 test('Alle Spiele und Funktionen der Liste sind eingetragen – im richtigen Päckchen', () => {
   const want = {
-    6: ['bauart-b-baustein', 'zahlenzoo', 'gedaechtnis-kueche', 'pfeilfieber', 'sortierstation', 'tickendes-paket'],
+    6: ['bauart-b-baustein', 'zahlenzoo', 'gedaechtnis-kueche', 'pfeilfieber', 'sortierstation', 'tickendes-paket', 'werwolf'],
     7: ['party-mix', 'party-turnier', 'eigene-playlist', 'team-duell'],
     8: ['broeckelboden', 'kronenjagd', 'laser-huepfer'],
-    spaeter: ['backgammon', 'hearts', 'five-card-draw', 'hex', 'schatzinsel', 'gummiband-challenge', 'geschenkfaenger', 'rhythmus-rausch', 'puzzle-panik', 'wortjagd', 'stillgestanden', 'schatzgraeber', 'minenlauf', 'labyrinth-chaos', 'schubsarena', 'scheinwerfer-flucht', 'doppelagent', 'luegenbaron', 'brueckenroulette', 'wuerfel-auktion', 'zahlenreihe', 'modifikatoren'],
-    gross: ['skat', 'doppelkopf', 'schach', 'staedtehandel', 'gebietskampf', 'party-brett'],
+    spaeter: ['backgammon', 'scrabble', 'hearts', 'five-card-draw', 'hex', 'schatzinsel', 'gummiband-challenge', 'geschenkfaenger', 'rhythmus-rausch', 'puzzle-panik', 'wortjagd', 'stillgestanden', 'schatzgraeber', 'minenlauf', 'labyrinth-chaos', 'schubsarena', 'scheinwerfer-flucht', 'doppelagent', 'luegenbaron', 'brueckenroulette', 'wuerfel-auktion', 'zahlenreihe', 'modifikatoren'],
+    gross: ['skat', 'doppelkopf', 'scotland-yard', 'schach', 'staedtehandel', 'gebietskampf', 'party-brett'],
   };
   for (const [p, ids] of Object.entries(want)) {
     assert.deepEqual(PLANNED.filter((e) => e.paeckchen === p).map((e) => e.id), ids, `Päckchen ${p}`);
@@ -78,6 +78,6 @@ test('Nur das nächste Päckchen steht auf „next“, alles andere auf „plann
   const next = PLANNED.filter((e) => e.status === 'next');
   assert.ok(next.length >= 1);
   assert.equal(new Set(next.map((e) => e.paeckchen)).size, 1, 'nur ein Päckchen gleichzeitig');
-  assert.deepEqual(next.map((e) => e.id), ['zahlenzoo', 'gedaechtnis-kueche', 'pfeilfieber', 'sortierstation', 'tickendes-paket'], 'Päckchen 5 ist fertig, Päckchen 6 ist dran (die Funktion Bauart-B-Baustein erscheint nie im Hub)');
+  assert.deepEqual(next.map((e) => e.id), ['zahlenzoo', 'gedaechtnis-kueche', 'pfeilfieber', 'sortierstation', 'tickendes-paket', 'werwolf'], 'Päckchen 5 ist fertig, Päckchen 6 ist dran (die Funktion Bauart-B-Baustein erscheint nie im Hub)');
   assert.ok(PLANNED.filter((e) => e.status !== 'next').every((e) => e.status === 'planned'));
 });
