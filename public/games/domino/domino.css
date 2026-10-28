@@ -1,0 +1,20 @@
+/* Domino: Kette aus Steinen mit Augen, Hand unten */
+.kg-domino .kg-main { background: radial-gradient(120% 90% at 50% 25%, #22443A, #0C1C17); }
+.dn-wrap { display: grid; justify-items: center; gap: 14px; width: 100%; }
+.dn-chain { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; max-width: 100%; padding: 8px; border-radius: var(--r-m); background: rgba(0,0,0,.22); min-width: min(100%, 280px); }
+.dn-tile { display: inline-flex; align-items: center; background: #F7F3E8; border-radius: 6px; padding: 3px; box-shadow: 0 2px 4px rgba(0,0,0,.45); border: 0; }
+.dn-tile.double { transform: rotate(0); }
+.dn-half { display: inline-grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr); width: 28px; height: 28px; padding: 3px; }
+.dn-half i { width: 70%; height: 70%; margin: auto; border-radius: 50%; }
+.dn-half i.on { background: #1A1A1A; }
+.dn-bar { width: 2px; align-self: stretch; background: #8A8470; margin: 2px 0; }
+.dn-hand .dn-tile { cursor: default; opacity: .6; }
+.dn-hand .dn-tile.can { cursor: pointer; opacity: 1; outline: 2px solid rgba(240, 195, 90, .7); }
+.dn-hand .dn-tile.sel { outline: 3px solid var(--gold); transform: translateY(-6px); }
+.dn-hand .dn-tile .dn-half { width: 30px; height: 30px; }
+@media (max-width: 640px) { .dn-half { width: 22px; height: 22px; padding: 2px; } .dn-hand .dn-tile .dn-half { width: 26px; height: 26px; } }
+/* Hand umbrechen statt überlappen: jeder Stein muss lesbar bleiben */
+.kg-domino .kg-hand.overlap { flex-wrap: wrap; justify-content: center; overflow: visible; padding: 8px 6px 0; gap: 6px; }
+.kg-domino .kg-hand.overlap > * + * { margin-left: 0; }
+.kg-domino .kg-hand.overlap > .dn-tile { box-shadow: 0 2px 4px rgba(0,0,0,.45); }
+@media (max-width: 640px) { .dn-hand .dn-tile .dn-half { width: 22px; height: 22px; } }

@@ -22,8 +22,14 @@ import mogeln from './mogeln/index.js';
 import praesident from './praesident/index.js';
 import durak from './durak/index.js';
 import omaha from './omaha/index.js';
+import wuerfelpoker from './wuerfelpoker/index.js';
+import luegenwuerfel from './luegenwuerfel/index.js';
+import chicago from './chicago/index.js';
+import reversi from './reversi/index.js';
+import dame from './dame/index.js';
+import domino from './domino/index.js';
 
-export const GAMES = Object.fromEntries([poker, maumau, farbenchaos, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, blackjack, kniffel, schiffe, viergewinnt, shutthebox, zehntausend, muehle, schaetzmeister, schlagfertig, werhatdasgesagt, mogeln, praesident, durak, omaha].map((g) => [g.id, g]));
+export const GAMES = Object.fromEntries([poker, maumau, farbenchaos, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, blackjack, kniffel, schiffe, viergewinnt, shutthebox, zehntausend, muehle, schaetzmeister, schlagfertig, werhatdasgesagt, mogeln, praesident, durak, omaha, wuerfelpoker, luegenwuerfel, chicago, reversi, dame, domino].map((g) => [g.id, g]));
 export const DEFAULT_GAME = 'poker'; // alte Spielstände ohne Spielart sind Poker
 
 // Was die Startseite über die Spiele wissen muss

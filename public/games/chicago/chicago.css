@@ -1,0 +1,15 @@
+/* Chicago: Zielzahl groß, Tabelle der Würfe */
+.kg-chicago .kg-main { background: radial-gradient(120% 90% at 50% 25%, #5A4A22, #231C0A); }
+.ch-wrap { display: grid; justify-items: center; gap: 14px; width: 100%; }
+.ch-target { display: grid; justify-items: center; padding: 10px 26px; border-radius: var(--r-l); background: rgba(0,0,0,.3); }
+.ch-target small { color: #EADFBF; text-transform: uppercase; letter-spacing: .06em; font-size: 12px; }
+.ch-target b { font-size: 34px; color: var(--gold-text); line-height: 1.1; }
+.ch-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; width: min(100%, 520px); }
+.ch-list li { display: grid; grid-template-columns: minmax(70px, 1.3fr) auto 48px 56px; gap: 8px; align-items: center; padding: 4px 10px; border-radius: 8px; background: rgba(0,0,0,.22); }
+.ch-list li.head { background: none; color: #EADFBF; font-size: 12px; text-transform: uppercase; }
+.ch-list li.hit { background: rgba(79,163,107,.35); }
+.ch-pair { display: inline-flex; gap: 4px; }
+.ch-pair .die.small { --d: 26px; }
+.ch-hist { width: min(100%, 520px); background: rgba(0,0,0,.22); border-radius: var(--r-m); padding: 6px 12px; }
+.ch-hist summary { cursor: pointer; min-height: 32px; display: flex; align-items: center; }
+.ch-hist ol { margin: 4px 0; padding-left: 20px; display: grid; gap: 4px; }

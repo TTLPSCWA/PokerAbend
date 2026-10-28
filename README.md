@@ -113,6 +113,12 @@ Die Startseite ist ein Hub mit Navigation per URL-Hash (Zurück-Taste und Links 
 | Mogeln | 3–8 | 52 Karten, Ansage in fester Folge (Ass, 2 … König), 1–4 Karten verdeckt ablegen, „Mogeln!“ rufen: der Lügner bzw. der Zweifler nimmt den Stapel. Wer zuerst keine Karten hat und nicht erwischt wird, gewinnt |
 | Präsident | 3–8 | 52 Karten, 2 am höchsten, gleich viele höhere Karten legen oder passen, Tisch frei, wenn alle passen. Plätze Präsident bis Schlusslicht mit Punkten, ab Runde 2 Kartentausch |
 | Durak | 2–6 | 36 Karten, Trumpf = unterste Karte, angreifen und schlagen, Nachlegen aller Mitspieler (höchstens 6), Aufnehmen, Auffüllen. Wer zuletzt Karten hat, ist der Durak |
+| Würfelpoker | 2–6 | Fünf Würfel, bis zu 3 Würfe (der Erste legt die Zahl fest), Würfel beiseitelegen. Hände von Fünfling bis hohe Karte; die schlechteste Hand bekommt einen Strich, bei der Strichzahl scheidet man aus |
+| Lügenwürfel | 2–6 | Würfel unter dem Becher, Gebote „mindestens N × F“ über alle Würfel am Tisch, „Lüge!“ deckt auf, der Verlierer gibt einen Würfel ab. Hausregel: Einsen als Joker |
+| Chicago | 2–6 | Elf Runden mit zwei Würfeln, Zielzahl 2 bis 12: Wer sie trifft, bekommt sie als Punkte. Stechen bei Gleichstand |
+| Reversi | 2 (+ Zuschauer) | 8 × 8, Gegner einschließen und umdrehen, Passen von selbst, mehr Steine gewinnt. Zeit pro Zug |
+| Dame | 2 (+ Zuschauer) | Deutsche Dame: Schlagzwang, Mehrfachsprünge (Sprung für Sprung), Damen ziehen weit, Remis nach 50 Zügen ohne Schlag. Zeit pro Zug |
+| Domino | 2–4 | 28 Steine, 7 je Spieler, Kette mit zwei Enden, ziehen aus dem Vorrat, Punkte aus den Restaugen (auch im Blockspiel) |
 
 Die Startseite ist ein Hub (siehe „Startseite“ weiter unten). Die Kategorie (`karten`, `wuerfel`, `brett`, `party`), Spielerzahl, Dauer und das Spielbild legt jedes Spiel in seinem `games/<spiel>/index.js` fest.
 

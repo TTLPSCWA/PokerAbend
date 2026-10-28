@@ -10,7 +10,7 @@
 // 'planned' erscheint nirgends – außer jemand schaltet unter „Ich“ „Geplante Spiele zeigen“ an (dann ausgegraut, nach Päckchen gruppiert).
 //
 // Ablauf: Wird ein Spiel gebaut, kommt es nach games/<id>/, wird in games/index.js registriert und fliegt hier raus.
-// Ist ein Päckchen fertig, werden die Einträge des nächsten Päckchens auf status 'next' gesetzt. (Fertig: Päckchen 2b – Schlagfertig, Wer hat das gesagt? – und Päckchen 4 – Mogeln, Präsident, Durak, Omaha.)
+// Ist ein Päckchen fertig, werden die Einträge des nächsten Päckchens auf status 'next' gesetzt. (Fertig: Päckchen 2b – Schlagfertig, Wer hat das gesagt? – Päckchen 4 – Mogeln, Präsident, Durak, Omaha – und Päckchen 5 – Würfelpoker, Lügenwürfel, Chicago, Reversi, Dame, Domino.)
 import { fan, cardsChip, dice, stairs, swim, bubbles, numberLine, flapBox, battle, mill, connect4, pawns, reversi, checkers, dominoes, hexBoard, chess, territory, glyph } from './art-kit.js';
 
 const spiel = (o) => ({ type: 'game', status: 'planned', houseRules: [], ...o });
@@ -18,94 +18,14 @@ const funktion = (o) => ({ type: 'feature', status: 'planned', ...o });
 const CARD = { fill: '#F7F3E8' };
 
 export const PLANNED = [
-  // ---------- Päckchen 5 (als Nächstes) ----------
-  spiel({
-    id: 'wuerfelpoker', name: 'Würfelpoker', category: 'wuerfel', minPlayers: 2, maxPlayers: 6, duration: 10, status: 'next', paeckchen: '5',
-    description: 'Mit fünf Würfeln die beste Pokerhand werfen – bis zu dreimal pro Zug.',
-    rules: [
-      'Fünf Würfel, pro Zug bis zu drei Würfe; nach jedem Wurf darf man beliebige Würfel beiseitelegen und den Rest neu würfeln.',
-      'Wertung von oben nach unten: Fünfling, Vierling, Full House, große Straße (2–6), kleine Straße (1–5), Drilling, zwei Paare, ein Paar, hohe Karte.',
-      'Bei gleicher Hand entscheidet die höhere Augenzahl.',
-      'Wer als Erster würfelt, legt die Zahl der Würfe fest, die alle anderen höchstens haben.',
-      'Wer eine Runde verliert, bekommt einen Strich; bei einer festgelegten Strichzahl scheidet man aus.',
-    ],
-    houseRules: ['Sechsen als Joker', 'Bei Gleichstand zählt der zweite Wurf', 'Kniffel-Zähler (nur Punkte statt Striche)'],
-    art: dice([{ x: 4, y: 8, n: 6, s: 18, rot: -10 }, { x: 24, y: 6, n: 6, s: 18, rot: 8 }, { x: 44, y: 10, n: 6, s: 16, rot: -6 }, { x: 14, y: 36, n: 3, s: 18, rot: 6 }, { x: 36, y: 36, n: 6, s: 18, rot: -8 }]),
-  }),
-  spiel({
-    id: 'luegenwuerfel', name: 'Lügenwürfel', category: 'wuerfel', minPlayers: 2, maxPlayers: 6, duration: 15, status: 'next', paeckchen: '5',
-    description: 'Verdeckt würfeln, Gebote über alle Würfel am Tisch abgeben und Lügen aufdecken.',
-    rules: [
-      'Jeder hat fünf Würfel unter einem Becher und schaut nur seine eigenen an.',
-      'Reihum gibt man ein Gebot ab: „Mindestens X Würfel zeigen die Augenzahl Y“ – gemeint sind alle Würfel am Tisch.',
-      'Jedes neue Gebot muss höher sein: mehr Würfel oder dieselbe Anzahl mit höherer Augenzahl.',
-      'Statt zu bieten kann man „Lüge!“ rufen. Dann werden alle Becher gehoben und gezählt.',
-      'Stimmt das Gebot, verliert der Zweifler einen Würfel, sonst der Bieter.',
-      'Wer keine Würfel mehr hat, scheidet aus; der Letzte gewinnt.',
-    ],
-    houseRules: ['Einsen zählen als Joker', 'Genau getroffen: der Zweifler verliert zwei Würfel', 'Start mit sechs Würfeln'],
-    art: dice([{ x: 10, y: 20, n: 4, s: 20, rot: -8, fill: '#2A2A2A', pip: '#F7F3E8' }, { x: 34, y: 18, n: 2, s: 20, rot: 10, fill: '#2A2A2A', pip: '#F7F3E8' }]),
-  }),
-  spiel({
-    id: 'chicago', name: 'Chicago', category: 'wuerfel', minPlayers: 2, maxPlayers: 6, duration: 15, status: 'next', paeckchen: '5',
-    description: 'Elf Runden, zwei Würfel: Wer die Rundenzahl trifft, sammelt Punkte.',
-    rules: [
-      'Gespielt werden elf Runden mit den Zielzahlen 2 bis 12, in dieser Reihenfolge.',
-      'Reihum würfelt jeder mit zwei Würfeln einmal.',
-      'Ergibt die Augensumme genau die Zahl der Runde, bekommt man diese Zahl als Punkte.',
-      'Nach Runde 12 gewinnt, wer die meisten Punkte hat; bei Gleichstand gibt es einen Stechwurf.',
-    ],
-    houseRules: ['Pasch zählt doppelt', 'Zweiter Versuch pro Runde gegen einen Punkt Abzug', 'Reihenfolge der Zielzahlen auslosen'],
-    art: dice([{ x: 10, y: 22, n: 6, s: 20, rot: -10 }, { x: 34, y: 20, n: 6, s: 20, rot: 8 }]),
-  }),
-  spiel({
-    id: 'reversi', name: 'Reversi', category: 'brett', minPlayers: 2, maxPlayers: 2, duration: 15, status: 'next', paeckchen: '5',
-    description: 'Gegnerische Steine einschließen und umdrehen – am Ende zählt, wem mehr Steine gehören.',
-    rules: [
-      'Auf dem 8×8-Brett liegen am Anfang je zwei schwarze und weiße Steine diagonal in der Mitte; Schwarz beginnt.',
-      'Man setzt einen Stein so, dass mindestens eine Reihe gegnerischer Steine (waagerecht, senkrecht oder diagonal) zwischen ihm und einem eigenen Stein liegt.',
-      'Alle so eingeschlossenen Steine werden umgedreht.',
-      'Kann man nicht legen, muss man passen; kann keiner mehr legen oder ist das Brett voll, endet die Partie.',
-      'Gewonnen hat, wem dann mehr Steine gehören. Ecken sind besonders wertvoll, weil sie nie umgedreht werden.',
-    ],
-    houseRules: ['Zeitlimit pro Zug', 'Start mit zufälligen Steinen auf den Mittelfeldern'],
-    art: reversi(),
-  }),
-  spiel({
-    id: 'dame', name: 'Dame', category: 'brett', minPlayers: 2, maxPlayers: 2, duration: 20, status: 'next', paeckchen: '5',
-    description: 'Deutsche Dame auf dem 8×8-Brett: schlagen, bis nichts mehr geht.',
-    rules: [
-      'Jeder hat zwölf Steine auf den dunklen Feldern der ersten drei Reihen; Weiß beginnt.',
-      'Gewöhnliche Steine ziehen diagonal ein Feld vorwärts, schlagen aber auch rückwärts, indem sie einen Gegner überspringen.',
-      'Es besteht Schlagzwang; mehrfache Sprünge in einem Zug müssen zu Ende gezogen werden.',
-      'Erreicht ein Stein die letzte Reihe, wird er zur Dame und darf diagonal beliebig weit ziehen und schlagen.',
-      'Wer keinen Stein mehr hat oder nicht mehr ziehen kann, verliert.',
-    ],
-    houseRules: ['Ohne Schlagzwang', 'Internationale Dame auf 10×10', 'Remis nach 25 Zügen ohne Schlag'],
-    art: checkers(),
-  }),
-  spiel({
-    id: 'domino', name: 'Domino', category: 'brett', minPlayers: 2, maxPlayers: 4, duration: 15, status: 'next', paeckchen: '5',
-    description: 'Steine mit gleichen Augen aneinanderlegen – wer zuerst alle los ist, gewinnt die Runde.',
-    rules: [
-      'Der Satz hat 28 Steine (0–6); bei zwei Spielern bekommt jeder sieben, bei drei oder vier ebenfalls sieben, der Rest bleibt als Vorrat.',
-      'Wer den höchsten Pasch hat, legt aus; sonst beginnt der Spieler mit dem höchsten Stein.',
-      'Reihum legt man einen Stein mit passender Augenzahl an eines der beiden Enden der Kette.',
-      'Wer nichts anlegen kann, zieht aus dem Vorrat, bis er legen kann; ist der Vorrat leer, setzt er aus.',
-      'Wer zuerst alle Steine los ist, gewinnt und bekommt die Augen der Reststeine der anderen als Punkte.',
-      'Ist das Spiel blockiert, gewinnt, wer die wenigsten Augen übrig hat.',
-    ],
-    houseRules: ['Spiel bis 100 Punkte', 'Nur Blockspiel ohne Vorrat', 'Mexikanischer Zug mit Spinner'],
-    art: dominoes(),
-  }),
 
-  // ---------- Päckchen 6 ----------
+  // ---------- Päckchen 6 (als Nächstes) ----------
   funktion({
     id: 'bauart-b-baustein', name: 'Bauart-B-Baustein', type: 'feature', paeckchen: '6',
     beschreibung: 'Gemeinsamer Baustein für Partyspiele, bei denen alle gleichzeitig solo spielen: Der Server verteilt einen Seed, jeder spielt lokal im Browser, der Server prüft das Ergebnis (Eingaben nachspielen) und wertet aus.',
   }),
   spiel({
-    id: 'zahlenzoo', name: 'Zahlenzoo', category: 'party', bauart: 'B', minPlayers: 2, maxPlayers: 8, duration: 5, paeckchen: '6',
+    id: 'zahlenzoo', name: 'Zahlenzoo', category: 'party', bauart: 'B', minPlayers: 2, maxPlayers: 8, duration: 5, status: 'next', paeckchen: '6',
     vorbild: 'Animal Arithmetic (Pummel Party) – nur die Mechanik: Tiere zählen und rechnen',
     description: 'Tiere huschen über das Bild – wer sie am besten zählt und verrechnet, gewinnt.',
     rules: [
@@ -118,7 +38,7 @@ export const PLANNED = [
     art: glyph('paw', '#1C7A43'),
   }),
   spiel({
-    id: 'gedaechtnis-kueche', name: 'Gedächtnisküche', category: 'party', bauart: 'B', minPlayers: 2, maxPlayers: 8, duration: 5, paeckchen: '6',
+    id: 'gedaechtnis-kueche', name: 'Gedächtnisküche', category: 'party', bauart: 'B', minPlayers: 2, maxPlayers: 8, duration: 5, status: 'next', paeckchen: '6',
     description: 'Ein Rezept kurz sehen, dann die Zutaten aus dem Gedächtnis in die richtige Reihenfolge bringen.',
     rules: [
       'Alle bekommen dasselbe Rezept (gleicher Seed) kurz angezeigt: eine Folge von Zutaten.',
@@ -130,7 +50,7 @@ export const PLANNED = [
     art: glyph('pot', '#A5522E'),
   }),
   spiel({
-    id: 'pfeilfieber', name: 'Pfeilfieber', category: 'party', bauart: 'B', minPlayers: 2, maxPlayers: 8, duration: 5, paeckchen: '6',
+    id: 'pfeilfieber', name: 'Pfeilfieber', category: 'party', bauart: 'B', minPlayers: 2, maxPlayers: 8, duration: 5, status: 'next', paeckchen: '6',
     description: 'Pfeilmuster so schnell und fehlerfrei wie möglich nachtippen.',
     rules: [
       'Eine Folge von Pfeilen (hoch, runter, links, rechts) erscheint – für alle gleich (gleicher Seed).',
@@ -142,7 +62,7 @@ export const PLANNED = [
     art: glyph('arrows', '#1F57C3'),
   }),
   spiel({
-    id: 'sortierstation', name: 'Sortierstation', category: 'party', bauart: 'B', minPlayers: 2, maxPlayers: 8, duration: 5, paeckchen: '6',
+    id: 'sortierstation', name: 'Sortierstation', category: 'party', bauart: 'B', minPlayers: 2, maxPlayers: 8, duration: 5, status: 'next', paeckchen: '6',
     description: 'Gegenstände auf einem Band in die richtigen Kisten sortieren, bevor sie vorbeigefahren sind.',
     rules: [
       'Ein Förderband bringt Dinge heran, alle sehen dieselbe Reihenfolge (gleicher Seed).',
@@ -154,7 +74,7 @@ export const PLANNED = [
     art: glyph('bars', '#7A5238'),
   }),
   spiel({
-    id: 'tickendes-paket', name: 'Tickendes Paket', category: 'party', bauart: 'A', minPlayers: 3, maxPlayers: 8, duration: 10, paeckchen: '6',
+    id: 'tickendes-paket', name: 'Tickendes Paket', category: 'party', bauart: 'A', minPlayers: 3, maxPlayers: 8, duration: 10, status: 'next', paeckchen: '6',
     vorbild: 'Heiße Kartoffel – nur die Mechanik',
     description: 'Ein tickendes Paket wandert von Hand zu Hand – wer es hält, wenn es platzt, verliert.',
     rules: [

@@ -1,0 +1,20 @@
+/* Lügenwürfel: Gebot groß in der Mitte, eigene Würfel, aufgedeckte Becher nach „Lüge!“ */
+.kg-luegenwuerfel .kg-main { background: radial-gradient(120% 90% at 50% 25%, #2A3A5A, #121A2B); }
+.lw-wrap { display: grid; justify-items: center; gap: 14px; width: 100%; }
+.lw-bid { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: center; padding: 12px 20px; border-radius: var(--r-l); background: rgba(0,0,0,.3); }
+.lw-bid b { font-size: 26px; color: var(--gold-text); }
+.lw-bid small { color: #CFD9EE; flex-basis: 100%; text-align: center; }
+.lw-mine { display: grid; justify-items: center; gap: 6px; }
+.lw-mine small { color: #CFD9EE; text-transform: uppercase; letter-spacing: .06em; font-size: 12px; }
+.lw-cup { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.lw-reveal { display: grid; gap: 6px; padding: 10px 14px; border-radius: var(--r-m); background: rgba(0,0,0,.3); border: 2px solid var(--gold); width: min(100%, 520px); }
+.lw-reveal.lie { border-color: #4FA36B; }
+.lw-reveal.true { border-color: #D9534F; }
+.lw-reveal ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.lw-reveal li { display: grid; grid-template-columns: minmax(60px, 1fr) auto; gap: 8px; align-items: center; }
+.lw-reveal .die.small { --d: 26px; }
+.lw-controls { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; justify-content: center; padding-top: 6px; }
+.lw-n { display: flex; align-items: center; gap: 10px; font-size: 22px; }
+.lw-n .btn { min-width: 44px; min-height: 44px; }
+.lw-faces { display: flex; gap: 6px; }
+.lw-faces .die { --d: 40px; }

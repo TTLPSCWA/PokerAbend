@@ -1,0 +1,19 @@
+/* Reversi: grünes Brett, schwarze und weiße Steine */
+.kg-reversi .kg-main { background: radial-gradient(120% 90% at 50% 25%, #1F5A3A, #0C2A1B); }
+.rv-wrap { display: grid; justify-items: center; width: 100%; }
+.rv-board { display: grid; grid-template-columns: repeat(8, 1fr); width: min(100%, 520px, 70vh); aspect-ratio: 1; gap: 2px; padding: 6px; border-radius: var(--r-m); background: #0A2E1C; box-shadow: 0 6px 18px rgba(0,0,0,.4); }
+.rv-cell { position: relative; display: grid; place-items: center; background: #2E8B57; border: 0; padding: 0; border-radius: 3px; }
+.rv-cell.can { cursor: pointer; background: #37A267; }
+.rv-cell.can:hover, .rv-cell.can:focus-visible { background: #45BB7A; }
+.rv-disc { position: relative; width: 82%; height: 82%; border-radius: 50%; display: grid; place-items: center; box-shadow: 0 2px 4px rgba(0,0,0,.45); }
+.rv-0 { background: radial-gradient(circle at 35% 30%, #4A4A4A, #111); }
+.rv-1 { background: radial-gradient(circle at 35% 30%, #fff, #D7D2C4); }
+.rv-disc .cm { display: none; position: absolute; top: 28%; left: 28%; width: 44%; height: 44%; }
+body.marks .rv-disc .cm { display: block; fill: #fff; stroke: rgba(0,0,0,.6); }
+body.marks .rv-1 .cm { fill: #333; stroke: rgba(255,255,255,.6); }
+.rv-disc.last { outline: 3px solid var(--gold); outline-offset: 1px; }
+.rv-disc.flip { box-shadow: 0 0 0 2px rgba(240, 195, 90, .8), 0 2px 4px rgba(0,0,0,.45); }
+.rv-hint { width: 26%; height: 26%; border-radius: 50%; background: rgba(255,255,255,.55); }
+.rv-dot { display: inline-grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; margin-right: 6px; vertical-align: -2px; }
+.rv-dot.rv-0 { background: #111; } .rv-dot.rv-1 { background: #eee; border: 1px solid #999; }
+@media (prefers-reduced-motion: no-preference) { .rv-disc.flip { animation: rv-flip .35s ease-out; } @keyframes rv-flip { from { transform: scaleX(.1); } } }

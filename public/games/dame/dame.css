@@ -1,0 +1,22 @@
+/* Dame: Holzbrett, helle und dunkle Steine, Dame mit Krone */
+.kg-dame .kg-main { background: radial-gradient(120% 90% at 50% 25%, #5A4028, #22170B); }
+.dm-wrap { display: grid; justify-items: center; width: 100%; }
+.dm-board { display: grid; grid-template-columns: repeat(8, 1fr); width: min(100%, 520px, 70vh); aspect-ratio: 1; border: 6px solid #3B2614; border-radius: 6px; box-shadow: 0 6px 18px rgba(0,0,0,.4); }
+.dm-cell { position: relative; display: grid; place-items: center; border: 0; padding: 0; }
+.dm-cell.light { background: #E8D5AE; }
+.dm-cell.dark { background: #8B5A2B; }
+.dm-cell.can { cursor: pointer; }
+.dm-cell.can:focus-visible, .dm-cell.can:hover { outline: 3px solid var(--gold); outline-offset: -3px; }
+.dm-cell.last { box-shadow: inset 0 0 0 3px rgba(240, 195, 90, .75); }
+.dm-piece { width: 78%; height: 78%; border-radius: 50%; display: grid; place-items: center; box-shadow: 0 2px 4px rgba(0,0,0,.5), inset 0 0 0 3px rgba(0,0,0,.18); position: relative; font-size: 22px; line-height: 1; }
+.dm-0 { background: radial-gradient(circle at 35% 30%, #fff, #D9CDB0); color: #8B5A2B; }
+.dm-1 { background: radial-gradient(circle at 35% 30%, #4A3A33, #140D0A); color: #F0C35A; }
+.dm-piece.king { box-shadow: 0 2px 4px rgba(0,0,0,.5), inset 0 0 0 4px var(--gold); }
+.dm-piece.sel { outline: 3px solid var(--gold); outline-offset: 2px; }
+.dm-piece .cm { display: none; position: absolute; top: 28%; left: 28%; width: 44%; height: 44%; }
+body.marks .dm-piece:not(.king) .cm { display: block; fill: #333; stroke: rgba(255,255,255,.6); }
+body.marks .dm-1:not(.king) .cm { fill: #fff; stroke: rgba(0,0,0,.6); }
+.dm-hint { width: 30%; height: 30%; border-radius: 50%; background: rgba(240, 195, 90, .85); box-shadow: 0 0 0 2px rgba(0,0,0,.35); }
+.dm-dot { display: inline-grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; margin-right: 6px; vertical-align: -2px; }
+.dm-dot.dm-0 { background: #eee; border: 1px solid #999; } .dm-dot.dm-1 { background: #222; }
+@media (max-width: 640px) { .dm-piece { font-size: 16px; } }

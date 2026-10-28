@@ -15,6 +15,9 @@ import { botColumn } from './viergewinnt/room.js';
 import { combos as stbCombos } from './shutthebox/room.js';
 import { bestTake } from './zehntausend/room.js';
 import { botMove as muehleMove } from './muehle/room.js';
+import { evaluate as pokerDiceEval } from './wuerfelpoker/room.js';
+import { botMove as reversiMove } from './reversi/room.js';
+import { botMove as dameMove } from './dame/room.js';
 
 const one = (list, rng) => list[Math.floor(rng() * list.length)];
 
@@ -431,4 +434,46 @@ function durak(room, id, rng) {
 const ORDER_P = ['3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A', '2'];
 const rankDurak = (c) => ['6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'].indexOf(c[0]);
 
-export const BOTS = { omaha: poker, mogeln, praesident, durak, poker, maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, schiffe, blackjack, kniffel, viergewinnt, shutthebox, zehntausend, muehle, schaetzmeister, schlagfertig: partyBot, werhatdasgesagt: partyBot };
+// Würfelpoker: die häufigste Augenzahl liegen lassen, bei Drilling oder besser (oder Straße) aufhören
+function wuerfelpoker(room, id, rng) {
+  if (!room.throws) return room.throwDice(id);
+  const ev = pokerDiceEval(room.dice);
+  if (ev[0] >= 3 || rng() < 0.05) return room.stop(id);
+  const count = {};
+  for (const d of room.dice) count[d] = (count[d] || 0) + 1;
+  const face = Object.keys(count).map(Number).sort((a, b) => count[b] - count[a] || b - a)[0];
+  const keep = room.dice.map((d, i) => (d === face ? i : -1)).filter((i) => i >= 0);
+  return room.throwDice(id, keep.length === 5 ? keep.slice(1) : keep);
+}
+
+// Lügenwürfel: Erwartungswert aus den eigenen Würfeln und dem Rest, zweifeln, wenn das Gebot deutlich darüber liegt
+function luegenwuerfel(room, id, rng) {
+  const mine = room.cups[id];
+  const others = room.total() - mine.length;
+  const wild = room.settings.wild;
+  const own = (f) => mine.filter((d) => d === f || (wild && d === 1 && f !== 1)).length;
+  const exp = (f) => own(f) + others * (wild && f !== 1 ? 2 / 6 : 1 / 6);
+  const B = room.bid;
+  if (B && B.n > exp(B.face) + 0.8 + rng() * 0.6) return room.doubt(id);
+  for (let n = B ? B.n : 1; n <= room.total(); n++) {
+    const faces = [1, 2, 3, 4, 5, 6].filter((f) => room.higher(n, f) && exp(f) >= n - 0.7);
+    if (faces.length) {
+      faces.sort((a, b) => exp(b) - exp(a));
+      return room.makeBid(id, n, faces[0]);
+    }
+  }
+  return B ? room.doubt(id) : room.makeBid(id, 1, 1);
+}
+
+// Domino: den Stein mit den meisten Augen anlegen, sonst ziehen, sonst aussetzen
+function domino(room, id, rng) {
+  const opts = room.playable(id);
+  if (opts.length) {
+    opts.sort((a, b) => dominoPips(b.tile) - dominoPips(a.tile));
+    return room.play(id, opts[0].tile, one(opts[0].sides, rng));
+  }
+  return room.stock.length ? room.draw(id) : room.pass(id);
+}
+const dominoPips = (t) => t.split('-').reduce((s, x) => s + Number(x), 0);
+
+export const BOTS = { wuerfelpoker, luegenwuerfel, chicago: (room, id) => room.throwDice(id), reversi: (room, id, rng) => room.place(id, reversiMove(room.board, id, rng)), dame: (room, id, rng) => { const m = dameMove(room.board, room.color(id), room.chain, rng); return room.move(id, m.from, m.to); }, domino, omaha: poker, mogeln, praesident, durak, poker, maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, schiffe, blackjack, kniffel, viergewinnt, shutthebox, zehntausend, muehle, schaetzmeister, schlagfertig: partyBot, werhatdasgesagt: partyBot };

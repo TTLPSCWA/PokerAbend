@@ -107,6 +107,35 @@ export const INVARIANTS = {
     assert.equal(cards.length, 36, 'Karten');
     assert.equal(new Set(cards).size, 36, 'Karte doppelt');
   },
+  wuerfelpoker: (r) => {
+    assert.equal(r.dice.length, 5);
+    for (const d of r.dice) assert.ok(d >= 0 && d <= 6, 'Würfel');
+    assert.ok(r.throws >= 0 && r.throws <= 3, 'Würfe');
+    for (const id of r.order) assert.ok(r.strikes[id] >= 0 && r.strikes[id] < r.settings.strikes, 'Striche');
+  },
+  luegenwuerfel: (r) => {
+    for (const id of r.order) { assert.ok(r.cups[id].length >= 1 && r.cups[id].length <= r.settings.dice, 'Becher'); for (const d of r.cups[id]) assert.ok(d >= 1 && d <= 6); }
+    if (r.bid) assert.ok(r.bid.n <= r.total() + 1, 'Gebot');
+  },
+  chicago: (r) => {
+    assert.ok(r.rnd >= 1 && r.rnd <= 11, 'Runde');
+    for (const id of r.order) assert.ok(r.points[id] >= 0 && r.points[id] <= 77, 'Punkte');
+  },
+  reversi: (r) => {
+    assert.equal(r.board.filter((x) => x !== null && !r.order.includes(x)).length, 0, 'fremder Stein');
+    assert.ok(r.board.filter((x) => x !== null).length >= 4, 'Steine');
+  },
+  dame: (r) => {
+    const n = (c) => r.board.filter((p) => p && p.toLowerCase() === c).length;
+    assert.ok(n('w') <= 12 && n('b') <= 12, 'Steine');
+    for (let i = 0; i < 64; i++) if (r.board[i]) assert.equal((Math.floor(i / 8) + (i % 8)) % 2, 1, 'Stein auf hellem Feld');
+  },
+  domino: (r) => {
+    const all = [...r.stock, ...Object.values(r.hands).flat(), ...r.chain.map(([a, b]) => `${Math.min(a, b)}-${Math.max(a, b)}`)];
+    assert.equal(all.length, 28, 'Steine');
+    assert.equal(new Set(all).size, 28, 'Stein doppelt');
+    for (let i = 1; i < r.chain.length; i++) assert.equal(r.chain[i - 1][1], r.chain[i][0], 'Kette passt nicht');
+  },
   schwimmen: (r) => {
     const cards = [...r.deck, ...r.middle, ...Object.values(r.hands).flat()];
     assert.equal(cards.length, 32, 'Karten');
@@ -137,5 +166,11 @@ export const PLAN = {
   mogeln: { games: 800, players: [3, 8], settings: {}, maxSteps: 4000 },
   praesident: { games: 800, players: [3, 8], settings: {}, maxSteps: 4000 },
   durak: { games: 800, players: [2, 6], settings: {}, maxSteps: 4000 },
+  wuerfelpoker: { games: 600, players: [2, 6], settings: {}, maxSteps: 4000 },
+  luegenwuerfel: { games: 600, players: [2, 6], settings: {}, maxSteps: 4000 },
+  chicago: { games: 400, players: [2, 6], settings: {}, maxSteps: 600 },
+  reversi: { games: 600, players: [2, 2], settings: {}, maxSteps: 200 },
+  dame: { games: 400, players: [2, 2], settings: {}, maxSteps: 800 },
+  domino: { games: 800, players: [2, 4], settings: {}, maxSteps: 400 },
   blackjack: { games: 300, rounds: 20, players: [1, 7], settings: {}, maxSteps: 400 }, // 20 Hände je Tisch – Chips und Schlitten laufen weiter
 };

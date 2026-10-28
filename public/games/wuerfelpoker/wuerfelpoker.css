@@ -1,0 +1,17 @@
+/* Würfelpoker: Tablett mit fünf Würfeln, Ergebnisse der Runde */
+.kg-wuerfelpoker .kg-main { background: radial-gradient(120% 90% at 50% 25%, #6A2A2A, #2B1212); }
+.wp-wrap { display: grid; justify-items: center; gap: 14px; width: 100%; }
+.wp-tray { display: grid; justify-items: center; gap: 8px; padding: 14px 18px; border-radius: var(--r-l); background: rgba(0,0,0,.28); }
+.wp-tray small { color: #F0D5D5; }
+.wp-dice { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.wp-dice .die.kept { transform: translateY(-8px); outline: 3px solid var(--gold); outline-offset: 2px; }
+.wp-dice button.die { cursor: pointer; }
+.wp-cat { color: var(--gold-text); font-size: 20px; }
+.wp-results, .wp-last ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; width: min(100%, 520px); }
+.wp-results li, .wp-last li { display: grid; grid-template-columns: minmax(60px, 1fr) auto minmax(0, 1.2fr); gap: 8px; align-items: center; padding: 3px 8px; border-radius: 8px; background: rgba(0,0,0,.2); }
+.wp-last li.lost { background: rgba(184,67,63,.3); }
+.wp-last { width: min(100%, 560px); background: rgba(0,0,0,.25); border-radius: var(--r-m); padding: 6px 12px; }
+.wp-last summary { cursor: pointer; font-weight: 600; min-height: 32px; display: flex; align-items: center; }
+.wp-mini { display: flex; gap: 2px; }
+.wp-mini .die { --d: 24px; }
+@media (max-width: 640px) { .wp-results li, .wp-last li { grid-template-columns: minmax(50px, 1fr) auto; } .wp-results li span:last-child, .wp-last li span:last-child { grid-column: 1 / -1; } }
