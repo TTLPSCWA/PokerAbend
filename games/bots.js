@@ -1,7 +1,7 @@
 // Einfache Computer-Züge für die Rundenspiele: regelkonform, mit etwas Zufall.
 // Jede Funktion macht genau eine Aktion für den Spieler id, der gerade dran ist.
 // Für Massentests und echte Bot-Mitspieler; Entscheidungen nutzen nur eigene bzw. offene Informationen.
-import { PHASES, partition, validGroup, cardPoints } from './zehnetappen/room.js';
+import { PHASES, partition, validGroup, cardPoints, hitSide } from './zehnetappen/room.js';
 import { JOKER } from './stapelrennen/room.js';
 import { valueOf } from './maexchen/room.js';
 import { UPPER } from './kniffel/room.js';
@@ -143,7 +143,7 @@ function zehnetappen(room, id, rng) {
   } else {
     for (const c of hand) {
       for (const owner of Object.keys(room.laid)) {
-        const g = room.laid[owner].findIndex((gr) => validGroup(gr.type, [...gr.cards, c]));
+        const g = room.laid[owner].findIndex((gr) => hitSide(gr, c));
         if (g >= 0) return room.hit(id, c.id, owner, g);
       }
     }

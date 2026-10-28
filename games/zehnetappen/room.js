@@ -3,6 +3,8 @@
 // Zug: eine Karte ziehen (Stapel oder oberste Ablage, aber kein Aussetzen), dann evtl. die eigene Phase auslegen,
 // nach dem Auslegen auch an beliebige ausgelegte Gruppen anlegen, zum Schluss eine Karte abwerfen.
 // Aussetzen abwerfen: ein Mitspieler deiner Wahl setzt einmal aus. Joker ersetzen jede Karte.
+// Die Mengen der Phasen sind Mindestangaben (Standard): Eine Gruppe darf mehr Karten haben, z. B. eine 6er-Folge statt einer 4er-Folge. Hausregel: nur genau die verlangte Anzahl.
+// Joker in Auslagen sind fest: Beim Auslegen oder Anlegen bekommt jeder Joker einen Wert (Zahl, bei „eine Farbe“ die Farbe) und bleibt für immer liegen.
 // Die Runde endet, wenn jemand keine Karten mehr hat. Wer seine Phase ausgelegt hat, ist in der nächsten Runde eine weiter.
 // Strafpunkte für Restkarten: 1–9 = 5, 10–12 = 10, Aussetzen = 15, Joker = 25.
 // Wer zuerst Phase 10 schafft, gewinnt das Spiel (bei Gleichstand wenig Strafpunkte). Danach geht es wieder bei Phase 1 los.
@@ -28,12 +30,13 @@ export const cardPoints = (c) => (c.c === 'j' ? 25 : c.c === 's' ? 15 : c.n >= 1
 export function validGroup(type, cards) {
   if (cards.some((c) => c.c === 's')) return false;
   const nat = cards.filter((c) => c.c !== 'j');
+  if (!nat.length) return false; // mindestens eine echte Karte, sonst hätte der Joker keinen Wert
   if (type === 'set') return new Set(nat.map((c) => c.n)).size <= 1;
   if (type === 'color') return new Set(nat.map((c) => c.c)).size <= 1;
   if (cards.length > 12) return false;
   const ns = nat.map((c) => c.n);
   if (new Set(ns).size !== ns.length) return false;
-  return !ns.length || Math.max(...ns) - Math.min(...ns) + 1 <= cards.length;
+  return Math.max(...ns) - Math.min(...ns) + 1 <= cards.length;
 }
 
 // Ausgewählte Karten in die Gruppen der Phase aufteilen – oder null
@@ -74,26 +77,46 @@ export function partitionMin(cards, groups) {
   return null;
 }
 
-// Folge zum Anzeigen ordnen: Zahlen aufsteigend, Joker in die Lücken
-export function arrange(group) {
-  if (group.type !== 'run') return group.cards;
-  const nat = group.cards.filter((c) => c.c !== 'j').sort((a, b) => a.n - b.n);
-  const jokers = group.cards.filter((c) => c.c === 'j');
-  const out = [];
-  for (let i = 0; i < nat.length; i++) {
-    out.push(nat[i]);
-    if (i < nat.length - 1) for (let g = nat[i].n + 1; g < nat[i + 1].n; g++) out.push(jokers.pop());
+// Joker in einer Auslage bekommen beim Auslegen einen festen Wert: eine Folge zählt aufsteigend von unten, Lücken füllen die Joker,
+// übrige Joker verlängern nach oben (bis 12), dann nach unten. Bei „gleiche Zahl“ ist es die Zahl, bei „eine Farbe“ die Farbe.
+// Ergebnis: { type, cards (Folge aufsteigend), vals (Wert je Karte: Zahl oder Farbe) } – oder null, wenn die Karten keine Gruppe ergeben.
+export function fixGroup(type, cards) {
+  if (!validGroup(type, cards)) return null;
+  const nat = cards.filter((c) => c.c !== 'j');
+  const jokers = cards.filter((c) => c.c === 'j');
+  if (type === 'set') return { type, cards: [...nat, ...jokers], vals: cards.map(() => nat[0].n) };
+  if (type === 'color') return { type, cards: [...nat, ...jokers], vals: cards.map(() => nat[0].c) };
+  const sorted = [...nat].sort((x, y) => x.n - y.n);
+  const out = [], vals = [];
+  const spare = [...jokers];
+  for (let i = 0; i < sorted.length; i++) {
+    out.push(sorted[i]); vals.push(sorted[i].n);
+    if (i < sorted.length - 1) for (let v = sorted[i].n + 1; v < sorted[i + 1].n; v++) { out.push(spare.pop()); vals.push(v); }
   }
-  return [...out, ...jokers].filter(Boolean);
+  let hi = vals[vals.length - 1], lo = vals[0];
+  while (spare.length && hi < 12) { out.push(spare.pop()); vals.push(++hi); }
+  while (spare.length && lo > 1) { out.unshift(spare.pop()); vals.unshift(--lo); }
+  return spare.length ? null : { type, cards: out, vals };
+}
+// Passt die Karte an diese ausgelegte Gruppe? Gibt die Seite zurück ('high' | 'low' | 'set') oder null. Joker nehmen den Wert, den die Stelle verlangt.
+export function hitSide(group, card, end = null) {
+  if (card.c === 's') return null;
+  if (group.type === 'set') return card.c === 'j' || card.n === group.vals[0] ? 'set' : null;
+  if (group.type === 'color') return card.c === 'j' || card.c === group.vals[0] ? 'set' : null;
+  const lo = group.vals[0], hi = group.vals[group.vals.length - 1];
+  if (card.c !== 'j') return card.n === hi + 1 && hi < 12 ? 'high' : card.n === lo - 1 && lo > 1 ? 'low' : null;
+  const can = { high: hi < 12, low: lo > 1 };
+  if (end === 'high' || end === 'low') return can[end] ? end : null;
+  return can.high ? 'high' : can.low ? 'low' : null;
 }
 
 export class Room extends TurnRoom {
   static OPTIONS = [
     { key: 'skipChoose', label: 'Aussetzen: Spieler frei wählen (sonst setzt der Nächste aus)', type: 'bool' },
-    { key: 'exactSize', label: 'Phase genau in der verlangten Größe auslegen', type: 'bool' },
+    { key: 'exactSize', label: 'Phase nur mit genauer Kartenanzahl auslegen', type: 'bool' },
     { key: 'firstSkip', label: 'Aussetzen als erste Ablage: der Erste setzt aus', type: 'bool' },
   ];
-  defaultSettings() { return { skipChoose: true, exactSize: true, firstSkip: false }; }
+  defaultSettings() { return { skipChoose: true, exactSize: false, firstSkip: false }; }
 
   constructor(code, settings, onChange) {
     super(code, settings, onChange, { minPlayers: 2, maxPlayers: 6, lowWins: false, scoreLabel: 'Siege', winPoints: 1 });
@@ -166,32 +189,55 @@ export class Room extends TurnRoom {
     this.step = 'play';
   }
 
-  layPhase(id, cardIds) {
+  // cardIds: alle Karten der Phase; groupIds (optional): die Karten je Gruppe in der Reihenfolge der Phase – dann gilt genau diese Aufteilung,
+  // sonst sucht der Server selbst eine passende.
+  layPhase(id, cardIds, groupIds = null) {
     this.requireTurn(id);
     if (this.step !== 'play') throw new Error('Erst eine Karte ziehen');
     if (this.done.has(id)) throw new Error('Deine Phase liegt schon');
-    const cards = [...new Set(cardIds.map(Number))].map((x) => this.inHand(id, x));
     const n = this.phaseOf(id);
     if (n > 10) throw new Error('Du hast alle Phasen geschafft');
-    const groups = (this.settings.exactSize ? partition : partitionMin)(cards, PHASES[n]);
+    let cards, groups;
+    if (Array.isArray(groupIds) && groupIds.length) {
+      if (groupIds.length !== PHASES[n].length) throw new Error(`Das passt nicht zu Phase ${n}: ${phaseText(n)}`);
+      const lists = groupIds.map((g) => [...new Set((Array.isArray(g) ? g : []).map(Number))].map((x) => this.inHand(id, x)));
+      cards = lists.flat();
+      if (new Set(cards.map((c) => c.id)).size !== cards.length) throw new Error('Jede Karte nur in einer Gruppe');
+      groups = lists.map((cs, i) => {
+        const [type, size] = PHASES[n][i];
+        return (this.settings.exactSize ? cs.length === size : cs.length >= size) && validGroup(type, cs) ? { type, cards: cs } : null;
+      });
+      if (groups.some((g) => !g)) groups = null;
+    } else {
+      cards = [...new Set(cardIds.map(Number))].map((x) => this.inHand(id, x));
+      groups = (this.settings.exactSize ? partition : partitionMin)(cards, PHASES[n]);
+    }
     if (!groups) throw new Error(`Das passt nicht zu Phase ${n}: ${phaseText(n)}`);
+    const fixed = groups.map((g) => fixGroup(g.type, g.cards));
+    if (fixed.some((g) => !g)) throw new Error(`Das passt nicht zu Phase ${n}: ${phaseText(n)}`);
     this.removeCards(id, cards);
-    this.laid[id] = groups;
+    this.laid[id] = fixed;
     this.done.add(id);
     this.say(`${this.name(id)} legt Phase ${n} aus (${phaseText(n)})`, 'win');
     this.act(id, `Phase ${n} ✓`);
     if (!this.hands[id].length) this.endRound(id);
   }
 
-  hit(id, cardId, owner, groupIndex) {
+  // Ausgelegte Joker bleiben für immer liegen – es gibt kein Tauschen und kein Aufnehmen
+  takeJoker() { throw new Error('Joker bleiben liegen'); }
+
+  hit(id, cardId, owner, groupIndex, end = null) {
     this.requireTurn(id);
     if (this.step !== 'play') throw new Error('Erst eine Karte ziehen');
     if (!this.done.has(id)) throw new Error('Anlegen geht erst, wenn deine Phase liegt');
     const g = this.laid[owner]?.[Number(groupIndex)];
     if (!g) throw new Error('Diese Gruppe gibt es nicht');
     const c = this.inHand(id, cardId);
-    if (!validGroup(g.type, [...g.cards, c])) throw new Error('Die Karte passt nicht an diese Gruppe');
-    g.cards.push(c);
+    const side = hitSide(g, c, end);
+    if (!side) throw new Error('Die Karte passt nicht an diese Gruppe');
+    if (side === 'low') { g.cards.unshift(c); g.vals.unshift(g.vals[0] - 1); }
+    else if (side === 'high') { g.cards.push(c); g.vals.push(g.vals[g.vals.length - 1] + 1); }
+    else { g.cards.push(c); g.vals.push(g.vals[0]); }
     this.removeCards(id, [c]);
     this.say(`${this.name(id)} legt an bei ${this.name(owner)}`, 'info', 'action');
     this.act(id, 'legt an');
@@ -246,7 +292,7 @@ export class Room extends TurnRoom {
     return {
       // Sortiert: Farben, darin aufsteigend; Joker und Aussetzen ans Ende
       hand: this.hands[viewerId] ? [...this.hands[viewerId]].sort((a, b) => SORT.indexOf(a.c) - SORT.indexOf(b.c) || a.n - b.n) : null,
-      laid: Object.fromEntries(Object.entries(this.laid).map(([id, gs]) => [id, gs.map((g) => ({ type: g.type, cards: arrange(g) }))])),
+      laid: Object.fromEntries(Object.entries(this.laid).map(([id, gs]) => [id, gs.map((g) => ({ type: g.type, cards: g.cards, vals: g.vals }))])),
       top: this.discard[this.discard.length - 1] ?? null, deck: this.deck.length,
       step: this.currentId === viewerId ? this.step : null,
       myPhase: this.phaseOf(viewerId), phaseText: phaseText(this.phaseOf(viewerId)),

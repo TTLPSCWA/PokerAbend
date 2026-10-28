@@ -62,3 +62,53 @@
 /* Phase und Stapel nebeneinander (spart Höhe am Tisch) */
 .ze-top { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: center; }
 .ze-top .kc.big { --w: 70px; }
+
+/* ---- Auswahl, Ausleg-Leiste über der Hand, Anlegen, Abwerfen ---- */
+.ze-hand { gap: 8px; padding: 14px 4px 4px; }
+.ze-hand .kc { --w: 54px; transition: transform .12s; }
+.kc.ze-sel { transform: translateY(-12px); box-shadow: 0 0 0 3px var(--gold), 0 6px 12px rgba(0,0,0,.45); }
+.kc.ze-disc { transform: translateY(-12px); box-shadow: 0 0 0 3px #E5534B, 0 6px 12px rgba(0,0,0,.45); }
+.kc.ze-disc::after { content: 'Abwerfen'; position: absolute; left: 50%; bottom: -17px; transform: translateX(-50%); font-size: 10px; font-weight: 800; color: #fff; background: #C0392B; border-radius: 6px; padding: 1px 6px; white-space: nowrap; z-index: 3; }
+.ze-badge { position: absolute; top: -9px; right: -9px; z-index: 3; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font: 800 13px/1 var(--font, inherit); font-style: normal; background: var(--gold); color: #1B1306; box-shadow: 0 1px 3px rgba(0,0,0,.5); }
+.ze-count { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 36px; color: var(--text-2); }
+.ze-slot.active { border-color: var(--gold); }
+.ze-slot.active:not(.ok) { border-style: solid; }
+.ze-why { font-size: 13px; color: #F3C9A8; min-height: 18px; padding: 0 6px; }
+.ze-why.ok { color: #8BE0A4; }
+.kg-dock .ze-slots { padding: 0 6px 6px; gap: 8px; }
+.kg-dock .ze-slot { flex: 1 1 220px; max-width: 420px; min-width: 0; }
+.ze-min { margin-top: 2px; }
+/* Auslagen: ganze Gruppe leuchtet, wenn die gewählte Karte passt */
+.ze-group { padding: 4px; display: grid; gap: 4px; }
+.ze-gbtn { display: grid; gap: 4px; padding: 4px 6px; background: none; border: 0; color: inherit; text-align: left; border-radius: 8px; }
+.ze-gbtn:not(:disabled) { cursor: pointer; }
+.ze-group.can { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(240, 195, 90, .35), 0 0 14px rgba(240, 195, 90, .45); }
+.ze-ends { display: flex; gap: 6px; flex-wrap: wrap; }
+.ze-cw { display: inline-grid; justify-items: center; gap: 2px; }
+.ze-jv { font-size: 11px; font-weight: 800; color: #FFE9A8; background: rgba(0,0,0,.45); border-radius: 6px; padding: 0 5px; white-space: nowrap; }
+.ze-cards .ze-cw .kc { --w: 34px; }
+/* Ablage als Ziel */
+.ze-pile-btn { background: none; border: 0; padding: 0; border-radius: 10px; }
+.kg-pile.ze-target .ze-pile-btn { cursor: pointer; box-shadow: 0 0 0 3px #E5534B, 0 0 16px rgba(229, 83, 75, .6); }
+.kg-pile.ze-target small { color: #FFB3AE; font-weight: 800; }
+/* Hand umbrechen statt überlappen: nichts verdeckt eine Karte */
+.kg-zehnetappen .kg-hand.overlap { flex-wrap: wrap; justify-content: center; overflow: visible; padding: 14px 4px 4px; gap: 8px; }
+.kg-zehnetappen .kg-hand.overlap > * + * { margin-left: 0; }
+@media (max-width: 640px) {
+  .ze-hand .kc { --w: 46px; }
+  .ze-hand { gap: 6px; }
+  .kg-dock .ze-slot { flex: 1 1 100%; max-width: none; }
+  .ze-slot-cards .kc { --w: 34px; }
+  .ze-badge { width: 20px; height: 20px; font-size: 12px; top: -8px; right: -6px; }
+}
+@media (max-width: 640px) {
+  .kg-dock .ze-slots { padding: 0 2px 2px; gap: 6px; }
+  .ze-slot { padding: 4px 6px; gap: 2px; }
+  .ze-slot-head { min-height: 32px; }
+  .ze-slot-cards { min-height: 38px; gap: 3px; }
+  .ze-slot-cards .kc { --w: 30px; }
+  .ze-empty { font-size: 12px; }
+  .ze-why { min-height: 0; font-size: 12px; }
+  .ze-count { min-height: 30px; }
+  .ze-hand { padding-top: 10px; }
+}
