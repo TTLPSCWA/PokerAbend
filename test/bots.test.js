@@ -13,7 +13,17 @@ function setup(game, settings = {}) {
   return { room, host };
 }
 
-for (const game of Object.keys(GAMES)) {
+// Spiele ohne Computer-Mitspieler: Wer bin ich? (Bots könnten die Fragen nicht sinnvoll beantworten)
+const NO_BOTS = ['wer-bin-ich'];
+test('Spiele ohne Bots lehnen „Bot hinzufügen“ ab', () => {
+  for (const game of NO_BOTS) {
+    const { room, host } = setup(game);
+    assert.equal(BOTS[game], undefined);
+    assert.throws(() => addBot(room, host.id), /noch keinen Bot/);
+  }
+});
+
+for (const game of Object.keys(GAMES).filter((g) => !NO_BOTS.includes(g))) {
   test(`${game}: optionaler Bot sitzt, lädt wieder und lässt sich entfernen`, () => {
     assert.equal(typeof BOTS[game], 'function');
     const { room, host } = setup(game);

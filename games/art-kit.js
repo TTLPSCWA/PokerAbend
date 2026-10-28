@@ -89,3 +89,6 @@ const GLYPHS = {
 };
 export const glyph = (name, bg = '#5A468F') => wrap(`<circle cx="32" cy="32" r="26" fill="${bg}" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/><g fill="none" stroke="${PAPER}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">${GLYPHS[name] || GLYPHS.crown}</g>`);
 export const GLYPH_NAMES = Object.keys(GLYPHS);
+
+// Wer bin ich?: Personen-Silhouette mit gelber Haftnotiz „?“ auf der Stirn
+export const silhouette = () => wrap(`<rect x="2" y="2" width="60" height="60" rx="12" fill="#3E5C7A"/><circle cx="32" cy="26" r="12" fill="#1B2733"/><path d="M10 62c0-14 10-20 22-20s22 6 22 20z" fill="#1B2733"/><g transform="rotate(-8 32 16)"><rect x="23" y="9" width="18" height="14" rx="1.5" fill="#F6D84B" stroke="rgba(0,0,0,.35)" stroke-width="1"/><text x="32" y="20.5" text-anchor="middle" font-size="12" font-weight="800" font-family="sans-serif" fill="#3B2F00">?</text></g>`);

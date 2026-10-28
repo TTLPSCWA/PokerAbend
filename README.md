@@ -125,6 +125,7 @@ Die Startseite ist ein Hub mit Navigation per URL-Hash (Zurück-Taste und Links 
 | Sortierstation (Party Spiele) | 2–8 | Dinge auf dem Band nach Farbe oder Form in Kisten sortieren, das Band wird schneller, Regel kann wechseln. Bauart B |
 | Tickendes Paket (Party Spiele) | 3–8 | Paket mit unbekannter Zündzeit wandert reihum; Wort mit verlangtem Buchstaben nennen. Platzt es, gibt es einen Minuspunkt; wenigste Minuspunkte gewinnen |
 | Werwolf (Party Spiele) | 6–18 | Server als Spielleiter: Werwölfe, Seherin, Hexe, Amor, Jäger. Nacht, Tag, Abstimmung; Rollen nur an den jeweiligen Spieler, Tote sehen alles; Besprechen per Voice am Tisch |
+| Wer bin ich? (Party Spiele) | 3–10 | Jeder trägt einen geheimen Begriff „auf der Stirn“ (gelber Zettel): alle sehen ihn, nur man selbst nicht. Reihum Ja/Nein-Fragen (per Voice, optional als Text), die anderen antworten per Knopf, die Mehrheit gilt; Raten mit Toleranz für Umlaute, Artikel und Tippfehler, sonst Abstimmung. Begriffe gegenseitig, aus 8 Kategorien (je ≥ 60) oder eigene Liste. Keine Bots. Der eigene Begriff geht nie an den eigenen Browser, bis er erraten ist |
 
 Die Startseite ist ein Hub (siehe „Startseite“ weiter unten). Die Kategorie (`karten`, `wuerfel`, `brett`, `party`), Spielerzahl, Dauer und das Spielbild legt jedes Spiel in seinem `games/<spiel>/index.js` fest.
 

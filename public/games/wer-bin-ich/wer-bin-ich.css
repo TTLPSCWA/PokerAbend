@@ -1,0 +1,54 @@
+/* Wer bin ich?: Tisch mit Avataren, gelbe Haftnotizen auf der Stirn, große Antwortknöpfe */
+.kg-wer-bin-ich .kg-main { background: radial-gradient(120% 90% at 50% 25%, #355A78, #14212E); place-items: start stretch; }
+.kg-wer-bin-ich .kg-table.wb-wrap { display: grid; gap: 14px; width: 100%; max-width: 980px; margin: 0 auto; justify-items: stretch; }
+.wb-centre { justify-self: center; }
+.wb-table { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.wb-card { display: grid; justify-items: center; gap: 6px; padding: 10px 8px 8px; border-radius: var(--r-m); background: rgba(0,0,0,.26); border: 2px solid transparent; text-align: center; }
+.wb-card.me { border-color: rgba(240, 195, 90, .5); }
+.wb-card.turn { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(240, 195, 90, .25); }
+.wb-card.solved { background: rgba(46, 158, 79, .22); }
+.wb-who { display: flex; align-items: center; gap: 8px; max-width: 100%; }
+.wb-who b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wb-av { display: inline-grid; place-items: center; width: 34px; height: 34px; }
+/* Stirn-Zettel */
+.wb-note { display: grid; place-items: center; min-width: 100px; max-width: 100%; min-height: 62px; padding: 8px 10px; background: #F6D84B; color: #3B2F00; font: 800 20px/1.15 "Segoe Print", "Comic Sans MS", system-ui, sans-serif; text-align: center; transform: rotate(var(--rot, 0deg)); box-shadow: 0 4px 8px rgba(0,0,0,.4), inset 0 -10px 12px rgba(0,0,0,.06); overflow-wrap: break-word; word-break: normal; hyphens: auto; border-radius: 2px; }
+.wb-note.long { font-size: 15px; }
+.wb-note.blank { background: #E8D878; color: #7B6A1C; font-size: 30px; }
+.wb-note.mini { min-height: 0; min-width: 0; font-size: 15px; padding: 3px 8px; transform: none; box-shadow: none; display: inline-block; }
+.wb-status { color: var(--text-2); }
+/* Erraten: Zettel fliegt auf und dreht sich um */
+.wb-card.fly .wb-note { animation: wb-fly 1.1s ease-out; }
+@keyframes wb-fly { 0% { transform: translateY(0) rotateY(0) scale(1); } 35% { transform: translateY(-60px) rotateY(180deg) scale(1.4); } 70% { transform: translateY(-60px) rotateY(360deg) scale(1.4); } 100% { transform: translateY(0) rotateY(360deg) rotate(var(--rot)) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .wb-card.fly .wb-note { animation: none; } }
+/* Mitte: Frage, Ergebnis */
+.wb-centre { display: grid; justify-items: center; gap: 6px; padding: 12px 18px; border-radius: var(--r-l); background: rgba(0,0,0,.28); text-align: center; }
+.wb-centre.big .wb-q { font-size: 28px; line-height: 1.2; color: var(--gold-text); overflow-wrap: anywhere; }
+.wb-centre small { color: #C9D6E8; }
+.wb-result { display: grid; gap: 2px; justify-items: center; padding: 8px 22px; border-radius: var(--r-m); }
+.wb-result b { font-size: 34px; letter-spacing: .06em; }
+.wb-result.ja { background: rgba(46,158,79,.4); } .wb-result.nein { background: rgba(200,60,50,.4); } .wb-result.unklar { background: rgba(120,120,120,.4); }
+.wb-hints { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; color: var(--text-2); }
+.wb-hints i { font-style: normal; padding: 2px 10px; border-radius: 999px; background: rgba(0,0,0,.28); color: var(--text); }
+/* Notizen */
+.wb-notes { background: rgba(0,0,0,.24); border-radius: var(--r-m); padding: 6px 12px 10px; }
+.wb-notes summary { cursor: pointer; min-height: 32px; display: flex; align-items: center; font-weight: 700; }
+.wb-known { margin: 4px 0 8px; padding: 0; list-style: none; display: grid; gap: 3px; max-height: 160px; overflow: auto; }
+.wb-known li { display: flex; gap: 8px; }
+.wb-known li b { min-width: 34px; }
+.wb-known li.ja b { color: #8BE0A4; } .wb-known li.nein b { color: #F3A39D; } .wb-known li.hint b { color: var(--gold-text); } .wb-known li.none { color: var(--text-2); }
+/* Antwortknöpfe: groß */
+.wb-answers { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; padding: 8px 6px; }
+.wb-ans { flex: 1 1 100px; max-width: 200px; min-height: 64px; border-radius: 14px; border: 3px solid transparent; font-size: 22px; font-weight: 800; color: #fff; cursor: pointer; touch-action: manipulation; }
+.wb-ans.wb-ja { background: #2E9E4F; } .wb-ans.wb-nein { background: #C0392B; } .wb-ans.wb-weiss { background: #5C6670; }
+.wb-ans.on { border-color: #fff; box-shadow: 0 0 0 3px var(--gold); }
+.wb-form { display: flex; gap: 8px; width: min(100%, 640px); margin: 0 auto; }
+.wb-form .pk-input { flex: 1; min-width: 0; }
+.wb-modes { display: grid; gap: 4px; }
+.wb-reveal .wb-note { max-width: 220px; }
+@media (max-width: 640px) {
+  .wb-table { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .wb-note { min-width: 0; width: 100%; font-size: 17px; min-height: 54px; }
+  .wb-note.long { font-size: 14px; }
+  .wb-centre.big .wb-q { font-size: 22px; }
+  .wb-ans { min-height: 60px; font-size: 20px; }
+}

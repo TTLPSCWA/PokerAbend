@@ -339,6 +339,7 @@ function kitGame(def) {
       <h2 id="kg-over-title">${esc(r.text)}</h2>
       ${rows ? `<table class="standings"><thead><tr><th>Name</th><th class="num">Runde</th><th class="num">Abend (${esc(S.scoreLabel)})</th></tr></thead><tbody>${rows}</tbody></table>
         <p class="hint" style="margin:0">${S.lowWins ? 'Wenig Punkte sind gut.' : 'Viel ist gut.'}</p>` : ''}
+      ${def.resultExtra ? def.resultExtra(S) : ''}
       <div class="kg-over-acts">
         <button class="btn btn-ghost" data-kit="closeResult">Schließen</button>
         ${host ? `<button class="btn" data-kit="switchPanel">Spiel wechseln</button><button class="btn btn-brass" data-kit="start" ${seatedCount() >= S.minPlayers ? '' : 'disabled'}>Nächste ${RW}</button>`
@@ -437,7 +438,7 @@ function kitGame(def) {
           ${S.phase !== 'playing' ? `<button class="btn btn-brass" data-kit="start">${ICON.play} ${S.phase === 'over' ? 'Nochmal' : S.roundNo ? `Nächste ${RW}` : `${RW} starten`}</button>` : ''}
           <button class="btn btn-outline-red" data-kit="newGame" ${S.phase === 'playing' ? 'disabled title="Geht nur zwischen zwei Runden"' : ''}>Neues Spiel (Punkte auf null)</button>
         </div>
-        ${botControlsHTML(S, S.phase === 'playing')}
+        ${def.noBots ? '' : botControlsHTML(S, S.phase === 'playing')}
         ${unlistedSwitchHTML(S)}
         ${fields ? `<h3>Regeln an diesem Tisch</h3>${fields}<p class="hint" style="margin:0">Änderungen gehen nur zwischen den Runden. Die Standardwerte sind unsere üblichen Hausregeln – alle sehen die aktiven Regeln unter „?“.</p>` : ''}
         ${def.hostExtra ? def.hostExtra(S) : ''}
