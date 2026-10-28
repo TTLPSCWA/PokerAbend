@@ -1,0 +1,9 @@
+/* Zahlenzoo: Bühne mit einer Zeile je Tierart */
+.zz-scene { display: grid; gap: 10px; width: min(100%, 520px); padding: 14px; border-radius: var(--r-l); background: rgba(0,0,0,.28); min-height: 160px; }
+.zz-row { min-height: 44px; display: flex; align-items: center; border-bottom: 1px dashed rgba(255,255,255,.12); }
+.zz-icons { display: flex; flex-wrap: wrap; gap: 2px; }
+.zz-icons i { font-style: normal; font-size: 30px; line-height: 1; animation: zz-pop .25s ease-out; }
+.zz-over { display: grid; justify-items: center; gap: 6px; padding: 30px; font-size: 22px; border-radius: var(--r-l); background: rgba(0,0,0,.3); min-width: 260px; }
+.zz-over span { color: var(--text-2); font-size: 16px; }
+@keyframes zz-pop { from { transform: scale(.2); } }
+@media (prefers-reduced-motion: reduce) { .zz-icons i { animation: none; } }

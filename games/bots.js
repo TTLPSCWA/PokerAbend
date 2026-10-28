@@ -18,6 +18,7 @@ import { botMove as muehleMove } from './muehle/room.js';
 import { evaluate as pokerDiceEval } from './wuerfelpoker/room.js';
 import { botMove as reversiMove } from './reversi/room.js';
 import { botMove as dameMove } from './dame/room.js';
+import { LETTERS as PAKET_LETTERS } from './tickendes-paket/room.js';
 
 const one = (list, rng) => list[Math.floor(rng() * list.length)];
 
@@ -476,4 +477,15 @@ function domino(room, id, rng) {
 }
 const dominoPips = (t) => t.split('-').reduce((s, x) => s + Number(x), 0);
 
-export const BOTS = { wuerfelpoker, luegenwuerfel, chicago: (room, id) => room.throwDice(id), reversi: (room, id, rng) => room.place(id, reversiMove(room.board, id, rng)), dame: (room, id, rng) => { const m = dameMove(room.board, room.color(id), room.chain, rng); return room.move(id, m.from, m.to); }, domino, omaha: poker, mogeln, praesident, durak, poker, maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, schiffe, blackjack, kniffel, viergewinnt, shutthebox, zehntausend, muehle, schaetzmeister, schlagfertig: partyBot, werhatdasgesagt: partyBot };
+// Tickendes Paket: ein ausgedachtes Wort mit dem verlangten Anfangsbuchstaben (ein Bot kennt keine Kategorien)
+function tickendesPaket(room, id, rng) {
+  const syl = ['ba', 'ro', 'li', 'mu', 'ta', 'ne', 'so', 'ki', 'pe', 'du', 'la', 'ri'];
+  for (let k = 0; k < 20; k++) {
+    const w = room.prompt.letter + syl[Math.floor(rng() * syl.length)] + syl[Math.floor(rng() * syl.length)] + (k ? syl[Math.floor(rng() * syl.length)] : '');
+    try { return room.answer(id, w); } catch { /* schon benutzt – nochmal */ }
+  }
+  return room.onTimeout(id);
+}
+void PAKET_LETTERS;
+
+export const BOTS = { 'tickendes-paket': tickendesPaket, werwolf: partyBot, zahlenzoo: partyBot, 'gedaechtnis-kueche': partyBot, pfeilfieber: partyBot, sortierstation: partyBot, wuerfelpoker, luegenwuerfel, chicago: (room, id) => room.throwDice(id), reversi: (room, id, rng) => room.place(id, reversiMove(room.board, id, rng)), dame: (room, id, rng) => { const m = dameMove(room.board, room.color(id), room.chain, rng); return room.move(id, m.from, m.to); }, domino, omaha: poker, mogeln, praesident, durak, poker, maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, schiffe, blackjack, kniffel, viergewinnt, shutthebox, zehntausend, muehle, schaetzmeister, schlagfertig: partyBot, werhatdasgesagt: partyBot };

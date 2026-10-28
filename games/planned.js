@@ -10,7 +10,7 @@
 // 'planned' erscheint nirgends – außer jemand schaltet unter „Ich“ „Geplante Spiele zeigen“ an (dann ausgegraut, nach Päckchen gruppiert).
 //
 // Ablauf: Wird ein Spiel gebaut, kommt es nach games/<id>/, wird in games/index.js registriert und fliegt hier raus.
-// Ist ein Päckchen fertig, werden die Einträge des nächsten Päckchens auf status 'next' gesetzt. (Fertig: Päckchen 2b – Schlagfertig, Wer hat das gesagt? – Päckchen 4 – Mogeln, Präsident, Durak, Omaha – und Päckchen 5 – Würfelpoker, Lügenwürfel, Chicago, Reversi, Dame, Domino.)
+// Ist ein Päckchen fertig, werden die Einträge des nächsten Päckchens auf status 'next' gesetzt. (Fertig: Päckchen 2b – Schlagfertig, Wer hat das gesagt? – Päckchen 4 – Mogeln, Präsident, Durak, Omaha – Päckchen 5 – Würfelpoker, Lügenwürfel, Chicago, Reversi, Dame, Domino – und Päckchen 6 – Zahlenzoo, Gedächtnisküche, Pfeilfieber, Sortierstation, Tickendes Paket, Werwolf samt Bauart-B-Baustein.)
 import { fan, cardsChip, dice, stairs, swim, bubbles, numberLine, flapBox, battle, mill, connect4, pawns, reversi, checkers, dominoes, hexBoard, chess, territory, glyph } from './art-kit.js';
 
 const spiel = (o) => ({ type: 'game', status: 'planned', houseRules: [], ...o });
@@ -19,94 +19,12 @@ const CARD = { fill: '#F7F3E8' };
 
 export const PLANNED = [
 
-  // ---------- Päckchen 6 (als Nächstes) ----------
-  funktion({
-    id: 'bauart-b-baustein', name: 'Bauart-B-Baustein', type: 'feature', paeckchen: '6',
-    beschreibung: 'Gemeinsamer Baustein für Partyspiele, bei denen alle gleichzeitig solo spielen: Der Server verteilt einen Seed, jeder spielt lokal im Browser, der Server prüft das Ergebnis (Eingaben nachspielen) und wertet aus.',
-  }),
-  spiel({
-    id: 'zahlenzoo', name: 'Zahlenzoo', category: 'party', bauart: 'B', minPlayers: 2, maxPlayers: 8, duration: 5, status: 'next', paeckchen: '6',
-    vorbild: 'Animal Arithmetic (Pummel Party) – nur die Mechanik: Tiere zählen und rechnen',
-    description: 'Tiere huschen über das Bild – wer sie am besten zählt und verrechnet, gewinnt.',
-    rules: [
-      'Alle sehen denselben Ablauf (gleicher Seed) von Tieren, die ins Bild laufen und es wieder verlassen.',
-      'Gefragt wird nach einer Rechnung, z. B. „Wie viele Katzen sind es mehr als Hunde?“ oder die Summe bestimmter Tiere.',
-      'Jeder tippt seine Zahl, der Server vergleicht mit der richtigen Antwort.',
-      'Punkte für richtig und für Tempo; mehrere Fragen pro Partie, die Schwierigkeit steigt.',
-    ],
-    houseRules: ['Nur Zählen ohne Rechnen', 'Mehr Tierarten gleichzeitig', 'Ohne Zeitbonus'],
-    art: glyph('paw', '#1C7A43'),
-  }),
-  spiel({
-    id: 'gedaechtnis-kueche', name: 'Gedächtnisküche', category: 'party', bauart: 'B', minPlayers: 2, maxPlayers: 8, duration: 5, status: 'next', paeckchen: '6',
-    description: 'Ein Rezept kurz sehen, dann die Zutaten aus dem Gedächtnis in die richtige Reihenfolge bringen.',
-    rules: [
-      'Alle bekommen dasselbe Rezept (gleicher Seed) kurz angezeigt: eine Folge von Zutaten.',
-      'Danach verschwindet es, und man tippt die Zutaten in der richtigen Reihenfolge an.',
-      'Jede Runde wird das Rezept eine Zutat länger, ein Fehler beendet die Folge.',
-      'Punkte nach Länge der richtig erinnerten Folge; Gleichstand entscheidet die Zeit.',
-    ],
-    houseRules: ['Zutaten kurz zeigen statt gleich lang', 'Rezept rückwärts nennen'],
-    art: glyph('pot', '#A5522E'),
-  }),
-  spiel({
-    id: 'pfeilfieber', name: 'Pfeilfieber', category: 'party', bauart: 'B', minPlayers: 2, maxPlayers: 8, duration: 5, status: 'next', paeckchen: '6',
-    description: 'Pfeilmuster so schnell und fehlerfrei wie möglich nachtippen.',
-    rules: [
-      'Eine Folge von Pfeilen (hoch, runter, links, rechts) erscheint – für alle gleich (gleicher Seed).',
-      'Man tippt die Pfeile in derselben Reihenfolge (Tasten oder Wischen).',
-      'Ein Fehler setzt die Folge zurück und kostet Zeit.',
-      'Wer in der Zeitspanne die meisten Folgen schafft, gewinnt; der Server prüft Eingaben und Zeiten.',
-    ],
-    houseRules: ['Pfeile gedreht (Rückwärts-Modus)', 'Mehr Pfeile pro Folge je Runde'],
-    art: glyph('arrows', '#1F57C3'),
-  }),
-  spiel({
-    id: 'sortierstation', name: 'Sortierstation', category: 'party', bauart: 'B', minPlayers: 2, maxPlayers: 8, duration: 5, status: 'next', paeckchen: '6',
-    description: 'Gegenstände auf einem Band in die richtigen Kisten sortieren, bevor sie vorbeigefahren sind.',
-    rules: [
-      'Ein Förderband bringt Dinge heran, alle sehen dieselbe Reihenfolge (gleicher Seed).',
-      'Jedes Ding gehört in eine von zwei oder drei Kisten, etwa nach Farbe, Form oder Zahl.',
-      'Man ordnet jedes Ding per Tipp der richtigen Kiste zu, bevor es das Band verlässt.',
-      'Richtige Treffer geben Punkte, falsche kosten welche; das Band wird schneller.',
-    ],
-    houseRules: ['Regel wechselt zwischendurch (nach Farbe, dann nach Form)', 'Ohne Minuspunkte'],
-    art: glyph('bars', '#7A5238'),
-  }),
-  spiel({
-    id: 'tickendes-paket', name: 'Tickendes Paket', category: 'party', bauart: 'A', minPlayers: 3, maxPlayers: 8, duration: 10, status: 'next', paeckchen: '6',
-    vorbild: 'Heiße Kartoffel – nur die Mechanik',
-    description: 'Ein tickendes Paket wandert von Hand zu Hand – wer es hält, wenn es platzt, verliert.',
-    rules: [
-      'Das Paket startet bei einem Spieler und tickt mit einer zufälligen, für alle unbekannten Zeit.',
-      'Wer es hat, muss es mit einer richtigen Antwort auf eine Kurzfrage weitergeben (Wort mit Anfangsbuchstaben, Kategorie).',
-      'Eine Antwort darf nur einmal vorkommen; wer nichts weiß oder zu lange braucht, behält das Paket.',
-      'Platzt es, bekommt der Halter einen Minuspunkt; nach mehreren Runden gewinnt, wer am wenigsten hat.',
-    ],
-    houseRules: ['Sichtbarer Countdown statt Zufallszeit', 'Eigene Kategorien des Hosts'],
-    art: glyph('bomb', '#7A5238'),
-  }),
-  spiel({
-    id: 'werwolf', name: 'Werwolf', category: 'party', bauart: 'A', minPlayers: 6, maxPlayers: 18, duration: 30, status: 'next', paeckchen: '6',
-    vorbild: 'Die Werwolf-Spielform „Die Werwölfe vom Düsterwald“ – nur die Mechanik',
-    description: 'Dorf gegen Werwölfe: Nachts wird gejagt, tagsüber diskutiert und abgestimmt. Der Server ist Spielleiter.',
-    rules: [
-      'Der Server verteilt die Rollen verdeckt und schickt jedem nur seine eigene Rolle; Tote sehen alles, dürfen aber nichts mehr verraten.',
-      'Nacht: Die Werwölfe einigen sich im Chat auf ein Opfer. Die Seherin sieht die Rolle eines Spielers. Die Hexe hat je einen Heil- und einen Gifttrank.',
-      'In der ersten Nacht verliebt Amor zwei Spieler: Stirbt einer, stirbt auch der andere.',
-      'Tag: Alle erfahren, wer gestorben ist, und diskutieren (per Voice am Tisch). Danach stimmt das Dorf ab; wer die meisten Stimmen hat, wird hingerichtet.',
-      'Stirbt der Jäger, nimmt er sofort einen Spieler mit in den Tod.',
-      'Das Dorf gewinnt, wenn alle Werwölfe tot sind; die Werwölfe gewinnen, wenn sie mindestens so viele sind wie das Dorf.',
-    ],
-    houseRules: ['Rollen-Auswahl durch den Host (welche Sonderrollen im Spiel sind)', 'Zeit pro Phase (Nacht, Diskussion, Abstimmung)', 'Rolle bei Tod aufdecken: an oder aus'],
-    art: glyph('mask', '#4A3A6B'),
-  }),
 
-  // ---------- Päckchen 7 ----------
-  funktion({ id: 'party-mix', name: 'Party-Mix', type: 'feature', paeckchen: '7', beschreibung: 'Ein Tisch spielt hintereinander zufällig oder vom Host gewählte Partyspiele, ohne dass man zwischendurch wechseln muss; die Punkte laufen über alle Spiele.' }),
-  funktion({ id: 'party-turnier', name: 'Party-Turnier', type: 'feature', paeckchen: '7', beschreibung: 'Mehrere Partyspiele nacheinander als Turnier mit Gesamtwertung und Siegerehrung am Ende.' }),
-  funktion({ id: 'eigene-playlist', name: 'Eigene Playlist', type: 'feature', paeckchen: '7', beschreibung: 'Der Host stellt eine Reihenfolge von Spielen mit Rundenzahl und Einstellungen zusammen und speichert sie für den Abend.' }),
-  funktion({ id: 'team-duell', name: 'Team-Duell', type: 'feature', paeckchen: '7', beschreibung: 'Zwei Teams treten gegeneinander an; die Punkte eines Teams werden gemeinsam gezählt (für Partyspiele, die sich dazu eignen).' }),
+  // ---------- Päckchen 7 (als Nächstes) ----------
+  funktion({ id: 'party-mix', name: 'Party-Mix', type: 'feature', status: 'next', paeckchen: '7', beschreibung: 'Ein Tisch spielt hintereinander zufällig oder vom Host gewählte Partyspiele, ohne dass man zwischendurch wechseln muss; die Punkte laufen über alle Spiele.' }),
+  funktion({ id: 'party-turnier', name: 'Party-Turnier', type: 'feature', status: 'next', paeckchen: '7', beschreibung: 'Mehrere Partyspiele nacheinander als Turnier mit Gesamtwertung und Siegerehrung am Ende.' }),
+  funktion({ id: 'eigene-playlist', name: 'Eigene Playlist', type: 'feature', status: 'next', paeckchen: '7', beschreibung: 'Der Host stellt eine Reihenfolge von Spielen mit Rundenzahl und Einstellungen zusammen und speichert sie für den Abend.' }),
+  funktion({ id: 'team-duell', name: 'Team-Duell', type: 'feature', status: 'next', paeckchen: '7', beschreibung: 'Zwei Teams treten gegeneinander an; die Punkte eines Teams werden gemeinsam gezählt (für Partyspiele, die sich dazu eignen).' }),
 
   // ---------- Päckchen 8 (Echtzeit, Bauart C) ----------
   spiel({

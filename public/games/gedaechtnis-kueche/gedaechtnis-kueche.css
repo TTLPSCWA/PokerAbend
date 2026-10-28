@@ -1,0 +1,10 @@
+/* Gedächtnisküche: große Zutat, danach Ablage zum Nachtippen */
+.gk-show { display: grid; justify-items: center; gap: 8px; padding: 22px 40px; border-radius: var(--r-l); background: rgba(0,0,0,.3); min-width: 220px; }
+.gk-show small { color: var(--text-2); }
+.gk-big { font-size: 96px; line-height: 1.1; min-height: 110px; display: block; }
+.gk-recall { display: grid; justify-items: center; gap: 12px; }
+.gk-recall small { color: var(--text-2); }
+.gk-taps { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; max-width: 100%; }
+.gk-taps i { font-style: normal; display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 10px; border: 2px dashed rgba(255,255,255,.25); font-size: 24px; }
+.gk-taps i.on { border-style: solid; border-color: var(--gold); background: rgba(0,0,0,.3); }
+.gk-recipe { font-size: 34px; letter-spacing: .1em; }

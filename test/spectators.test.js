@@ -13,6 +13,7 @@ const SECRETS = {
   maexchen: (r, id) => (r.cup && r.currentId === id ? [`"cup":[${r.cup.join(',')}]`] : []),
   schwimmen: (r, id) => (r.lastDeal ? [] : r.hands[id]), // gleich beim Geben 31: dann wurde zu Recht aufgedeckt (Karten des alten Durchgangs)
   mogeln: (r, id) => r.hands[id],
+  werwolf: (r, id) => (id === r.order[0] ? ['"roles":{', '"nightLog":['] : []), // Rollen und Nachtgeschehen sehen nur Tote
   praesident: (r, id) => r.hands[id],
   durak: (r, id) => r.hands[id],
   schiffe: (r, id) => r.ships[id].map((s) => JSON.stringify(s.cells)), // Schiffspositionen
@@ -23,7 +24,7 @@ for (const g of Object.values(GAMES)) {
   test(`Zuschauen bei ${g.name}: nichts Verdecktes, Einstieg zur nächsten Runde`, () => {
     const r = g.create('ZUSCH', {}, () => {});
     const [a, b] = ['Anna', 'Ben'].map((n) => { const p = r.addPlayer(n, null); r.sit(p.id); return p.id; });
-    if (r.opts.minPlayers > 2) { const p = r.addPlayer('Cem', null); r.sit(p.id); } // Spiele ab drei Spielern
+    for (let k = r.seats.length; k < Math.max(r.opts.minPlayers, 2); k++) { const p = r.addPlayer('Mit' + k, null); r.sit(p.id); } // Spiele ab drei (Werwolf: sechs) Spielern
     const z = r.addPlayer('Zoe', null).id; // schaut nur zu
     r.start(a);
     if (g.id === 'maexchen') r.throwDice(r.currentId); // ein verdeckter Wurf liegt unter dem Becher

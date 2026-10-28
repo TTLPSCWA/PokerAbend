@@ -1,0 +1,12 @@
+/* Solo-Partyspiele (Bauart B): gemeinsames Spielfeld, Zeitleiste, Ergebnisliste */
+.so-area { display: grid; justify-items: center; gap: 14px; width: 100%; min-height: 200px; padding: 10px; }
+.so-wait { display: grid; justify-items: center; gap: 8px; padding: 22px; text-align: center; border-radius: var(--r-l); background: rgba(0,0,0,.25); }
+.so-bar { width: min(100%, 420px); height: 8px; border-radius: 4px; background: rgba(255,255,255,.15); overflow: hidden; }
+.so-bar i { display: block; height: 100%; background: var(--gold); transition: width .1s linear; }
+.so-score { color: var(--gold-text); font-weight: 700; }
+.so-rank .val small { color: var(--text-2); }
+.so-btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.so-btns button { min-width: 64px; min-height: 64px; border-radius: 14px; border: 2px solid var(--line); background: var(--panel-2); color: var(--text); font-size: 30px; cursor: pointer; touch-action: manipulation; }
+.so-btns button:hover, .so-btns button:focus-visible { border-color: var(--gold); }
+.so-btns button[disabled] { opacity: .45; cursor: default; }
+.kg-zahlenzoo .kg-main, .kg-gedaechtnis-kueche .kg-main, .kg-pfeilfieber .kg-main, .kg-sortierstation .kg-main { background: radial-gradient(120% 90% at 50% 25%, #2F3F5F, #121A2B); }

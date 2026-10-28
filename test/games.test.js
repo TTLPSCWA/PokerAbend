@@ -21,7 +21,7 @@ function setup(Room, names = ['Anna', 'Ben', 'Carla'], settings = {}) {
 const seq = (...vals) => () => { if (!vals.length) throw new Error('Würfel aufgebraucht'); return vals.shift(); };
 
 test('Alle Spiele: Module, Grundlage und Spielarten', () => {
-  assert.deepEqual(Object.keys(GAMES), ['poker', 'maumau', 'farbenchaos', 'maexchen', 'schocken', 'huetchen', 'zehnetappen', 'stapelrennen', 'schwimmen', 'blackjack', 'kniffel', 'schiffe', 'viergewinnt', 'shutthebox', 'zehntausend', 'muehle', 'schaetzmeister', 'schlagfertig', 'werhatdasgesagt', 'mogeln', 'praesident', 'durak', 'omaha', 'wuerfelpoker', 'luegenwuerfel', 'chicago', 'reversi', 'dame', 'domino']);
+  assert.deepEqual(Object.keys(GAMES), ['poker', 'maumau', 'farbenchaos', 'maexchen', 'schocken', 'huetchen', 'zehnetappen', 'stapelrennen', 'schwimmen', 'blackjack', 'kniffel', 'schiffe', 'viergewinnt', 'shutthebox', 'zehntausend', 'muehle', 'schaetzmeister', 'schlagfertig', 'werhatdasgesagt', 'mogeln', 'praesident', 'durak', 'omaha', 'wuerfelpoker', 'luegenwuerfel', 'chicago', 'reversi', 'dame', 'domino', 'zahlenzoo', 'gedaechtnis-kueche', 'pfeilfieber', 'sortierstation', 'tickendes-paket', 'werwolf']);
   for (const g of Object.values(GAMES)) {
     assert.ok(g.name && g.description && g.players, g.id);
     const r = g.create('ABCDE', {}, () => {});
@@ -472,7 +472,7 @@ test('Anzeigenamen geändert, interne IDs gleich – alte gespeicherte Tische la
   const names = Object.fromEntries(Object.values(GAMES).map((g) => [g.id, g.name]));
   assert.deepEqual(names, {
     poker: "Texas Hold'em", maumau: 'Mau-Mau', farbenchaos: 'UNO', maexchen: 'Mäxchen',
-    schocken: 'Schocken', huetchen: 'Mensch ärgere Dich nicht', zehnetappen: 'Phase 10', stapelrennen: 'Skip-Bo', schwimmen: 'Schwimmen', blackjack: 'Blackjack', kniffel: 'Kniffel', schiffe: 'Schiffe versenken', viergewinnt: 'Vier gewinnt', shutthebox: 'Shut the Box', zehntausend: 'Zehntausend', muehle: 'Mühle', schaetzmeister: 'Schätzmeister', schlagfertig: 'Schlagfertig', werhatdasgesagt: 'Wer hat das gesagt?', mogeln: 'Mogeln', praesident: 'Präsident', durak: 'Durak', omaha: 'Omaha', wuerfelpoker: 'Würfelpoker', luegenwuerfel: 'Lügenwürfel', chicago: 'Chicago', reversi: 'Reversi', dame: 'Dame', domino: 'Domino',
+    schocken: 'Schocken', huetchen: 'Mensch ärgere Dich nicht', zehnetappen: 'Phase 10', stapelrennen: 'Skip-Bo', schwimmen: 'Schwimmen', blackjack: 'Blackjack', kniffel: 'Kniffel', schiffe: 'Schiffe versenken', viergewinnt: 'Vier gewinnt', shutthebox: 'Shut the Box', zehntausend: 'Zehntausend', muehle: 'Mühle', schaetzmeister: 'Schätzmeister', schlagfertig: 'Schlagfertig', werhatdasgesagt: 'Wer hat das gesagt?', mogeln: 'Mogeln', praesident: 'Präsident', durak: 'Durak', omaha: 'Omaha', wuerfelpoker: 'Würfelpoker', luegenwuerfel: 'Lügenwürfel', chicago: 'Chicago', reversi: 'Reversi', dame: 'Dame', domino: 'Domino', zahlenzoo: 'Zahlenzoo', 'gedaechtnis-kueche': 'Gedächtnisküche', pfeilfieber: 'Pfeilfieber', sortierstation: 'Sortierstation', 'tickendes-paket': 'Tickendes Paket', werwolf: 'Werwolf',
   });
   // Spielstand wie in data/rooms.json: Spielart steht unter der alten ID
   for (const id of ['farbenchaos', 'huetchen', 'zehnetappen', 'stapelrennen']) {
@@ -505,7 +505,7 @@ test('Lobby: jedes Spiel bringt nur seine eigenen Einstellungen mit', () => {
   const fields = Object.fromEntries(Object.values(GAMES).map((g) => [g.id, g.createFields.map((f) => f.key)]));
   assert.deepEqual(fields, {
     poker: ['startStack', 'smallBlind', 'bigBlind'], maumau: ['handSize'], farbenchaos: ['handSize'], maexchen: ['lives'],
-    schocken: [], huetchen: [], zehnetappen: [], stapelrennen: ['stockSize'], schwimmen: ['lives'], blackjack: ['startStack', 'minBet', 'maxBet'], kniffel: [], schiffe: ['turnTime'], viergewinnt: ['turnTime'], shutthebox: ['rounds'], zehntausend: ['target'], muehle: ['turnTime'], schaetzmeister: ['rounds'], schlagfertig: ['rounds'], werhatdasgesagt: ['rounds'], mogeln: ['maxCards'], praesident: [], durak: [], omaha: ['startStack', 'smallBlind', 'bigBlind'], wuerfelpoker: ['strikes'], luegenwuerfel: ['dice'], chicago: [], reversi: ['turnTime'], dame: ['turnTime'], domino: [],
+    schocken: [], huetchen: [], zehnetappen: [], stapelrennen: ['stockSize'], schwimmen: ['lives'], blackjack: ['startStack', 'minBet', 'maxBet'], kniffel: [], schiffe: ['turnTime'], viergewinnt: ['turnTime'], shutthebox: ['rounds'], zehntausend: ['target'], muehle: ['turnTime'], schaetzmeister: ['rounds'], schlagfertig: ['rounds'], werhatdasgesagt: ['rounds'], mogeln: ['maxCards'], praesident: [], durak: [], omaha: ['startStack', 'smallBlind', 'bigBlind'], wuerfelpoker: ['strikes'], luegenwuerfel: ['dice'], chicago: [], reversi: ['turnTime'], dame: ['turnTime'], domino: [], zahlenzoo: ['rounds'], 'gedaechtnis-kueche': ['rounds'], pfeilfieber: ['rounds'], sortierstation: ['rounds'], 'tickendes-paket': ['rounds'], werwolf: [],
   });
   // Was die Lobby anbietet, versteht das Spiel auch (unbekannte Felder würden still ignoriert)
   for (const g of Object.values(GAMES)) {

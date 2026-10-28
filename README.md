@@ -119,6 +119,12 @@ Die Startseite ist ein Hub mit Navigation per URL-Hash (Zurück-Taste und Links 
 | Reversi | 2 (+ Zuschauer) | 8 × 8, Gegner einschließen und umdrehen, Passen von selbst, mehr Steine gewinnt. Zeit pro Zug |
 | Dame | 2 (+ Zuschauer) | Deutsche Dame: Schlagzwang, Mehrfachsprünge (Sprung für Sprung), Damen ziehen weit, Remis nach 50 Zügen ohne Schlag. Zeit pro Zug |
 | Domino | 2–4 | 28 Steine, 7 je Spieler, Kette mit zwei Enden, ziehen aus dem Vorrat, Punkte aus den Restaugen (auch im Blockspiel) |
+| Zahlenzoo (Party Spiele) | 2–8 | Tiere laufen ins Bild und wieder hinaus, danach eine Zahlenfrage (zählen, Unterschied, Summe). Richtig 100 + Tempobonus, Schwierigkeit steigt. Bauart B |
+| Gedächtnisküche (Party Spiele) | 2–8 | Rezept aus Zutaten kurz sehen, dann in der Reihenfolge nachtippen; der erste Fehler beendet die Folge, jede Runde eine Zutat länger. Hausregel rückwärts. Bauart B |
+| Pfeilfieber (Party Spiele) | 2–8 | Pfeilfolgen so schnell und fehlerfrei wie möglich nachtippen (Tasten oder Knöpfe), Fehler sperren kurz. Der Server spielt die Eingaben nach. Bauart B |
+| Sortierstation (Party Spiele) | 2–8 | Dinge auf dem Band nach Farbe oder Form in Kisten sortieren, das Band wird schneller, Regel kann wechseln. Bauart B |
+| Tickendes Paket (Party Spiele) | 3–8 | Paket mit unbekannter Zündzeit wandert reihum; Wort mit verlangtem Buchstaben nennen. Platzt es, gibt es einen Minuspunkt; wenigste Minuspunkte gewinnen |
+| Werwolf (Party Spiele) | 6–18 | Server als Spielleiter: Werwölfe, Seherin, Hexe, Amor, Jäger. Nacht, Tag, Abstimmung; Rollen nur an den jeweiligen Spieler, Tote sehen alles; Besprechen per Voice am Tisch |
 
 Die Startseite ist ein Hub (siehe „Startseite“ weiter unten). Die Kategorie (`karten`, `wuerfel`, `brett`, `party`), Spielerzahl, Dauer und das Spielbild legt jedes Spiel in seinem `games/<spiel>/index.js` fest.
 
@@ -296,6 +302,14 @@ test/              node:test – Engine inkl. 100.000 Zufallshänden, Räume, Se
 ```
 
 Jede Testdatei mit eigenem Server hat einen eigenen Portbereich, weil `npm test` die Dateien parallel ausführt: `server` 4000–4049, `security` 4050–4099, `sebastian` 4100–4149, `away` 4150–4199, `codes` 4200–4249, `history` 4250–4299, `platform` 4300–4349. Neue Dateien bekommen den nächsten freien Fünfziger-Block.
+
+### Bauart B: Solo-Partyspiele (Bauart-B-Baustein)
+
+Zahlenzoo, Gedächtnisküche, Pfeilfieber und Sortierstation sind **Bauart B**: Alle spielen gleichzeitig solo dieselbe Runde. Der Server (`games/solo-room.js`, ein `PartyRoom`) verteilt pro Runde einen **Seed**; jeder Browser erzeugt daraus lokal dieselbe Runde und schickt am Ende nur seine **Eingaben** (Antwort, Tipps, Tastendrücke mit Zeitstempel, Entscheidungen). Der Server **spielt die Eingaben nach** und wertet aus – die Punkte kommen nie vom Browser. Zeit wird auf der Serveruhr gemessen; Tempo und Abstände der Eingaben werden geprüft (zum Beispiel höchstens eine Eingabe alle 80 ms, Sperre nach einem Fehler).
+
+Die Spiellogik (`makeRound`, `score`, `botPayload`, `solution`) liegt je Spiel in `public/games/<spiel>/logic.js` und läuft **dieselbe Datei** im Browser (dynamischer Import) und auf dem Server. Zufall: `public/games/solo/rng.js`. Die Oberfläche (`public/games/solo/solo-kit.js`, `soloGame({ … })`) zeichnet das Spielfeld aus dem Seed neu, sobald sich der Zustand ändert. Ein neues Bauart-B-Spiel braucht also: `logic.js`, `games/<id>/room.js` (eine kleine Unterklasse von `SoloRoom`), `index.js`, die Oberfläche mit `soloGame` und einen Eintrag in `games/index.js`/`games/bots.js`. Wie bei jedem Spiel ohne Server-Geheimnis gilt: Wer den Code liest, kann die Lösung berechnen – die Spiele sind auf Spaß unter Freunden ausgelegt, nicht auf Betrugssicherheit.
+
+**Tickendes Paket** und **Werwolf** sind Bauart A (Runden mit Server als Spielleiter). Beim Werwolf kennt jeder Spieler nur seine eigene Rolle (Werwölfe einander, Verliebte einander); Nachtaktionen stehen weder im Verlauf noch in Sprechblasen, Tote und alle nach dem Spiel sehen Rollen und Nachtgeschehen. Die Diskussion läuft am Tisch (per Voice), im Spiel gibt es keinen Chat. Tests: `test/paeckchen6.test.js`.
 
 ## Partyspiele (Schätzmeister, Schlagfertig, Wer hat das gesagt?)
 

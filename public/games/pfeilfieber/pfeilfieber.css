@@ -1,0 +1,10 @@
+/* Pfeilfieber: aktuelle Folge groß, vier Knöpfe */
+.pf-wrap { display: grid; justify-items: center; gap: 14px; width: 100%; }
+.pf-info { display: flex; gap: 18px; align-items: baseline; color: var(--text-2); }
+.pf-seq { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding: 14px 18px; border-radius: var(--r-l); background: rgba(0,0,0,.3); }
+.pf-seq i { font-style: normal; font-size: 40px; line-height: 1; width: 52px; text-align: center; opacity: .55; }
+.pf-seq i.now { opacity: 1; color: var(--gold-text); transform: scale(1.2); }
+.pf-seq i.done { opacity: 1; color: #7FD39A; }
+.pf-seq.locked { filter: grayscale(1); outline: 3px solid #D9534F; }
+.pf-pad button { width: 76px; height: 76px; font-size: 38px; user-select: none; -webkit-user-select: none; }
+.pf-first { font-size: 34px; letter-spacing: .15em; }

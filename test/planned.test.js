@@ -54,7 +54,6 @@ test('IDs sind eindeutig und kollidieren nicht mit gebauten Spielen oder Spiel-E
 
 test('Alle Spiele und Funktionen der Liste sind eingetragen – im richtigen Päckchen', () => {
   const want = {
-    6: ['bauart-b-baustein', 'zahlenzoo', 'gedaechtnis-kueche', 'pfeilfieber', 'sortierstation', 'tickendes-paket', 'werwolf'],
     7: ['party-mix', 'party-turnier', 'eigene-playlist', 'team-duell'],
     8: ['broeckelboden', 'kronenjagd', 'laser-huepfer'],
     spaeter: ['backgammon', 'scrabble', 'hearts', 'five-card-draw', 'hex', 'schatzinsel', 'gummiband-challenge', 'geschenkfaenger', 'rhythmus-rausch', 'puzzle-panik', 'wortjagd', 'stillgestanden', 'schatzgraeber', 'minenlauf', 'labyrinth-chaos', 'schubsarena', 'scheinwerfer-flucht', 'doppelagent', 'luegenbaron', 'brueckenroulette', 'wuerfel-auktion', 'zahlenreihe', 'modifikatoren'],
@@ -66,10 +65,7 @@ test('Alle Spiele und Funktionen der Liste sind eingetragen – im richtigen Pä
   assert.equal(PLANNED.length, Object.values(want).flat().length, 'nichts Zusätzliches');
   // Bauarten laut Planung
   const art = (id) => PLANNED.find((e) => e.id === id).bauart;
-  for (const id of ['zahlenzoo', 'gedaechtnis-kueche', 'pfeilfieber', 'sortierstation']) assert.equal(art(id), 'B', id);
-  assert.equal(art('tickendes-paket'), 'A');
   for (const id of ['broeckelboden', 'kronenjagd', 'laser-huepfer']) assert.equal(art(id), 'C', id);
-  assert.match(PLANNED.find((e) => e.id === 'zahlenzoo').vorbild, /Animal Arithmetic/);
   // Reine Mechanik: keine Original-Grafiken, eigene Namen
   assert.ok(!PLANNED.some((e) => /pummel party|machine party/i.test(e.name)));
 });
@@ -78,6 +74,6 @@ test('Nur das nächste Päckchen steht auf „next“, alles andere auf „plann
   const next = PLANNED.filter((e) => e.status === 'next');
   assert.ok(next.length >= 1);
   assert.equal(new Set(next.map((e) => e.paeckchen)).size, 1, 'nur ein Päckchen gleichzeitig');
-  assert.deepEqual(next.map((e) => e.id), ['zahlenzoo', 'gedaechtnis-kueche', 'pfeilfieber', 'sortierstation', 'tickendes-paket', 'werwolf'], 'Päckchen 5 ist fertig, Päckchen 6 ist dran (die Funktion Bauart-B-Baustein erscheint nie im Hub)');
+  assert.deepEqual(next.map((e) => e.id), ['party-mix', 'party-turnier', 'eigene-playlist', 'team-duell'], 'Päckchen 6 ist fertig, Päckchen 7 (nur Funktionen) ist dran');
   assert.ok(PLANNED.filter((e) => e.status !== 'next').every((e) => e.status === 'planned'));
 });

@@ -1,0 +1,18 @@
+/* Tickendes Paket: Paket wackelt beim Halter, große Frage */
+.kg-tickendes-paket .kg-main { background: radial-gradient(120% 90% at 50% 25%, #5A3A22, #22140A); }
+.tp-wrap { display: grid; justify-items: center; gap: 14px; width: 100%; }
+.tp-box { font-size: 72px; display: inline-block; }
+.tp-box.hot { animation: tp-tick .5s ease-in-out infinite; }
+.tp-prompt { display: grid; justify-items: center; gap: 4px; padding: 14px 28px; border-radius: var(--r-l); background: rgba(0,0,0,.3); }
+.tp-prompt.mine { outline: 3px solid var(--gold); }
+.tp-prompt small { color: #EAD9C2; }
+.tp-prompt b { font-size: 24px; }
+.tp-letter { font-size: 56px; line-height: 1; color: var(--gold-text); font-weight: 800; }
+.tp-used { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; max-width: 520px; color: var(--text-2); }
+.tp-used i { font-style: normal; padding: 2px 8px; border-radius: 999px; background: rgba(0,0,0,.28); }
+.tp-boom { padding: 8px 18px; border-radius: 999px; background: #8A2F2B; font-weight: 700; }
+.tp-fuse { font-size: 22px; font-weight: 700; color: var(--gold-text); }
+.tp-form { display: flex; gap: 8px; width: min(100%, 520px); margin: 0 auto; }
+.tp-form .pk-input { flex: 1; min-width: 0; }
+@keyframes tp-tick { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg) scale(1.06); } }
+@media (prefers-reduced-motion: reduce) { .tp-box.hot { animation: none; } }
