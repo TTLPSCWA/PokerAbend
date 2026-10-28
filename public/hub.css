@@ -118,11 +118,6 @@ body.calm .host-dlg[open] { animation: none; }
 .more { margin: 12px 0 0; }
 .more a, .hub-main a:not(.btn):not(.table-card):not(.nav-item) { color: var(--gold-text); }
 
-/* Einladung per Link */
-.invite { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 20px; padding: 16px 18px; border-radius: 16px; background: rgba(201,154,69,.12); border: 1px solid var(--gold); }
-.invite p { margin: 2px 0 0; color: #D3E1DA; }
-.invite-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-.invite-actions .btn { min-height: 44px; }
 
 /* ---------- Spieleliste: Filter, Liste/Kacheln, Favoriten, „In Planung“ ---------- */
 .games-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 20px 0 16px; }
@@ -199,3 +194,9 @@ li.cat-party .ga { background: linear-gradient(160deg, #5A468F, #382B66); }
 .plan-detail .btn { min-height: 44px; justify-self: start; }
 .plan-rules { margin: 0; padding-left: 20px; display: grid; gap: 6px; color: #D3E1DA; }
 #p-showplanned-row { margin-top: 6px; }
+
+/* Statt eines schwarzen Bildschirms: Hinweis „Verbindung verloren“ mit „Neu laden“ */
+.lost { position: fixed; inset: 0; z-index: 90; display: grid; place-content: center; justify-items: center; gap: 14px; padding: 24px; background: rgba(11,21,19,.94); text-align: center; }
+.lost[hidden] { display: none; }
+.lost p { margin: 0; font-size: 22px; font-weight: 700; }
+.lost .btn { min-height: 48px; min-width: 160px; }

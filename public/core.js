@@ -230,40 +230,85 @@ function loadGame(id) {
   return gameLoads[id];
 }
 
+// ---------- Verlauf: Raum = /?t=CODE, Startseite = /#seite ----------
+// Ein Raum hat immer die Adresse /?t=CODE, die Startseite nie ein ?t=. Raum betreten = pushState, damit „Zurück“ sauber zur Startseite führt.
+// „Zurück“ aus dem Raum parkt den Raum: Wir bleiben am Tisch angemeldet (Platz bleibt), sehen aber die Startseite;
+// der Tisch steht dort unter „Weiterspielen“, und „Vor“ führt wieder an den Tisch.
+const roomCodeFromUrl = () => (new URLSearchParams(location.search).get('t') || '').toUpperCase();
+let parked = false;
+function pushRoomUrl(code) {
+  if (roomCodeFromUrl() === code) { if (location.hash) history.replaceState({ room: code }, '', '/?t=' + code); return; } // Link oder Neuladen: die Adresse stimmt schon
+  history.pushState({ room: code }, '', '/?t=' + code);
+}
+
 // Ins Spiel wechseln, sobald das Modul geladen ist
 async function enterGame(r) {
-  session = { code: r.code, token: r.token, game: r.game || 'poker' };
+  const prev = session;
+  const game = r.game || 'poker';
+  session = { code: r.code, token: r.token, game };
   store.set('poker:session:' + r.code, r.token);
   store.set('poker:last', r.code);
-  if (typeof markPlayed === 'function') markPlayed(session.game); // Startseite: „zuletzt gespielt“
-  history.replaceState(null, '', '?t=' + r.code);
-  try { current = await loadGame(session.game); } catch (e) { session = null; showLobby(e.message); return; }
+  if (typeof markPlayed === 'function') markPlayed(game); // Startseite: „zuletzt gespielt“
+  pushRoomUrl(r.code);
+  // Anderes Spiel oder anderer Raum als der, der in dieser Seite hängt: frisch laden (saubere Oberfläche, neue Verbindung).
+  // Die Adresse steht schon richtig, und location.reload() legt keinen weiteren Verlaufseintrag an.
+  if ((mounted && mounted !== game) || (prev && prev.code !== r.code)) { location.reload(); return; }
+  try { current = await loadGame(game); } catch (e) { session = null; showLobby(e.message); return; }
   if (!session) return; // inzwischen rausgeflogen
-  // Ein anderes Spiel war schon geladen: Seite neu laden, damit sich die Oberflächen nicht in die Quere kommen
-  if (mounted && mounted !== session.game) { location.href = '/?t=' + session.code; return; }
-  mounted = session.game;
+  mounted = game;
+  parked = false;
   $('#hub').hidden = true;
   $('#game-root').hidden = false;
   current.show();
   if (lastState) current.onState(lastState);
 }
 function leaveGame() {
-  session = null; lastState = null;
+  session = null; lastState = null; parked = false;
   $('#game-root').hidden = true;
 }
+// Vor/Zurück im Browser: Startseite ↔ Raum
+function returnToRoom() {
+  parked = false;
+  if (mounted !== session.game) { location.reload(); return; } // der Host hat das Spiel gewechselt, während wir auf der Startseite waren
+  $('#hub').hidden = true;
+  $('#game-root').hidden = false;
+  if (lastState) current.onState(lastState);
+}
+window.addEventListener('popstate', () => {
+  const code = roomCodeFromUrl();
+  if (!code) {
+    if (hubVisible()) return; // nur eine Seite der Startseite (Hash) – das zeichnet hub.js
+    if (session) parked = true; // Platz am Tisch behalten
+    showHub('', { keepUrl: true });
+    return;
+  }
+  if (session && session.code === code && mounted) { returnToRoom(); return; }
+  openRoomByUrl();
+});
+// Aus dem Rückwärts-/Vorwärts-Cache (bfcache) zurück: die Verbindung dieser Seite ist tot, also sauber neu laden
+window.addEventListener('pageshow', (e) => { if (e.persisted) location.reload(); });
+// Statt eines schwarzen Bildschirms: Ist der Raum sichtbar, aber nichts gemountet oder keine Verbindung da, kommt nach 3 s ein Hinweis
+let brokenSince = 0;
+setInterval(() => {
+  const broken = !$('#game-root').hidden && (!mounted || !socket.connected || !lastState);
+  if (!broken) { brokenSince = 0; $('#lost').hidden = true; return; }
+  brokenSince ||= Date.now();
+  if (Date.now() - brokenSince >= 3000) $('#lost').hidden = false;
+}, 1000);
+$('#lost-reload').addEventListener('click', () => location.reload());
 
 // ---------- Startseite ----------
 // Die Startseite (Hub) liegt in hub.js: Profil, Seitenleiste, Tische, Spiele, Hosten, Bestenliste.
-const params = new URLSearchParams(location.search);
 
-// Automatisch wieder in den Raum, wenn wir schon ein Token haben
-function tryResume() {
-  const code = (params.get('t') || '').toUpperCase();
-  const token = code && store.get('poker:session:' + code, null);
-  if (!token) { showLobby(); return; }
+// Adresse mit ?t=CODE (Neuladen, Link, „Vor“): mit Token wieder an den Tisch, sonst mit dem Profil beitreten (ohne Profil erst der Profil-Dialog)
+function openRoomByUrl() {
+  const code = roomCodeFromUrl();
+  if (!code) { showLobby(); return; }
+  const token = store.get('poker:session:' + code, null);
+  if (!token) { joinFromLink(code); return; }
   socket.emit('join', { code, token }, (r) => {
     if (r?.ok) enterGame(r);
-    else { store.set('poker:session:' + code, null); showLobby(); }
+    else { store.set('poker:session:' + code, null); joinFromLink(code); }
   });
 }
 
@@ -287,9 +332,9 @@ socket.on('state', (st) => {
   // Der Host hat das Spiel gewechselt: neu laden, das neue Spiel kommt automatisch (gleicher Raum, gleiches Token)
   if (session && st.game && st.game !== session.game) {
     session.game = st.game;
-    if (mounted) { location.href = '/?t=' + session.code; return; }
+    if (mounted && !parked) { location.reload(); return; }
   }
-  if (session && current) current.onState(st);
+  if (session && current && !parked) current.onState(st);
 });
 
 // ---------- Bestenliste über alle Abende ----------
@@ -400,7 +445,7 @@ async function boot() {
     if (r.status === 401) { location.href = '/login?next=' + encodeURIComponent(location.pathname + location.search); return; }
     if (r.ok) account = { games: [], ...(await r.json()) };
   } catch { /* offline – Socket.IO versucht es weiter */ }
-  tryResume();
+  openRoomByUrl();
 }
 boot();
 

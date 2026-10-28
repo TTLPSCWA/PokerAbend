@@ -49,6 +49,7 @@ $('#profile-form').addEventListener('submit', (e) => {
   profile.save(name, profileChoice);
   $('#profile-dlg').close();
   renderProfileChip();
+  if (pendingJoin) { const code = pendingJoin; pendingJoin = ''; joinFromLink(code); return; }
   if (hubVisible()) renderHub();
 });
 $('#p-cancel').addEventListener('click', () => $('#profile-dlg').close());
@@ -76,7 +77,6 @@ async function joinAndEnter(code, mode = '') {
   if (!profile.name) { openProfile(true); return false; }
   const r = await joinTable(code);
   if (!r?.ok) { toast(r?.error || 'Verbindung fehlgeschlagen', true); return false; }
-  inviteCode = '';
   if (mode === 'sit') {
     // Poker braucht einen bestimmten Platz – den sucht man am Tisch aus
     if (r.game === 'poker') toast('Such dir am Tisch einen freien Platz aus');
@@ -87,7 +87,6 @@ async function joinAndEnter(code, mode = '') {
 }
 
 // ---------- Seiten und Navigation ----------
-let inviteCode = (params.get('t') || '').toUpperCase(); // Link von außen: einmal anbieten
 const GAME_CATEGORIES = [['karten', 'Kartenspiele'], ['wuerfel', 'Würfelspiele'], ['brett', 'Brettspiele'], ['party', 'Party']]; // wie games/index.js
 const hubVisible = () => !$('#hub').hidden;
 const ico = (d) => `<svg class="hub-ico" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
@@ -147,16 +146,26 @@ function renderHub(focus = false) {
   afterPage?.();
 }
 let afterPage = null;
-window.addEventListener('hashchange', () => { if (hubVisible()) renderHub(true); });
+window.addEventListener('hashchange', () => { if (hubVisible() && !roomCodeFromUrl()) renderHub(true); }); // in einem Raum (?t=) rührt die Startseite die Adresse nie an
 
-function showLobby(error = '') {
+// Startseite zeigen. keepUrl: die Adresse stimmt schon („Zurück“ aus dem Raum); sonst wird ein übrig gebliebenes ?t=CODE entfernt.
+function showHub(error = '', { keepUrl = false } = {}) {
   $('#game-root').hidden = true;
   $('#hub').hidden = false;
   if (error) toast(error, true);
-  if (location.search) history.replaceState(null, '', location.pathname + location.hash); // ?t=CODE gehört zum Tisch, nicht zur Startseite
+  if (!keepUrl && roomCodeFromUrl()) history.replaceState(null, '', '/' + (location.hash || '#start')); // ?t=CODE gehört zum Tisch, nicht zur Startseite
+  resumeAt = 0; // „Weiterspielen“ neu laden: der gerade verlassene Tisch soll dort stehen
   renderProfileChip();
   if (!profile.name) openProfile(true); // allererster Besuch
   renderHub();
+}
+const showLobby = (error = '') => showHub(error);
+
+// Link /?t=CODE ohne Token: mit dem Profil direkt beitreten. Ohne Profil erst der Profil-Dialog, danach geht es weiter.
+let pendingJoin = '';
+async function joinFromLink(code) {
+  if (!profile.name) { pendingJoin = code; showHub('', { keepUrl: true }); return; }
+  if (!(await joinAndEnter(code))) showHub(); // Tisch gibt es nicht (mehr): Meldung, Startseite, Adresse bereinigen
 }
 
 // ---------- Hosten (Seitenpanel bzw. Leiste von unten) ----------
@@ -197,7 +206,6 @@ $('#host-dlg').addEventListener('submit', (e) => {
 function pageStart() {
   loadResume();
   return `<section class="hub-head"><h1>Hallo ${esc(profile.name)} <span aria-hidden="true">${esc(profile.avatar)}</span></h1><p>Setz dich an einen offenen Tisch oder mach selbst einen auf.</p></section>
-    ${inviteHTML()}
     <section class="hub-block"><div class="hub-block-head"><h2>Offene Tische</h2></div><div data-tables="4">${tablesBlockHTML(4)}</div></section>
     ${gamesPreviewHTML()}
     ${codeBoxHTML()}
@@ -365,8 +373,6 @@ document.addEventListener('click', (e) => {
   if (view) { gamesView = view.dataset.view; store.set('poker:view', gamesView); refreshGames(); $$('[data-view]').find((x) => x.dataset.view === gamesView)?.focus({ preventScroll: true }); return; }
   const join = e.target.closest('[data-join]');
   if (join) { joinAndEnter(join.dataset.join, join.dataset.mode || ''); return; }
-  if (e.target.closest('[data-invite-join]')) { joinAndEnter(inviteCode); return; }
-  if (e.target.closest('[data-invite-dismiss]')) { inviteCode = ''; renderHub(); }
 });
 
 // ---------- Offene Tische ----------
@@ -430,11 +436,6 @@ async function loadResume() {
   }
   hubResume = found;
   refreshTables();
-}
-// Einladung per Link (?t=CODE): erst fragen, dann beitreten
-function inviteHTML() {
-  return inviteCode ? `<section class="invite" aria-label="Einladung"><div><b>Einladung zu Tisch ${esc(inviteCode)}</b><p>Mit deinem Profil beitreten (${esc(profile.avatar)} ${esc(profile.name)})?</p></div>
-    <div class="invite-actions"><button type="button" class="btn btn-brass" data-invite-join>Beitreten</button><button type="button" class="btn btn-ghost" data-invite-dismiss>Nein danke</button></div></section>` : '';
 }
 
 // Suche in der Spieleliste (ab 20 Spielen sichtbar)

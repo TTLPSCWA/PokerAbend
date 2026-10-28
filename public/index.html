@@ -68,6 +68,8 @@
   </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div id="offline" class="offline" hidden>Verbindung weg – verbinde neu …</div>
+  <!-- Statt eines schwarzen Bildschirms, wenn der Raum sichtbar ist, aber nichts gemountet oder keine Verbindung da ist -->
+  <div id="lost" class="lost" role="alert" hidden><p>Verbindung verloren.</p><button type="button" class="btn btn-brass" id="lost-reload">Neu laden</button></div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/core.js"></script>
