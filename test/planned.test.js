@@ -54,7 +54,6 @@ test('IDs sind eindeutig und kollidieren nicht mit gebauten Spielen oder Spiel-E
 
 test('Alle Spiele und Funktionen der Liste sind eingetragen – im richtigen Päckchen', () => {
   const want = {
-    9: ['monopoly'],
     spaeter: ['omaha-hi-lo', 'seven-card-stud', 'short-deck', 'stichmeister', 'exploding-deck', 'risiko-wuerfeln', 'wuerfelduell', 'wuerfeljagd', 'monsterwuerfel', 'labyrinth-brett', 'story-chaos', 'regelwahnsinn', 'jaeger-schatten', 'infektionsjagd', 'letzter-schutzplatz', 'kistenchaos', 'survival-abend', 'chaos-modus', 'backgammon', 'scrabble', 'hearts', 'five-card-draw', 'hex', 'schatzinsel', 'gummiband-challenge', 'geschenkfaenger', 'rhythmus-rausch', 'puzzle-panik', 'wortjagd', 'stillgestanden', 'schatzgraeber', 'minenlauf', 'labyrinth-chaos', 'schubsarena', 'scheinwerfer-flucht', 'doppelagent', 'luegenbaron', 'brueckenroulette', 'wuerfel-auktion', 'zahlenreihe', 'modifikatoren'],
     gross: ['skat', 'doppelkopf', 'scotland-yard', 'schach', 'staedtehandel', 'gebietskampf', 'party-brett'],
   };
@@ -66,7 +65,7 @@ test('Alle Spiele und Funktionen der Liste sind eingetragen – im richtigen Pä
   assert.ok(!PLANNED.some((e) => /pummel party|machine party/i.test(e.name)));
 });
 
-test('Nur das aktuelle nummerierte Päckchen ist im Backlog vorgezogen', () => {
-  assert.deepEqual(PLANNED.filter((e) => e.status === 'next').map((e) => e.id), ['monopoly']);
-  assert.ok(PLANNED.every((e) => e.status === (e.paeckchen === '9' ? 'next' : 'planned')));
+test('Ohne weiteres nummeriertes Päckchen ist kein Backlog-Spiel vorgezogen', () => {
+  assert.deepEqual(PLANNED.filter((e) => e.status === 'next').map((e) => e.id), []);
+  assert.ok(PLANNED.every((e) => e.status === 'planned'));
 });

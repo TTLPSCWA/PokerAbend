@@ -20,10 +20,12 @@ import { createCodes, normalize } from './codes.js';
 import { createLeaderboard } from './leaderboard.js';
 import { addBot, removeBot, createBotRunner } from './bots.js';
 import { BOTS } from '../games/bots.js';
+import { configureBoards } from '../games/monopoly/boards.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
 const DATA_DIR = process.env.DATA_DIR || join(__dirname, '..', 'data');
+configureBoards(DATA_DIR);
 const SAVE_FILE = join(DATA_DIR, 'rooms.json');
 const MAX_ROOMS = Number(process.env.MAX_ROOMS || 50);
 const ROOM_TTL_MIN = 30; // Notbremse: Tische ohne Verbindung werden spätestens nach 30 Minuten geschlossen

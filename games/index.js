@@ -43,8 +43,9 @@ import kronenjagd from './kronenjagd/index.js';
 import laserHuepfer from './laser-huepfer/index.js';
 import sechsNimmt from './sechs-nimmt/index.js';
 import monopolyDeal from './monopoly-deal/index.js';
+import monopoly from './monopoly/index.js';
 
-export const GAMES = Object.fromEntries([poker, maumau, farbenchaos, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, blackjack, kniffel, schiffe, viergewinnt, shutthebox, zehntausend, muehle, schaetzmeister, schlagfertig, werhatdasgesagt, mogeln, praesident, durak, omaha, wuerfelpoker, luegenwuerfel, chicago, reversi, dame, domino, zahlenzoo, gedaechtnisKueche, pfeilfieber, sortierstation, tickendesPaket, werwolf, werBinIch, kritzelpost, bildunterschrift, malenRaten, broeckelboden, kronenjagd, laserHuepfer, sechsNimmt, monopolyDeal].map((g) => [g.id, g]));
+export const GAMES = Object.fromEntries([poker, maumau, farbenchaos, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, blackjack, kniffel, schiffe, viergewinnt, shutthebox, zehntausend, muehle, schaetzmeister, schlagfertig, werhatdasgesagt, mogeln, praesident, durak, omaha, wuerfelpoker, luegenwuerfel, chicago, reversi, dame, domino, zahlenzoo, gedaechtnisKueche, pfeilfieber, sortierstation, tickendesPaket, werwolf, werBinIch, kritzelpost, bildunterschrift, malenRaten, broeckelboden, kronenjagd, laserHuepfer, sechsNimmt, monopolyDeal, monopoly].map((g) => [g.id, g]));
 export const DEFAULT_GAME = 'poker'; // alte Spielstände ohne Spielart sind Poker
 
 // Was die Startseite über die Spiele wissen muss

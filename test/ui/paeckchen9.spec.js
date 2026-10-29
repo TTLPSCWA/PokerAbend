@@ -1,11 +1,12 @@
 import { test, expect, login, selectGame } from './helpers.js';
 
-async function host(page, app, id, bots = 1) {
+async function host(page, app, id, bots = 1, settings = {}) {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await login(page, app); await selectGame(page, id);
   await page.locator('#host-form button[type=submit]').click();
   await page.getByRole('button', { name: 'Mitspielen', exact: true }).click();
   for (let i = 0; i < bots; i++) expect((await page.evaluate(() => send('addBot'))).ok).toBe(true);
+  if (Object.keys(settings).length) expect((await page.evaluate((settings) => send('settings', settings), settings)).ok).toBe(true);
   expect((await page.evaluate(() => send('start'))).ok).toBe(true);
 }
 
@@ -30,6 +31,72 @@ test('6 nimmt!: verdeckt wählen, Bot, Aufdecken, Reihenwahl, Reconnect und Quer
   await page.setViewportSize({ width: 900, height: 450 });
   await expect(page.locator('.sn-row').first()).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('Monopoly: mit Bot spielen, realer Handel, Würfeln, eigenes Eigentum und Brett im Querformat', async ({ page, app }, info) => {
+  test.setTimeout(60000);
+  await host(page, app, 'monopoly', 1, { quick: true });
+  await expect(page.locator('.mo-field')).toHaveCount(40);
+  expect((await page.locator('.mo-field').first().boundingBox()).width).toBeGreaterThanOrEqual(32);
+  await page.getByRole('button', { name: 'Handel anbieten', exact: true }).click();
+  await expect(page.locator('#mo-dialog')).toBeVisible();
+  await page.getByLabel('Geld abgeben', { exact: true }).fill('50');
+  await page.getByRole('button', { name: 'Angebot senden', exact: true }).click();
+  await expect.poll(() => page.evaluate(() => lastState.g.people[lastState.you.id].money)).toBe(1450);
+  await page.getByRole('button', { name: 'Würfeln', exact: true }).click();
+  await expect.poll(() => page.evaluate(() => lastState.g.lastMove?.n || 0)).toBeGreaterThan(0);
+  if (await page.getByRole('button', { name: 'Kaufen', exact: true }).isVisible()) await page.getByRole('button', { name: 'Kaufen', exact: true }).click();
+  await page.reload(); await expect(page.locator('.mo-field')).toHaveCount(40);
+  await page.screenshot({ path: info.outputPath('monopoly.png') });
+  await page.setViewportSize({ width: 900, height: 450 });
+  await expect.poll(() => page.locator('.mo-token.own').evaluate((el) => {
+    const b = el.getBoundingClientRect(), v = document.querySelector('.mo-board-viewport').getBoundingClientRect();
+    return b.left >= v.left && b.right <= v.right && b.top >= v.top && b.bottom <= v.bottom;
+  })).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: info.outputPath('monopoly-querformat.png') });
+});
+
+test('Monopoly: Versteigerungs- und Zahlungsdialog mit Gebotsgrenzen und Liquidation', async ({ page, app }, info) => {
+  await host(page, app, 'monopoly', 1, { quick: true });
+  // Öffentliche Entscheidungsszenarien gezielt rendern; echte Transaktionen sind gegen Room getestet.
+  await page.evaluate(() => {
+    window.realMonopolyState = structuredClone(lastState);
+    const S = structuredClone(lastState), me = S.you.id;
+    S.g.auction = { field: 1, bid: 10, leader: null, passed: [], participants: [me] };
+    current.onState(S);
+  });
+  await expect(page.locator('#mo-dialog')).toContainText('Versteigerung');
+  await expect(page.getByLabel('Dein Gebot', { exact: true })).toHaveAttribute('min', '11');
+  await page.getByLabel('Dein Gebot', { exact: true }).fill('21');
+  await expect(page.getByRole('button', { name: 'Gebot abgeben', exact: true })).toBeEnabled();
+  await page.screenshot({ path: info.outputPath('monopoly-versteigerung.png') });
+  await page.evaluate(() => {
+    const S = structuredClone(window.realMonopolyState), me = S.you.id;
+    S.g.debt = { from: me, to: null, amount: 3000, reason: 'Testforderung' }; S.g.liquidation = 2000;
+    current.onState(S);
+  });
+  await expect(page.locator('#mo-dialog')).toContainText('3000 bezahlen');
+  await expect(page.getByRole('button', { name: 'Bankrott erklären', exact: true })).toBeEnabled();
+  await expect(page.locator('.mo-debt-list [data-action=mortgage]')).toHaveCount(2);
+  expect(await page.evaluate(() => document.querySelector('#mo-dialog').getBoundingClientRect().width <= innerWidth)).toBe(true);
+});
+
+test('Monopoly: eigenes Brett sicher speichern, auswählen, starten und nach Neuladen behalten', async ({ page, app }) => {
+  await login(page, app); await selectGame(page, 'monopoly');
+  await page.locator('#host-form button[type=submit]').click();
+  await page.locator('[data-kit-panel=host]').click();
+  await page.getByRole('button', { name: 'Eigenes Brett anlegen', exact: true }).click();
+  await page.getByLabel('Brettname', { exact: true }).fill('Unsere Teststadt');
+  await page.locator('[data-mo-name="0"]').fill('Eulen & Freunde');
+  await page.getByRole('button', { name: 'Brett speichern und auswählen', exact: true }).click();
+  await expect.poll(() => page.evaluate(() => lastState.settings.board)).not.toBe('default');
+  await page.locator('#kg-panel .icon-btn[data-kit=close]').click();
+  await page.getByRole('button', { name: 'Mitspielen', exact: true }).click();
+  await page.evaluate(() => send('addBot')); await page.evaluate(() => send('start'));
+  await expect(page.locator('.mo-center h2')).toHaveText('Unsere Teststadt');
+  await expect(page.locator('[data-field="1"].mo-field')).toContainText('Eulen & Freunde');
+  await page.reload(); await expect(page.locator('.mo-center h2')).toHaveText('Unsere Teststadt');
 });
 
 test('Monopoly Deal: mit Bot anspielen, Zielauswahl, Bank/Auslage und Reconnect', async ({ page, app }, info) => {
