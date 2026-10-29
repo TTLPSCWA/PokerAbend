@@ -64,6 +64,10 @@ export const chess = () => wrap(`<rect x="8" y="8" width="48" height="48" rx="3"
 export const territory = () => wrap(`<path d="M8 20l14-10 14 4 12-6 8 14-6 14 4 12-16 6-12-6-14 2z" fill="#7FB4E8" stroke="rgba(0,0,0,.4)"/><path d="M22 10l4 20-14 6M36 14l-6 22 16 8M48 8l-4 22" fill="none" stroke="rgba(0,0,0,.4)" stroke-width="1.5"/>${disc(20, 24, '#D33B35')}${disc(38, 28, '#1F57C3')}${disc(44, 46, '#F2C230')}`);
 // Rundes Symbol für Partyspiele (Name aus GLYPHS)
 const GLYPHS = {
+  pen: '<path d="m19 40 3 6 6-3 18-18-9-9zM33 20l10 10M20 46l8-3"/>',
+  story: '<path d="M19 19h20v28H19zM25 26h8M25 32h8M25 38h12M39 23h6v24h-6"/>',
+  monster: '<path d="m22 25-3-9 10 7h6l10-7-3 9v15l-10 8-10-8zM27 30v3M37 30v3M27 39h10"/>',
+  shield: '<path d="m32 17 15 6-3 17-12 9-12-9-3-17zM25 33l5 5 10-12"/>',
   gift: '<rect x="21" y="31" width="22" height="14"/><rect x="19" y="26" width="26" height="6"/><path d="M32 26v19M32 26c-5-7-10-3-6 0M32 26c5-7 10-3 6 0"/>',
   note: '<path d="M26 40V22l14-4v18"/><circle cx="23" cy="41" r="4" fill="#F7F3E8"/><circle cx="37" cy="37" r="4" fill="#F7F3E8"/>',
   puzzle: '<path d="M20 22h10v-3a3 3 0 0 1 6 0v3h8v8h-3a3 3 0 0 0 0 6h3v8H20z"/>',

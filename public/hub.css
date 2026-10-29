@@ -185,15 +185,63 @@ li.cat-party .ga { background: linear-gradient(160deg, #5A468F, #382B66); }
 
 /* ---------- Geplante Spiele: „Bald“, Details, nach Päckchen gruppiert ---------- */
 .games > li.planned { cursor: pointer; }
-.pkg-title { margin: 22px 0 10px; font-size: 16px; color: var(--gold-text); }
-.planned-block .pkg-title:first-of-type { margin-top: 4px; }
 .plan-detail { display: grid; gap: 14px; }
 .plan-detail h2 { margin: 0; font-size: 26px; }
 .plan-detail h3 { margin: 4px 0 -6px; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-2); }
 .plan-detail p { margin: 0; color: #D3E1DA; }
 .plan-detail .btn { min-height: 44px; justify-self: start; }
 .plan-rules { margin: 0; padding-left: 20px; display: grid; gap: 6px; color: #D3E1DA; }
-#p-showplanned-row { margin-top: 6px; }
+
+/* Roadmap: Etappen, erkennbare Arten und native, per Tastatur bedienbare Gruppen. */
+.roadmap-filters { margin-block: 24px; }
+.roadmap-stage { margin: 24px 0; }
+.roadmap-stage > h2 { font-size: 18px; margin: 0 0 12px; color: var(--gold-text); }
+.roadmap-stage > summary, .presence-mobile > summary, .presence-recent > summary { min-height: 48px; padding: 12px; cursor: pointer; border: 1px solid var(--line); border-radius: 12px; }
+.roadmap-stage > summary { font-size: 18px; font-weight: 700; }
+.roadmap-stage > summary span { font-size: 13px; color: var(--text-2); font-weight: 400; margin-left: 12px; }
+.roadmap-stage[open] > summary { margin-bottom: 12px; }
+.roadmap-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.roadmap-card { min-width: 0; padding: 18px; border-radius: 16px; border: 1px solid var(--line); background: var(--panel); }
+.roadmap-card.current { border: 2px solid var(--gold); }
+.roadmap-card h3 { margin: 0; font-size: 20px; }
+.roadmap-card > p { color: var(--text-2); margin: 10px 0 16px; }
+.roadmap-card time { display: block; margin-top: 6px; color: var(--gold-text); font-size: 13px; }
+.roadmap-progress { display: grid; gap: 6px; color: var(--text-2); font-size: 13px; margin-bottom: 12px; }
+.roadmap-progress progress { width: 100%; height: 8px; accent-color: var(--gold); }
+.roadmap-points { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.roadmap-point { display: grid; grid-template-columns: 44px minmax(0, 1fr); align-items: start; gap: 10px; width: 100%; min-height: 44px; padding: 10px 0; text-align: left; border: 0; color: var(--text); background: none; border-radius: 8px; }
+button.roadmap-point { padding: 10px; background: rgba(255,255,255,.04); }
+button.roadmap-point:hover { background: rgba(201,154,69,.12); }
+.roadmap-art { display: grid; place-items: center; width: 44px; height: 44px; }
+.roadmap-point b, .roadmap-point small, .roadmap-point span > span { display: block; overflow-wrap: anywhere; }
+.roadmap-point small { color: var(--gold-text); margin-block: 3px; }
+.roadmap-point span > span { font-size: 14px; color: var(--text-2); }
+
+/* Anwesenheit aktualisiert nur diesen Bereich und lässt andere Eingaben unberührt. */
+.presence-desktop h2 { font-size: 16px; margin: 0 0 12px; }
+.presence-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.presence-list li { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 10px; background: rgba(255,255,255,.035); border-radius: 12px; }
+.presence-avatar { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--panel-2); font-size: 24px; }
+.presence-list b, .presence-list small { display: block; overflow-wrap: anywhere; }
+.presence-list small { color: var(--text-2); }
+.presence-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.presence-actions .btn { min-height: 44px; }
+.presence-recent { margin-top: 12px; color: var(--text-2); }
+.presence-recent .presence-list { margin-top: 8px; }
+.presence-recent .presence-avatar { filter: grayscale(1); }
+.presence-mobile { display: none; }
+.presence-avatars { display: inline-flex; margin-left: 10px; }
+.presence-avatars span { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--panel-2); border: 1px solid var(--line); margin-left: -5px; }
+@media (max-width: 899px) { .roadmap-cards { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 640px) {
+  .hub-tabbar { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .tab-item { font-size: 10px; }
+  .presence-desktop { display: none; }
+  .presence-mobile { display: block; }
+  .presence-mobile[open] > summary { margin-bottom: 8px; }
+  .presence-list li { grid-template-columns: 44px minmax(0, 1fr); }
+  .presence-actions { grid-column: 1 / -1; }
+}
 
 /* Statt eines schwarzen Bildschirms: Hinweis „Verbindung verloren“ mit „Neu laden“ */
 .lost { position: fixed; inset: 0; z-index: 90; display: grid; place-content: center; justify-items: center; gap: 14px; padding: 24px; background: rgba(11,21,19,.94); text-align: center; }

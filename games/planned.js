@@ -4,12 +4,14 @@
 //   status ('next' | 'planned'), paeckchen ('4', '5' … 'spaeter', 'gross'), bauart (nur Party: 'A' Runden/Text, 'B' gleichzeitig solo mit gleichem Seed –
 //   jeder spielt lokal, der Server prüft das Ergebnis –, 'C' Echtzeit zusammen), vorbild (optional, nur Mechanik), rules (3–8 Stichpunkte,
 //   Standardregeln), houseRules (Ideen für Hausregeln), art (SVG, Bausteine in art-kit.js).
-// Feature-Eintrag (kein Spiel, erscheint nie im Hub): id, name, type: 'feature', paeckchen, status, beschreibung.
+// Feature-Eintrag (kein Spiel, erscheint auf der Roadmap): id, name, type: 'feature', paeckchen, status, beschreibung.
 //
 // Sichtbarkeit im Hub: 'next' steht in seiner Kategorie ausgegraut mit der Plakette „Bald“ (kein Hosten, Klick zeigt Beschreibung und Regeln).
-// 'planned' erscheint nirgends – außer jemand schaltet unter „Ich“ „Geplante Spiele zeigen“ an (dann ausgegraut, nach Päckchen gruppiert).
+// 'planned' erscheint auf der Roadmap; 'next' bleibt zusätzlich mit „Bald“ in der Spieleliste.
 //
 // Ablauf: Wird ein Spiel gebaut, kommt es nach games/<id>/, wird in games/index.js registriert und fliegt hier raus.
+// Bei jedem fertigen Päckchen/jeder fertigen Funktion auch games/roadmap.js pflegen:
+// Etappe mit dem Commit-Datum auf 'erledigt', die nächste auf 'jetzt' setzen.
 // Ist ein Päckchen fertig, werden die Einträge des nächsten Päckchens auf status 'next' gesetzt. (Fertig: Päckchen 2b – Schlagfertig, Wer hat das gesagt? – Päckchen 4 – Mogeln, Präsident, Durak, Omaha – Päckchen 5 – Würfelpoker, Lügenwürfel, Chicago, Reversi, Dame, Domino – und Päckchen 6 – Zahlenzoo, Gedächtnisküche, Pfeilfieber, Sortierstation, Tickendes Paket, Werwolf samt Bauart-B-Baustein.)
 import { fan, cardsChip, dice, stairs, swim, bubbles, numberLine, flapBox, battle, mill, connect4, pawns, reversi, checkers, dominoes, hexBoard, chess, territory, glyph } from './art-kit.js';
 
@@ -18,6 +20,72 @@ const funktion = (o) => ({ type: 'feature', status: 'planned', ...o });
 const CARD = { fill: '#F7F3E8' };
 
 export const PLANNED = [
+  spiel({ id: 'omaha-hi-lo', name: 'Omaha Hi/Lo', category: 'karten', minPlayers: 2, maxPlayers: 9, duration: 35, paeckchen: 'spaeter',
+    description: "High- und Low-Hand teilen sich den Pot, gespielt mit vier eigenen Karten.",
+    rules: ["Jeder bekommt vier verdeckte Karten, fünf Gemeinschaftskarten folgen in drei Setzrunden.","Für jede Wertung zählen genau zwei eigene und drei Gemeinschaftskarten.","Die beste High-Hand gewinnt die Hälfte; eine Low-Hand braucht fünf verschiedene Werte bis acht.","Gibt es keine gültige Low-Hand, gewinnt die High-Hand den gesamten Pot."], art: fan([{ kind: 'heart' }, { kind: 'diamond' }, { kind: 'bars' }]),
+  }),
+  spiel({ id: 'seven-card-stud', name: 'Seven Card Stud', category: 'karten', minPlayers: 2, maxPlayers: 8, duration: 35, paeckchen: 'spaeter',
+    description: "Sieben Karten pro Spieler, davon einige offen: Setzen und die beste Fünferhand bilden.",
+    rules: ["Jeder beginnt mit zwei verdeckten und einer offenen Karte, danach wird reihum gesetzt.","Weitere offene Karten folgen mit Setzrunden, die siebte Karte bleibt verdeckt.","Zum Schluss zählt die beste Pokerhand aus fünf der sieben eigenen Karten."], art: fan([{ kind: 'heart' }, { kind: 'diamond' }, { kind: 'bars' }]),
+  }),
+  spiel({ id: 'short-deck', name: 'Short Deck Poker', category: 'karten', minPlayers: 2, maxPlayers: 9, duration: 25, paeckchen: 'spaeter',
+    description: "Poker mit 36 Karten: Kleine Ränge fehlen, ein Flush schlägt ein Full House.",
+    rules: ["Gespielt wird mit den Rängen Sechs bis Ass, also insgesamt 36 Karten.","Jeder bekommt zwei eigene Karten und nutzt bis zu fünf Gemeinschaftskarten.","Die Setzrunden folgen Hold’em; ein Flush steht hier über einem Full House."], art: fan([{ kind: 'heart' }, { kind: 'diamond' }, { kind: 'bars' }]),
+  }),
+  spiel({ id: 'stichmeister', name: 'Stichmeister', category: 'karten', minPlayers: 3, maxPlayers: 6, duration: 20, paeckchen: 'spaeter',
+    description: "Vorher ansagen, wie viele Stiche man holt – nur genaue Vorhersagen bringen Bonuspunkte.",
+    rules: ["Alle erhalten gleich viele Karten und sagen vor der Runde ihre Stichzahl an.","Wer eine angespielte Farbe auf der Hand hat, muss diese Farbe bedienen.","Die höchste Karte der Farbe gewinnt den Stich; ein vereinbarter Trumpf kann sie schlagen.","Nach der Runde gibt es Punkte für die Stiche und einen Bonus für eine genaue Ansage."], art: fan([{ kind: 'heart' }, { kind: 'diamond' }, { kind: 'bars' }]),
+  }),
+  spiel({ id: 'exploding-deck', name: 'Exploding-Deck', category: 'karten', minPlayers: 2, maxPlayers: 6, duration: 15, paeckchen: 'spaeter',
+    description: "Karten ziehen, Gefahren entschärfen und den richtigen Moment zum Ausweichen wählen.",
+    rules: ["Wer dran ist, darf Aktionskarten spielen und zieht zum Abschluss eine Karte.","Eine Gefahrenkarte lässt dich ausscheiden, wenn du keine Entschärfung hast.","Mit einer Entschärfung bleibt man dabei und legt die Gefahr zurück in den Stapel.","Der letzte verbliebene Spieler gewinnt; Karten und Gestaltung sind eigenständig."], art: glyph('bomb'),
+  }),
+  spiel({ id: 'risiko-wuerfeln', name: 'Risiko-Würfeln', category: 'wuerfel', minPlayers: 2, maxPlayers: 8, duration: 10, paeckchen: 'spaeter',
+    description: "Jeder weitere Wurf kann den Zuggewinn erhöhen oder ihn vollständig kosten.",
+    rules: ["Jeder Zug beginnt mit einem Wurf und einem vorläufigen Punktestand.","Nach jedem erfolgreichen Wurf kannst du sichern oder erneut würfeln.","Ein Fehlwurf kostet alle ungesicherten Punkte; zuerst am Ziel gewinnt."], art: dice([{ x: 9, y: 18, n: 1 }, { x: 25, y: 28, n: 3 }, { x: 37, y: 13, n: 5 }]),
+  }),
+  spiel({ id: 'wuerfelduell', name: 'Würfelduell', category: 'wuerfel', minPlayers: 2, maxPlayers: 4, duration: 10, paeckchen: 'spaeter',
+    description: "Angriffs- und Verteidigungswürfel bestimmen, wer das Duell übersteht.",
+    rules: ["Alle beginnen mit gleich vielen Lebenspunkten und einer festen Würfelzahl.","Wer dran ist, wählt einen Gegner und würfelt Angriff gegen dessen Verteidigung.","Überzählige Angriffssymbole kosten Leben; ohne Leben scheidet man aus."], art: glyph('shield'),
+  }),
+  spiel({ id: 'wuerfeljagd', name: 'Würfeljagd', category: 'wuerfel', minPlayers: 2, maxPlayers: 8, duration: 10, paeckchen: 'spaeter',
+    description: "Unter Zeitdruck die gesuchte Würfelkombination erreichen und Punkte sammeln.",
+    rules: ["Alle bekommen dieselbe Zielkombination und dasselbe Zeitfenster.","Würfel dürfen liegen bleiben, die übrigen werden erneut geworfen.","Jede rechtzeitig erreichte Kombination bringt Punkte; die höchste Summe gewinnt."], art: dice([{ x: 9, y: 18, n: 1 }, { x: 25, y: 28, n: 3 }, { x: 37, y: 13, n: 5 }]),
+  }),
+  spiel({ id: 'monsterwuerfel', name: 'Monsterwürfel', category: 'wuerfel', minPlayers: 1, maxPlayers: 6, duration: 20, paeckchen: 'spaeter',
+    description: "Gemeinsam mit passenden Würfelkombinationen gegen Monster bestehen.",
+    rules: ["Alle spielen gemeinsam gegen eine Folge von Monstern mit offenen Anforderungen.","Pro Zug darfst du würfeln und Würfel für Angriff, Schutz oder Heilung behalten.","Erfüllte Kombinationen schaden dem Monster, danach greift es die Gruppe an.","Die Gruppe gewinnt nach dem letzten Monster und verliert ohne verbleibende Lebenspunkte."], art: glyph('monster'),
+  }),
+  spiel({ id: 'labyrinth-brett', name: 'Labyrinth-Brett', category: 'brett', minPlayers: 2, maxPlayers: 4, duration: 20, paeckchen: 'spaeter',
+    description: "Gänge verschieben, Wege öffnen und die eigenen Schätze einsammeln.",
+    rules: ["Ein Labyrinth aus verschiebbaren Gangplättchen enthält verdeckte Schatzaufträge.","Wer dran ist, schiebt zuerst eine Reihe oder Spalte mit dem freien Plättchen.","Danach zieht die eigene Figur beliebig weit auf zusammenhängenden Wegen.","Wer alle eigenen Schätze gesammelt hat und zum Start zurückkehrt, gewinnt."], art: glyph('maze'),
+  }),
+  spiel({ id: 'story-chaos', name: 'Story-Chaos', category: 'party', bauart: 'A', minPlayers: 3, maxPlayers: 12, duration: 10, paeckchen: 'spaeter',
+    description: "Reihum einen Satz ergänzen, nur den letzten sehen und am Ende die ganze Geschichte entdecken.",
+    rules: ["Der erste Spieler beginnt eine Geschichte mit genau einem Satz.","Jeder weitere sieht nur den letzten Satz und ergänzt einen eigenen.","Nach einer festen Rundenzahl wird die vollständige Geschichte vorgelesen."], art: glyph('story'),
+  }),
+  spiel({ id: 'regelwahnsinn', name: 'Regelwahnsinn', category: 'party', bauart: 'A', minPlayers: 3, maxPlayers: 12, duration: 10, paeckchen: 'spaeter',
+    description: "Jede Runde eine neue Regel: Wer den Überblick behält, sammelt Punkte.",
+    rules: ["Alle starten mit einer einfachen offenen Grundaufgabe für die Runde.","Nach jeder Runde kommt eine weitere sichtbare Zusatzregel dazu.","Korrekte Antworten unter allen aktiven Regeln bringen Punkte; die höchste Summe gewinnt."], art: glyph('arrows'),
+  }),
+  spiel({ id: 'jaeger-schatten', name: 'Jäger & Schatten', category: 'party', bauart: 'C', minPlayers: 2, maxPlayers: 8, duration: 5, paeckchen: 'spaeter',
+    description: "Im gemeinsamen Echtzeitfeld jagen, ausweichen und unerkannt entkommen.",
+    rules: ["Ein Teil der Spieler jagt, die übrigen verstecken sich als Schatten auf dem Feld.","Alle bewegen sich gleichzeitig; Berührung durch einen Jäger deckt einen Schatten auf.","Nach Ablauf der Zeit gewinnen die entkommenen Schatten, sonst das Jägerteam."], art: glyph('agent'),
+  }),
+  spiel({ id: 'infektionsjagd', name: 'Infektionsjagd', category: 'party', bauart: 'C', minPlayers: 3, maxPlayers: 12, duration: 5, paeckchen: 'spaeter',
+    description: "Eine Berührung steckt an – bleibt jemand bis zum Schluss unentdeckt?",
+    rules: ["Ein zufälliger Spieler beginnt infiziert, alle anderen fliehen im gemeinsamen Feld.","Wer von einem Infizierten berührt wird, gehört ebenfalls zu dessen Team.","Die Überlebenden gewinnen nach Ablauf der Zeit; vorher gewinnt eine vollständige Infektion."], art: glyph('monster'),
+  }),
+  spiel({ id: 'letzter-schutzplatz', name: 'Letzter Schutzplatz', category: 'party', bauart: 'C', minPlayers: 2, maxPlayers: 12, duration: 5, paeckchen: 'spaeter',
+    description: "Rechtzeitig einen sicheren Platz erreichen, bevor die nächste Gefahr kommt.",
+    rules: ["Alle bewegen sich gleichzeitig auf einer Fläche mit markierten Schutzplätzen.","Vor jeder Gefahrenphase werden die sicheren Plätze angezeigt und eine Frist läuft.","Außerhalb eines Schutzplatzes scheidest du aus; bis zum Schluss werden Plätze weniger."], art: glyph('shield'),
+  }),
+  spiel({ id: 'kistenchaos', name: 'Kistenchaos', category: 'party', bauart: 'C', minPlayers: 2, maxPlayers: 8, duration: 5, paeckchen: 'spaeter',
+    description: "Kisten in Echtzeit verschieben und trotz des Gedränges das eigene Ziel erreichen.",
+    rules: ["Alle bewegen sich gleichzeitig auf einem Feld voller verschiebbarer Kisten.","Kisten müssen zu passenden Zielen geschoben werden und dürfen andere Wege versperren.","Eine feste Spielzeit entscheidet; die meisten richtig platzierten Kisten gewinnen."], art: glyph('puzzle'),
+  }),
+  funktion({ id: 'survival-abend', name: 'Survival-Abend', paeckchen: 'spaeter', beschreibung: 'Ein Party-Programm auf Basis von Päckchen 7: Wer eine Runde verliert, verliert ein Leben; am Ende gewinnt, wer übrig bleibt.' }),
+  funktion({ id: 'chaos-modus', name: 'Chaos-Modus', paeckchen: 'spaeter', beschreibung: 'Zufällig gewählte Zusatzregeln verändern jede Partie; alle sehen die aktiven Regeln vor dem Start.' }),
 
 
   // ---------- Päckchen 7 (als Nächstes) ----------

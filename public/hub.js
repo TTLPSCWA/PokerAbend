@@ -1,7 +1,9 @@
 // Startseite (Hub) von Spieleabend: Profil, Navigation per URL-Hash, Seiten, Hosten. Läuft nach /core.js.
-// Seiten: #start · #spiele · #spiele/karten|wuerfel|brett|party · #favoriten · #tische · #bestenliste
+// Seiten: #start · #spiele · #spiele/karten|wuerfel|brett|party · #favoriten · #tische · #bestenliste · #roadmap
 // Name und Avatar werden einmal festgelegt (localStorage, gleiche Schlüssel wie früher) und überall verwendet.
 'use strict';
+// Einmalige Bereinigung der früheren Einstellung; die Roadmap ersetzt sie vollständig.
+try { localStorage.removeItem('poker:showplanned'); } catch { /* Speicher kann gesperrt sein. */ }
 
 // ---------- Profil ----------
 const profile = {
@@ -30,8 +32,7 @@ function openProfile(first = false) {
   $('#p-name').value = profile.name;
   $('#p-error').textContent = '';
   $('#p-cancel').hidden = first;
-  $('#p-showplanned').checked = !!store.get('poker:showplanned', false);
-  $('#p-showplanned-row').hidden = first;
+  $('#p-presence-hidden').checked = !!store.get('poker:presenceHidden', false);
   d.dataset.first = first ? '1' : '';
   $('#p-avatars').innerHTML = AVATARS.map((a) => `<button type="button" class="avatar-opt" data-a="${a}" aria-pressed="${a === profileChoice}" aria-label="Avatar ${a}">${a}</button>`).join('');
   d.showModal();
@@ -47,13 +48,14 @@ $('#profile-form').addEventListener('submit', (e) => {
   const name = $('#p-name').value.replace(/[\u0000-\u001f\u007f-\u009f]/g, '').trim().slice(0, 16);
   if (!name) { $('#p-error').textContent = 'Bitte gib einen Namen ein.'; $('#p-name').focus(); return; }
   profile.save(name, profileChoice);
+  store.set('poker:presenceHidden', $('#p-presence-hidden').checked);
+  reportPresence(true);
   $('#profile-dlg').close();
   renderProfileChip();
   if (pendingJoin) { const code = pendingJoin; pendingJoin = ''; joinFromLink(code); return; }
   if (hubVisible()) renderHub();
 });
 $('#p-cancel').addEventListener('click', () => $('#profile-dlg').close());
-$('#p-showplanned').addEventListener('change', (e) => { store.set('poker:showplanned', e.target.checked); if (hubVisible()) renderHub(); });
 $('#profile-dlg').addEventListener('cancel', (e) => { if ($('#profile-dlg').dataset.first) e.preventDefault(); }); // Esc
 $('#profile-chip').addEventListener('click', () => openProfile(false));
 $('#profile-avatar').addEventListener('click', () => openProfile(false));
@@ -100,8 +102,9 @@ const ICONS = {
   wuerfel: '<rect x="4" y="4" width="16" height="16" rx="3.5"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/><circle cx="9" cy="15" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/>',
   brett: '<rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M3.5 9.2h17M3.5 14.8h17M9.2 3.5v17M14.8 3.5v17"/>',
   party: '<path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="m19 16 .8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/>',
+  roadmap: '<path d="M6 4v16M6 5h12l-3 4 3 4H6"/><circle cx="6" cy="20" r="1"/>',
 };
-const PAGES = ['start', 'spiele', 'favoriten', 'tische', 'bestenliste'];
+const PAGES = ['start', 'spiele', 'favoriten', 'tische', 'bestenliste', 'roadmap'];
 let route = { page: 'start', sub: '' };
 function parseRoute() {
   const [p = 'start', s = ''] = location.hash.replace(/^#/, '').split('/');
@@ -118,7 +121,7 @@ function navHTML() {
   const n = openTableCount();
   const badge = n ? `<span class="badge" aria-label="${n} offene${n === 1 ? 'r' : ''} Tisch${n === 1 ? '' : 'e'}">${n}</span>` : '';
   const games = account.games || [];
-  return `${item('#start', 'start', 'Start')}${item('#tische', 'tische', 'Offene Tische', badge)}${item('#favoriten', 'favoriten', 'Favoriten')}${item('#bestenliste', 'bestenliste', 'Bestenliste')}
+  return `${item('#start', 'start', 'Start')}${item('#tische', 'tische', 'Offene Tische', badge)}${item('#favoriten', 'favoriten', 'Favoriten')}${item('#bestenliste', 'bestenliste', 'Bestenliste')}${item('#roadmap', 'roadmap', 'Roadmap')}
     <h2 class="side-title side-label">Spiele</h2>
     ${GAME_CATEGORIES.map(([id, title]) => item(`#spiele/${id}`, id, title, `<span class="count side-label" aria-label="${games.filter((g) => (g.category || 'karten') === id).length} Spiele">${games.filter((g) => (g.category || 'karten') === id).length}</span>`)).join('')}`;
 }
@@ -127,16 +130,16 @@ function tabbarHTML() {
   const tab = (href, key, label, on, extra = '') => `<a class="tab-item" href="${href}" ${on ? 'aria-current="page"' : ''}>${ico(ICONS[key])}<span>${label}</span>${extra}</a>`;
   const n = openTableCount();
   return tab('#start', 'start', 'Start', cur === 'start') + tab('#spiele', 'spiele', 'Spiele', cur === 'spiele' || cur === 'favoriten')
-    + tab('#tische', 'tische', 'Tische', cur === 'tische', n ? `<span class="badge" aria-label="${n} offen">${n}</span>` : '') + tab('#bestenliste', 'bestenliste', 'Bestenliste', cur === 'bestenliste');
+    + tab('#tische', 'tische', 'Tische', cur === 'tische', n ? `<span class="badge" aria-label="${n} offen">${n}</span>` : '') + tab('#bestenliste', 'bestenliste', 'Bestenliste', cur === 'bestenliste') + tab('#roadmap', 'roadmap', 'Roadmap', cur === 'roadmap');
 }
 
-const TITLES = { start: 'Start', spiele: 'Spiele', favoriten: 'Favoriten', tische: 'Offene Tische', bestenliste: 'Bestenliste' };
+const TITLES = { start: 'Start', spiele: 'Spiele', favoriten: 'Favoriten', tische: 'Offene Tische', bestenliste: 'Bestenliste', roadmap: 'Roadmap' };
 let renderedPage = null;
 function renderHub(focus = false) {
   route = parseRoute();
   $('#side-nav').innerHTML = navHTML();
   $('#hub-tabbar').innerHTML = tabbarHTML();
-  const page = { start: pageStart, spiele: pageGames, favoriten: pageGames, tische: pageTables, bestenliste: pageBoard }[route.page];
+  const page = { start: pageStart, spiele: pageGames, favoriten: pageGames, tische: pageTables, bestenliste: pageBoard, roadmap: pageRoadmap }[route.page];
   const main = $('#hub-main');
   const scroll = main.scrollTop;
   main.innerHTML = page();
@@ -207,6 +210,7 @@ function pageStart() {
   loadResume();
   return `<section class="hub-head"><h1>Hallo ${esc(profile.name)} <span aria-hidden="true">${esc(profile.avatar)}</span></h1><p>Setz dich an einen offenen Tisch oder mach selbst einen auf.</p></section>
     <section class="hub-block"><div class="hub-block-head"><h2>Offene Tische</h2></div><div data-tables="4">${tablesBlockHTML(4)}</div></section>
+    <section class="hub-block" id="presence-slot">${presenceHTML()}</section>
     ${gamesPreviewHTML()}
     ${codeBoxHTML()}
     <p class="hub-foot">Ohne Benutzerkonto. Nur Spielgeld, kein Echtgeld.</p>`;
@@ -224,13 +228,9 @@ const CHIPS = [['all', 'Alle'], ['fav', '★ Favoriten'], ['p2', '2 Spieler'], [
 const RANGES = { p2: [2, 2], p34: [3, 4], p56: [5, 6], p7: [7, 99] };
 const SEARCH_FROM = 20; // Suche ab so vielen Spielen
 const catTitle = (id) => (GAME_CATEGORIES.find(([c]) => c === id) || [, ''])[1];
-const showPlanned = () => !!store.get('poker:showplanned', false); // Schalter „Geplante Spiele zeigen“ (Profil-Dialog „Ich“), Standard aus
 const plannedAll = () => account.planned || [];
-// Immer sichtbar: Einträge mit status 'next' („Bald“). Status 'planned' erscheint nur mit dem Schalter, gruppiert nach Päckchen. Funktionen (type 'feature') kommen nie hierher.
+// 'next' bleibt mit „Bald“ in der Spieleliste. Der übrige Backlog gehört zur Roadmap.
 const allGames = () => [...(account.games || []), ...plannedAll().filter((p) => p.status === 'next').map((p) => ({ ...p, planned: true }))];
-const extraGames = () => (showPlanned() ? plannedAll().filter((p) => p.status !== 'next').map((p) => ({ ...p, planned: true })) : []);
-const PKG_ORDER = ['4', '5', '6', '7', '8', 'spaeter', 'gross'];
-const PKG_NAME = { 4: 'Päckchen 4', 5: 'Päckchen 5', 6: 'Päckchen 6', 7: 'Päckchen 7', 8: 'Päckchen 8', spaeter: 'Später', gross: 'Große Projekte' };
 const playersText = (g) => (g.minPlayers === g.maxPlayers ? `${g.maxPlayers} Spieler` : `${g.minPlayers}–${g.maxPlayers} Spieler`);
 
 // Sortierung: Favoriten zuerst, dann zuletzt gespielt, dann alphabetisch; Geplantes ans Ende
@@ -278,20 +278,12 @@ function pageGames() {
   const search = allGames().length >= SEARCH_FROM ? `<label class="search"><span class="sr-only">Spiel suchen</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="games-search" type="search" placeholder="Spiel suchen" value="${esc(gamesQuery)}" autocomplete="off"></label>` : '';
   return `<section class="hub-head"><h1>${esc(title)}</h1><p>Such dir ein Spiel aus und mach einen Tisch auf – die anderen kommen per Link oder Code dazu.</p></section>
     <div class="games-tools"><div id="games-toolbar" class="toolbar">${gamesToolbarHTML()}</div>${search}</div>
-    <div id="games-body">${gamesBodyHTML()}</div>
-    <div id="planned-body">${plannedGroupsHTML()}</div>`;
+    <div id="games-body">${gamesBodyHTML()}</div>`;
 }
-function plannedGroupsHTML() {
-  if (!showPlanned() || route.page === 'favoriten') return '';
-  const list = filterGames(extraGames());
-  if (!list.length) return '<p class="hint">Mit diesem Filter gibt es keine geplanten Spiele.</p>';
-  const groups = PKG_ORDER.map((k) => [k, list.filter((g) => String(g.paeckchen) === k)]).filter(([, l]) => l.length);
-  return `<section class="hub-block planned-block"><div class="hub-block-head"><h2>Geplante Spiele</h2></div>${groups.map(([k, l]) => `<h3 class="pkg-title">${PKG_NAME[k]}</h3><ul class="games ${gamesView === 'tiles' ? 'tiles' : 'rows'}">${l.map((g) => gameHTML(g, gamesView === 'tiles')).join('')}</ul>`).join('')}</section>`;
-}
-function refreshGames() { $('#games-toolbar').innerHTML = gamesToolbarHTML(); $('#games-body').innerHTML = gamesBodyHTML(); $('#planned-body').innerHTML = plannedGroupsHTML(); }
+function refreshGames() { $('#games-toolbar').innerHTML = gamesToolbarHTML(); $('#games-body').innerHTML = gamesBodyHTML(); }
 // Beschreibung und Regeln eines noch nicht spielbaren Spiels (im gleichen Panel wie „Hosten“)
 function openPlan(id) {
-  const g = plannedAll().find((x) => x.id === id);
+  const g = plannedAll().find((x) => x.id === id) || roadmapData?.flatMap((e) => e.punkte).find((p) => p.id === id)?.spiel;
   if (!g) return;
   const list = (items) => `<ul class="plan-rules">${items.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>`;
   const d = $('#host-dlg');
@@ -299,10 +291,10 @@ function openPlan(id) {
       <button type="button" class="host-close" data-host-close aria-label="Schließen">✕</button>
       <div class="host-art cat-${esc(g.category)}">${g.art}</div>
       <div><h2 id="host-title">${esc(g.name)}</h2><p class="host-meta">${esc(catTitle(g.category))} · ${esc(playersText(g))} · ca. ${g.duration} Min.</p></div>
-      <p><span class="soon">${g.status === 'next' ? 'Bald' : 'Geplant'}</span> Noch nicht spielbar.</p>
+      <p><span class="soon">${g.status === 'available' ? 'Erledigt' : g.status === 'next' ? 'Bald' : 'Geplant'}</span> ${g.status === 'available' ? 'Bereits spielbar.' : 'Noch nicht spielbar.'}</p>
       <p>${esc(g.description)}</p>
       ${g.vorbild ? `<p class="hint">Vorbild (nur die Mechanik): ${esc(g.vorbild)}</p>` : ''}
-      <h3>Regeln</h3>${list(g.rules || [])}
+      <h3>Regeln</h3>${g.rules?.length ? list(g.rules) : '<p>Die vollständigen Spielregeln findest du am Tisch unter „Regeln“.</p>'}
       ${g.houseRules?.length ? `<h3>Mögliche Hausregeln</h3>${list(g.houseRules)}` : ''}
       <button type="button" class="btn btn-ghost" data-host-close>Schließen</button></div>`;
   d.dataset.game = '';
@@ -380,9 +372,8 @@ document.addEventListener('click', (e) => {
 const CAT_NAME = { karten: 'Kartenspiel', wuerfel: 'Würfelspiel', brett: 'Brettspiel', party: 'Partyspiel' };
 let hubResume = [];     // meine eigenen Tische (Token im Browser) – stehen ganz vorne
 let resumeAt = 0;
-function subscribeLobby() { socket.emit('lobby', {}, (r) => { if (r?.ok) { hubTables = r.tables; refreshTables(); } }); }
+function subscribeLobby() { reportPresence(true); socket.emit('lobby', {}, (r) => { if (r?.ok) { hubTables = r.tables; hubPresence = r.presence || { online: [], recent: [] }; refreshTables(); refreshPresence(); } }); }
 socket.on('connect', subscribeLobby);
-if (socket.connected) subscribeLobby();
 socket.on('lobby', (list) => { hubTables = list; refreshTables(); });
 
 function tableCardHTML(t, mine = false) {
@@ -443,7 +434,6 @@ document.addEventListener('input', (e) => {
   if (e.target.id !== 'games-search') return;
   gamesQuery = e.target.value;
   $('#games-body').innerHTML = gamesBodyHTML();
-  $('#planned-body').innerHTML = plannedGroupsHTML();
 });
 
 // Tablet: Seitenleiste ein-/ausklappen (nur Symbole ↔ mit Text), Wahl wird gemerkt
@@ -459,3 +449,114 @@ $('#side-toggle').addEventListener('click', () => {
   store.set('poker:sidebar', open ? 'open' : 'closed');
   syncSideToggle();
 });
+
+// ---------- Roadmap ----------
+let roadmapData = null, roadmapRequest = null, roadmapError = '', roadmapFilter = 'alle';
+const ROADMAP_FILTERS = [['alle', 'Alle'], ['spiel', 'Spiele'], ['funktion', 'Funktionen'], ['design', 'Design'], ['fehler', 'Fehler']];
+const ROADMAP_STAGES = [['jetzt', 'Gerade in Arbeit'], ['naechstes', 'Als Nächstes'], ['danach', 'Danach'], ['spaeter', 'Später'], ['gross', 'Große Projekte'], ['erledigt', 'Schon erledigt']];
+const ART_LABEL = { spiel: 'Spiel', funktion: 'Funktion', design: 'Design', discord: 'Discord', betrieb: 'Betrieb', fehler: 'Fehler' };
+const ART_ICON = {
+  spiel: ICONS.spiele, funktion: '<path d="M12 3v18M3 12h18"/>', design: '<path d="m5 16 11-11 3 3L8 19H5zM14 7l3 3"/>',
+  discord: '<path d="M4 5h16v11H9l-5 4zM8 10h1M15 10h1"/>', betrieb: '<path d="m5 4 5 5-2 3 10 8 3-3L11 8l1-3-5-2z"/>',
+  fehler: '<path d="m12 3 10 18H2zM12 9v5M12 17v1"/>',
+};
+async function loadRoadmap() {
+  if (roadmapRequest) return;
+  roadmapError = '';
+  roadmapRequest = (async () => {
+    try {
+      const response = await fetch('/roadmap');
+      if (!response.ok) throw new Error('Roadmap konnte nicht geladen werden.');
+      roadmapData = await response.json();
+    } catch { roadmapError = 'Roadmap konnte nicht geladen werden. Bitte versuche es erneut.'; }
+    finally { roadmapRequest = null; if (hubVisible() && route.page === 'roadmap') renderHub(); }
+  })();
+}
+function pageRoadmap() {
+  if (!roadmapData && !roadmapRequest && !roadmapError) loadRoadmap();
+  return `<section class="hub-head"><h1>Roadmap</h1><p>Was wir gerade bauen, was als Nächstes kommt und was schon fertig ist.</p></section>
+    <div class="chips roadmap-filters" role="group" aria-label="Roadmap filtern">${ROADMAP_FILTERS.map(([id, title]) => `<button type="button" class="chip" data-roadmap-filter="${id}" aria-pressed="${roadmapFilter === id}">${title}</button>`).join('')}</div>
+    <div id="roadmap-body">${roadmapBodyHTML()}</div>`;
+}
+function roadmapBodyHTML() {
+  if (!roadmapData) return roadmapError ? `<p role="alert">${esc(roadmapError)}</p><button type="button" class="btn" data-roadmap-retry>Erneut versuchen</button>` : '<p role="status">Roadmap wird geladen …</p>';
+  const matches = (p) => roadmapFilter === 'alle' || p.art === roadmapFilter || roadmapFilter === 'funktion' && ['discord', 'betrieb'].includes(p.art);
+  const open = store.get('poker:roadmapOpen', {});
+  const card = (e, points) => {
+    const done = e.punkte.filter((p) => p.erledigt).length, total = e.punkte.length;
+    return `<article class="roadmap-card ${e.stufe === 'jetzt' ? 'current' : ''}" aria-labelledby="roadmap-${esc(e.id)}">
+      <h3 id="roadmap-${esc(e.id)}">${esc(e.titel)}</h3>${e.datum ? `<time datetime="${e.datum}">${new Date(e.datum + 'T12:00:00').toLocaleDateString('de-DE')}</time>` : ''}<p>${esc(e.satz)}</p>
+      ${total > 1 ? `<div class="roadmap-progress"><span>${done} von ${total} erledigt</span><progress max="${total}" value="${done}" aria-label="Fortschritt: ${esc(e.titel)}"></progress></div>` : ''}
+      <ul class="roadmap-points">${points.map((p) => `<li>${p.art === 'spiel' && p.spiel ? `<button type="button" class="roadmap-point" data-plan="${esc(p.id)}" aria-label="${esc(p.titel)}: Beschreibung und Regeln">` : '<div class="roadmap-point">'}
+        <span class="roadmap-art" aria-hidden="true">${p.spiel?.art || ico(ART_ICON[p.art])}</span><span><b>${esc(p.titel)}</b><small>${ART_LABEL[p.art]}${p.erledigt ? ' · Erledigt ✓' : ''}</small><span>${esc(p.text)}</span></span>
+        ${p.art === 'spiel' && p.spiel ? '</button>' : '</div>'}</li>`).join('')}</ul></article>`;
+  };
+  const html = ROADMAP_STAGES.map(([stage, title]) => {
+    const list = roadmapData.filter((e) => e.stufe === stage).map((e) => [e, e.punkte.filter(matches)]).filter(([, points]) => points.length);
+    if (stage === 'erledigt') list.sort(([a], [b]) => b.datum.localeCompare(a.datum));
+    if (!list.length) return '';
+    const content = `<div class="roadmap-cards">${list.map(([e, points]) => card(e, points)).join('')}</div>`;
+    return ['spaeter', 'gross', 'erledigt'].includes(stage)
+      ? `<details class="roadmap-stage" data-roadmap-stage="${stage}" ${open?.[stage] === true ? 'open' : ''}><summary>${title}<span>${list.length} ${list.length === 1 ? 'Etappe' : 'Etappen'}</span></summary>${content}</details>`
+      : `<section class="roadmap-stage"><h2>${title}</h2>${content}</section>`;
+  }).join('');
+  return html || '<p class="hint">Zu diesem Filter gibt es noch keine Einträge.</p>';
+}
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-roadmap-filter]');
+  if (b) {
+    roadmapFilter = b.dataset.roadmapFilter;
+    $$('.roadmap-filters button').forEach((chip) => chip.setAttribute('aria-pressed', String(chip === b)));
+    $('#roadmap-body').innerHTML = roadmapBodyHTML();
+  }
+  if (e.target.closest('[data-roadmap-retry]')) loadRoadmap();
+});
+document.addEventListener('toggle', (e) => {
+  if (!e.target.matches('[data-roadmap-stage]')) return;
+  const saved = store.get('poker:roadmapOpen', {});
+  store.set('poker:roadmapOpen', { ...(saved && typeof saved === 'object' ? saved : {}), [e.target.dataset.roadmapStage]: e.target.open });
+}, true);
+
+// ---------- Gerade online ----------
+let hubPresence = { online: [], recent: [] }, lastInput = Date.now(), presenceSent = '';
+function reportPresence(force = false) {
+  if (!socket.connected || !profile.name) return;
+  const value = { name: profile.name, avatar: profile.avatar, visible: !store.get('poker:presenceHidden', false), active: !document.hidden && Date.now() - lastInput < 300000 };
+  const signature = JSON.stringify(value);
+  if (!force && signature === presenceSent) return;
+  presenceSent = signature;
+  socket.emit('presence', value);
+}
+function relativeSeen(at) {
+  const mins = Math.floor(Math.max(0, Date.now() - at) / 60000);
+  return mins < 1 ? 'gerade eben' : mins < 60 ? `vor ${mins} Min.` : `vor ${Math.floor(mins / 60)} Std.`;
+}
+function presenceHTML() {
+  const me = profile.name.trim().toLowerCase();
+  const recentlySeen = hubPresence.recent.filter((p) => Date.now() - p.at < 86400000);
+  const people = [...hubPresence.online].sort((a, b) => (b.key === me) - (a.key === me) || a.name.localeCompare(b.name, 'de'));
+  const list = `<ul class="presence-list">${people.map((p) => `<li><span class="presence-avatar" aria-hidden="true">${esc(p.avatar)}</span><div><b>${esc(p.name)}${p.key === me ? ' (du)' : ''}</b><small>${esc(p.status)}</small></div>
+    ${p.code && p.key !== me ? `<div class="presence-actions">${p.canJoin ? `<button type="button" class="btn btn-brass" data-join="${esc(p.code)}" data-mode="sit">Mitspielen</button>` : ''}<button type="button" class="btn btn-ghost" data-join="${esc(p.code)}" data-mode="watch">Zuschauen</button></div>` : ''}</li>`).join('')}</ul>`;
+  const recent = `<details class="presence-recent" data-presence-details="recent"><summary>Zuletzt online (${recentlySeen.length})</summary><ul class="presence-list">${recentlySeen.map((p) => `<li><span class="presence-avatar" aria-hidden="true">${esc(p.avatar)}</span><div><b>${esc(p.name)}</b><small><time datetime="${new Date(p.at).toISOString()}">${relativeSeen(p.at)}</time></small></div></li>`).join('') || '<li>Noch niemand in den letzten 24 Stunden.</li>'}</ul></details>`;
+  const title = `Gerade online (${people.length})`;
+  return `<div class="presence-desktop"><h2>${title}</h2>${list || ''}</div>
+    <details class="presence-mobile" data-presence-details="online"><summary><span>${title}</span><span class="presence-avatars" aria-hidden="true">${people.slice(0, 5).map((p) => `<span>${esc(p.avatar)}</span>`).join('')}</span></summary>${list}</details>
+    ${people.length ? '' : '<p class="hint">Gerade ist niemand sichtbar online.</p>'}${recent}`;
+}
+function refreshPresence() {
+  const slot = $('#presence-slot');
+  if (!hubVisible() || !slot) return;
+  const opened = new Set($$('details[open]', slot).map((el) => el.dataset.presenceDetails));
+  const focusedSummary = document.activeElement?.closest?.('summary')?.parentElement.dataset.presenceDetails;
+  const focused = slot.contains(document.activeElement) ? { code: document.activeElement.dataset.join, mode: document.activeElement.dataset.mode } : null;
+  slot.innerHTML = presenceHTML();
+  $$('details', slot).forEach((el) => { el.open = opened.has(el.dataset.presenceDetails); });
+  if (focused) $$('[data-join]', slot).find((el) => el.dataset.join === focused.code && el.dataset.mode === focused.mode)?.focus({ preventScroll: true });
+  if (focusedSummary) $$('details', slot).find((el) => el.dataset.presenceDetails === focusedSummary)?.querySelector('summary').focus({ preventScroll: true });
+}
+socket.on('presence', (data) => { hubPresence = data; refreshPresence(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) lastInput = Date.now(); reportPresence(); });
+['pointerdown', 'keydown', 'input'].forEach((event) => document.addEventListener(event, () => { lastInput = Date.now(); reportPresence(); }, { passive: true }));
+setInterval(() => { reportPresence(); refreshPresence(); }, 30000);
+window.addEventListener('storage', (e) => { if (['poker:name', 'poker:avatar', 'poker:presenceHidden'].includes(e.key)) { renderProfileChip(); reportPresence(true); } });
+if (socket.connected) subscribeLobby();

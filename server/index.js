@@ -8,6 +8,8 @@ import { readFileSync, writeFileSync, renameSync, mkdirSync, existsSync, unlinkS
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { GAMES, DEFAULT_GAME, gameList, gameEvents, PLANNED, plannedGames } from '../games/index.js';
+import { resolvedRoadmap } from '../games/roadmap.js';
+import { createPresence } from './presence.js';
 import {
   COOKIE, loadSecret, createAuth, parseCookies, cookieHeader, limiter, bucket,
   securityHeaders, sameOrigin, clientIp, safeNext,
@@ -107,7 +109,11 @@ app.use((req, res, next) => {
 });
 app.get('/me', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
-  res.json({ mode: MODE, games: gameList(), planned: plannedGames() }); // geplante Spiele (ohne Funktionen) – der Browser zeigt „Bald“ und, auf Wunsch, alle
+  res.json({ mode: MODE, games: gameList(), planned: plannedGames() }); // Spiele mit 'next' stehen mit „Bald“ im Katalog, der übrige Backlog auf /roadmap.
+});
+app.get('/roadmap', (_req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.json(resolvedRoadmap());
 });
 // Bestenliste über alle Abende: ?game=maumau&period=all|2026-10 (nur angemeldet)
 const GAME_INFO = Object.fromEntries(Object.values(GAMES).map((g) => {
@@ -143,6 +149,20 @@ const io = new Server(http, {
 
 /** @type {Map<string, import('./base-room.js').BaseRoom>} */
 const rooms = new Map();
+const presence = createPresence({
+  emit: (list) => io.to('lobby').emit('presence', list),
+  location: (id) => {
+    const socket = io.sockets.sockets.get(id);
+    if (!socket) return null;
+    const r = rooms.get(socket.data.code), p = r?.players.get(socket.data.playerId);
+    if (p?.bot) return { bot: true };
+    if (!p || p.kicked || p.socketId !== id) return { kind: 'home' };
+    const info = r.lobbyInfo?.();
+    const seated = r.seats ? r.seats.includes(p.id) : p.seat !== null && p.seat !== undefined;
+    return { kind: seated ? 'playing' : 'watching', private: !!r.unlisted, code: r.code, game: r.game, gameName: GAMES[r.game].name,
+      canJoin: !!info && info.seats.length < info.max };
+  },
+});
 const bots = createBotRunner({ isCurrent: (r) => rooms.get(r.code) === r, notify: (r) => { broadcast(r); if (!r.busy) save(); } });
 const codes = createCodes(); // gemeinsam für alle Spiele
 const leaderboard = createLeaderboard(DATA_DIR); // Bestenliste über alle Abende
@@ -250,6 +270,7 @@ function switchRoom(old, game) {
 // Geplante Spiele und Funktionen (games/planned.js) lassen sich nicht hosten oder auswählen
 const notPlayable = (id) => (PLANNED.some((e) => e.id === String(id)) ? 'Das gibt es noch nicht – es steht auf der Liste der geplanten Spiele' : 'Dieses Spiel gibt es nicht');
 function broadcast(room) {
+  presence.changed();
   bots.sync(room);
   const botPlayers = [...room.players.values()].filter((p) => p.bot && !p.kicked).map(({ id, name }) => ({ id, name }));
   for (const p of room.players.values()) {
@@ -318,6 +339,7 @@ function detach(socket, room) {
   socket.leave(room.code);
   socket.data.code = null;
   socket.data.playerId = null;
+  presence.changed();
 }
 // Raum endgültig schließen: Timer und Bots stoppen, Code frei, Verlauf und Stand weg. Die Bestenliste bleibt (wird beim Rundenende geschrieben).
 function closeRoom(room) {
@@ -327,6 +349,7 @@ function closeRoom(room) {
   codes.release(room.code);
   dropHistory(room.code);
   scheduleLobby();
+  presence.changed();
   save();
 }
 const humansIn = (room) => [...room.players.values()].filter((p) => !p.bot && !p.kicked);
@@ -349,6 +372,7 @@ io.on('connection', (socket) => {
   const ip = clientIp(socket.request, TRUST_PROXY);
   connections.set(ip, (connections.get(ip) || 0) + 1);
   socket.on('disconnect', () => {
+    presence.disconnect(socket.id);
     const n = (connections.get(ip) || 1) - 1;
     if (n <= 0) connections.delete(ip); else connections.set(ip, n);
   });
@@ -425,8 +449,10 @@ io.on('connection', (socket) => {
   on('lobby', ({ off }) => {
     if (off) { socket.leave('lobby'); return {}; }
     socket.join('lobby');
-    return { reply: { tables: lobbyList() } };
+    return { reply: { tables: lobbyList(), presence: presence.snapshot() } };
   }, { needRoom: false });
+
+  on('presence', (data) => ({ reply: { accepted: presence.update(socket.id, data) } }), { needRoom: false });
 
   // Startseite „Weiterspielen“: gibt es meinen Tisch noch? Nur mit gültigem Token, zeigt dasselbe wie die Liste
   on('peek', ({ code, token }) => {
@@ -468,6 +494,7 @@ io.on('connection', (socket) => {
   on('park', (_d, room, p) => {
     detach(socket, room);
     goOffline(room, p, `${p.name} ist kurz auf der Startseite`);
+    presence.park(socket.id);
     return { closed: true }; // goOffline hat schon neu gezeichnet
   });
 
@@ -550,7 +577,7 @@ process.on('uncaughtException', (e) => console.error('Unerwarteter Fehler:', e))
 process.on('unhandledRejection', (e) => console.error('Unerwarteter Fehler:', e));
 
 // Ein Spiel darf keine Plattform-Ereignisse überschreiben
-const RESERVED = ['create', 'join', 'kick', 'makeHost', 'history', 'react', 'switchGame', 'disconnect', 'addBot', 'removeBot', 'lobby', 'peek', 'unlisted', 'park', 'leave', 'abortRound', 'closeTable', 'look'];
+const RESERVED = ['create', 'join', 'kick', 'makeHost', 'history', 'react', 'switchGame', 'disconnect', 'addBot', 'removeBot', 'lobby', 'peek', 'unlisted', 'park', 'leave', 'abortRound', 'closeTable', 'look', 'presence'];
 for (const g of Object.values(GAMES)) {
   const clash = Object.keys(g.events).filter((e) => RESERVED.includes(e));
   if (clash.length) throw new Error(`Spiel ${g.id}: Ereignisse ${clash.join(', ')} gehören der Plattform`);

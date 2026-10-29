@@ -1,0 +1,95 @@
+import { test, expect } from './helpers.js';
+
+async function start(page, app, name) {
+  await page.addInitScript((name) => {
+    localStorage.setItem('poker:showplanned', 'true'); // Altbestand muss beim Start verschwinden.
+    if (!localStorage.getItem('poker:name')) {
+      localStorage.setItem('poker:name', JSON.stringify(name));
+      localStorage.setItem('poker:avatar', JSON.stringify('🦉'));
+      localStorage.setItem('poker:prefs', JSON.stringify({ intros: false }));
+    }
+  }, name);
+  await page.goto(app.url);
+  await page.getByLabel('Passwort').fill(app.password);
+  await page.getByRole('button', { name: 'Reinkommen' }).click();
+  await expect(page.locator('#hub')).toBeVisible();
+}
+
+test('Roadmap: Navigation, Filter, Spielregeln und gemerkte abgeschlossene Etappen', async ({ page, app }, info) => {
+  await start(page, app, 'Anna');
+  expect(await page.evaluate(() => localStorage.getItem('poker:showplanned'))).toBeNull();
+  const response = await page.request.get(app.url + '/roadmap');
+  expect(response.ok()).toBe(true);
+  const nav = page.viewportSize().width < 641 ? '#hub-tabbar' : '#side-nav';
+  await page.locator(nav).getByRole('link', { name: 'Roadmap', exact: true }).click();
+  await expect(page).toHaveTitle('Roadmap – Spieleabend');
+  await expect(page.locator('.roadmap-card.current')).toContainText('Hub-Paket');
+  await page.getByRole('button', { name: 'Spiele', exact: true }).click();
+  await expect(page.locator('[data-plan="kritzelpost"]')).toBeVisible();
+  await expect(page.locator('#roadmap-body')).not.toContainText('Markdown-Export');
+  await page.locator('[data-plan="kritzelpost"]').click();
+  await expect(page.locator('#host-dlg')).toContainText('Regeln');
+  await expect(page.locator('#host-dlg .plan-rules li')).toHaveCount(3);
+  await page.locator('#host-dlg .host-close').click();
+  const completed = page.locator('[data-roadmap-stage="erledigt"]');
+  await expect(completed).not.toHaveAttribute('open', '');
+  await completed.locator('summary').click();
+  await expect(completed.locator('time').first()).toHaveAttribute('datetime', '2026-10-28');
+  await page.reload();
+  await expect(completed).toHaveAttribute('open', '');
+  await completed.locator('summary').click();
+  await expect(completed).not.toHaveAttribute('open', '');
+  await page.getByRole('button', { name: 'Alle', exact: true }).click();
+  await page.screenshot({ path: info.outputPath('roadmap.png'), fullPage: true });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.locator(page.viewportSize().width < 641 ? '#profile-avatar' : '#profile-chip').click();
+  await expect(page.getByRole('switch', { name: /Geplante Spiele zeigen/ })).toHaveCount(0);
+  await expect(page.getByRole('switch', { name: /Mich nicht als online zeigen/ })).toBeVisible();
+});
+
+test('Presence: zweiter Browser, Unsichtbarkeit, Tisch zuschauen und Trennen', async ({ page, app, browser }, info) => {
+  await start(page, app, 'Anna');
+  const otherContext = await browser.newContext({ viewport: page.viewportSize() });
+  try {
+    const other = await otherContext.newPage();
+    await start(other, app, 'Ben');
+    if (page.viewportSize().width < 641) await page.locator('.presence-mobile > summary').click();
+    const list = page.locator(page.viewportSize().width < 641 ? '.presence-mobile .presence-list' : '.presence-desktop .presence-list');
+    await expect(list).toContainText('Ben', { timeout: 7000 });
+    await expect(list.locator('li').first()).toContainText('Anna (du)');
+    const profile = other.viewportSize().width < 641 ? '#profile-avatar' : '#profile-chip';
+    await other.locator(profile).click();
+    await other.getByRole('switch', { name: /Mich nicht als online zeigen/ }).check();
+    await other.getByRole('button', { name: 'Speichern', exact: true }).click();
+    await expect(list).not.toContainText('Ben', { timeout: 7000 });
+    await other.locator(profile).click();
+    await other.getByRole('switch', { name: /Mich nicht als online zeigen/ }).uncheck();
+    await other.getByRole('button', { name: 'Speichern', exact: true }).click();
+    await other.evaluate(() => { location.hash = '#spiele'; });
+    await other.locator('[data-host="maumau"]').click();
+    await other.locator('#host-form button[type="submit"]').click();
+    await other.getByRole('button', { name: 'Mitspielen', exact: true }).click();
+    await expect(list).toContainText('spielt Mau-Mau', { timeout: 7000 });
+    await page.screenshot({ path: info.outputPath('presence.png'), fullPage: true });
+    await list.locator('li').filter({ hasText: 'Ben' }).getByRole('button', { name: 'Zuschauen', exact: true }).click();
+    await expect(page.locator('#kg-meta')).toContainText('Mau-Mau');
+    await page.goBack();
+    await expect(page.locator('#hub')).toBeVisible();
+    await otherContext.close();
+    const currentList = page.locator(page.viewportSize().width < 641 ? '.presence-mobile .presence-list' : '.presence-desktop .presence-list');
+    await expect(currentList).not.toContainText('Ben', { timeout: 7000 });
+    await page.locator('.presence-recent > summary').click();
+    await expect(page.locator('.presence-recent')).toContainText('Ben');
+    await page.evaluate(() => {
+      hubPresence.recent.push({ key: 'alt', name: 'Abgelaufener Besuch', avatar: '🦉', at: Date.now() - 86400001 });
+      refreshPresence();
+    });
+    await expect(page.locator('.presence-recent')).not.toContainText('Abgelaufener Besuch');
+  } finally { await otherContext.close(); }
+});
+
+test('Roadmap erfordert Anmeldung', async ({ page, app }) => {
+  const response = await page.request.get(app.url + '/roadmap', { maxRedirects: 0 });
+  expect([302, 401]).toContain(response.status());
+  expect(await response.text()).not.toContain('Hub-Paket');
+});

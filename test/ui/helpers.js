@@ -55,13 +55,18 @@ export const test = base.extend({
 export { expect };
 
 export async function selectGame(page, id) {
-  const card = page.locator(`[data-game="${id}"]`);
-  const category = page.locator('#game-list details').filter({ has: card });
-  if (!await category.evaluate((el) => el.open)) await category.locator('summary').click();
-  await card.click();
+  await page.evaluate(() => { location.hash = '#spiele'; });
+  await page.locator(`[data-host="${id}"]`).first().click();
 }
 
-export async function login(page, app) {
+export async function login(page, app, name = 'Anna') {
+  await page.addInitScript((name) => {
+    if (!localStorage.getItem('poker:name')) {
+      localStorage.setItem('poker:name', JSON.stringify(name));
+      localStorage.setItem('poker:avatar', JSON.stringify('🦉'));
+      localStorage.setItem('poker:prefs', JSON.stringify({ intros: false }));
+    }
+  }, name);
   // Die Einführung gehört nicht zum Lobby-Test; bei Bedarf wie ein Nutzer schließen.
   await page.addLocatorHandler(page.locator('#intro-dlg[open]'), async () => {
     await page.getByRole('button', { name: 'Überspringen', exact: true }).click();
@@ -69,7 +74,7 @@ export async function login(page, app) {
   await page.goto(app.url);
   await page.getByLabel('Passwort').fill(app.password);
   await page.getByRole('button', { name: 'Reinkommen' }).click();
-  await expect(page.locator('#lobby')).toBeVisible();
+  await expect(page.locator('#hub')).toBeVisible();
 }
 
 export async function screenshot(page, name) {

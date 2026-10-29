@@ -4,8 +4,7 @@ for (const [game, name] of [['poker', "Texas Hold'em"], ['farbenchaos', 'UNO']])
   test(`${name}: Host kann ohne Bots starten, Bots hinzufügen, wiederverbinden und entfernen`, async ({ page, app }, testInfo) => {
     await login(page, app);
     await selectGame(page, game);
-    await page.getByLabel('Dein Name').fill('Anna');
-    await page.getByRole('button', { name: `${name} hosten`, exact: true }).click();
+    await page.locator('#host-form button[type=submit]').click();
     const hostMenu = page.locator(game === 'poker' ? '[data-panel="host"]' : '[data-kit-panel="host"]').first();
     await hostMenu.click();
     const controls = page.getByRole('region', { name: 'Computer-Mitspieler' });
@@ -24,8 +23,7 @@ for (const [game, name] of [['poker', "Texas Hold'em"], ['farbenchaos', 'UNO']])
 test('Bot spielt live, bleibt beim Spielwechsel; Gäste dürfen keine Bots oder Bot-Hosts anlegen', async ({ page, app, browser }) => {
   await login(page, app);
   await selectGame(page, 'viergewinnt');
-  await page.getByLabel('Dein Name').fill('Anna');
-  await page.getByRole('button', { name: 'Vier gewinnt hosten', exact: true }).click();
+  await page.locator('#host-form button[type=submit]').click();
   await page.locator('[data-kit-panel="host"]').first().click();
   await page.getByRole('button', { name: 'Bot hinzufügen', exact: true }).click();
   await expect(page.getByRole('region', { name: 'Computer-Mitspieler' })).toContainText('Bot 1');

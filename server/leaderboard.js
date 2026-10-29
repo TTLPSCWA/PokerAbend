@@ -4,7 +4,7 @@
 import { readFileSync, writeFileSync, renameSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-const nameKey = (name) => String(name ?? '').trim().toLowerCase();
+export const nameKey = (name) => String(name ?? '').trim().toLowerCase();
 const monthOf = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 const empty = () => ({ played: 0, wins: 0, points: 0 });
 function add(t, e) {

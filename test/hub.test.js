@@ -235,6 +235,6 @@ test('Geplante Spiele und Funktionen lassen sich nicht hosten oder auswählen; /
   assert.equal(me.planned.length, games.length);
   assert.ok(me.planned.every((p) => p.type !== 'feature' && ['next', 'planned'].includes(p.status) && Array.isArray(p.rules)));
   assert.ok(!me.planned.some((p) => features.some((f) => f.id === p.id)), 'Funktionen sind nicht dabei');
-  assert.deepEqual(me.planned.filter((p) => p.status === 'next').map((p) => p.id).sort(), PLANNED.filter((e) => e.status === 'next' && e.type !== 'feature').map((e) => e.id).sort(), 'nur „next“ ist standardmäßig zu sehen – der Rest wartet auf den Schalter');
+  assert.deepEqual(me.planned.filter((p) => p.status === 'next').map((p) => p.id).sort(), PLANNED.filter((e) => e.status === 'next' && e.type !== 'feature').map((e) => e.id).sort(), 'nur „next“ steht im Katalog; der Rest auf der Roadmap');
   assert.ok(me.games.every((g) => !me.planned.some((p) => p.id === g.id)));
 });
