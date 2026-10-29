@@ -77,6 +77,7 @@ Die Startseite ist ein Hub mit Navigation per URL-Hash (Zurück-Taste und Links 
 | `#favoriten` | meine Favoriten |
 | `#bestenliste` | Bestenliste nach Spiel und Monat |
 | `#roadmap` | Etappen, geplante Spiele und Funktionen, abgeschlossene Päckchen |
+| `#tickets`, `#tickets/123` | Ticket-Board und direkte Links auf einzelne Tickets |
 
 - **Profil:** Beim ersten Besuch fragt ein Dialog nach Name und Avatar. Beides liegt im Browser (`poker:name`, `poker:avatar`) und wird beim Hosten und Beitreten verwendet. Ist der Name am Tisch schon vergeben, schlägt der Server einen freien vor („Tobi 2“).
 - **Offene Tische:** Der Server schickt die Liste an alle Angemeldeten (Socket-Ereignis `lobby`, Änderungen höchstens einmal pro Sekunde): Spiel, Code, Host, wer sitzt, Plätze, Stand – nie Tokens, Karten oder Spielstände. „Dazusetzen“ und „Zuschauen“ sind ein Klick mit dem Profil. Ein Tisch erscheint, solange mindestens ein Mensch online ist. Der Host kann am Tisch unter „Host“ einstellen: **Tisch nicht in der Liste zeigen** (privat, nur per Code oder Link). Die Grenze für neue Tische lässt sich zum Testen mit `CREATE_LIMIT` erhöhen (Standard 6 pro 10 Minuten und IP).
@@ -85,9 +86,24 @@ Die Startseite ist ein Hub mit Navigation per URL-Hash (Zurück-Taste und Links 
 - **Einladungslink `/?t=CODE`:** Mit Profil tritt man direkt bei, ohne Profil fragt erst der Profil-Dialog nach dem Namen. Gibt es den Tisch nicht mehr, kommt ein Hinweis und die Startseite.
 - **Spieleliste:** Filter (Favoriten, Spielerzahl, Kurz unter 15 Minuten), Liste oder Kacheln, Favoriten und „zuletzt gespielt“ (nur in diesem Browser: `poker:favs`, `poker:recent`, `poker:view`). Noch nicht gebaute Spiele stehen in `games/planned.js`: `status: 'next'` erscheint weiter ausgegraut mit „Bald“, der übrige Backlog auf der Roadmap. Funktionen erscheinen nie als Spiel. Ab 20 Spielen gibt es eine Suche.
 - **Roadmap:** `games/roadmap.js` beschreibt Etappen für Spiele, Funktionen, Design, Discord und Betrieb; `/roadmap` liefert sie nur angemeldet und ergänzt Backlog-Inhalte automatisch aus `planned.js`. Filter, Fortschritt und Spielregeln sind im Hub sichtbar. Später, große Projekte und erledigte Etappen starten eingeklappt; die Wahl wird lokal gemerkt.
+- **Tickets:** Ideen und Fehler mit Titel, Beschreibung und optionalem Spielbezug sammeln. Suche, Art, Status, Spiel und Sortierung filtern das Board; die Filter werden im Browser gemerkt (`poker:ticketFilters`). „Suche & Filter“ ist einklappbar und startet am Handy geschlossen. Ein Klick auf ein Ticket öffnet die Diskussion. Eigene Tickets lassen sich bearbeiten, eigene Kommentare löschen. Eine Stimme pro Browser lässt sich jederzeit zurücknehmen; Stimmen und Bearbeitungsrechte hängen an einem privaten Cookie, nicht am Anzeigenamen. Andere Geräte oder gelöschte Cookies haben eine neue Identität.
 - **Gerade online:** Zeigt Profilname, Avatar und Standort, bündelt mehrere Tabs/Geräte über denselben normalisierten Namen wie die Bestenliste und bietet den Beitritt zu gelisteten Tischen an. Private Tische verraten weder Spiel noch Code, Bots fehlen. Unter „Ich“ macht „Mich nicht als online zeigen“ die eigene Anwesenheit und den letzten Besuch unsichtbar. Hintergrund-Tabs, fünf Minuten ohne Eingabe und geparkte Verbindungen gelten als kurz weg. Online-Änderungen kommen höchstens alle zwei Sekunden; „Zuletzt online“ bleibt maximal 24 Stunden ausschließlich im Serverspeicher und entfällt nach einem Neustart. Gleichnamige Personen werden bis zur Einführung fester Spieler-IDs zusammengefasst.
 - **Hosten:** Seitenpanel rechts, am Handy eine Leiste von unten – nur mit den Lobby-Feldern des Spiels (`createFields`).
 - **Neues Spiel:** Ein Spielmodul bringt `minPlayers`, `maxPlayers`, `duration` (Minuten) und `art` (SVG, Bausteine in `games/art-kit.js`) mit; ein Test prüft, dass die Zahlen zum Raum passen.
+
+## Ticket-Board
+
+Unter **Tickets → Verwaltung anmelden** mit dem eigenen Admin-Passwort anmelden. Dafür in der `.env` **`TICKET_ADMIN_PASSWORD`** setzen und die App neu starten; die Docker-Compose-Dateien reichen die Variable an die App weiter. Die Vorlage steht in `.env.example`. Ein eigenes Passwort verwenden. Ist die Variable leer, bleibt die Verwaltungsanmeldung ausgeschaltet; normale Tickets, Stimmen, Kommentare und Exporte funktionieren trotzdem. Die Anwendung richtet kein Standard-Admin-Passwort ein.
+
+Die Verwaltung kann jeden Tickettext bearbeiten, den Status auf **Neu, Geplant, In Arbeit, Erledigt oder Abgelehnt** setzen, Kommentare moderieren und Tickets nach Bestätigung endgültig löschen. Statuswechsel bleiben mit Zeit und Namen im Ticket sichtbar. Admin-Sitzungen gelten acht Stunden; Abmelden oder ein geändertes Admin-Passwort entziehen die Rechte. Auch das Abmelden von der gesamten Seite beendet die Admin-Sitzung. Der Anzeigename allein verleiht keine Verwaltungsrechte.
+
+**Markdown exportieren** lädt alle Tickets der aktuellen Filterauswahl herunter, einschließlich weiterer Ergebnisseiten. **Ticket als Markdown** exportiert einen einzelnen Eintrag. Enthalten sind Beschreibung, Status, Autor, Stimmenzahl, Kommentare und Statusverlauf; Browser-Identitäten und Sitzungsdaten fehlen. Nutzereingaben erscheinen im Board als Text und werden im Export maskiert.
+
+Tickets liegen in **`data/tickets.json`** (bzw. `DATA_DIR/tickets.json`) und damit im bestehenden Docker-Volume. Änderungen werden erst nach erfolgreichem atomaren Speichern bestätigt. Parallele Änderungen an einem Ticket werden erkannt; eine veraltete Bearbeitung überschreibt den neuen Stand nicht. Bei einer defekten Ticket-Datei bleibt diese erhalten, das Board meldet den Fehler und die Spiele bleiben nutzbar. Datei in die bestehenden Backups einschließen.
+
+Grenzen: 100 Zeichen im Titel, 4000 in der Beschreibung, 2000 je Kommentar, 100 Kommentare und 200 Stimmen je Ticket, insgesamt 1000 Tickets. Zusätzlich gelten Limits pro IP: 12 neue Tickets und 60 Kommentare pro Stunde, 120 Stimm- bzw. Verwaltungsaktionen in zehn Minuten sowie acht fehlgeschlagene Admin-Anmeldungen in 15 Minuten. Die Schreib-API verlangt JSON, passende Herkunft und einen eigenen Anfrage-Header; Admin- und Browser-Cookies sind signiert, HttpOnly und bei HTTPS Secure.
+
+Technik: `server/tickets.js` kapselt Daten, Rechte und Markdown; `server/ticket-api.js` stellt die geschützte HTTP-API unter `/api/tickets` bereit. `public/tickets.js` bindet das Board in den Hub ein. Kommentare behalten ihren Entwurf beim Abstimmen oder Aktualisieren. Tests: `test/tickets.test.js`, `test/ticket-api.test.js`, `test/ui/tickets.spec.js`.
 
 ## Spiele
 
@@ -130,7 +146,7 @@ Mit **Pfeiltasten/WASD** bewegen, auf dem Handy die **Richtungsknöpfe halten**.
 
 Spielzeit: 10–180 Sekunden, standardmäßig 60. Bei Bröckelboden und Laser-Hüpfer gewinnt der letzte Überlebende; nach Zeitablauf teilen sich die Überlebenden den Sieg. Jede überstandene Platzierung bringt 100 Punkte. Gleichzeitig Ausscheidende erhalten dieselbe Wertung; fallen alle sofort gleichzeitig aus, ist die Partie unentschieden.
 
-Wiederverbinden behält Figur und Punkte. Bei Tabwechsel, geöffnetem Menü oder ausbleibenden Eingaben bleibt die Figur stehen; die Runde läuft weiter. Der Host kann abbrechen oder den Tisch schließen. Ein Server-Neustart lädt die gespeicherten Teilnehmer, Einstellungen und abgeschlossenen Wertungen; die laufende Runde muss der Host neu starten. Im Abendprogramm bleiben bereits abgeschlossene Spiele gewertet. Die nummerierten Päckchen bis einschließlich 8 sind damit gebaut; als Nächstes steht das Ticket-Board auf der Roadmap.
+Wiederverbinden behält Figur und Punkte. Bei Tabwechsel, geöffnetem Menü oder ausbleibenden Eingaben bleibt die Figur stehen; die Runde läuft weiter. Der Host kann abbrechen oder den Tisch schließen. Ein Server-Neustart lädt die gespeicherten Teilnehmer, Einstellungen und abgeschlossenen Wertungen; die laufende Runde muss der Host neu starten. Im Abendprogramm bleiben bereits abgeschlossene Spiele gewertet. Die nummerierten Päckchen bis einschließlich 8 und das Ticket-Board sind gebaut; als Nächstes folgt Design & Töne auf der Roadmap.
 
 | Spiel | Spieler | Kurz |
 | --- | --- | --- |

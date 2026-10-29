@@ -554,6 +554,8 @@ async function boot() {
     if (r.status === 401) { location.href = '/login?next=' + encodeURIComponent(location.pathname + location.search); return; }
     if (r.ok) account = { games: [], ...(await r.json()) };
   } catch { /* offline – Socket.IO versucht es weiter */ }
+  // Der Hub und seine Seiten stehen erst nach den gemeinsamen Skripten bereit.
+  if (document.readyState === 'loading') await new Promise((resolve) => document.addEventListener('DOMContentLoaded', resolve, { once: true }));
   openRoomByUrl();
 }
 boot();

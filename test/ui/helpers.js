@@ -11,14 +11,15 @@ const password = 'BlockA-Testpasswort';
 // Jeder Test erhält einen eigenen Server, freien Port und temporäre Spieldaten.
 // Passwortschutz und Rate-Limits laufen dabei unverändert mit.
 export const test = base.extend({
-  app: async ({}, use) => {
+  ticketAdminPassword: ['', { option: true }],
+  app: async ({ ticketAdminPassword }, use) => {
     const child = spawn(process.execPath, ['--input-type=module', '-e', `
       const { http } = await import('./server/index.js');
       const ready = () => console.log('TEST_READY:' + http.address().port);
       if (http.listening) ready(); else http.once('listening', ready);
     `], {
       cwd: root,
-      env: { ...process.env, PORT: '0', DATA_DIR: mkdtempSync(join(tmpdir(), 'spieleabend-ui-')), POKER_NO_DOTENV: '1', SITE_PASSWORD: password },
+      env: { ...process.env, PORT: '0', DATA_DIR: mkdtempSync(join(tmpdir(), 'spieleabend-ui-')), POKER_NO_DOTENV: '1', SITE_PASSWORD: password, TICKET_ADMIN_PASSWORD: ticketAdminPassword },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     let output = '';
@@ -34,7 +35,7 @@ export const test = base.extend({
           if (match) { clearTimeout(timer); resolve('http://localhost:' + match[1]); }
         });
       });
-      await use({ url, password });
+      await use({ url, password, ticketAdminPassword });
     } finally {
       if (child.exitCode === null && child.signalCode === null) {
         const stopped = new Promise((resolve) => child.once('exit', resolve));

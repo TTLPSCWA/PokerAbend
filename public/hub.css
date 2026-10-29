@@ -234,7 +234,7 @@ button.roadmap-point:hover { background: rgba(201,154,69,.12); }
 .presence-avatars span { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--panel-2); border: 1px solid var(--line); margin-left: -5px; }
 @media (max-width: 899px) { .roadmap-cards { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 640px) {
-  .hub-tabbar { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .hub-tabbar { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .tab-item { font-size: 10px; }
   .presence-desktop { display: none; }
   .presence-mobile { display: block; }

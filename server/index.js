@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { GAMES, DEFAULT_GAME, gameList, gameEvents, PLANNED, plannedGames } from '../games/index.js';
 import { resolvedRoadmap } from '../games/roadmap.js';
 import { createPresence } from './presence.js';
+import { createTicketAPI } from './ticket-api.js';
 import { configureProgram, beginProgram, nextProgramStep, recordProgramResult, publicProgram, restoreProgram, programActive, programGames, programDefaults } from './party-program.js';
 import {
   COOKIE, loadSecret, createAuth, parseCookies, cookieHeader, limiter, bucket,
@@ -37,6 +38,7 @@ const MAX_CONN_PER_IP = Number(process.env.MAX_CONN_PER_IP || 30);
 const MODE = SITE_PASSWORD ? 'password' : 'open';
 const SECRET = loadSecret(DATA_DIR);
 const auth = createAuth({ password: SITE_PASSWORD, secret: SECRET });
+const ticketAPI = createTicketAPI({ dir: DATA_DIR, games: Object.values(GAMES), secret: SECRET, adminPassword: process.env.TICKET_ADMIN_PASSWORD || '', secure: (req) => isSecure(req), trustProxy: TRUST_PROXY });
 if (MODE === 'password') console.log('Anmeldung: Seitenpasswort');
 else console.warn('⚠ Kein SITE_PASSWORD eingerichtet – jeder mit dem Link kommt auf die Seite. Nur lokal zum Testen!');
 
@@ -90,6 +92,7 @@ app.post('/login', express.urlencoded({ extended: false, limit: '2kb' }), (req, 
 
 app.post('/logout', (req, res) => {
   res.setHeader('Set-Cookie', cookieHeader('', { secure: isSecure(req), maxAgeDays: 0 }));
+  ticketAPI.clearAdmin(req, res);
   res.redirect(303, '/login');
 });
 
@@ -117,6 +120,7 @@ app.get('/roadmap', (_req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.json(resolvedRoadmap());
 });
+app.use('/api/tickets', ticketAPI.router);
 // Bestenliste über alle Abende: ?game=maumau&period=all|2026-10 (nur angemeldet)
 const GAME_INFO = Object.fromEntries(Object.values(GAMES).map((g) => {
   const r = g.create('INFO', {}, () => {}); const info = { id: g.id, name: g.name, lowWins: !!r.opts?.lowWins, scoreLabel: r.opts?.scoreLabel || 'Chips' }; r.dispose?.();

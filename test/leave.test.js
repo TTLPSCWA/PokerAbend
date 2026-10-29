@@ -7,17 +7,24 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { io } from 'socket.io-client';
 
-const PORT = 4350 + Math.floor(Math.random() * 50);
-const URL = `http://localhost:${PORT}`;
+let URL;
 const dataDir = mkdtempSync(join(tmpdir(), 'poker-leave-'));
 let server;
 before(async () => {
-  server = spawn(process.execPath, ['server/index.js'], {
-    env: { ...process.env, PORT: String(PORT), DATA_DIR: dataDir, POKER_NO_DOTENV: '1', SITE_PASSWORD: '', CREATE_LIMIT: '500' }, stdio: 'pipe',
+  server = spawn(process.execPath, ['--input-type=module', '-e', `
+    const { http } = await import('./server/index.js');
+    const ready = () => console.log('LEAVE_READY:' + http.address().port);
+    if (http.listening) ready(); else http.once('listening', ready);
+  `], {
+    env: { ...process.env, PORT: '0', DATA_DIR: dataDir, POKER_NO_DOTENV: '1', SITE_PASSWORD: '', CREATE_LIMIT: '500' }, stdio: 'pipe',
   });
+  let output = '';
   await new Promise((res, rej) => {
-    server.stdout.on('data', (d) => { if (String(d).includes('läuft')) res(); });
-    server.on('exit', (c) => rej(new Error('Server beendet: ' + c)));
+    const timer = setTimeout(() => rej(new Error('Testserver startet nicht: ' + output)), 12000);
+    server.stderr.on('data', (d) => { output += d; });
+    server.stdout.on('data', (d) => { output += d; const match = output.match(/LEAVE_READY:(\d+)/); if (match) { URL = 'http://localhost:' + match[1]; clearTimeout(timer); res(); } });
+    server.once('error', (e) => { clearTimeout(timer); rej(e); });
+    server.once('exit', (c) => { clearTimeout(timer); rej(new Error(`Server beendet (${c}): ${output}`)); });
   });
 });
 after(() => server.kill());

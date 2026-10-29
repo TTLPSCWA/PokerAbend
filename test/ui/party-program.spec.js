@@ -59,6 +59,10 @@ test('Playlist: Vorlagen, Regeln, Wechsel im selben Raum, Reconnect, Gesamtwertu
   try {
     await page.reload({ waitUntil: 'commit' });
     await expect.poll(() => typeof releaseKit).toBe('function');
+    await expect.poll(() => page.evaluate(() => account.games.length)).toBeGreaterThan(0);
+    // Auch eine vorzeitig eintreffende Wiederanmeldung muss sicher warten;
+    // der normale Seitenstart wartet inzwischen selbst auf die Hub-Skripte.
+    await page.evaluate(() => openRoomByUrl());
     await expect.poll(() => page.evaluate(() => lastState?.game)).toBe('zahlenzoo');
     await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
     expect(await page.evaluate(() => Object.hasOwn(gameLoads, 'zahlenzoo'))).toBe(false);

@@ -7,7 +7,7 @@ import { PLANNED } from './planned.js';
 import { GAMES } from './index.js';
 
 const punkt = (id, titel, art, text, erledigt = false) => ({ id, titel, art, text, ...(erledigt ? { erledigt: true } : {}) });
-const liste = (prefix, art, rows) => rows.map(([titel, text], i) => punkt(`${prefix}-${i + 1}`, titel, art, text));
+const liste = (prefix, art, rows, erledigt = false) => rows.map(([titel, text], i) => punkt(`${prefix}-${i + 1}`, titel, art, text, erledigt));
 const spiele = (ids) => ids.map((id) => punkt(id, GAMES[id].name, 'spiel', GAMES[id].description, true));
 
 export const ROADMAP = [
@@ -16,11 +16,11 @@ export const ROADMAP = [
     punkt('gerade-online', 'Gerade online', 'funktion', 'Sehen, wer da ist, zuschauen oder mitspielen – mit privater Sichtbarkeit.', true),
     punkt('backlog-ergaenzen', 'Fehlende Spiele nachtragen', 'funktion', 'Der Backlog enthält auch die bisher fehlenden Spiele und Party-Funktionen.', true),
   ] },
-  { id: 'ticket-board', titel: 'Ticket-Board – Ideen & Fehler melden', satz: 'Ideen und Fehler direkt im Hub sammeln und gemeinsam bewerten.', stufe: 'jetzt', punkte: liste('tickets', 'funktion', [
+  { id: 'ticket-board', titel: 'Ticket-Board – Ideen & Fehler melden', satz: 'Ideen und Fehler direkt im Hub sammeln und gemeinsam bewerten.', stufe: 'erledigt', datum: '2026-10-29', punkte: liste('tickets', 'funktion', [
     ['Tickets erstellen', 'Ideen und Fehler im Hub erfassen, abstimmen und kommentieren.'],
     ['Status & Verwaltung', 'Neu, geplant, in Arbeit, erledigt oder abgelehnt; ein Admin verwaltet die Tickets.'],
     ['Markdown-Export', 'Tickets zur Weiterarbeit als Markdown exportieren.'],
-  ]) },
+  ], true) },
   { id: 'party-modi', titel: 'Päckchen 7 – Party-Modi', satz: 'Mehrere Partyspiele werden zu einem gemeinsamen Programm.', stufe: 'erledigt', datum: '2026-10-29', paeckchen: '7', punkte: [
     punkt('party-mix', 'Party-Mix', 'funktion', 'Gewählte Partyspiele in zufälliger Reihenfolge, gleicher Raum und laufende Gesamtwertung.', true),
     punkt('party-turnier', 'Party-Turnier', 'funktion', 'Ein Turnier über mehrere Spiele mit Platzierungspunkten und Siegerehrung.', true),
@@ -28,7 +28,7 @@ export const ROADMAP = [
     punkt('team-duell', 'Team-Duell', 'funktion', 'Aufteilung in zwei feste Teams mit gemeinsamer Wertung bei geeigneten Partyspielen.', true),
   ] },
   { id: 'zeichnen', titel: 'Päckchen 7b – Zeichnen', satz: 'Eigene Bilder, überraschende Beschriftungen und gemeinsames Raten.', stufe: 'erledigt', datum: '2026-10-29', paeckchen: '7b', punkte: [punkt('zeichenwerkzeug', 'Zeichenwerkzeug', 'funktion', 'Stift, Farben, Radierer und Rückgängig mit Maus, Stift oder Finger.', true), ...spiele(['kritzelpost', 'bildunterschrift', 'malen-raten'])] },
-  { id: 'design-toene', titel: 'Design & Töne', satz: 'Jedes Spiel bekommt mehr Atmosphäre und passt besser auf jeden Bildschirm.', stufe: 'spaeter', punkte: liste('design', 'design', [
+  { id: 'design-toene', titel: 'Design & Töne', satz: 'Jedes Spiel bekommt mehr Atmosphäre und passt besser auf jeden Bildschirm.', stufe: 'jetzt', punkte: liste('design', 'design', [
     ['Themen pro Spiel', 'Bilder, kurze Animationen und passende Töne für die verschiedenen Spiele.'],
     ['Anpassbare Spielfelder', 'Das Spielfeld passt sich der Bildschirmgröße an; im Querformat gibt es eine eigene Anordnung.'],
     ['Kartengröße unter „Ich“', 'Normal, groß oder sehr groß pro Spieler einstellen.'],
