@@ -14,7 +14,7 @@ function setup(game, settings = {}) {
 }
 
 // Spiele ohne Computer-Mitspieler: Wer bin ich? (Bots könnten die Fragen nicht sinnvoll beantworten)
-const NO_BOTS = ['wer-bin-ich'];
+const NO_BOTS = ['wer-bin-ich', 'kritzelpost', 'bildunterschrift', 'malen-raten'];
 test('Spiele ohne Bots lehnen „Bot hinzufügen“ ab', () => {
   for (const game of NO_BOTS) {
     const { room, host } = setup(game);

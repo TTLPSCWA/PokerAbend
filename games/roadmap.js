@@ -27,7 +27,7 @@ export const ROADMAP = [
     punkt('eigene-playlist', 'Eigene Playlist', 'funktion', 'Reihenfolge, Rundenzahl und Regeln pro Spiel; Vorlagen im Browser und Fortschritt am Tisch speichern.', true),
     punkt('team-duell', 'Team-Duell', 'funktion', 'Aufteilung in zwei feste Teams mit gemeinsamer Wertung bei geeigneten Partyspielen.', true),
   ] },
-  { id: 'zeichnen', titel: 'Päckchen 7b – Zeichnen', satz: 'Eigene Bilder, überraschende Beschriftungen und gemeinsames Raten.', stufe: 'jetzt', paeckchen: '7b', punkte: [] },
+  { id: 'zeichnen', titel: 'Päckchen 7b – Zeichnen', satz: 'Eigene Bilder, überraschende Beschriftungen und gemeinsames Raten.', stufe: 'erledigt', datum: '2026-10-29', paeckchen: '7b', punkte: [punkt('zeichenwerkzeug', 'Zeichenwerkzeug', 'funktion', 'Stift, Farben, Radierer und Rückgängig mit Maus, Stift oder Finger.', true), ...spiele(['kritzelpost', 'bildunterschrift', 'malen-raten'])] },
   { id: 'design-toene', titel: 'Design & Töne', satz: 'Jedes Spiel bekommt mehr Atmosphäre und passt besser auf jeden Bildschirm.', stufe: 'spaeter', punkte: liste('design', 'design', [
     ['Themen pro Spiel', 'Bilder, kurze Animationen und passende Töne für die verschiedenen Spiele.'],
     ['Anpassbare Spielfelder', 'Das Spielfeld passt sich der Bildschirmgröße an; im Querformat gibt es eine eigene Anordnung.'],
@@ -56,7 +56,7 @@ export const ROADMAP = [
     ['Paket-Metadaten', 'package.json-Beschreibung und Versionsnummern aktuell halten.'],
   ]) },
   { id: 'englisch', titel: 'Englisch', satz: 'Sprache pro Spieler wechseln, einschließlich der Party-Inhalte.', stufe: 'spaeter', punkte: [punkt('englische-seite', 'Englische Oberfläche & Inhalte', 'funktion', 'Die ganze Seite übersetzen und englische Party-Inhalte anbieten.')] },
-  { id: 'echtzeit', titel: 'Päckchen 8 – Echtzeit', satz: 'Alle bewegen sich gleichzeitig im gemeinsamen Spielfeld.', stufe: 'spaeter', paeckchen: '8', punkte: [] },
+  { id: 'echtzeit', titel: 'Päckchen 8 – Echtzeit', satz: 'Alle bewegen sich gleichzeitig im gemeinsamen Spielfeld.', stufe: 'jetzt', paeckchen: '8', punkte: [] },
   { id: 'discord-login', titel: 'Discord-Login', satz: 'Optional mit dem eigenen Discord-Konto wiederkommen.', stufe: 'spaeter', punkte: liste('discord', 'discord', [
     ['Optionaler Discord-Login', 'Name und Bild aus Discord übernehmen und das Konto wiedererkennen.'],
     ['Tisch-Nachricht', 'Im Discord Bescheid geben, wenn jemand einen Tisch aufmacht.'],

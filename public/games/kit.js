@@ -279,7 +279,7 @@ function kitGame(def) {
     const help = '<button class="help-btn" data-kit="help" aria-label="Kurzregeln und Hausregeln" title="Kurzregeln">?</button>';
     const center = S.phase === 'lobby' ? lobbyHTML() : def.main(S, { ring });
     main.classList.toggle('has-program', !!S.partyProgram);
-    main.innerHTML = help + programBannerHTML(S) + (ring ? ringHTML(center) : center) + (S.phase === 'over' && S.result && resultClosed !== S.roundNo ? resultHTML() : '');
+    if (!def.keepMain?.(S)) main.innerHTML = help + programBannerHTML(S) + (ring ? ringHTML(center) : center) + (S.phase === 'over' && S.result && resultClosed !== S.roundNo ? resultHTML() : '');
 
     // Aktionsleiste
     const baseDockKey = def.dockKey ? def.dockKey(S, myTurn) : null;

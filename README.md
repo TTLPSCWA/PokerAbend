@@ -104,7 +104,19 @@ An einem Party-Tisch erst mitspielen, dann unter **Host → Abendprogramm planen
 
 Die Teilnehmer bleiben während des Programms fest; neue Gäste können zuschauen und beim nächsten Programm mitspielen. Der Server prüft Spielerzahlen, Regeln und Teamzuordnung vor dem Start. Spiele ohne Bot-Unterstützung brauchen menschliche Mitspieler. Host-Wechsel, Wiederverbinden und private Tische funktionieren weiterhin. **Programm beenden** ist zwischen Partien möglich; eine laufende Partie kann der Host vorher wie gewohnt abbrechen. Abgebrochene Partien zählen nicht und lassen sich am gleichen Programmplatz wiederholen.
 
-Programm, Einstellungen und bereits vergebene Programmpunkte werden im Raum gespeichert. Nach einem Server-Neustart setzt der Host fort; nur die noch nicht abgeschlossene Partie muss erneut gespielt werden. Die einzelnen Spiele werten zusätzlich wie bisher für die Bestenliste. Die Programmwertung selbst erzeugt dort keine weiteren Einträge. Danach ist laut Roadmap Päckchen 7b (Zeichnen) dran.
+Programm, Einstellungen und bereits vergebene Programmpunkte werden im Raum gespeichert. Nach einem Server-Neustart setzt der Host fort; nur die noch nicht abgeschlossene Partie muss erneut gespielt werden. Die einzelnen Spiele werten zusätzlich wie bisher für die Bestenliste. Die Programmwertung selbst erzeugt dort keine weiteren Einträge.
+
+### Päckchen 7b: Zeichenspiele
+
+**Kritzelpost**, **Bildunterschrift** und **Malen & Raten** stehen unter Party Spiele und in den Abendprogrammen bereit, jeweils für **3–12 Menschen**. Bots sind für diese Spiele nicht verfügbar.
+
+Der gemeinsame Zeichenbereich unterstützt Maus, Stift und Finger: sieben Farben einschließlich weißem Radierer, vier Stiftstärken, Rückgängig und Leeren mit Bestätigung. Bilder bestehen aus höchstens 60 Strichen und 800 Zeichenpunkten; sie werden als geprüfte Vektoren übertragen. Nach dem Neuladen bleibt der zuletzt vom Server bestätigte Entwurf erhalten. Ein Server-Neustart setzt wie bei den anderen Partyspielen auf die nächste neu zu startende Partie zurück.
+
+- **Kritzelpost:** Jeder beginnt eine Kette mit einem Begriff oder Satz. Die Ketten wandern weiter: zeichnen, beschreiben, zeichnen … Jeder bearbeitet jede Kette einmal und sieht dabei nur den letzten Beitrag. Am Ende sind alle Ketten mit ihren Autoren sichtbar. Ein nicht leerer Beitrag zählt 100 Punkte; die gemeinsame Geschichte steht im Mittelpunkt. Eine bis drei Runden, standardmäßig eine.
+- **Bildunterschrift:** Reihum zeichnet eine Person einen geheimen Begriff. Danach schreiben die anderen verdeckte Bildunterschriften. Alle stimmen für einen fremden Beitrag; die Autoren werden erst zur Auflösung gezeigt. Jede Stimme bringt 100 Punkte, eine nicht leere Zeichnung ebenfalls 100. Zuschauer können bei entsprechender Host-Einstellung abstimmen. Standardmäßig drei Runden.
+- **Malen & Raten:** Nur die zeichnende Person erhält den Begriff. Alle anderen sehen die Zeichnung und geben private Vermutungen ab. Die erste richtige Lösung bringt 300 Punkte, danach jeweils 25 weniger (mindestens 100); Zeichnende bekommen 100 je richtiger Lösung. Großschreibung, Leerzeichen, Satzzeichen und ausgeschriebene Umlaute werden toleriert. Sind alle fertig oder ist die Zeit abgelaufen, wird der Begriff aufgedeckt. Der Zeichenplatz wechselt jede Runde; standardmäßig sechs Runden.
+
+Der Host kann Zeit, Runden und Punkte-Ziel einstellen, bei Bedarf weiterschalten und für Bildunterschrift/Malen & Raten eigene Begriffe ergänzen. Leere oder fehlende Beiträge bei Zeitablauf blockieren den Ablauf nicht. Abbrechen, Host-Wechsel, Zuschauer und Wiederverbinden nutzen die vorhandene Raumverwaltung. Als Nächstes folgt Päckchen 8 (Echtzeit).
 
 | Spiel | Spieler | Kurz |
 | --- | --- | --- |
@@ -144,6 +156,9 @@ Programm, Einstellungen und bereits vergebene Programmpunkte werden im Raum gesp
 | Tickendes Paket (Party Spiele) | 3–8 | Paket mit unbekannter Zündzeit wandert reihum; Wort mit verlangtem Buchstaben nennen. Platzt es, gibt es einen Minuspunkt; wenigste Minuspunkte gewinnen |
 | Werwolf (Party Spiele) | 6–18 | Server als Spielleiter: Werwölfe, Seherin, Hexe, Amor, Jäger. Nacht, Tag, Abstimmung; Rollen nur an den jeweiligen Spieler, Tote sehen alles; Besprechen per Voice am Tisch |
 | Wer bin ich? (Party Spiele) | 3–10 | Jeder trägt einen geheimen Begriff „auf der Stirn“ (gelber Zettel): alle sehen ihn, nur man selbst nicht. Reihum Ja/Nein-Fragen (per Voice, optional als Text), die anderen antworten per Knopf, die Mehrheit gilt; Raten mit Toleranz für Umlaute, Artikel und Tippfehler, sonst Abstimmung. Begriffe gegenseitig, aus 8 Kategorien (je ≥ 60) oder eigene Liste. Keine Bots. Der eigene Begriff geht nie an den eigenen Browser, bis er erraten ist |
+| Kritzelpost (Party Spiele) | 3–12 | Begriff, Bild und Beschreibung wandern verdeckt durch die Runde; am Ende alle Ketten gemeinsam entdecken |
+| Bildunterschrift (Party Spiele) | 3–12 | Gemeinsam eine Zeichnung ansehen, verdeckte Bildunterschriften schreiben und für den Favoriten stimmen |
+| Malen & Raten (Party Spiele) | 3–12 | Reihum einen geheimen Begriff zeichnen; alle anderen raten gleichzeitig, richtige Lösungen bringen Punkte |
 
 Die Startseite ist ein Hub (siehe „Startseite“ weiter unten). Die Kategorie (`karten`, `wuerfel`, `brett`, `party`), Spielerzahl, Dauer und das Spielbild legt jedes Spiel in seinem `games/<spiel>/index.js` fest.
 
@@ -153,7 +168,7 @@ Die genauen Regeln stehen im Spiel unter „Regeln“ und oben in `games/<spiel>
 
 Im Host-Menü unter „Mit Bots spielen (optional)“ auf **Bot hinzufügen** klicken; bei Poker im Reiter „Spiel“. Standardmäßig sind keine Bots dabei. Bots sitzen automatisch am Tisch, du selbst trittst wie gewohnt bei. Hinzufügen und Entfernen gehen zwischen den Runden, die Runde startet weiterhin der Host. Bots bleiben bei Spielwechsel und Server-Neustart erhalten und werden als „Bot 1“, „Bot 2“ usw. angezeigt. Wird beim Spielwechsel der Tisch zu klein, schauen überzählige Spieler zu.
 
-Alle vorhandenen Spiele haben eine Bot-Strategie in `games/bots.js`. Poker schätzt mit zufällig simulierten unbekannten Karten seine Chancen; die anderen Spiele nutzen einfache Grundstrategien, etwa Farbmehrheiten, Schlagen, passende Phasen, Treffer-Nachbarschaften oder die offene Blackjack-Dealerkarte. Die Bots kennen keine verdeckten Gegnerkarten und sind keine Turnier-KI. Der automatische Bot-Treiber pausiert, wenn kein Mensch verbunden ist. Bots können keine Hosts werden; sie zählen im Tischstand, aber nicht in der übergreifenden Bestenliste. Poker-Bots kaufen nach einem verlorenen Stack nicht selbst nach – der Host kann Chips korrigieren oder den Bot zwischen den Händen ersetzen.
+Die unterstützten Spiele haben eine Bot-Strategie in `games/bots.js`; „Wer bin ich?“ und die drei Zeichenspiele brauchen Menschen. Poker schätzt mit zufällig simulierten unbekannten Karten seine Chancen; die anderen Spiele nutzen einfache Grundstrategien, etwa Farbmehrheiten, Schlagen, passende Phasen, Treffer-Nachbarschaften oder die offene Blackjack-Dealerkarte. Die Bots kennen keine verdeckten Gegnerkarten und sind keine Turnier-KI. Der automatische Bot-Treiber pausiert, wenn kein Mensch verbunden ist. Bots können keine Hosts werden; sie zählen im Tischstand, aber nicht in der übergreifenden Bestenliste. Poker-Bots kaufen bei erlaubtem Nachkaufen automatisch nach.
 
 ### Regeln anpassen
 

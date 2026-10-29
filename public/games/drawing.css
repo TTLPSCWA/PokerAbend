@@ -1,0 +1,23 @@
+/* Gemeinsamer, im Querformat und auf schmalen Handys benutzbarer Zeichenbereich. */
+.draw-editor { width:100%; max-width:780px; display:grid; gap:8px; text-align:left; }
+.draw-editor canvas,.draw-picture { display:block; width:100%; height:auto; aspect-ratio:1000/650; border-radius:12px; background:#fff; border:2px solid #b7c4bb; }
+.draw-editor canvas { touch-action:none; cursor:crosshair; }
+.draw-tools { display:flex; align-items:center; flex-wrap:wrap; gap:6px; }
+.draw-tools .draw-color { width:44px; height:44px; border:3px solid #a3b5a9; border-radius:50%; background:var(--ink); cursor:pointer; }
+.draw-tools .draw-color[aria-pressed=true] { border-color:var(--gold); outline:2px solid var(--gold); outline-offset:1px; }
+.draw-tools label { display:flex; align-items:center; gap:6px; font-size:.8rem; }
+.draw-tools select { width:72px; min-height:44px; padding:6px; }
+.draw-tools .btn { min-height:44px; padding:8px 12px; }
+.draw-editor small,.draw-empty { color:var(--muted); }
+.draw-picture { max-width:780px; margin:6px auto; }
+.draw-chains { width:100%; display:grid; gap:16px; text-align:left; }
+.draw-chains details { background:#ffffff09; border:1px solid #ffffff25; border-radius:12px; padding:12px; }
+.draw-chains summary { cursor:pointer; font-weight:700; padding:10px 0; }
+.draw-chains ol { padding-left:24px; display:grid; gap:18px; }
+.draw-chains li { min-width:0; overflow-wrap:anywhere; }
+.draw-answers { display:grid; gap:10px; width:100%; }
+.draw-answers .btn { white-space:normal; overflow-wrap:anywhere; min-height:48px; }
+.draw-results { width:100%; text-align:left; display:grid; gap:12px; padding-left:24px; }
+.draw-results li span { display:block; color:var(--muted); font-size:.85rem; }
+.draw-solution { overflow-wrap:anywhere; }
+@media(max-width:640px) { .draw-tools { gap:5px; } .draw-tools .draw-color { width:44px; height:44px; } .draw-editor { gap:6px; } }

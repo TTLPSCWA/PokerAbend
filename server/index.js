@@ -18,6 +18,7 @@ import {
 import { createCodes, normalize } from './codes.js';
 import { createLeaderboard } from './leaderboard.js';
 import { addBot, removeBot, createBotRunner } from './bots.js';
+import { BOTS } from '../games/bots.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -258,6 +259,7 @@ function switchRoom(old, game, settings = {}, prepare = null) {
   const isBot = (id) => next.players.get(id)?.bot;
   let seat = 0;
   for (const id of [...playing.filter((id) => !isBot(id)), ...playing.filter(isBot)]) {
+    if (isBot(id) && !BOTS[game.id]) continue;
     try { if (next.table) next.sit(id, seat++); else next.sit(id); } catch { /* Tisch voll: schaut zu */ }
   }
   const seated = (id) => (next.table ? next.table.seats.some((s) => s?.id === id) : next.seats.includes(id));

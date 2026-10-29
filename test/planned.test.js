@@ -31,7 +31,7 @@ test('Spiel-Einträge haben alle Pflichtfelder', () => {
 });
 
 test('Funktions-Einträge: id, name, type, paeckchen, status, beschreibung – und sie sind keine Spiele', () => {
-  assert.ok(features.length >= 5);
+  assert.ok(features.length >= 4);
   for (const f of features) {
     assert.match(f.id, /^[a-z0-9-]{1,30}$/);
     assert.ok(f.name && f.type === 'feature' && PACKAGES.includes(f.paeckchen) && ['next', 'planned'].includes(f.status), f.id);
@@ -54,7 +54,6 @@ test('IDs sind eindeutig und kollidieren nicht mit gebauten Spielen oder Spiel-E
 
 test('Alle Spiele und Funktionen der Liste sind eingetragen – im richtigen Päckchen', () => {
   const want = {
-    '7b': ['zeichenwerkzeug', 'kritzelpost', 'bildunterschrift', 'malen-raten'],
     8: ['broeckelboden', 'kronenjagd', 'laser-huepfer'],
     spaeter: ['omaha-hi-lo', 'seven-card-stud', 'short-deck', 'stichmeister', 'exploding-deck', 'risiko-wuerfeln', 'wuerfelduell', 'wuerfeljagd', 'monsterwuerfel', 'labyrinth-brett', 'story-chaos', 'regelwahnsinn', 'jaeger-schatten', 'infektionsjagd', 'letzter-schutzplatz', 'kistenchaos', 'survival-abend', 'chaos-modus', 'backgammon', 'scrabble', 'hearts', 'five-card-draw', 'hex', 'schatzinsel', 'gummiband-challenge', 'geschenkfaenger', 'rhythmus-rausch', 'puzzle-panik', 'wortjagd', 'stillgestanden', 'schatzgraeber', 'minenlauf', 'labyrinth-chaos', 'schubsarena', 'scheinwerfer-flucht', 'doppelagent', 'luegenbaron', 'brueckenroulette', 'wuerfel-auktion', 'zahlenreihe', 'modifikatoren'],
     gross: ['skat', 'doppelkopf', 'scotland-yard', 'schach', 'staedtehandel', 'gebietskampf', 'party-brett'],
@@ -74,6 +73,6 @@ test('Nur das nächste Päckchen steht auf „next“, alles andere auf „plann
   const next = PLANNED.filter((e) => e.status === 'next');
   assert.ok(next.length >= 1);
   assert.equal(new Set(next.map((e) => e.paeckchen)).size, 1, 'nur ein Päckchen gleichzeitig');
-  assert.deepEqual(next.map((e) => e.id), ['zeichenwerkzeug', 'kritzelpost', 'bildunterschrift', 'malen-raten'], 'Päckchen 7 ist fertig, Päckchen 7b ist dran');
+  assert.deepEqual(next.map((e) => e.id), ['broeckelboden', 'kronenjagd', 'laser-huepfer'], 'Päckchen 7b ist fertig, Päckchen 8 ist dran');
   assert.ok(PLANNED.filter((e) => e.status !== 'next').every((e) => e.status === 'planned'));
 });

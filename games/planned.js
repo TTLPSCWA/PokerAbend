@@ -12,7 +12,7 @@
 // Ablauf: Wird ein Spiel gebaut, kommt es nach games/<id>/, wird in games/index.js registriert und fliegt hier raus.
 // Bei jedem fertigen Päckchen/jeder fertigen Funktion auch games/roadmap.js pflegen:
 // Etappe mit dem Commit-Datum auf 'erledigt', die nächste auf 'jetzt' setzen.
-// Päckchen 7 (Mix, Turnier, Playlist, Team-Duell) ist fertig; als Nächstes folgt 7b (Zeichnen).
+// Päckchen 7b (Zeichnen) ist fertig; als Nächstes folgt Päckchen 8 (Echtzeit).
 // Ist ein Päckchen fertig, werden die Einträge des nächsten Päckchens auf status 'next' gesetzt. (Fertig: Päckchen 2b – Schlagfertig, Wer hat das gesagt? – Päckchen 4 – Mogeln, Präsident, Durak, Omaha – Päckchen 5 – Würfelpoker, Lügenwürfel, Chicago, Reversi, Dame, Domino – und Päckchen 6 – Zahlenzoo, Gedächtnisküche, Pfeilfieber, Sortierstation, Tickendes Paket, Werwolf samt Bauart-B-Baustein.)
 import { fan, cardsChip, dice, stairs, swim, bubbles, numberLine, flapBox, battle, mill, connect4, pawns, reversi, checkers, dominoes, hexBoard, chess, territory, glyph } from './art-kit.js';
 
@@ -89,24 +89,9 @@ export const PLANNED = [
   funktion({ id: 'chaos-modus', name: 'Chaos-Modus', paeckchen: 'spaeter', beschreibung: 'Zufällig gewählte Zusatzregeln verändern jede Partie; alle sehen die aktiven Regeln vor dem Start.' }),
 
 
-  // ---------- Päckchen 7b (als Nächstes; Party-Modi aus Päckchen 7 sind fertig) ----------
-  funktion({ id: 'zeichenwerkzeug', name: 'Zeichenwerkzeug', status: 'next', paeckchen: '7b', beschreibung: 'Stift, Farben, Radierer und Rückgängig als gemeinsamer Baustein für die Zeichenspiele.' }),
-  spiel({ id: 'kritzelpost', name: 'Kritzelpost', status: 'next', paeckchen: '7b', category: 'party', bauart: 'A', minPlayers: 3, maxPlayers: 12, duration: 15,
-    description: 'Ein Begriff wandert als Bild und Beschreibung durch die Runde.', art: glyph('pen'),
-    rules: ['Alle beginnen mit einem eigenen kurzen Begriff oder Satz.', 'Danach wechseln Zeichnen und Beschreiben, sichtbar ist nur der letzte Beitrag.', 'Zum Schluss werden alle entstandenen Ketten gemeinsam aufgedeckt.'],
-  }),
-  spiel({ id: 'bildunterschrift', name: 'Bildunterschrift', status: 'next', paeckchen: '7b', category: 'party', bauart: 'A', minPlayers: 3, maxPlayers: 12, duration: 15,
-    description: 'Lustige Beschriftungen zu selbst gezeichneten Bildern finden.', art: glyph('pen'),
-    rules: ['In jeder Runde entsteht eine eigene Zeichnung als gemeinsame Vorlage.', 'Alle anderen schreiben verdeckt eine passende oder lustige Bildunterschrift.', 'Die Beiträge werden aufgedeckt und die Runde stimmt über ihre Favoriten ab.'],
-  }),
-  spiel({ id: 'malen-raten', name: 'Malen & Raten', status: 'next', paeckchen: '7b', category: 'party', bauart: 'A', minPlayers: 3, maxPlayers: 12, duration: 15,
-    description: 'Eine Person zeichnet einen Begriff, die anderen raten gleichzeitig.', art: glyph('pen'),
-    rules: ['Eine Person bekommt einen geheimen Begriff und zeichnet ihn ohne Buchstaben.', 'Alle anderen geben innerhalb des Zeitlimits ihre Vermutungen ab.', 'Richtige Lösungen und gelöste Zeichnungen bringen Punkte; der Zeichenplatz wechselt.'],
-  }),
-
   // ---------- Päckchen 8 (Echtzeit, Bauart C) ----------
   spiel({
-    id: 'broeckelboden', name: 'Bröckelboden', category: 'party', bauart: 'C', minPlayers: 2, maxPlayers: 8, duration: 5, paeckchen: '8',
+    id: 'broeckelboden', status: 'next', name: 'Bröckelboden', category: 'party', bauart: 'C', minPlayers: 2, maxPlayers: 8, duration: 5, paeckchen: '8',
     description: 'Der Boden bröckelt unter den Füßen weg – wer sich am längsten hält, gewinnt. (Auch Technik-Test für Echtzeit.)',
     rules: [
       'Alle stehen gleichzeitig auf einer Fläche aus Feldern und bewegen sich in Echtzeit.',
@@ -118,7 +103,7 @@ export const PLANNED = [
     art: glyph('floor', '#7A5238'),
   }),
   spiel({
-    id: 'kronenjagd', name: 'Kronenjagd', category: 'party', bauart: 'C', minPlayers: 2, maxPlayers: 8, duration: 5, paeckchen: '8',
+    id: 'kronenjagd', status: 'next', name: 'Kronenjagd', category: 'party', bauart: 'C', minPlayers: 2, maxPlayers: 8, duration: 5, paeckchen: '8',
     description: 'Eine Krone liegt in der Arena – wer sie am längsten trägt, gewinnt.',
     rules: [
       'Alle bewegen sich in Echtzeit in einer Arena; eine Krone liegt in der Mitte.',
@@ -130,7 +115,7 @@ export const PLANNED = [
     art: glyph('crown', '#5A468F'),
   }),
   spiel({
-    id: 'laser-huepfer', name: 'Laser-Hüpfer', category: 'party', bauart: 'C', minPlayers: 2, maxPlayers: 8, duration: 5, paeckchen: '8',
+    id: 'laser-huepfer', status: 'next', name: 'Laser-Hüpfer', category: 'party', bauart: 'C', minPlayers: 2, maxPlayers: 8, duration: 5, paeckchen: '8',
     description: 'Laserstrahlen schwingen über den Boden – wer rechtzeitig springt, bleibt im Spiel.',
     rules: [
       'Alle stehen auf derselben Fläche, ein Laser fegt in Echtzeit darüber – wie ein Springseil.',
