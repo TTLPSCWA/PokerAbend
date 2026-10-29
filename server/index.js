@@ -220,6 +220,7 @@ function load() {
 
 // Meldungen eines Raums: mit data.to nur an diesen Spieler (z. B. Anstupsen), sonst alle neu zeichnen
 function onRoomChange(room, kind, data) {
+  if (kind === 'frame') { broadcastFrame(room); return; }
   // Ergebnis einer Partie: in die Bestenliste (gespeichert wird mit dem nächsten Speichern)
   if (kind === 'result') {
     recordProgramResult(room);
@@ -236,6 +237,12 @@ function onRoomChange(room, kind, data) {
   broadcast(room);
 }
 const snapshotOf = (r) => ({ ...r.snapshot(), game: r.game, code: r.code, unlisted: !!r.unlisted, ...(r.partyProgram ? { partyProgram: r.partyProgram } : {}) });
+
+function broadcastFrame(room) {
+  if (!room.frame || rooms.get(room.code) !== room) return;
+  const frame = room.frame();
+  for (const p of room.players.values()) if (p.socketId && !p.kicked) io.to(p.socketId).emit('arena', frame);
+}
 
 // ---------- Spiel wechseln (gleicher Raum, gleicher Code, alle bleiben drin) ----------
 // Gleiche Spieler-IDs und Tokens, damit Reconnect weiter klappt. Wer mitgespielt hat, sitzt wieder.
@@ -424,7 +431,7 @@ io.on('connection', (socket) => {
         }
         const res = fn(payload || {}, room, player);
         const r = res?.closed ? null : (res?.room || room);
-        if (r) { r.afterChange(); broadcast(r); if (!r.busy) save(); }
+        if (r) { r.afterChange(); if (!res?.frameOnly) broadcast(r); if (!r.busy) save(); }
         cb({ ok: true, ...(res?.reply || {}) });
       } catch (e) {
         cb({ ok: false, error: e.message, ...(e.extra || {}) }); // extra: z. B. ein Namensvorschlag

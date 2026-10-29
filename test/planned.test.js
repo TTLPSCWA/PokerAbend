@@ -54,7 +54,6 @@ test('IDs sind eindeutig und kollidieren nicht mit gebauten Spielen oder Spiel-E
 
 test('Alle Spiele und Funktionen der Liste sind eingetragen – im richtigen Päckchen', () => {
   const want = {
-    8: ['broeckelboden', 'kronenjagd', 'laser-huepfer'],
     spaeter: ['omaha-hi-lo', 'seven-card-stud', 'short-deck', 'stichmeister', 'exploding-deck', 'risiko-wuerfeln', 'wuerfelduell', 'wuerfeljagd', 'monsterwuerfel', 'labyrinth-brett', 'story-chaos', 'regelwahnsinn', 'jaeger-schatten', 'infektionsjagd', 'letzter-schutzplatz', 'kistenchaos', 'survival-abend', 'chaos-modus', 'backgammon', 'scrabble', 'hearts', 'five-card-draw', 'hex', 'schatzinsel', 'gummiband-challenge', 'geschenkfaenger', 'rhythmus-rausch', 'puzzle-panik', 'wortjagd', 'stillgestanden', 'schatzgraeber', 'minenlauf', 'labyrinth-chaos', 'schubsarena', 'scheinwerfer-flucht', 'doppelagent', 'luegenbaron', 'brueckenroulette', 'wuerfel-auktion', 'zahlenreihe', 'modifikatoren'],
     gross: ['skat', 'doppelkopf', 'scotland-yard', 'schach', 'staedtehandel', 'gebietskampf', 'party-brett'],
   };
@@ -62,17 +61,11 @@ test('Alle Spiele und Funktionen der Liste sind eingetragen – im richtigen Pä
     assert.deepEqual(PLANNED.filter((e) => e.paeckchen === p).map((e) => e.id), ids, `Päckchen ${p}`);
   }
   assert.equal(PLANNED.length, Object.values(want).flat().length, 'nichts Zusätzliches');
-  // Bauarten laut Planung
-  const art = (id) => PLANNED.find((e) => e.id === id).bauart;
-  for (const id of ['broeckelboden', 'kronenjagd', 'laser-huepfer']) assert.equal(art(id), 'C', id);
   // Reine Mechanik: keine Original-Grafiken, eigene Namen
   assert.ok(!PLANNED.some((e) => /pummel party|machine party/i.test(e.name)));
 });
 
-test('Nur das nächste Päckchen steht auf „next“, alles andere auf „planned“', () => {
-  const next = PLANNED.filter((e) => e.status === 'next');
-  assert.ok(next.length >= 1);
-  assert.equal(new Set(next.map((e) => e.paeckchen)).size, 1, 'nur ein Päckchen gleichzeitig');
-  assert.deepEqual(next.map((e) => e.id), ['broeckelboden', 'kronenjagd', 'laser-huepfer'], 'Päckchen 7b ist fertig, Päckchen 8 ist dran');
-  assert.ok(PLANNED.filter((e) => e.status !== 'next').every((e) => e.status === 'planned'));
+test('Ohne weiteres nummeriertes Päckchen ist kein Backlog-Spiel vorgezogen', () => {
+  assert.deepEqual(PLANNED.filter((e) => e.status === 'next'), []);
+  assert.ok(PLANNED.every((e) => e.status === 'planned'));
 });

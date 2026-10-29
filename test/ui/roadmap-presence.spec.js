@@ -23,13 +23,14 @@ test('Roadmap: Navigation, Filter, Spielregeln und gemerkte abgeschlossene Etapp
   const nav = page.viewportSize().width < 641 ? '#hub-tabbar' : '#side-nav';
   await page.locator(nav).getByRole('link', { name: 'Roadmap', exact: true }).click();
   await expect(page).toHaveTitle('Roadmap – Spieleabend');
-  await expect(page.locator('.roadmap-card.current')).toContainText('Päckchen 8');
+  await expect(page.locator('.roadmap-card.current')).toContainText('Ticket-Board');
   await page.getByRole('button', { name: 'Spiele', exact: true }).click();
-  await expect(page.locator('[data-plan="broeckelboden"]')).toBeVisible();
+  await page.locator('[data-roadmap-stage="spaeter"] > summary').click();
+  await expect(page.locator('[data-plan="backgammon"]')).toBeVisible();
   await expect(page.locator('#roadmap-body')).not.toContainText('Markdown-Export');
-  await page.locator('[data-plan="broeckelboden"]').click();
+  await page.locator('[data-plan="backgammon"]').click();
   await expect(page.locator('#host-dlg')).toContainText('Regeln');
-  await expect(page.locator('#host-dlg .plan-rules li')).toHaveCount(6);
+  await expect(page.locator('#host-dlg .plan-rules li')).toHaveCount(9);
   await page.locator('#host-dlg .host-close').click();
   const completed = page.locator('[data-roadmap-stage="erledigt"]');
   await expect(completed).not.toHaveAttribute('open', '');

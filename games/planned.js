@@ -12,7 +12,7 @@
 // Ablauf: Wird ein Spiel gebaut, kommt es nach games/<id>/, wird in games/index.js registriert und fliegt hier raus.
 // Bei jedem fertigen Päckchen/jeder fertigen Funktion auch games/roadmap.js pflegen:
 // Etappe mit dem Commit-Datum auf 'erledigt', die nächste auf 'jetzt' setzen.
-// Päckchen 7b (Zeichnen) ist fertig; als Nächstes folgt Päckchen 8 (Echtzeit).
+// Die nummerierten Päckchen bis einschließlich 8 sind fertig. Als Nächstes folgt das Ticket-Board aus der Roadmap.
 // Ist ein Päckchen fertig, werden die Einträge des nächsten Päckchens auf status 'next' gesetzt. (Fertig: Päckchen 2b – Schlagfertig, Wer hat das gesagt? – Päckchen 4 – Mogeln, Präsident, Durak, Omaha – Päckchen 5 – Würfelpoker, Lügenwürfel, Chicago, Reversi, Dame, Domino – und Päckchen 6 – Zahlenzoo, Gedächtnisküche, Pfeilfieber, Sortierstation, Tickendes Paket, Werwolf samt Bauart-B-Baustein.)
 import { fan, cardsChip, dice, stairs, swim, bubbles, numberLine, flapBox, battle, mill, connect4, pawns, reversi, checkers, dominoes, hexBoard, chess, territory, glyph } from './art-kit.js';
 
@@ -88,44 +88,6 @@ export const PLANNED = [
   funktion({ id: 'survival-abend', name: 'Survival-Abend', paeckchen: 'spaeter', beschreibung: 'Ein Party-Programm auf Basis von Päckchen 7: Wer eine Runde verliert, verliert ein Leben; am Ende gewinnt, wer übrig bleibt.' }),
   funktion({ id: 'chaos-modus', name: 'Chaos-Modus', paeckchen: 'spaeter', beschreibung: 'Zufällig gewählte Zusatzregeln verändern jede Partie; alle sehen die aktiven Regeln vor dem Start.' }),
 
-
-  // ---------- Päckchen 8 (Echtzeit, Bauart C) ----------
-  spiel({
-    id: 'broeckelboden', status: 'next', name: 'Bröckelboden', category: 'party', bauart: 'C', minPlayers: 2, maxPlayers: 8, duration: 5, paeckchen: '8',
-    description: 'Der Boden bröckelt unter den Füßen weg – wer sich am längsten hält, gewinnt. (Auch Technik-Test für Echtzeit.)',
-    rules: [
-      'Alle stehen gleichzeitig auf einer Fläche aus Feldern und bewegen sich in Echtzeit.',
-      'Felder, die man betritt, beginnen zu bröckeln und verschwinden nach kurzer Zeit.',
-      'Wer ins Leere fällt, scheidet aus.',
-      'Die Fläche wird immer kleiner; wer als Letzter übrig bleibt, gewinnt die Runde.',
-    ],
-    houseRules: ['Sprung über Lücken', 'Zufällige Löcher von Beginn an'],
-    art: glyph('floor', '#7A5238'),
-  }),
-  spiel({
-    id: 'kronenjagd', status: 'next', name: 'Kronenjagd', category: 'party', bauart: 'C', minPlayers: 2, maxPlayers: 8, duration: 5, paeckchen: '8',
-    description: 'Eine Krone liegt in der Arena – wer sie am längsten trägt, gewinnt.',
-    rules: [
-      'Alle bewegen sich in Echtzeit in einer Arena; eine Krone liegt in der Mitte.',
-      'Wer die Krone einsammelt, trägt sie und bekommt jede Sekunde einen Punkt.',
-      'Andere können sie durch Berührung stehlen; der Träger ist dafür etwas langsamer.',
-      'Nach der Spielzeit gewinnt, wer die meisten Punkte hat.',
-    ],
-    houseRules: ['Mehrere Kronen', 'Krone wird mit der Zeit wertvoller'],
-    art: glyph('crown', '#5A468F'),
-  }),
-  spiel({
-    id: 'laser-huepfer', status: 'next', name: 'Laser-Hüpfer', category: 'party', bauart: 'C', minPlayers: 2, maxPlayers: 8, duration: 5, paeckchen: '8',
-    description: 'Laserstrahlen schwingen über den Boden – wer rechtzeitig springt, bleibt im Spiel.',
-    rules: [
-      'Alle stehen auf derselben Fläche, ein Laser fegt in Echtzeit darüber – wie ein Springseil.',
-      'Man muss im richtigen Moment springen oder ausweichen.',
-      'Wer getroffen wird, scheidet aus; der Laser wird schneller und wechselt Muster.',
-      'Wer zuletzt übrig ist, gewinnt.',
-    ],
-    houseRules: ['Mehrere Laser gleichzeitig', 'Treffer kosten nur ein Leben von drei'],
-    art: glyph('laser', '#B8433F'),
-  }),
 
   // ---------- Später ----------
   spiel({

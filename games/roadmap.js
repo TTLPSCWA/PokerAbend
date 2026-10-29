@@ -16,7 +16,7 @@ export const ROADMAP = [
     punkt('gerade-online', 'Gerade online', 'funktion', 'Sehen, wer da ist, zuschauen oder mitspielen – mit privater Sichtbarkeit.', true),
     punkt('backlog-ergaenzen', 'Fehlende Spiele nachtragen', 'funktion', 'Der Backlog enthält auch die bisher fehlenden Spiele und Party-Funktionen.', true),
   ] },
-  { id: 'ticket-board', titel: 'Ticket-Board – Ideen & Fehler melden', satz: 'Ideen und Fehler direkt im Hub sammeln und gemeinsam bewerten.', stufe: 'naechstes', punkte: liste('tickets', 'funktion', [
+  { id: 'ticket-board', titel: 'Ticket-Board – Ideen & Fehler melden', satz: 'Ideen und Fehler direkt im Hub sammeln und gemeinsam bewerten.', stufe: 'jetzt', punkte: liste('tickets', 'funktion', [
     ['Tickets erstellen', 'Ideen und Fehler im Hub erfassen, abstimmen und kommentieren.'],
     ['Status & Verwaltung', 'Neu, geplant, in Arbeit, erledigt oder abgelehnt; ein Admin verwaltet die Tickets.'],
     ['Markdown-Export', 'Tickets zur Weiterarbeit als Markdown exportieren.'],
@@ -56,7 +56,7 @@ export const ROADMAP = [
     ['Paket-Metadaten', 'package.json-Beschreibung und Versionsnummern aktuell halten.'],
   ]) },
   { id: 'englisch', titel: 'Englisch', satz: 'Sprache pro Spieler wechseln, einschließlich der Party-Inhalte.', stufe: 'spaeter', punkte: [punkt('englische-seite', 'Englische Oberfläche & Inhalte', 'funktion', 'Die ganze Seite übersetzen und englische Party-Inhalte anbieten.')] },
-  { id: 'echtzeit', titel: 'Päckchen 8 – Echtzeit', satz: 'Alle bewegen sich gleichzeitig im gemeinsamen Spielfeld.', stufe: 'jetzt', paeckchen: '8', punkte: [] },
+  { id: 'echtzeit', titel: 'Päckchen 8 – Echtzeit', satz: 'Alle bewegen sich gleichzeitig im gemeinsamen Spielfeld.', stufe: 'erledigt', datum: '2026-10-29', paeckchen: '8', punkte: [punkt('bauart-c', 'Bauart-C-Baustein', 'funktion', 'Serverberechnete Bewegung, kleine Zustandsbilder, Tastatur, Touch und Echtzeit-Bots.', true), ...spiele(['broeckelboden', 'kronenjagd', 'laser-huepfer'])] },
   { id: 'discord-login', titel: 'Discord-Login', satz: 'Optional mit dem eigenen Discord-Konto wiederkommen.', stufe: 'spaeter', punkte: liste('discord', 'discord', [
     ['Optionaler Discord-Login', 'Name und Bild aus Discord übernehmen und das Konto wiedererkennen.'],
     ['Tisch-Nachricht', 'Im Discord Bescheid geben, wenn jemand einen Tisch aufmacht.'],

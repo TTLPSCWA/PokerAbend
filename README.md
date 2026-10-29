@@ -116,7 +116,21 @@ Der gemeinsame Zeichenbereich unterstützt Maus, Stift und Finger: sieben Farben
 - **Bildunterschrift:** Reihum zeichnet eine Person einen geheimen Begriff. Danach schreiben die anderen verdeckte Bildunterschriften. Alle stimmen für einen fremden Beitrag; die Autoren werden erst zur Auflösung gezeigt. Jede Stimme bringt 100 Punkte, eine nicht leere Zeichnung ebenfalls 100. Zuschauer können bei entsprechender Host-Einstellung abstimmen. Standardmäßig drei Runden.
 - **Malen & Raten:** Nur die zeichnende Person erhält den Begriff. Alle anderen sehen die Zeichnung und geben private Vermutungen ab. Die erste richtige Lösung bringt 300 Punkte, danach jeweils 25 weniger (mindestens 100); Zeichnende bekommen 100 je richtiger Lösung. Großschreibung, Leerzeichen, Satzzeichen und ausgeschriebene Umlaute werden toleriert. Sind alle fertig oder ist die Zeit abgelaufen, wird der Begriff aufgedeckt. Der Zeichenplatz wechselt jede Runde; standardmäßig sechs Runden.
 
-Der Host kann Zeit, Runden und Punkte-Ziel einstellen, bei Bedarf weiterschalten und für Bildunterschrift/Malen & Raten eigene Begriffe ergänzen. Leere oder fehlende Beiträge bei Zeitablauf blockieren den Ablauf nicht. Abbrechen, Host-Wechsel, Zuschauer und Wiederverbinden nutzen die vorhandene Raumverwaltung. Als Nächstes folgt Päckchen 8 (Echtzeit).
+Der Host kann Zeit, Runden und Punkte-Ziel einstellen, bei Bedarf weiterschalten und für Bildunterschrift/Malen & Raten eigene Begriffe ergänzen. Leere oder fehlende Beiträge bei Zeitablauf blockieren den Ablauf nicht. Abbrechen, Host-Wechsel, Zuschauer und Wiederverbinden nutzen die vorhandene Raumverwaltung.
+
+### Päckchen 8: Echtzeit-Arenen
+
+**Bröckelboden**, **Kronenjagd** und **Laser-Hüpfer** stehen unter Party Spiele und in den Abendprogrammen bereit, jeweils für **2–8 Mitspieler**, mit optionalen Bots. Nach einem gemeinsamen Countdown von drei Sekunden spielen alle gleichzeitig.
+
+Mit **Pfeiltasten/WASD** bewegen, auf dem Handy die **Richtungsknöpfe halten**. Mehrere Richtungen lassen sich kombinieren. **Leertaste/Springen** löst einen Sprung aus, wenn das Spiel ihn erlaubt. Deine Figur hat einen weißen Rand. Namen, Punkte und verbleibende Leben stehen auch unter der Arena. Die Steuerung bleibt bei Aktualisierungen am selben Platz.
+
+- **Bröckelboden:** Betretene Felder brechen nach 0,9 Sekunden weg. Ab 18 Sekunden verschwindet zusätzlich der Rand schrittweise. Wer auf einem Loch steht, scheidet aus. Der Host kann Sprünge über Lücken und zufällige Startlöcher aktivieren; die Startplätze bleiben frei.
+- **Kronenjagd:** Die Krone in der Mitte einsammeln oder durch Berührung vom Träger stehlen. Nach einem Wechsel ist sie eine Sekunde geschützt. Träger bewegen sich langsamer und sammeln einen Punkt je insgesamt gehaltener Sekunde. Nach Ablauf gewinnt die höchste Summe; gleiche Punktzahlen teilen sich den Sieg.
+- **Laser-Hüpfer:** Eine gestrichelte Linie warnt vor dem nächsten Laser. Die Strahlen wechseln Richtung und werden schneller. Ein Sprung schützt 0,55 Sekunden und lädt anschließend nach. Ein Treffer kostet ein Leben; der Host kann ein bis drei Leben und zwei gleichzeitige Laser einstellen.
+
+Spielzeit: 10–180 Sekunden, standardmäßig 60. Bei Bröckelboden und Laser-Hüpfer gewinnt der letzte Überlebende; nach Zeitablauf teilen sich die Überlebenden den Sieg. Jede überstandene Platzierung bringt 100 Punkte. Gleichzeitig Ausscheidende erhalten dieselbe Wertung; fallen alle sofort gleichzeitig aus, ist die Partie unentschieden.
+
+Wiederverbinden behält Figur und Punkte. Bei Tabwechsel, geöffnetem Menü oder ausbleibenden Eingaben bleibt die Figur stehen; die Runde läuft weiter. Der Host kann abbrechen oder den Tisch schließen. Ein Server-Neustart lädt die gespeicherten Teilnehmer, Einstellungen und abgeschlossenen Wertungen; die laufende Runde muss der Host neu starten. Im Abendprogramm bleiben bereits abgeschlossene Spiele gewertet. Die nummerierten Päckchen bis einschließlich 8 sind damit gebaut; als Nächstes steht das Ticket-Board auf der Roadmap.
 
 | Spiel | Spieler | Kurz |
 | --- | --- | --- |
@@ -159,6 +173,9 @@ Der Host kann Zeit, Runden und Punkte-Ziel einstellen, bei Bedarf weiterschalten
 | Kritzelpost (Party Spiele) | 3–12 | Begriff, Bild und Beschreibung wandern verdeckt durch die Runde; am Ende alle Ketten gemeinsam entdecken |
 | Bildunterschrift (Party Spiele) | 3–12 | Gemeinsam eine Zeichnung ansehen, verdeckte Bildunterschriften schreiben und für den Favoriten stimmen |
 | Malen & Raten (Party Spiele) | 3–12 | Reihum einen geheimen Begriff zeichnen; alle anderen raten gleichzeitig, richtige Lösungen bringen Punkte |
+| Bröckelboden (Party Spiele) | 2–8 | In der gemeinsamen Arena laufen, bevor die betretenen Felder zerbrechen; der letzte Überlebende gewinnt |
+| Kronenjagd (Party Spiele) | 2–8 | Krone einsammeln, durch Berührung stehlen und möglichst lange halten |
+| Laser-Hüpfer (Party Spiele) | 2–8 | Vorwarnung beobachten, über wandernde Laser springen oder ausweichen und bis zum Schluss überleben |
 
 Die Startseite ist ein Hub (siehe „Startseite“ weiter unten). Die Kategorie (`karten`, `wuerfel`, `brett`, `party`), Spielerzahl, Dauer und das Spielbild legt jedes Spiel in seinem `games/<spiel>/index.js` fest.
 
@@ -336,6 +353,14 @@ test/              node:test – Engine inkl. 100.000 Zufallshänden, Räume, Se
 ```
 
 Jede Testdatei mit eigenem Server hat einen eigenen Portbereich, weil `npm test` die Dateien parallel ausführt: `server` 4000–4049, `security` 4050–4099, `sebastian` 4100–4149, `away` 4150–4199, `codes` 4200–4249, `history` 4250–4299, `platform` 4300–4349. Neue Dateien bekommen den nächsten freien Fünfziger-Block.
+
+### Bauart C: Echtzeit zusammen
+
+`games/realtime-room.js` erweitert `TurnRoom`. Ein Raum berechnet Bewegung und Kollisionen in festen Schritten von 50 ms. Alle 100 ms sendet er einen kleinen öffentlichen `arena`-Frame an seine verbundenen Spieler und Zuschauer. Diese Frames enthalten weder Tokens noch Eingaben oder vollständige Verlaufsdaten; sie lösen keine Speicherzugriffe oder Lobby-Aktualisierungen aus.
+
+`steer` akzeptiert ausschließlich die laufende Runde samt frischer Rundenkennung, eine steigende Sequenznummer, Richtungen −1/0/1 und den Sprungwunsch. Positionen, Client-Zeiten und Client-Punkte haben keinen Einfluss. Diagonalen werden normalisiert, Eingaben verfallen nach 350 ms. Die bestehenden Socket-Limits bleiben aktiv. Sequenzen werden beim Wiederverbinden aus dem Raumstand übernommen; Abbruch und Neustart erzeugen eine neue Rundenkennung.
+
+`public/games/realtime-kit.js` zeichnet die Arena per Canvas zwischen den Server-Frames und verwendet den bestehenden `kitGame`-Rahmen für Host-Menü, Regeln, Wertung und Abendprogramm. Bots entscheiden im selben Server-Takt anhand des öffentlichen Spielfelds und verwenden dieselbe Bewegung, Sprungpause und Kollision wie Menschen. Der allgemeine Bot-Treiber startet für sie keine zusätzlichen Zug-Timer. Alle Raum-Timer stoppen bei Abbruch, Rundenende, Spielwechsel oder Entfernen des Raums. Tests: `test/realtime.test.js`, `test/ui/realtime.spec.js`.
 
 ### Bauart B: Solo-Partyspiele (Bauart-B-Baustein)
 
