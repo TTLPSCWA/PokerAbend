@@ -11,7 +11,7 @@ const liste = (prefix, art, rows, erledigt = false) => rows.map(([titel, text], 
 const spiele = (ids) => ids.map((id) => punkt(id, GAMES[id].name, 'spiel', GAMES[id].description, true));
 
 export const ROADMAP = [
-  { id: 'monopoly-co', titel: 'Päckchen 9 – Monopoly & Co.', satz: 'Verdeckt Karten wählen, Grundstücke sammeln und eine eigene Stadt bespielen.', stufe: 'jetzt', paeckchen: '9', punkte: spiele(['sechs-nimmt']) },
+  { id: 'monopoly-co', titel: 'Päckchen 9 – Monopoly & Co.', satz: 'Verdeckt Karten wählen, Grundstücke sammeln und eine eigene Stadt bespielen.', stufe: 'jetzt', paeckchen: '9', punkte: spiele(['sechs-nimmt', 'monopoly-deal']) },
   { id: 'hub-paket', titel: 'Hub-Paket: Roadmap & Gerade online', satz: 'Planung und Mitspieler bekommen ihren festen Platz im Hub.', stufe: 'erledigt', datum: '2026-10-29', punkte: [
     punkt('roadmap-seite', 'Roadmap im Hub', 'funktion', 'Etappen mit Filtern, Fortschritt und Regeln für geplante Spiele.', true),
     punkt('gerade-online', 'Gerade online', 'funktion', 'Sehen, wer da ist, zuschauen oder mitspielen – mit privater Sichtbarkeit.', true),

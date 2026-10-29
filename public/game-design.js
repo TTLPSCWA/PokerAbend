@@ -11,7 +11,7 @@ const GameDesign = (() => {
     arena: { label: 'Zusammen in der Arena', light: '#3c4266', dark: '#1c2335', tone: 392, accents: ['#C2D598', '#EAC77F', '#A8D3EB'] },
   };
   const groups = {
-    cards: 'poker omaha maumau farbenchaos zehnetappen stapelrennen schwimmen blackjack mogeln praesident durak sechs-nimmt',
+    cards: 'poker omaha maumau farbenchaos zehnetappen stapelrennen schwimmen blackjack mogeln praesident durak sechs-nimmt monopoly-deal',
     dice: 'maexchen schocken kniffel shutthebox zehntausend wuerfelpoker luegenwuerfel chicago',
     board: 'huetchen schiffe viergewinnt muehle reversi dame domino',
     party: 'schaetzmeister schlagfertig werhatdasgesagt tickendes-paket werwolf wer-bin-ich',
