@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { GAMES, DEFAULT_GAME, gameList, gameEvents, PLANNED, plannedGames } from '../games/index.js';
 import { resolvedRoadmap } from '../games/roadmap.js';
 import { createPresence } from './presence.js';
+import { configureProgram, beginProgram, nextProgramStep, recordProgramResult, publicProgram, restoreProgram, programActive, programGames, programDefaults } from './party-program.js';
 import {
   COOKIE, loadSecret, createAuth, parseCookies, cookieHeader, limiter, bucket,
   securityHeaders, sameOrigin, clientIp, safeNext,
@@ -109,7 +110,7 @@ app.use((req, res, next) => {
 });
 app.get('/me', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
-  res.json({ mode: MODE, games: gameList(), planned: plannedGames() }); // Spiele mit 'next' stehen mit „Bald“ im Katalog, der übrige Backlog auf /roadmap.
+  res.json({ mode: MODE, games: gameList(), planned: plannedGames(), partyTeamGames: programGames(true).map((g) => g.id), partyDefaults: programDefaults() });
 });
 app.get('/roadmap', (_req, res) => {
   res.setHeader('Cache-Control', 'no-store');
@@ -204,6 +205,7 @@ function load() {
       const r = game.restore(d, (kind, data) => onRoomChange(r, kind, data));
       r.game = game.id;
       r.unlisted = d.unlisted === true;
+      r.partyProgram = restoreProgram(d.partyProgram);
       r.lastSnapshot = d;
       if (existsSync(historyFile(r.code))) {
         try { r.loadHistory(JSON.parse(readFileSync(historyFile(r.code), 'utf8'))); r.say('Server neu gestartet – Host startet weiter'); }
@@ -219,6 +221,7 @@ function load() {
 function onRoomChange(room, kind, data) {
   // Ergebnis einer Partie: in die Bestenliste (gespeichert wird mit dem nächsten Speichern)
   if (kind === 'result') {
+    recordProgramResult(room);
     const botNames = new Set([...room.players.values()].filter((p) => p.bot).map((p) => p.name));
     leaderboard.record(room.game, data?.entries?.filter((p) => !botNames.has(p.name))); save(); return;
   }
@@ -231,16 +234,16 @@ function onRoomChange(room, kind, data) {
   if (kind === 'handDone') save();
   broadcast(room);
 }
-const snapshotOf = (r) => ({ ...r.snapshot(), game: r.game, code: r.code, unlisted: !!r.unlisted });
+const snapshotOf = (r) => ({ ...r.snapshot(), game: r.game, code: r.code, unlisted: !!r.unlisted, ...(r.partyProgram ? { partyProgram: r.partyProgram } : {}) });
 
 // ---------- Spiel wechseln (gleicher Raum, gleicher Code, alle bleiben drin) ----------
 // Gleiche Spieler-IDs und Tokens, damit Reconnect weiter klappt. Wer mitgespielt hat, sitzt wieder.
-function switchRoom(old, game) {
+function switchRoom(old, game, settings = {}, prepare = null) {
   const before = GAMES[old.game]?.name || old.game;
   // Abendstand des alten Spiels als eine Zeile in den Verlauf (Poker: Plus/Minus, Rundenspiele: Punkte und Siege)
   const summary = old.standingsList().map((s) => ('net' in s ? `${s.name} ${s.net > 0 ? '+' : ''}${s.net}` : `${s.name} ${s.score} (${s.wins} gewonnen)`)).join(', ');
   const playing = old.seats ? [...old.seats] : [...old.players.values()].filter((p) => p.seat !== null && !p.kicked).sort((a, b) => a.seat - b.seat).map((p) => p.id);
-  const next = game.create(old.code, {}, (kind, data) => onRoomChange(next, kind, data));
+  const next = game.create(old.code, settings, (kind, data) => onRoomChange(next, kind, data));
   next.game = game.id;
   next.loadHistory(old.log);
   for (const op of old.players.values()) {
@@ -259,10 +262,27 @@ function switchRoom(old, game) {
   }
   const seated = (id) => (next.table ? next.table.seats.some((s) => s?.id === id) : next.seats.includes(id));
   for (const p of [...next.players.values()]) if (p.bot && !seated(p.id)) next.players.delete(p.id);
+  try { prepare?.(next); } catch (error) { next.dispose(); throw error; }
   bots.stop(old);
   old.dispose();
   rooms.set(old.code, next);
   codes.retag(old.code, game.id);
+  return next;
+}
+
+function startProgramStep(room, id, program) {
+  const entry = program.plan[program.index];
+  program.saved[room.game] = { settings: { ...room.settings }, extra: room.saveExtra?.() };
+  const saved = program.saved[entry.game];
+  const next = switchRoom(room, GAMES[entry.game], { ...(saved?.settings || {}), ...entry.settings }, (r) => {
+    if (saved?.extra) r.loadExtra(saved.extra);
+    r.partyProgram = program;
+    r.roundNo = room.roundNo;
+    r.validateStart(r.seats);
+  });
+  // Beim Neustart wird nur die noch nicht gewertete Partie wiederholt.
+  next.lastSnapshot = snapshotOf(next);
+  next.start(id);
   return next;
 }
 
@@ -274,7 +294,7 @@ function broadcast(room) {
   bots.sync(room);
   const botPlayers = [...room.players.values()].filter((p) => p.bot && !p.kicked).map(({ id, name }) => ({ id, name }));
   for (const p of room.players.values()) {
-    if (p.socketId) io.to(p.socketId).emit('state', { ...room.view(p.id), game: room.game, bots: botPlayers, unlisted: !!room.unlisted }); // Spielart, damit der Browser bei einem Wechsel umschaltet
+    if (p.socketId) io.to(p.socketId).emit('state', { ...room.view(p.id), game: room.game, bots: botPlayers, unlisted: !!room.unlisted, ...(room.partyProgram ? { partyProgram: publicProgram(room) } : {}) });
   }
   scheduleLobby();
 }
@@ -472,6 +492,13 @@ io.on('connection', (socket) => {
   // Ereignisse der Spiele: jedes Spiel bekommt nur seine eigenen
   for (const event of gameEvents()) {
     on(event, (d, room, p) => {
+      const program = room.partyProgram;
+      if (event === 'start' && (program?.status === 'ready' || programActive(room))) {
+        const next = program.status === 'ready' ? beginProgram(room, p.id) : nextProgramStep(room, p.id);
+        return { room: startProgramStep(room, p.id, next) };
+      }
+      if (programActive(room) && ['newGame', 'settings'].includes(event)) throw new Error('Beende zuerst das Abendprogramm, um diese Einstellungen zu ändern');
+      if (programActive(room) && event === 'sit' && !program.roster.some((person) => person.id === p.id)) throw new Error('Dieses Programm läuft schon; du kannst zuschauen und beim nächsten mitspielen');
       const fn = GAMES[room.game]?.events[event];
       if (!fn) throw new Error('Das gibt es in diesem Spiel nicht');
       return fn(room, p, d && typeof d === 'object' ? d : {});
@@ -481,11 +508,21 @@ io.on('connection', (socket) => {
   // Für alle Spiele gleich: Spiel wechseln (nur zwischen zwei Runden)
   on('switchGame', ({ game: gameId }, room, p) => {
     room.requireHost(p.id);
+    if (programActive(room)) throw new Error('Nutze „Nächstes Programm-Spiel“ oder beende zuerst das Abendprogramm');
     const game = GAMES[String(gameId || '')];
     if (!game) throw new Error(notPlayable(gameId));
     if (game.id === room.game) throw new Error('Das wird hier schon gespielt');
     if (room.busy) throw new Error('Wechseln geht erst, wenn die Runde vorbei ist');
     return { room: switchRoom(room, game) };
+  });
+
+  on('programSave', (data, room, p) => { configureProgram(room, p.id, data); });
+  on('programStart', (_data, room, p) => ({ room: startProgramStep(room, p.id, beginProgram(room, p.id)) }));
+  on('programNext', (_data, room, p) => ({ room: startProgramStep(room, p.id, nextProgramStep(room, p.id)) }));
+  on('programStop', (_data, room, p) => {
+    room.requireHost(p.id);
+    if (room.busy) throw new Error('Beende oder brich zuerst die laufende Partie ab');
+    if (room.partyProgram) { room.partyProgram.status = 'stopped'; room.say('Abendprogramm beendet; die bisherige Gesamtwertung bleibt sichtbar', 'summary'); }
   });
 
   // Für alle Spiele gleich: Host-Rechte
@@ -526,8 +563,8 @@ io.on('connection', (socket) => {
 
   on('kick', ({ id }, room, p) => { room.requireHost(p.id); if (id === p.id) throw new Error('Du kannst dich nicht selbst entfernen'); const target = room.players.get(id); room.remove(id); if (target?.socketId && !room.players.has(id)) io.to(target.socketId).emit('kicked'); });
   on('makeHost', ({ id }, room, p) => { room.requireHost(p.id); const t = room.players.get(id); if (!t || t.bot) throw new Error('Ein Mensch muss Host bleiben'); room.hostId = id; room.say(`${t.name} ist jetzt Host`); });
-  on('addBot', (_data, room, p) => { addBot(room, p.id); });
-  on('removeBot', ({ id }, room, p) => { removeBot(room, p.id, id); });
+  on('addBot', (_data, room, p) => { if (programActive(room)) throw new Error('Während des Programms bleiben die Mitspieler fest'); addBot(room, p.id); });
+  on('removeBot', ({ id }, room, p) => { if (programActive(room)) throw new Error('Beende zuerst das Abendprogramm'); removeBot(room, p.id, id); });
 
   // Ganzer Verlauf auf Anfrage (nicht in jedem Update – der kann lang werden). Ohne Neuzeichnen für alle.
   socket.on('history', (data, cb) => {
@@ -577,7 +614,7 @@ process.on('uncaughtException', (e) => console.error('Unerwarteter Fehler:', e))
 process.on('unhandledRejection', (e) => console.error('Unerwarteter Fehler:', e));
 
 // Ein Spiel darf keine Plattform-Ereignisse überschreiben
-const RESERVED = ['create', 'join', 'kick', 'makeHost', 'history', 'react', 'switchGame', 'disconnect', 'addBot', 'removeBot', 'lobby', 'peek', 'unlisted', 'park', 'leave', 'abortRound', 'closeTable', 'look', 'presence'];
+const RESERVED = ['create', 'join', 'kick', 'makeHost', 'history', 'react', 'switchGame', 'disconnect', 'addBot', 'removeBot', 'lobby', 'peek', 'unlisted', 'park', 'leave', 'abortRound', 'closeTable', 'look', 'presence', 'programSave', 'programStart', 'programNext', 'programStop'];
 for (const g of Object.values(GAMES)) {
   const clash = Object.keys(g.events).filter((e) => RESERVED.includes(e));
   if (clash.length) throw new Error(`Spiel ${g.id}: Ereignisse ${clash.join(', ')} gehören der Plattform`);

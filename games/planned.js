@@ -12,6 +12,7 @@
 // Ablauf: Wird ein Spiel gebaut, kommt es nach games/<id>/, wird in games/index.js registriert und fliegt hier raus.
 // Bei jedem fertigen Päckchen/jeder fertigen Funktion auch games/roadmap.js pflegen:
 // Etappe mit dem Commit-Datum auf 'erledigt', die nächste auf 'jetzt' setzen.
+// Päckchen 7 (Mix, Turnier, Playlist, Team-Duell) ist fertig; als Nächstes folgt 7b (Zeichnen).
 // Ist ein Päckchen fertig, werden die Einträge des nächsten Päckchens auf status 'next' gesetzt. (Fertig: Päckchen 2b – Schlagfertig, Wer hat das gesagt? – Päckchen 4 – Mogeln, Präsident, Durak, Omaha – Päckchen 5 – Würfelpoker, Lügenwürfel, Chicago, Reversi, Dame, Domino – und Päckchen 6 – Zahlenzoo, Gedächtnisküche, Pfeilfieber, Sortierstation, Tickendes Paket, Werwolf samt Bauart-B-Baustein.)
 import { fan, cardsChip, dice, stairs, swim, bubbles, numberLine, flapBox, battle, mill, connect4, pawns, reversi, checkers, dominoes, hexBoard, chess, territory, glyph } from './art-kit.js';
 
@@ -88,11 +89,20 @@ export const PLANNED = [
   funktion({ id: 'chaos-modus', name: 'Chaos-Modus', paeckchen: 'spaeter', beschreibung: 'Zufällig gewählte Zusatzregeln verändern jede Partie; alle sehen die aktiven Regeln vor dem Start.' }),
 
 
-  // ---------- Päckchen 7 (als Nächstes) ----------
-  funktion({ id: 'party-mix', name: 'Party-Mix', type: 'feature', status: 'next', paeckchen: '7', beschreibung: 'Ein Tisch spielt hintereinander zufällig oder vom Host gewählte Partyspiele, ohne dass man zwischendurch wechseln muss; die Punkte laufen über alle Spiele.' }),
-  funktion({ id: 'party-turnier', name: 'Party-Turnier', type: 'feature', status: 'next', paeckchen: '7', beschreibung: 'Mehrere Partyspiele nacheinander als Turnier mit Gesamtwertung und Siegerehrung am Ende.' }),
-  funktion({ id: 'eigene-playlist', name: 'Eigene Playlist', type: 'feature', status: 'next', paeckchen: '7', beschreibung: 'Der Host stellt eine Reihenfolge von Spielen mit Rundenzahl und Einstellungen zusammen und speichert sie für den Abend.' }),
-  funktion({ id: 'team-duell', name: 'Team-Duell', type: 'feature', status: 'next', paeckchen: '7', beschreibung: 'Zwei Teams treten gegeneinander an; die Punkte eines Teams werden gemeinsam gezählt (für Partyspiele, die sich dazu eignen).' }),
+  // ---------- Päckchen 7b (als Nächstes; Party-Modi aus Päckchen 7 sind fertig) ----------
+  funktion({ id: 'zeichenwerkzeug', name: 'Zeichenwerkzeug', status: 'next', paeckchen: '7b', beschreibung: 'Stift, Farben, Radierer und Rückgängig als gemeinsamer Baustein für die Zeichenspiele.' }),
+  spiel({ id: 'kritzelpost', name: 'Kritzelpost', status: 'next', paeckchen: '7b', category: 'party', bauart: 'A', minPlayers: 3, maxPlayers: 12, duration: 15,
+    description: 'Ein Begriff wandert als Bild und Beschreibung durch die Runde.', art: glyph('pen'),
+    rules: ['Alle beginnen mit einem eigenen kurzen Begriff oder Satz.', 'Danach wechseln Zeichnen und Beschreiben, sichtbar ist nur der letzte Beitrag.', 'Zum Schluss werden alle entstandenen Ketten gemeinsam aufgedeckt.'],
+  }),
+  spiel({ id: 'bildunterschrift', name: 'Bildunterschrift', status: 'next', paeckchen: '7b', category: 'party', bauart: 'A', minPlayers: 3, maxPlayers: 12, duration: 15,
+    description: 'Lustige Beschriftungen zu selbst gezeichneten Bildern finden.', art: glyph('pen'),
+    rules: ['In jeder Runde entsteht eine eigene Zeichnung als gemeinsame Vorlage.', 'Alle anderen schreiben verdeckt eine passende oder lustige Bildunterschrift.', 'Die Beiträge werden aufgedeckt und die Runde stimmt über ihre Favoriten ab.'],
+  }),
+  spiel({ id: 'malen-raten', name: 'Malen & Raten', status: 'next', paeckchen: '7b', category: 'party', bauart: 'A', minPlayers: 3, maxPlayers: 12, duration: 15,
+    description: 'Eine Person zeichnet einen Begriff, die anderen raten gleichzeitig.', art: glyph('pen'),
+    rules: ['Eine Person bekommt einen geheimen Begriff und zeichnet ihn ohne Buchstaben.', 'Alle anderen geben innerhalb des Zeitlimits ihre Vermutungen ab.', 'Richtige Lösungen und gelöste Zeichnungen bringen Punkte; der Zeichenplatz wechselt.'],
+  }),
 
   // ---------- Päckchen 8 (Echtzeit, Bauart C) ----------
   spiel({

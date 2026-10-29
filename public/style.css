@@ -149,6 +149,24 @@ button { cursor: pointer; }
 .bot-controls .hint { margin: 0; }
 .bot-controls .btn { min-height: 44px; }
 .bot-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.program-controls, .program-stand, .program-options, .program-presets { display: grid; gap: 12px; }
+.program-controls { padding: 12px; border: 1px solid var(--gold-line); border-radius: var(--r-m); }
+.program-controls p { margin: 0; }
+.program-banner { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 12px; width: min(100%, 940px); border: 1px solid var(--gold); border-radius: var(--r-m); background: var(--panel); }
+.program-banner > div { flex: 1; min-width: min(200px, 100%); }
+.program-banner small { display: block; color: var(--gold-text); }
+.kg-main.has-program { align-content: start; gap: 14px; }
+.program-dlg { width: min(720px, calc(100vw - 24px)); padding: 20px; max-height: 90dvh; }
+.program-dlg form, .program-editor, .program-teams { display: grid; gap: 14px; }
+.program-dlg h2, .program-dlg p { margin: 0; }
+.program-dlg input, .program-dlg select { max-width: 100%; min-width: 0; }
+.program-entry { min-width: 0; display: grid; gap: 10px; border: 1px solid var(--line); border-radius: var(--r-m); padding: 12px; }
+.program-entry summary { cursor: pointer; min-height: 44px; padding: 10px 0; }
+.program-row-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.program-controls .btn, .program-banner .btn, .program-dlg .btn { min-height: 44px; }
+.program-stand { max-width: 100%; overflow-x: auto; }
+.program-winners { padding: 14px; border: 2px solid var(--gold); border-radius: var(--r-m); font-size: 20px; }
+.program-results { margin: 0; padding-left: 22px; font-size: 14px; }
 
 /* ---------- Spiel-Layout ---------- */
 .game { height: 100dvh; display: grid; grid-template-rows: auto 1fr auto; overflow: hidden; }

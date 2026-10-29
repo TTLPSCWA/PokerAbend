@@ -23,7 +23,7 @@ test('Roadmap: Navigation, Filter, Spielregeln und gemerkte abgeschlossene Etapp
   const nav = page.viewportSize().width < 641 ? '#hub-tabbar' : '#side-nav';
   await page.locator(nav).getByRole('link', { name: 'Roadmap', exact: true }).click();
   await expect(page).toHaveTitle('Roadmap – Spieleabend');
-  await expect(page.locator('.roadmap-card.current')).toContainText('Hub-Paket');
+  await expect(page.locator('.roadmap-card.current')).toContainText('Päckchen 7b');
   await page.getByRole('button', { name: 'Spiele', exact: true }).click();
   await expect(page.locator('[data-plan="kritzelpost"]')).toBeVisible();
   await expect(page.locator('#roadmap-body')).not.toContainText('Markdown-Export');
@@ -34,7 +34,9 @@ test('Roadmap: Navigation, Filter, Spielregeln und gemerkte abgeschlossene Etapp
   const completed = page.locator('[data-roadmap-stage="erledigt"]');
   await expect(completed).not.toHaveAttribute('open', '');
   await completed.locator('summary').click();
-  await expect(completed.locator('time').first()).toHaveAttribute('datetime', '2026-10-28');
+  const dates = await completed.locator('time').evaluateAll((nodes) => nodes.map((node) => node.getAttribute('datetime')));
+  expect(dates.length).toBeGreaterThan(0);
+  expect(dates).toEqual([...dates].sort().reverse());
   await page.reload();
   await expect(completed).toHaveAttribute('open', '');
   await completed.locator('summary').click();

@@ -91,6 +91,21 @@ Die Startseite ist ein Hub mit Navigation per URL-Hash (Zurück-Taste und Links 
 
 ## Spiele
 
+### Päckchen 7: Party-Abendprogramme
+
+An einem Party-Tisch erst mitspielen, dann unter **Host → Abendprogramm planen** den Modus wählen:
+
+- **Party-Mix:** Die ausgewählten Spiele werden auf dem Server zufällig gemischt.
+- **Party-Turnier:** Mehrere Spiele in fester Reihenfolge mit Gesamtwertung und Siegerehrung.
+- **Eigene Playlist:** Bis zu zwölf Spiele sortieren und je Spiel Rundenzahl, Zeiten und Regeln einstellen. Bis zu zehn benannte Vorlagen liegen in diesem Browser (`poker:partyPlaylists`).
+- **Team-Duell:** Die Mitspieler auf Team 1 und Team 2 verteilen. Alle spielen einzeln, ihre Programmpunkte werden im Team addiert; gleich große Teams sind empfohlen. Werwolf und „Wer bin ich?“ sind hierfür nicht auswählbar.
+
+**Programm übernehmen → Programm starten** beginnt die erste Partie. Nach jeder Partie geht es mit **Nächstes Programm-Spiel** im selben Raum und mit denselben Spielern weiter. Die Gesamtwertung steht jederzeit unter **Gesamtwertung** und **Stand**. Eine Platzierung zählt bei N Teilnehmern N Punkte für Platz 1, dann einen weniger je Platz; Gleichstände teilen sich den Platz. Eine Partie ohne Punkte und ohne Sieger zählt null. Zuschauer bekommen keine Programmpunkte. So lassen sich Spiele mit unterschiedlichen eigenen Punkteskalen kombinieren.
+
+Die Teilnehmer bleiben während des Programms fest; neue Gäste können zuschauen und beim nächsten Programm mitspielen. Der Server prüft Spielerzahlen, Regeln und Teamzuordnung vor dem Start. Spiele ohne Bot-Unterstützung brauchen menschliche Mitspieler. Host-Wechsel, Wiederverbinden und private Tische funktionieren weiterhin. **Programm beenden** ist zwischen Partien möglich; eine laufende Partie kann der Host vorher wie gewohnt abbrechen. Abgebrochene Partien zählen nicht und lassen sich am gleichen Programmplatz wiederholen.
+
+Programm, Einstellungen und bereits vergebene Programmpunkte werden im Raum gespeichert. Nach einem Server-Neustart setzt der Host fort; nur die noch nicht abgeschlossene Partie muss erneut gespielt werden. Die einzelnen Spiele werten zusätzlich wie bisher für die Bestenliste. Die Programmwertung selbst erzeugt dort keine weiteren Einträge. Danach ist laut Roadmap Päckchen 7b (Zeichnen) dran.
+
 | Spiel | Spieler | Kurz |
 | --- | --- | --- |
 | Texas Hold'em | 2–9 | No Limit mit Spielgeld, alles unten beschrieben |

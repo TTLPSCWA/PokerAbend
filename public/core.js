@@ -210,7 +210,10 @@ let lastState = null; // letzter Stand vom Server – kommt oft, bevor das Modul
 function registerGame(id, mod) { GAME_MODULES[id] = mod; }
 // Spielarten, die die Oberfläche eines anderen Spiels nutzen (Omaha ist Poker mit vier Karten)
 const GAME_FILES = { omaha: 'poker' };
-function loadGame(id) {
+async function loadGame(id) {
+  // Ein schneller Reconnect kann schon während des Parsens eintreffen. Erst alle
+  // gemeinsamen Bausteine (kitGame/partyGame/soloGame) laden, dann das Spielskript.
+  if (document.readyState === 'loading') await new Promise((resolve) => document.addEventListener('DOMContentLoaded', resolve, { once: true }));
   if (GAME_MODULES[id]) return Promise.resolve(GAME_MODULES[id]);
   if (!/^[a-z0-9-]{1,30}$/.test(id)) return Promise.reject(new Error('Dieses Spiel gibt es nicht'));
   if (GAME_FILES[id]) return loadGame(GAME_FILES[id]).then((m) => (GAME_MODULES[id] = m));
@@ -519,6 +522,7 @@ document.addEventListener('change', (e) => {
 
 // Host-Menü: in ein anderes Spiel wechseln (gleicher Raum, alle bleiben drin)
 function switchGameHTML(currentId, busy) {
+  busy ||= ['running', 'between'].includes(lastState?.partyProgram?.status);
   const others = account.games.filter((g) => g.id !== currentId);
   return `<h3>Spiel wechseln</h3>
     <div class="switch-game"><select class="input" id="switch-game" aria-label="Neues Spiel">${others.map((g) => `<option value="${esc(g.id)}">${esc(g.name)}</option>`).join('')}</select>

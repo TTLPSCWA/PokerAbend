@@ -5,34 +5,29 @@
 // 8bd8ec3, 2c82db2, 8197000, 703751d, b588e7d, 3d7366b (git log, Datum YYYY-MM-DD).
 import { PLANNED } from './planned.js';
 import { GAMES } from './index.js';
-import { glyph } from './art-kit.js';
 
 const punkt = (id, titel, art, text, erledigt = false) => ({ id, titel, art, text, ...(erledigt ? { erledigt: true } : {}) });
 const liste = (prefix, art, rows) => rows.map(([titel, text], i) => punkt(`${prefix}-${i + 1}`, titel, art, text));
 const spiele = (ids) => ids.map((id) => punkt(id, GAMES[id].name, 'spiel', GAMES[id].description, true));
-const zeichnen = (id, titel, text, rules) => ({ ...punkt(id, titel, 'spiel', text), spiel: {
-  id, name: titel, description: text, category: 'party', minPlayers: 3, maxPlayers: 12, duration: 15,
-  status: 'planned', art: glyph('pen'), rules,
-} });
 
 export const ROADMAP = [
-  { id: 'hub-paket', titel: 'Hub-Paket: Roadmap & Gerade online', satz: 'Planung und Mitspieler bekommen ihren festen Platz im Hub.', stufe: 'jetzt', punkte: [
-    punkt('roadmap-seite', 'Roadmap im Hub', 'funktion', 'Etappen mit Filtern, Fortschritt und Regeln für geplante Spiele.'),
-    punkt('gerade-online', 'Gerade online', 'funktion', 'Sehen, wer da ist, zuschauen oder mitspielen – mit privater Sichtbarkeit.'),
-    punkt('backlog-ergaenzen', 'Fehlende Spiele nachtragen', 'funktion', 'Der Backlog enthält auch die bisher fehlenden Spiele und Party-Funktionen.'),
+  { id: 'hub-paket', titel: 'Hub-Paket: Roadmap & Gerade online', satz: 'Planung und Mitspieler bekommen ihren festen Platz im Hub.', stufe: 'erledigt', datum: '2026-10-29', punkte: [
+    punkt('roadmap-seite', 'Roadmap im Hub', 'funktion', 'Etappen mit Filtern, Fortschritt und Regeln für geplante Spiele.', true),
+    punkt('gerade-online', 'Gerade online', 'funktion', 'Sehen, wer da ist, zuschauen oder mitspielen – mit privater Sichtbarkeit.', true),
+    punkt('backlog-ergaenzen', 'Fehlende Spiele nachtragen', 'funktion', 'Der Backlog enthält auch die bisher fehlenden Spiele und Party-Funktionen.', true),
   ] },
   { id: 'ticket-board', titel: 'Ticket-Board – Ideen & Fehler melden', satz: 'Ideen und Fehler direkt im Hub sammeln und gemeinsam bewerten.', stufe: 'naechstes', punkte: liste('tickets', 'funktion', [
     ['Tickets erstellen', 'Ideen und Fehler im Hub erfassen, abstimmen und kommentieren.'],
     ['Status & Verwaltung', 'Neu, geplant, in Arbeit, erledigt oder abgelehnt; ein Admin verwaltet die Tickets.'],
     ['Markdown-Export', 'Tickets zur Weiterarbeit als Markdown exportieren.'],
   ]) },
-  { id: 'party-modi', titel: 'Päckchen 7 – Party-Modi', satz: 'Mehrere Partyspiele werden zu einem gemeinsamen Programm.', stufe: 'danach', paeckchen: '7', punkte: [] },
-  { id: 'zeichnen', titel: 'Päckchen 7b – Zeichnen', satz: 'Eigene Bilder, überraschende Beschriftungen und gemeinsames Raten.', stufe: 'danach', paeckchen: '7b', punkte: [
-    punkt('zeichenwerkzeug', 'Zeichenwerkzeug', 'funktion', 'Stift, Farben, Radierer und Rückgängig als gemeinsamer Baustein.'),
-    zeichnen('kritzelpost', 'Kritzelpost', 'Ein Begriff wandert als Bild und Beschreibung durch die Runde.', ['Alle beginnen mit einem eigenen kurzen Begriff oder Satz.', 'Danach wechseln Zeichnen und Beschreiben, sichtbar ist nur der letzte Beitrag.', 'Zum Schluss werden alle entstandenen Ketten gemeinsam aufgedeckt.']),
-    zeichnen('bildunterschrift', 'Bildunterschrift', 'Lustige Beschriftungen zu selbst gezeichneten Bildern finden.', ['In jeder Runde entsteht eine eigene Zeichnung als gemeinsame Vorlage.', 'Alle anderen schreiben verdeckt eine passende oder lustige Bildunterschrift.', 'Die Beiträge werden aufgedeckt und die Runde stimmt über ihre Favoriten ab.']),
-    zeichnen('malen-raten', 'Malen & Raten', 'Eine Person zeichnet einen Begriff, die anderen raten gleichzeitig.', ['Eine Person bekommt einen geheimen Begriff und zeichnet ihn ohne Buchstaben.', 'Alle anderen geben innerhalb des Zeitlimits ihre Vermutungen ab.', 'Richtige Lösungen und gelöste Zeichnungen bringen Punkte; der Zeichenplatz wechselt.']),
+  { id: 'party-modi', titel: 'Päckchen 7 – Party-Modi', satz: 'Mehrere Partyspiele werden zu einem gemeinsamen Programm.', stufe: 'erledigt', datum: '2026-10-29', paeckchen: '7', punkte: [
+    punkt('party-mix', 'Party-Mix', 'funktion', 'Gewählte Partyspiele in zufälliger Reihenfolge, gleicher Raum und laufende Gesamtwertung.', true),
+    punkt('party-turnier', 'Party-Turnier', 'funktion', 'Ein Turnier über mehrere Spiele mit Platzierungspunkten und Siegerehrung.', true),
+    punkt('eigene-playlist', 'Eigene Playlist', 'funktion', 'Reihenfolge, Rundenzahl und Regeln pro Spiel; Vorlagen im Browser und Fortschritt am Tisch speichern.', true),
+    punkt('team-duell', 'Team-Duell', 'funktion', 'Aufteilung in zwei feste Teams mit gemeinsamer Wertung bei geeigneten Partyspielen.', true),
   ] },
+  { id: 'zeichnen', titel: 'Päckchen 7b – Zeichnen', satz: 'Eigene Bilder, überraschende Beschriftungen und gemeinsames Raten.', stufe: 'jetzt', paeckchen: '7b', punkte: [] },
   { id: 'design-toene', titel: 'Design & Töne', satz: 'Jedes Spiel bekommt mehr Atmosphäre und passt besser auf jeden Bildschirm.', stufe: 'spaeter', punkte: liste('design', 'design', [
     ['Themen pro Spiel', 'Bilder, kurze Animationen und passende Töne für die verschiedenen Spiele.'],
     ['Anpassbare Spielfelder', 'Das Spielfeld passt sich der Bildschirmgröße an; im Querformat gibt es eine eigene Anordnung.'],

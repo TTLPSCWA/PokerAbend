@@ -1,0 +1,147 @@
+// Päckchen 7: ein Abendprogramm verbindet vorhandene Partyspiele. Spielregeln und geheime
+// Antworten bleiben in den jeweiligen Räumen; hier zählen nur abgeschlossene Ergebnisse.
+import { GAMES } from '../games/index.js';
+import { cleanText } from './security.js';
+import { shuffle } from './random.js';
+import { BOTS } from '../games/bots.js';
+
+export const PROGRAM_MODES = ['mix', 'turnier', 'playlist', 'team'];
+export const MAX_PROGRAM_GAMES = 12;
+const NO_TEAM = new Set(['werwolf', 'wer-bin-ich']);
+export const programGames = (team = false) => Object.values(GAMES).filter((g) => g.category === 'party' && (!team || !NO_TEAM.has(g.id)));
+export const programDefaults = () => Object.fromEntries(programGames().map((game) => {
+  const room = game.create('DEFAULTS', {}, () => {});
+  const settings = { ...room.settings };
+  room.dispose();
+  return [game.id, settings];
+}));
+export const programActive = (room) => ['running', 'between'].includes(room.partyProgram?.status);
+const clone = (value) => JSON.parse(JSON.stringify(value));
+
+export function normalizeProgram(input) {
+  if (!input || !PROGRAM_MODES.includes(input.mode)) throw new Error('Wähle einen gültigen Programm-Modus');
+  if (!Array.isArray(input.entries) || !input.entries.length || input.entries.length > MAX_PROGRAM_GAMES) throw new Error('Ein Programm braucht 1 bis 12 Spiele');
+  const allowed = new Set(programGames(input.mode === 'team').map((g) => g.id));
+  const entries = input.entries.map((entry) => {
+    if (!entry || !allowed.has(entry.game)) throw new Error('Dieses Spiel eignet sich nicht für diesen Party-Modus');
+    const game = GAMES[entry.game], settings = {};
+    const values = entry.settings && typeof entry.settings === 'object' ? entry.settings : {};
+    for (const option of game.options || []) {
+      if (!Object.hasOwn(values, option.key)) continue;
+      const value = values[option.key];
+      if (option.type === 'bool') {
+        if (typeof value !== 'boolean') throw new Error(`Ungültige Einstellung: ${option.label}`);
+        settings[option.key] = value;
+      } else {
+        const n = Number(value);
+        if (!Number.isSafeInteger(n) || n < option.min || n > option.max) throw new Error(`Ungültige Einstellung: ${option.label}`);
+        settings[option.key] = n;
+      }
+    }
+    return { game: game.id, settings };
+  });
+  const teams = {};
+  if (input.teams && typeof input.teams === 'object') for (const [id, team] of Object.entries(input.teams).slice(0, 30)) {
+    if (/^[a-f0-9]{12}$/.test(id) && ['a', 'b'].includes(team)) teams[id] = team;
+  }
+  return { name: cleanText(typeof input.name === 'string' ? input.name : '', 40) || 'Unser Party-Abend', mode: input.mode, entries, teams };
+}
+
+export function configureProgram(room, id, input) {
+  room.requireHost(id);
+  if (GAMES[room.game]?.category !== 'party') throw new Error('Abendprogramme gibt es an einem Party-Tisch');
+  if (room.busy || programActive(room)) throw new Error('Beende zuerst das laufende Programm');
+  const config = normalizeProgram(input);
+  room.partyProgram = { config, status: 'ready', index: 0, plan: [], roster: [], results: [], scores: {}, saved: {} };
+  room.say(`Abendprogramm „${config.name}“ vorbereitet`);
+}
+
+export function validateProgramPlayers(room, config, ids = room.seats) {
+  if (!ids?.length) throw new Error('Erst am Tisch mitspielen, dann das Programm starten');
+  for (const entry of config.entries) {
+    const game = GAMES[entry.game];
+    if (ids.length < game.minPlayers || ids.length > game.maxPlayers) throw new Error(`${game.name} braucht ${game.minPlayers}–${game.maxPlayers} Mitspieler; es sitzen ${ids.length} am Tisch`);
+    if (!BOTS[entry.game] && ids.some((id) => room.players.get(id)?.bot)) throw new Error(`${game.name} braucht menschliche Mitspieler; wähle ein anderes Spiel oder entferne die Bots`);
+  }
+  if (config.mode === 'team') {
+    if (ids.some((id) => !['a', 'b'].includes(config.teams[id]))) throw new Error('Ordne jeden Mitspieler einem Team zu');
+    if (!ids.some((id) => config.teams[id] === 'a') || !ids.some((id) => config.teams[id] === 'b')) throw new Error('Beide Teams brauchen mindestens einen Mitspieler');
+  }
+}
+
+export function beginProgram(room, id) {
+  room.requireHost(id);
+  const p = room.partyProgram;
+  if (!p || p.status !== 'ready' || room.busy) throw new Error('Bereite zuerst ein neues Programm vor');
+  validateProgramPlayers(room, p.config);
+  const next = clone(p);
+  next.plan = p.config.mode === 'mix' ? shuffle(clone(p.config.entries)) : clone(p.config.entries);
+  next.roster = room.seats.map((id) => {
+    const person = room.players.get(id);
+    return { id, name: person.name, avatar: person.avatar, team: p.config.teams[id] || null };
+  });
+  next.scores = Object.fromEntries(next.roster.map((person) => [person.id, 0]));
+  next.status = 'running';
+  return next;
+}
+
+export function nextProgramStep(room, id) {
+  room.requireHost(id);
+  if (room.busy) throw new Error('Die aktuelle Partie läuft noch');
+  const p = room.partyProgram;
+  if (!p || !['running', 'between'].includes(p.status)) throw new Error('Gerade wartet kein Programm auf die nächste Partie');
+  const next = clone(p);
+  if (p.status === 'between') next.index++;
+  if (!next.plan[next.index]) throw new Error('Das Programm ist bereits beendet');
+  const remaining = next.roster.filter((person) => room.seats.includes(person.id)).map((person) => person.id);
+  const entry = next.plan[next.index];
+  validateProgramPlayers(room, { ...next.config, entries: [entry] }, remaining);
+  next.status = 'running';
+  return next;
+}
+
+export function recordProgramResult(room) {
+  const p = room.partyProgram, result = room.result;
+  if (!p || p.status !== 'running' || !result || p.plan[p.index]?.game !== room.game || p.results.some((row) => row.index === p.index)) return false;
+  const members = result.players.filter((id) => p.roster.some((person) => person.id === id));
+  const value = (id) => Number.isFinite(Number(result.points[id])) ? Number(result.points[id]) : 0;
+  const dir = room.opts?.lowWins ? 1 : -1;
+  const ordered = [...members].sort((a, b) => (value(a) - value(b)) * dir);
+  // Gleichstände teilen den Platz. Eine Partie ohne Sieger und ohne Punkte zählt null.
+  const hasResult = result.winners.length || members.some((id) => value(id) !== 0);
+  const points = Object.fromEntries(ordered.map((id) => [id, hasResult ? members.length - ordered.filter((other) => (value(other) - value(id)) * dir < 0).length : 0]));
+  for (const [id, value] of Object.entries(points)) p.scores[id] = (p.scores[id] || 0) + value;
+  p.results.push({ index: p.index, game: room.game, points, raw: Object.fromEntries(members.map((id) => [id, value(id)])) });
+  p.status = p.index === p.plan.length - 1 ? 'done' : 'between';
+  room.say(p.status === 'done' ? `Abendprogramm „${p.config.name}“ beendet: ${p.roster.map((person) => `${person.name} ${p.scores[person.id] || 0}`).join(' · ')}` : `Abendprogramm: ${p.index + 1} von ${p.plan.length} Spielen gewertet`, 'summary');
+  return true;
+}
+
+export function publicProgram(room) {
+  const p = room.partyProgram;
+  if (!p) return null;
+  const standings = p.roster.map((person) => ({ ...person, points: p.scores[person.id] || 0 })).sort((a, b) => b.points - a.points || a.name.localeCompare(b.name, 'de'));
+  const teams = ['a', 'b'].map((id, i) => ({ id, name: `Team ${i + 1}`, points: standings.filter((person) => person.team === id).reduce((sum, person) => sum + person.points, 0) }));
+  const ranking = p.config.mode === 'team' ? teams : standings;
+  const best = Math.max(0, ...ranking.map((row) => row.points));
+  return { config: clone(p.config), status: p.status, index: p.index, plan: clone(p.plan), results: clone(p.results), standings, teams,
+    winners: p.status === 'done' ? ranking.filter((row) => row.points === best && best > 0).map((row) => row.name) : [] };
+}
+
+export function restoreProgram(data) {
+  if (!data || typeof data !== 'object') return null;
+  try {
+    const config = normalizeProgram(data.config);
+    if (!['ready', 'running', 'between', 'done', 'stopped'].includes(data.status)) return null;
+    if (!Array.isArray(data.plan) || data.plan.length > MAX_PROGRAM_GAMES || !Array.isArray(data.roster) || !Array.isArray(data.results)) return null;
+    if (['running', 'between', 'done'].includes(data.status) && !data.plan.length) return null;
+    if (data.roster.length > 30 || data.results.length > MAX_PROGRAM_GAMES || !data.scores || typeof data.scores !== 'object') return null;
+    if (data.roster.some((person) => !person || typeof person.id !== 'string' || typeof person.name !== 'string')) return null;
+    if (Object.values(data.scores).some((n) => !Number.isFinite(n))) return null;
+    if (data.results.some((row) => !row || !Number.isInteger(row.index) || row.index < 0 || row.index >= data.plan.length || !row.points || typeof row.points !== 'object')) return null;
+    if (!data.saved || typeof data.saved !== 'object') return null;
+    if (data.plan.length) normalizeProgram({ ...config, entries: data.plan });
+    if (!Number.isInteger(data.index) || data.index < 0 || data.index >= Math.max(1, data.plan.length)) return null;
+    return clone({ ...data, config });
+  } catch { return null; }
+}

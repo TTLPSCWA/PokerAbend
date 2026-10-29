@@ -278,10 +278,12 @@ function kitGame(def) {
     main.classList.toggle('ring', ring);
     const help = '<button class="help-btn" data-kit="help" aria-label="Kurzregeln und Hausregeln" title="Kurzregeln">?</button>';
     const center = S.phase === 'lobby' ? lobbyHTML() : def.main(S, { ring });
-    main.innerHTML = help + (ring ? ringHTML(center) : center) + (S.phase === 'over' && S.result && resultClosed !== S.roundNo ? resultHTML() : '');
+    main.classList.toggle('has-program', !!S.partyProgram);
+    main.innerHTML = help + programBannerHTML(S) + (ring ? ringHTML(center) : center) + (S.phase === 'over' && S.result && resultClosed !== S.roundNo ? resultHTML() : '');
 
     // Aktionsleiste
-    const dkey = def.dockKey ? def.dockKey(S, myTurn) : null;
+    const baseDockKey = def.dockKey ? def.dockKey(S, myTurn) : null;
+    const dkey = baseDockKey === null ? null : `${baseDockKey}|${S.partyProgram?.status || ''}|${S.partyProgram?.index ?? ''}`;
     if (dkey === null || dkey !== dockKeyPrev || !$('#kg-dock').firstChild) { $('#kg-dock').innerHTML = dockHTML(myTurn); dockKeyPrev = dkey; }
     document.documentElement.style.setProperty('--dock-h', $('#kg-dock').offsetHeight + 'px');
     setupHand();
@@ -340,9 +342,10 @@ function kitGame(def) {
       ${rows ? `<table class="standings"><thead><tr><th>Name</th><th class="num">Runde</th><th class="num">Abend (${esc(S.scoreLabel)})</th></tr></thead><tbody>${rows}</tbody></table>
         <p class="hint" style="margin:0">${S.lowWins ? 'Wenig Punkte sind gut.' : 'Viel ist gut.'}</p>` : ''}
       ${def.resultExtra ? def.resultExtra(S) : ''}
+      ${S.partyProgram?.status === 'done' ? programStandHTML(S) : ''}
       <div class="kg-over-acts">
         <button class="btn btn-ghost" data-kit="closeResult">Schließen</button>
-        ${host ? `<button class="btn" data-kit="switchPanel">Spiel wechseln</button><button class="btn btn-brass" data-kit="start" ${seatedCount() >= S.minPlayers ? '' : 'disabled'}>Nächste ${RW}</button>`
+        ${host && S.partyProgram?.status === 'done' ? '<button type="button" class="btn btn-brass" data-program="plan">Neues Programm planen</button>' : host ? `<button class="btn" data-kit="switchPanel">Spiel wechseln</button><button class="btn btn-brass" data-kit="start" ${seatedCount() >= S.minPlayers ? '' : 'disabled'}>${S.partyProgram?.status === 'between' ? 'Nächstes Programm-Spiel' : `Nächste ${RW}`}</button>`
           : '<span class="waiting">Der Host startet die nächste Runde.</span>'}
       </div></div></div>`;
   }
@@ -373,9 +376,12 @@ function kitGame(def) {
       parts.push(`<button class="btn btn-brass" data-kit="sit" ${seatedCount() >= S.maxPlayers ? 'disabled title="Alle Plätze sind besetzt"' : ''}>Mitspielen</button>`);
     }
     if (me?.isHost && S.phase !== 'playing') {
-      const enough = seatedCount() >= S.minPlayers;
-      parts.push(`<button class="btn btn-brass" data-kit="start" ${enough ? '' : `disabled title="Es müssen mindestens ${S.minPlayers} mitspielen"`}>${S.phase === 'over' ? 'Nochmal' : S.roundNo ? `Nächste ${RW}` : `${RW} starten`}</button>`);
-      if (S.phase === 'over') parts.push('<button class="btn" data-kit-panel="host">Anderes Spiel …</button>');
+      const p = S.partyProgram;
+      const pending = p?.status === 'ready' || programRunning(S);
+      const enough = pending ? seatedCount() > 0 : seatedCount() >= S.minPlayers;
+      const label = p?.status === 'ready' ? 'Abendprogramm starten' : p?.status === 'between' ? 'Nächstes Programm-Spiel' : programRunning(S) ? 'Partie wiederholen' : S.phase === 'over' ? 'Nochmal' : S.roundNo ? `Nächste ${RW}` : `${RW} starten`;
+      parts.push(p?.status === 'done' ? '<button type="button" class="btn btn-brass" data-program="plan">Programm planen</button>' : `<button class="btn btn-brass" data-kit="start" ${enough ? '' : `disabled title="Es müssen mindestens ${S.minPlayers} mitspielen"`}>${label}</button>`);
+      if (S.phase === 'over') parts.push(`<button class="btn" data-kit-panel="host">${programRunning(S) ? 'Programm verwalten' : 'Anderes Spiel …'}</button>`);
     }
     const row = `<div class="kg-dock-row">${parts.join('')}</div>`;
     return watch ? `<div class="kg-dock-in">${watch}${row}</div>` : row;
@@ -405,7 +411,7 @@ function kitGame(def) {
       if (atBottom || force) body.scrollTop = body.scrollHeight;
     } else if (panel === 'stand') {
       const winsCol = S.scoreLabel !== 'Siege'; // zählt das Spiel ohnehin Siege, nicht zweimal zeigen
-      body.innerHTML = `<table class="standings"><thead><tr><th></th><th>Name</th><th class="num">${esc(S.scoreLabel)}</th>${winsCol ? '<th class="num">Siege</th>' : ''}</tr></thead><tbody>
+      body.innerHTML = `${programStandHTML(S)}<table class="standings"><thead><tr><th></th><th>Name</th><th class="num">${esc(S.scoreLabel)}</th>${winsCol ? '<th class="num">Siege</th>' : ''}</tr></thead><tbody>
         ${S.standings.map((p, k) => `<tr><td><span class="rank ${k < 3 ? 'r' + (k + 1) : ''}" aria-label="Platz ${k + 1}">${k + 1}</span></td>
           <td><span class="mini-av">${avatarHTML(p)}</span> ${esc(p.name)}</td><td class="num">${p.score}</td>${winsCol ? `<td class="num">${p.wins}</td>` : ''}</tr>`).join('')}
         </tbody></table>
@@ -427,7 +433,7 @@ function kitGame(def) {
     } else if (panel === 'host') {
       if (!S.you?.isHost) { openPanel(null); return; }
       const others = S.players.filter((p) => p.id !== S.you.id);
-      const off = S.phase === 'playing' ? 'disabled' : '';
+      const off = S.phase === 'playing' || programRunning(S) ? 'disabled' : '';
       const opts = gameOptions();
       const nums = opts.filter((o) => o.type !== 'bool').map((o) => `<label class="field"><span>${esc(o.label)}</span>
         <input type="number" data-kit-set="${o.key}" min="${o.min}" max="${o.max}" value="${esc(S.settings[o.key])}" ${off}></label>`).join('');
@@ -438,7 +444,8 @@ function kitGame(def) {
           ${S.phase !== 'playing' ? `<button class="btn btn-brass" data-kit="start">${ICON.play} ${S.phase === 'over' ? 'Nochmal' : S.roundNo ? `Nächste ${RW}` : `${RW} starten`}</button>` : ''}
           <button class="btn btn-outline-red" data-kit="newGame" ${S.phase === 'playing' ? 'disabled title="Geht nur zwischen zwei Runden"' : ''}>Neues Spiel (Punkte auf null)</button>
         </div>
-        ${def.noBots ? '' : botControlsHTML(S, S.phase === 'playing')}
+        ${programControlsHTML(S)}
+        ${def.noBots ? '' : botControlsHTML(S, S.phase === 'playing' || programRunning(S))}
         ${unlistedSwitchHTML(S)}
         ${fields ? `<h3>Regeln an diesem Tisch</h3>${fields}<p class="hint" style="margin:0">Änderungen gehen nur zwischen den Runden. Die Standardwerte sind unsere üblichen Hausregeln – alle sehen die aktiven Regeln unter „?“.</p>` : ''}
         ${def.hostExtra ? def.hostExtra(S) : ''}
