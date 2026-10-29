@@ -146,7 +146,7 @@ Mit **Pfeiltasten/WASD** bewegen, auf dem Handy die **Richtungsknöpfe halten**.
 
 Spielzeit: 10–180 Sekunden, standardmäßig 60. Bei Bröckelboden und Laser-Hüpfer gewinnt der letzte Überlebende; nach Zeitablauf teilen sich die Überlebenden den Sieg. Jede überstandene Platzierung bringt 100 Punkte. Gleichzeitig Ausscheidende erhalten dieselbe Wertung; fallen alle sofort gleichzeitig aus, ist die Partie unentschieden.
 
-Wiederverbinden behält Figur und Punkte. Bei Tabwechsel, geöffnetem Menü oder ausbleibenden Eingaben bleibt die Figur stehen; die Runde läuft weiter. Der Host kann abbrechen oder den Tisch schließen. Ein Server-Neustart lädt die gespeicherten Teilnehmer, Einstellungen und abgeschlossenen Wertungen; die laufende Runde muss der Host neu starten. Im Abendprogramm bleiben bereits abgeschlossene Spiele gewertet. Die nummerierten Päckchen bis einschließlich 8 und das Ticket-Board sind gebaut; als Nächstes folgt Design & Töne auf der Roadmap.
+Wiederverbinden behält Figur und Punkte. Bei Tabwechsel, geöffnetem Menü oder ausbleibenden Eingaben bleibt die Figur stehen; die Runde läuft weiter. Der Host kann abbrechen oder den Tisch schließen. Ein Server-Neustart lädt die gespeicherten Teilnehmer, Einstellungen und abgeschlossenen Wertungen; die laufende Runde muss der Host neu starten. Im Abendprogramm bleiben bereits abgeschlossene Spiele gewertet. Die nummerierten Päckchen bis einschließlich 8, das Ticket-Board und Design & Töne sind gebaut; als Nächstes folgt „Spieleabend als Ganzes“ auf der Roadmap.
 
 | Spiel | Spieler | Kurz |
 | --- | --- | --- |
@@ -238,6 +238,9 @@ Gehen bei Skip-Bo während der Runde die Nachziehkarten aus, darf ein Spieler oh
 - Über der eigenen Hand steht immer ein Satz, was man gerade tun kann; spielbare Karten heben sich an und haben einen Goldrand. Karten lassen sich antippen oder (am Computer) auf die Ablage ziehen, auf dem Handy überlappt eine volle Hand – erstes Tippen vergrößert, zweites legt.
 - Nach jeder Runde zeigt ein großes Fenster die Punkte; der Host startet dort die nächste Runde oder wechselt das Spiel.
 - Unter „Ich“ (pro Browser gemerkt): **Farbsymbole** auf farbigen Karten (Rot ▲, Gelb ●, Grün ■, Blau ◆ – Standard an), **Töne** (Karten, Würfel, „UNO!“ – alles per Web Audio erzeugt, keine Dateien), **Animationen aus** (gilt auch bei „Bewegung reduzieren“ am Gerät), **Erste Schritte** (kurze Einführung beim ersten Spiel jeder Art), bei Mau-Mau das **Kartenblatt** (französisch oder deutsch).
+- **Kartengröße** unter „Ich“: Normal, Groß oder Sehr groß. Vergrößert die eigenen Handkarten in allen Kartenspielen einschließlich Poker/Omaha, wird im Browser gespeichert und verändert keine fremden Karten oder Ablagen.
+- **Design & Töne:** Alle 42 Spiele verwenden ihre Spielbilder auch am Tisch, mit passenden Akzentfarben und kurzen Aktionsklängen. „Ton ausprobieren“ hilft beim Einstellen; stumm bleibt alles stumm. Neue-Runde- und Aktionsimpulse beachten „Animationen aus“ und die Geräteeinstellung für reduzierte Bewegung.
+- **Querformat:** Bei 641 px oder mehr Breite und höchstens 560 px Höhe stehen Aktionen bei Karten-, Würfel- und Brettspielen rechts neben dem Tisch. Die Aktionsleiste lässt sich unabhängig scrollen. Reversi, Dame, Mühle, Hütchen und Vier gewinnt passen ihre Brettgröße an den verfügbaren Platz an; Schiffe zeigt die Meere und Kniffel Würfel und Punkteblatt nebeneinander. Zeichen-, Solo- und Echtzeitspiele nutzen ihre eigenen angepassten Spielflächen.
 
 ### Spiel wechseln, Nochmal
 
@@ -360,6 +363,7 @@ public/            Browser
   core.js            Verbindung, Dialoge, Hilfen, Bestenliste – lädt das gewählte Spiel nach
   hub.js, hub.css    Startseite: Profil, Navigation per URL-Hash, offene Tische, Spieleliste, Hosten, Bestenliste
   style.css          gemeinsames Aussehen (Tokens, Buttons, Leisten, Seitenleiste, Verlauf)
+  game-design.*     Spielmotive, Aktionsklänge, Handkartengröße und Querformat-Anordnung
   games/poker/       poker.js (Tisch-Oberfläche) und poker.css
   games/kit.js       gemeinsamer Rahmen der Rundenspiele (Kopfzeile, Spielerleiste, Seitenleiste, Ablegespiel-Bedienung)
   games/party-kit.*  gemeinsamer Baustein der Partyspiele: Fortschritt, Fragekarte, Eingabezeile, Rangliste (baut auf kit.js auf)

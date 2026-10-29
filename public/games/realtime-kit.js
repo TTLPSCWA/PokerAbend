@@ -12,6 +12,19 @@ function realtimeGame(def) {
     if (frame?.runId === next.runId && next.tick < frame.tick) return;
     if (frame?.runId !== next.runId) { keys.clear(); held.clear(); seq = 0; lastVector = ''; jump = false; }
     previous = frame?.runId === next.runId ? frame : next;
+    if (previous !== next && next.tick > previous.tick && kit.S.phase === 'playing') {
+      const oldMe = previous.bodies.find((p) => p.id === kit.S.you?.id);
+      const newMe = next.bodies.find((p) => p.id === kit.S.you?.id);
+      const cue = oldMe?.alive && newMe && (!newMe.alive || newMe.lives < oldMe.lives) ? 'hit'
+        : next.hazards?.some((h) => h.warning && !previous.hazards.some((old) => old.id === h.id)) ? 'warn'
+        : next.crown?.holder && next.crown.holder !== previous.crown?.holder ? 'crown'
+        : newMe && oldMe && newMe.jumpUntil > oldMe.jumpUntil ? 'jump'
+        : next.elapsed < 0 && Math.ceil(-next.elapsed / 1000) < Math.ceil(-previous.elapsed / 1000) ? 'countdown' : null;
+      if (cue) {
+        GameDesign.sound(def.id, cue);
+        if (cue === 'hit' || cue === 'warn') GameDesign.pulse($('#kg'), cue);
+      }
+    }
     frame = next; received = performance.now();
     updateLabels();
   }

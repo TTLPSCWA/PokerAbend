@@ -12,14 +12,15 @@ const password = 'BlockA-Testpasswort';
 // Passwortschutz und Rate-Limits laufen dabei unverändert mit.
 export const test = base.extend({
   ticketAdminPassword: ['', { option: true }],
-  app: async ({ ticketAdminPassword }, use) => {
+  createLimit: ['6', { option: true }],
+  app: async ({ ticketAdminPassword, createLimit }, use) => {
     const child = spawn(process.execPath, ['--input-type=module', '-e', `
       const { http } = await import('./server/index.js');
       const ready = () => console.log('TEST_READY:' + http.address().port);
       if (http.listening) ready(); else http.once('listening', ready);
     `], {
       cwd: root,
-      env: { ...process.env, PORT: '0', DATA_DIR: mkdtempSync(join(tmpdir(), 'spieleabend-ui-')), POKER_NO_DOTENV: '1', SITE_PASSWORD: password, TICKET_ADMIN_PASSWORD: ticketAdminPassword },
+      env: { ...process.env, PORT: '0', DATA_DIR: mkdtempSync(join(tmpdir(), 'spieleabend-ui-')), POKER_NO_DOTENV: '1', SITE_PASSWORD: password, TICKET_ADMIN_PASSWORD: ticketAdminPassword, CREATE_LIMIT: createLimit },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     let output = '';

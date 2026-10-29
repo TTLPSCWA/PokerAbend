@@ -270,6 +270,8 @@ const ringSVG = '<svg class="ring" viewBox="0 0 48 48" aria-hidden="true"><circl
 
 function render() {
   if (!S || $('#game').hidden) return;
+  GameDesign.apply($('#game'), session.game);
+  if (!$('.table-wrap > .scene-backdrop')) $('.table-wrap').insertAdjacentHTML('afterbegin', GameDesign.backdrop(session.game));
   document.documentElement.style.setProperty('--topbar', $('.topbar').offsetHeight + 'px');
   $('#room-code').textContent = S.code;
   $('#nav-host').hidden = !S.you?.isHost;
@@ -1024,6 +1026,7 @@ function renderPanel(force = false) {
       ${t('odds', 'Gewinnchancen anzeigen', { off: 'Der Host hat die Chancen an diesem Tisch ausgeschaltet', own: 'Wie wahrscheinlich deine Hand bis zum River besser wird', after: 'An diesem Tisch erst nach dem Showdown, für alle gezeigten Hände' }[S.settings.oddsMode])}
       ${t('bb', 'Beträge in Big Blinds')}
       ${t('sound', 'Töne', 'Mischen, Karten, Chips und ein Signal, wenn du dran bist')}
+      ${GameDesign.soundPreference()}
       ${t('intros', 'Erste Schritte zeigen', 'Kurze Einführung beim ersten Spiel jeder Art. Einschalten zeigt sie wieder.')}
       ${t('keys', 'Tastenkürzel', 'F = Fold, C = Check/Call, R = Raise')}
       ${t('calm', 'Animationen aus')}
@@ -1031,9 +1034,7 @@ function renderPanel(force = false) {
       ${t('foldJokes', 'Freche Sprüche beim Folden', 'Wenn du foldest, obwohl du checken könntest')}
       ${t('seatCards', 'Eigene Karten auch am eigenen Platz', 'Zusätzlich zur Aktionsleiste. Am Handy wird der eigene Platz nicht gezeigt.')}
       </div>
-      <label class="field"><span>Kartengröße (deine Karten)</span>
-        <select data-pref="cardSize">${[['normal', 'normal'], ['large', 'groß'], ['xl', 'sehr groß']].map(([v, l]) => `<option value="${v}" ${prefs.cardSize === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
-      </label>
+      ${GameDesign.cardPreference()}
       ${padOn ? `<div class="notice" role="note"><b>Controller erkannt</b><br>A = Check/Call · B = Fold · X = Raise · LB/RB = Betrag − / + · Start = dieses Menü. Im Dialog: A = OK, B = Abbrechen.</div>` : ''}
       <label class="field"><span>Tisch</span>
         <select data-pref="theme"><option value="classic" ${prefs.theme === 'classic' ? 'selected' : ''}>Klassisch – grüner Filz</option><option value="night" ${prefs.theme === 'night' ? 'selected' : ''}>Nacht – blauer Filz</option></select>

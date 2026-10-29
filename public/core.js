@@ -17,7 +17,7 @@ const store = {
 // Jedes Spiel bringt seine Standardwerte mit (usePrefs), gespeichert wird alles zusammen.
 const prefs = store.get('poker:prefs', {});
 function usePrefs(defaults) { for (const [k, v] of Object.entries(defaults)) if (!(k in prefs)) prefs[k] = v; }
-usePrefs({ sound: true, calm: false });
+usePrefs({ sound: true, calm: false, cardSize: 'normal' });
 function savePrefs() { store.set('poker:prefs', prefs); current?.onPrefs?.(); }
 
 // ---------- Zustand ----------

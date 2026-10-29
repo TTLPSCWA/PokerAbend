@@ -1,0 +1,57 @@
+/* Spielmotive und gemeinsame Lesbarkeit. Vorhandene Bretter behalten ihre eigenen Farben. */
+[data-scene] .topbar { border-bottom-color:var(--scene-accent); }
+[data-scene] .code-chip { border-color:color-mix(in srgb,var(--scene-accent) 35%,transparent); }
+.scene-backdrop { position:absolute; inset:0; z-index:-1; overflow:hidden; pointer-events:none; opacity:.09; background:repeating-linear-gradient(var(--scene-angle),transparent 0 54px,#ffffff0b 54px 55px); }
+.scene-backdrop > svg { position:absolute; width:min(58%,440px); height:auto; max-width:none; max-height:none; left:50%; top:50%; transform:translate(-50%,-50%) rotate(-8deg); opacity:.55; }
+[data-scene-family='board'] .scene-backdrop { background-image:linear-gradient(#ffffff0e 1px,transparent 1px),linear-gradient(90deg,#ffffff0e 1px,transparent 1px); background-size:52px 52px; }
+[data-scene-family='dice'] .scene-backdrop { background-image:radial-gradient(circle,#ffffff70 1.5px,transparent 2px); background-size:28px 28px; }
+[data-scene-family='drawing'] .scene-backdrop { background-image:repeating-linear-gradient(0deg,transparent 0 31px,#ffffff30 31px 32px); }
+[data-scene-family='arena'] .scene-backdrop { background-image:linear-gradient(#9bbddd22 1px,transparent 1px),linear-gradient(90deg,#9bbddd22 1px,transparent 1px); background-size:40px 40px; }
+[data-scene] .kg-main { isolation:isolate; background-color:var(--scene-dark); }
+.kg[data-scene] { --felt-light:var(--scene-light); --felt:var(--scene-dark); }
+.scene-hero { display:grid; justify-items:center; gap:10px; margin:0 0 18px; }
+.scene-hero > svg { width:104px; height:104px; max-width:none; max-height:none; filter:drop-shadow(0 10px 16px #0005); }
+.scene-hero > span { color:var(--scene-accent); font-size:11px; letter-spacing:.12em; text-transform:uppercase; }
+[data-scene] .kg-lobby { max-width:520px; padding:24px; border:1px solid #ffffff1c; border-radius:24px; background:#0d1d17ba; box-shadow:0 12px 44px #0003; }
+[data-scene] .kg-lobby h2 { margin-top:0; }
+.scene-preference select { max-width:220px; }
+.scene-preference small { color:var(--text-2); }
+[data-scene] .kg-hand { max-width:100%; min-width:0; }
+#kg .rv-board,#kg .dm-board { width:min(100%,520px,var(--board-space,70vh)); }
+#kg .mu-board { width:min(100%,560px,var(--board-space,70vh)); min-width:0; }
+#kg .hb-wrap { width:min(100%,560px,var(--board-space,70vh)); min-width:0; }
+#kg .vg-board { width:min(100%,540px,calc(var(--board-space,60vh) * 7 / 6)); }
+/* Poker nutzt dieselbe Größenwahl wie die übrigen Kartenhände. */
+.mine { min-width:0; }
+.mine .cards { max-width:100%; overflow-x:auto; padding-block:6px; }
+.table-wrap { isolation:isolate; }
+.table-wrap > .scene-backdrop { opacity:.06; }
+@media (prefers-reduced-motion:no-preference) { body:not(.calm) .scene-hero > svg { animation:scene-arrive .35s ease-out both; } }
+@keyframes scene-arrive { from { opacity:0; transform:translateY(8px) rotate(-4deg); } to { opacity:1; transform:none; } }
+@media(max-width:640px) { .scene-hero > svg { width:76px; height:76px; } [data-scene] .kg-lobby { padding:20px; } }
+/* Im Querformat liegen die Aktionen neben dem Tisch; sie bleiben beim Scrollen erreichbar. */
+@media(max-height:560px) and (min-width:641px) and (orientation:landscape) {
+  .kg[data-scene-layout='table'] { grid-template-columns:minmax(0,1fr) minmax(240px,32%); grid-template-rows:auto auto minmax(0,1fr); }
+  .kg[data-scene-layout='table'] > .topbar { grid-area:1/1/2/3; }
+  .kg[data-scene-layout='table'] .topnav .nav-btn { min-width:44px; padding-inline:10px; }
+  .kg[data-scene-layout='table'] .topnav .nav-btn span { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+  .kg[data-scene-layout='table'] > .kg-players { grid-area:2/1/3/3; }
+  .kg[data-scene-layout='table'] > .kg-main { grid-area:3/1/4/2; padding:12px; }
+  .kg[data-scene-layout='table'] > .kg-dock { grid-area:3/2/4/3; overflow:auto; border-top:0; border-left:1px solid var(--gold-line); padding:12px; }
+  .kg[data-scene-layout='table'] .kg-dock-in { gap:10px; }
+  .kg[data-scene-layout='table'] .kg-acts { gap:6px; }
+  .kg[data-scene-layout='table'] .kg-acts .btn { min-height:44px; }
+  .kg[data-scene-layout='table'] .kg-hand { padding-top:14px; }
+  .kg[data-scene-layout='table'] .help-btn { top:6px; right:6px; }
+  .kg[data-scene-layout='table'] .kg-lobby { padding:14px; }
+  .kg[data-scene-layout='table'] .scene-hero { grid-template-columns:50px auto; align-items:center; gap:12px; margin-bottom:10px; }
+  .kg[data-scene-layout='table'] .scene-hero > svg { width:50px; height:50px; }
+  .kg-schiffe .sv-two { flex-wrap:nowrap; gap:10px; }
+  .kg-schiffe .sv-sea,.kg-schiffe .sv-sea.small { width:48%; }
+  .kg-schiffe .sv-ships { gap:4px; }
+  .kg-kniffel .kn-table { grid-template-columns:minmax(130px,.6fr) minmax(0,1.4fr); align-items:start; }
+  .kg-kniffel .kn-tray { min-width:0; padding:10px; }
+  .kg-kniffel .kn-dice { flex-wrap:wrap; justify-content:center; gap:6px; }
+  .kg-kniffel .kn-dice .die.big { --d:40px; }
+  .kg-kniffel .kn-sheet-wrap { min-width:0; }
+}

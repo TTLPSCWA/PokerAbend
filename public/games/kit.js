@@ -100,8 +100,8 @@ const deckPrefHTML = () => `<label class="toggle"><span>Kartenblatt<small>Franz�
       </select></label>`;
 
   // Welcher Ton passt zu einer Aktion („legt Herz König“, „UNO!“, „würfelt 5“ …)? Wichtigeres zuerst.
-const ACT_SOUNDS = [[/^(UNO|Mau|31|Feuer|Kniffel)!/, 'call'], [/^Box zu!/, 'call'], [/^alle sechs!/, 'call'], [/^Mühle!/, 'call'], [/^setzt$/, 'chips'], [/^Niete/, 'end'], [/^schreibt/, 'done'], [/^\+\d/, 'chips'], [/^schließt/, 'chips'], [/^klopft/, 'drum'], [/versenkt!$/, 'drum'], [/^Blackjack!/, 'call'], [/über 21/, 'end'], [/ Treffer$/, 'hit'], [/ Wasser$/, 'splash'], [/^Erwischt/, 'catch'], [/schlägt/, 'hit'], [/zweifelt/, 'drum'], [/^Phase d+ ✓/, 'done'],
-  [/setzt aus/, 'skip'], [/würfelt/, 'dice'], [/^(zieht|nimmt Ablage|erwischt)/, 'draw'], [/^(legt|wirft ab|ungesehen|tauscht|Karte:|verdoppelt|teilt)/, 'card'], [/^(setzt d|versichert|kauft)/, 'chips']];
+const ACT_SOUNDS = [[/^(UNO|Mau|31|Feuer|Kniffel)!/, 'call'], [/^Box zu!/, 'call'], [/^alle sechs!/, 'call'], [/^Mühle!/, 'call'], [/^setzt$/, 'chips'], [/^Niete/, 'end'], [/^schreibt/, 'done'], [/^\+\d/, 'chips'], [/^schließt/, 'chips'], [/^klopft/, 'drum'], [/versenkt!$/, 'drum'], [/^Blackjack!/, 'call'], [/über 21/, 'end'], [/ Treffer$/, 'hit'], [/ Wasser$/, 'splash'], [/^Erwischt/, 'catch'], [/schlägt/, 'hit'], [/zweifelt/, 'drum'], [/^Phase \d+ ✓/, 'done'],
+  [/setzt aus/, 'skip'], [/würfelt/, 'dice'], [/^(zieht|nimmt Ablage|erwischt)/, 'draw'], [/^(legt|wirft ab|ungesehen|tauscht|Karte:|verdoppelt|teilt)/, 'card'], [/^(setzt \d|versichert|kauft)/, 'chips']];
 function actSound(acts, prev) {
   const seen = Math.max(0, ...Object.values(prev || {}).map((a) => a.n));
   const fresh = Object.values(acts || {}).filter((a) => a.n > seen).map((a) => a.text);
@@ -253,6 +253,7 @@ function kitGame(def) {
 
   function render() {
     if (!isMine() || !$('#kg')) return;
+    GameDesign.apply($('#kg'), def.id);
     document.documentElement.style.setProperty('--topbar', $('#kg .topbar').offsetHeight + 'px');
     document.body.classList.toggle('calm', !!prefs.calm);
     document.body.classList.toggle('marks', !!prefs.marks);
@@ -279,16 +280,22 @@ function kitGame(def) {
     const help = '<button class="help-btn" data-kit="help" aria-label="Kurzregeln und Hausregeln" title="Kurzregeln">?</button>';
     const center = S.phase === 'lobby' ? lobbyHTML() : def.main(S, { ring });
     main.classList.toggle('has-program', !!S.partyProgram);
-    if (!def.keepMain?.(S)) main.innerHTML = help + programBannerHTML(S) + (ring ? ringHTML(center) : center) + (S.phase === 'over' && S.result && resultClosed !== S.roundNo ? resultHTML() : '');
+    if (!def.keepMain?.(S)) main.innerHTML = GameDesign.backdrop(def.id) + help + programBannerHTML(S) + (ring ? ringHTML(center) : center) + (S.phase === 'over' && S.result && resultClosed !== S.roundNo ? resultHTML() : '');
 
     // Aktionsleiste
     const baseDockKey = def.dockKey ? def.dockKey(S, myTurn) : null;
     const dkey = baseDockKey === null ? null : `${baseDockKey}|${S.partyProgram?.status || ''}|${S.partyProgram?.index ?? ''}`;
     if (dkey === null || dkey !== dockKeyPrev || !$('#kg-dock').firstChild) { $('#kg-dock').innerHTML = dockHTML(myTurn); dockKeyPrev = dkey; }
-    document.documentElement.style.setProperty('--dock-h', $('#kg-dock').offsetHeight + 'px');
+    GameDesign.scaleCards($('#kg'));
     setupHand();
+    document.documentElement.style.setProperty('--dock-h', $('#kg-dock').offsetHeight + 'px');
     if (panel) renderPanel();
     def.afterRender?.(S);
+    GameDesign.fit($('#kg'));
+    GameDesign.watch($('#kg'), () => {
+      setupHand();
+      document.documentElement.style.setProperty('--dock-h', $('#kg-dock').offsetHeight + 'px');
+    });
   }
 
   // Hand nach dem Zeichnen: Ziehen auf die Ablage (Maus) und Überlappen bei vielen Karten (Handy)
@@ -315,6 +322,7 @@ function kitGame(def) {
     const n = seatedCount();
     const enough = n >= S.minPlayers;
     return `<div class="kg-lobby">
+      ${GameDesign.hero(def.id)}
       <h2>${esc(def.name)}</h2>
       <p>${n} von höchstens ${S.maxPlayers} spielen mit${enough ? '.' : ` – es braucht mindestens ${S.minPlayers}.`}</p>
       <p class="hint">${S.you?.isHost ? (enough ? 'Du bist Host: Starte die Runde unten.' : 'Teil den Link oben, damit die anderen dazukommen.') : 'Der Host startet die Runde.'}
@@ -426,6 +434,8 @@ function kitGame(def) {
       body.innerHTML = `<div class="kg-switches">
         ${t('marks', 'Farbsymbole auf Karten', `Jede Farbe hat zusätzlich eine Form: ${Object.keys(MARK_SHAPE).map((k) => `${colorMark(k)} ${MARK_NAME[k]}`).join(', ')}`)}
         ${t('sound', 'Töne', 'Karten, Würfel, „UNO!“ und ein Signal, wenn du dran bist')}
+        ${GameDesign.soundPreference()}
+        ${GameDesign.scene(def.id).family === 'cards' ? GameDesign.cardPreference() : ''}
         ${t('calm', 'Animationen aus', 'Karten, Würfel und Figuren springen ohne Bewegung an ihren Platz. Ist am Gerät „Bewegung reduzieren“ an, gilt das sowieso.')}
         ${t('intros', 'Erste Schritte zeigen', 'Kurze Einführung beim ersten Spiel jeder Art. Einschalten zeigt sie wieder.')}
         ${def.prefs ? def.prefs() : ''}
@@ -579,17 +589,20 @@ function kitGame(def) {
       if (!now) document.title = 'Spieleabend';
       if (!now || !before) peekKey = null;
       // Spiel-Töne: neue Runde = mischen, Rundenende = Sieg oder Schluss, sonst passend zur letzten Aktion
-      if (prev && prev.roundNo !== st.roundNo && st.phase === 'playing') sfx('shuffle');
-      else if (prev?.phase === 'playing' && st.phase === 'over') sfx(st.result?.winners?.includes(st.you?.id) ? 'win' : 'end');
-      else if (prev && prev.roundNo === st.roundNo) { const name = def.sounds?.(st, prev) || actSound(st.acts, prev.acts); if (name) sfx(name); }
+      let cue = null;
+      if (prev && prev.roundNo !== st.roundNo && st.phase === 'playing') cue = 'shuffle';
+      else if (prev?.phase === 'playing' && st.phase === 'over') cue = st.result?.winners?.includes(st.you?.id) ? 'win' : 'end';
+      else if (prev && prev.roundNo === st.roundNo) cue = def.sounds?.(st, prev) || actSound(st.acts, prev.acts);
+      if (cue) GameDesign.sound(def.id, cue);
       sortHand(st);
       clockOffset = (st.now || Date.now()) - Date.now();
       def.onState?.(st, prev);
       render();
+      if (cue) GameDesign.pulse($('#kg'), cue);
       // Neues Rundenende: Fokus ins Ergebnisfenster (Tastatur, Bildschirmleser)
       if (st.phase === 'over' && prev?.phase === 'playing') $('#kg .kg-over .btn-brass, #kg .kg-over .btn')?.focus();
     },
-    onPrefs() { if (S) sortHand(S); render(); },
+    onPrefs() { dockKeyPrev = null; if (S) sortHand(S); render(); },
   });
   registerGame(def.id, mod);
   return { render, get S() { return S; }, lookSheet };

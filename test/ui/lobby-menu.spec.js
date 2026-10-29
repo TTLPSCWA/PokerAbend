@@ -12,5 +12,6 @@ test('Hub: Spiele filtern, Hosten-Panel schließen, Roadmap über Navigation öf
   const nav = page.viewportSize().width < 641 ? '#hub-tabbar' : '#side-nav';
   await page.locator(nav).getByRole('link', { name: 'Roadmap', exact: true }).click();
   await expect(page).toHaveTitle('Roadmap – Spieleabend');
+  await expect(page.locator('.roadmap-card.current')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
