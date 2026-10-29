@@ -244,6 +244,8 @@ Gehen bei Skip-Bo während der Runde die Nachziehkarten aus, darf ein Spieler oh
 
 ### Spiel wechseln, Nochmal
 
+Päckchen 9 beginnt mit **6 nimmt!** (2–10): zehn verdeckte Handkarten, vier Reihen, aufsteigende Auflösung und Hornochsen bis zum einstellbaren Ziel (66). Alle wählen gleichzeitig; nach Ablauf wählt der Server zufällig. Eine zu kleine Karte verlangt eine Reihenwahl. Profi verkleinert den Kartensatz und erlaubt die Wahl zwischen passenden Reihen; Taktik zeigt den Kartenpool ohne Handzuordnung. Bots bewerten Reihenlänge, Abstand und Hornochsen. Reconnect behält laufende Auswahlen; Snapshots speichern Teilnehmer, Hausregeln und abgeschlossene Wertungen zwischen Partien.
+
 Nach einer Runde kann der Host im Host-Menü unter „Spiel wechseln“ ein anderes Spiel wählen: gleicher Raum, gleicher Code, alle bleiben drin, wer mitgespielt hat, sitzt wieder. Der bisherige Stand kommt als eine Zeile in den Verlauf (Poker-Chips nimmt man nicht mit). Die Browser aller Leute laden kurz neu und landen im neuen Spiel. „Nochmal“ startet bei den Rundenspielen die nächste Runde desselben Spiels.
 
 ### Raum verlassen, Spiel beenden, Stapel ansehen

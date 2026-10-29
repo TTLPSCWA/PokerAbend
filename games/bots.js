@@ -19,6 +19,7 @@ import { evaluate as pokerDiceEval } from './wuerfelpoker/room.js';
 import { botMove as reversiMove } from './reversi/room.js';
 import { botMove as dameMove } from './dame/room.js';
 import { LETTERS as PAKET_LETTERS } from './tickendes-paket/room.js';
+import { botMove as sechsNimmt } from './sechs-nimmt/room.js';
 
 const one = (list, rng) => list[Math.floor(rng() * list.length)];
 
@@ -488,4 +489,4 @@ function tickendesPaket(room, id, rng) {
 }
 void PAKET_LETTERS;
 
-export const BOTS = { broeckelboden: partyBot, kronenjagd: partyBot, 'laser-huepfer': partyBot, 'tickendes-paket': tickendesPaket, werwolf: partyBot, zahlenzoo: partyBot, 'gedaechtnis-kueche': partyBot, pfeilfieber: partyBot, sortierstation: partyBot, wuerfelpoker, luegenwuerfel, chicago: (room, id) => room.throwDice(id), reversi: (room, id, rng) => room.place(id, reversiMove(room.board, id, rng)), dame: (room, id, rng) => { const m = dameMove(room.board, room.color(id), room.chain, rng); return room.move(id, m.from, m.to); }, domino, omaha: poker, mogeln, praesident, durak, poker, maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, schiffe, blackjack, kniffel, viergewinnt, shutthebox, zehntausend, muehle, schaetzmeister, schlagfertig: partyBot, werhatdasgesagt: partyBot };
+export const BOTS = { 'sechs-nimmt': sechsNimmt, broeckelboden: partyBot, kronenjagd: partyBot, 'laser-huepfer': partyBot, 'tickendes-paket': tickendesPaket, werwolf: partyBot, zahlenzoo: partyBot, 'gedaechtnis-kueche': partyBot, pfeilfieber: partyBot, sortierstation: partyBot, wuerfelpoker, luegenwuerfel, chicago: (room, id) => room.throwDice(id), reversi: (room, id, rng) => room.place(id, reversiMove(room.board, id, rng)), dame: (room, id, rng) => { const m = dameMove(room.board, room.color(id), room.chain, rng); return room.move(id, m.from, m.to); }, domino, omaha: poker, mogeln, praesident, durak, poker, maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, schiffe, blackjack, kniffel, viergewinnt, shutthebox, zehntausend, muehle, schaetzmeister, schlagfertig: partyBot, werhatdasgesagt: partyBot };

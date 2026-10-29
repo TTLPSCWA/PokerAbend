@@ -11,6 +11,7 @@ const liste = (prefix, art, rows, erledigt = false) => rows.map(([titel, text], 
 const spiele = (ids) => ids.map((id) => punkt(id, GAMES[id].name, 'spiel', GAMES[id].description, true));
 
 export const ROADMAP = [
+  { id: 'monopoly-co', titel: 'Päckchen 9 – Monopoly & Co.', satz: 'Verdeckt Karten wählen, Grundstücke sammeln und eine eigene Stadt bespielen.', stufe: 'jetzt', paeckchen: '9', punkte: spiele(['sechs-nimmt']) },
   { id: 'hub-paket', titel: 'Hub-Paket: Roadmap & Gerade online', satz: 'Planung und Mitspieler bekommen ihren festen Platz im Hub.', stufe: 'erledigt', datum: '2026-10-29', punkte: [
     punkt('roadmap-seite', 'Roadmap im Hub', 'funktion', 'Etappen mit Filtern, Fortschritt und Regeln für geplante Spiele.', true),
     punkt('gerade-online', 'Gerade online', 'funktion', 'Sehen, wer da ist, zuschauen oder mitspielen – mit privater Sichtbarkeit.', true),
@@ -33,7 +34,7 @@ export const ROADMAP = [
     ['Anpassbare Spielfelder', 'Das Spielfeld passt sich der Bildschirmgröße an; im Querformat gibt es eine eigene Anordnung.'],
     ['Kartengröße unter „Ich“', 'Normal, groß oder sehr groß pro Spieler einstellen.'],
   ], true) },
-  { id: 'spieleabend', titel: 'Spieleabend als Ganzes', satz: 'Aus einzelnen Partien wird ein geplanter Abend mit gemeinsamer Erinnerung.', stufe: 'jetzt', punkte: liste('abend', 'funktion', [
+  { id: 'spieleabend', titel: 'Spieleabend als Ganzes', satz: 'Aus einzelnen Partien wird ein geplanter Abend mit gemeinsamer Erinnerung.', stufe: 'naechstes', punkte: liste('abend', 'funktion', [
     ['Abend-Modus', 'Alle Spiele tragen Platzierungspunkte zur gemeinsamen Abendwertung bei.'],
     ['Abend-Rückblick', 'Ergebnisse und besondere Momente eines Abends zusammen ansehen.'],
     ['Termin & Spiele-Abstimmung', 'Einen Termin planen, Zusagen sammeln und über die Spiele abstimmen.'],

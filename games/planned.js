@@ -12,15 +12,23 @@
 // Ablauf: Wird ein Spiel gebaut, kommt es nach games/<id>/, wird in games/index.js registriert und fliegt hier raus.
 // Bei jedem fertigen Päckchen/jeder fertigen Funktion auch games/roadmap.js pflegen:
 // Etappe mit dem Commit-Datum auf 'erledigt', die nächste auf 'jetzt' setzen.
-// Die nummerierten Päckchen bis einschließlich 8, das Ticket-Board und Design & Töne sind fertig. Als Nächstes folgt Spieleabend als Ganzes aus der Roadmap.
+// Päckchen 9 ist in Arbeit. Fertig: 6 nimmt!; danach Monopoly Deal und Monopoly.
 // Ist ein Päckchen fertig, werden die Einträge des nächsten Päckchens auf status 'next' gesetzt. (Fertig: Päckchen 2b – Schlagfertig, Wer hat das gesagt? – Päckchen 4 – Mogeln, Präsident, Durak, Omaha – Päckchen 5 – Würfelpoker, Lügenwürfel, Chicago, Reversi, Dame, Domino – und Päckchen 6 – Zahlenzoo, Gedächtnisküche, Pfeilfieber, Sortierstation, Tickendes Paket, Werwolf samt Bauart-B-Baustein.)
-import { fan, cardsChip, dice, stairs, swim, bubbles, numberLine, flapBox, battle, mill, connect4, pawns, reversi, checkers, dominoes, hexBoard, chess, territory, glyph } from './art-kit.js';
+import { fan, cardsChip, dice, stairs, swim, bubbles, numberLine, flapBox, battle, mill, connect4, pawns, reversi, checkers, dominoes, hexBoard, chess, territory, glyph, propertyCards, cityBoard } from './art-kit.js';
 
 const spiel = (o) => ({ type: 'game', status: 'planned', houseRules: [], ...o });
 const funktion = (o) => ({ type: 'feature', status: 'planned', ...o });
 const CARD = { fill: '#F7F3E8' };
 
 export const PLANNED = [
+  spiel({ id: 'monopoly-deal', name: 'Monopoly Deal', category: 'karten', minPlayers: 2, maxPlayers: 5, duration: 20, paeckchen: '9', status: 'next',
+    description: 'Grundstücke sammeln, Mieten verlangen und mit drei vollständigen Farbgruppen gewinnen.', art: propertyCards(),
+    rules: ['Ziehe zu Zugbeginn zwei Karten und spiele bis zu drei Karten aus.', 'Lege Grundstücke aus, zahle Geld auf die Bank oder spiele eine Aktion.', 'Zahle Forderungen mit deiner Bank oder Auslage, ohne Wechselgeld.', 'Drei volle Sätze in verschiedenen Farben gewinnen sofort.'],
+  }),
+  spiel({ id: 'monopoly', name: 'Monopoly', category: 'brett', minPlayers: 2, maxPlayers: 8, duration: 90, paeckchen: '9', status: 'next',
+    description: 'Eine eigene Spieleabend-Stadt kaufen, bebauen, versteigern und miteinander handeln.', art: cityBoard(),
+    rules: ['Würfle und ziehe über das Brett. Über Los bringt 200.', 'Kaufe freie Grundstücke oder lass sie versteigern; Besitzer kassieren Miete.', 'Baue gleichmäßig in vollständigen Farbgruppen und verwalte Hypotheken.', 'Handelt miteinander. Wer als Letzter zahlungsfähig bleibt, gewinnt.'],
+  }),
   spiel({ id: 'omaha-hi-lo', name: 'Omaha Hi/Lo', category: 'karten', minPlayers: 2, maxPlayers: 9, duration: 35, paeckchen: 'spaeter',
     description: "High- und Low-Hand teilen sich den Pot, gespielt mit vier eigenen Karten.",
     rules: ["Jeder bekommt vier verdeckte Karten, fünf Gemeinschaftskarten folgen in drei Setzrunden.","Für jede Wertung zählen genau zwei eigene und drei Gemeinschaftskarten.","Die beste High-Hand gewinnt die Hälfte; eine Low-Hand braucht fünf verschiedene Werte bis acht.","Gibt es keine gültige Low-Hand, gewinnt die High-Hand den gesamten Pot."], art: fan([{ kind: 'heart' }, { kind: 'diamond' }, { kind: 'bars' }]),
