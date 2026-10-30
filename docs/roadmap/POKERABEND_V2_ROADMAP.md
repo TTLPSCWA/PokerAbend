@@ -21,6 +21,22 @@ Ein dauerhaftes, optionales Discord-Accountsystem mit verifizierter Identität f
 | V2-09 | critical | Regressionstests, Sicherheit und Datenschutz | V2-03, V2-04, V2-05, V2-06, V2-07, V2-08 | Geplant |
 | V2-10 | high | Deployment-Plan, Feature-Flags und Übergabe | V2-09 | Geplant |
 
+## Erweiterung vom 30. Oktober 2026 – weitere Wünsche (7 neue Arbeitspakete)
+
+**Alle Ergänzungen sind nur geplant.** Einzelheiten und Akzeptanzkriterien siehe [plan.json](./plan.json) und [V2_ADDENDUM_2026-10-30.md](./V2_ADDENDUM_2026-10-30.md).
+
+| ID | Priorität | Inhalt | Voraussetzung | Status |
+|---|---|---|---|---|
+| V2-11 | later | Strategiebrettspiel Risiko (eigenständige Umsetzung) | V2-00 | Geplant |
+| V2-12 | later | Siedler von Catan-inspiriertes Hexfeld-Aufbauspiel | V2-00 | Geplant |
+| V2-13 | medium | Erfolge & Errungenschaften deutlich ausbauen | V2-03, V2-04 | Geplant |
+| V2-14 | high | Gerade-online-Status und Presence verbessern | V2-01, V2-05, V2-07 | Geplant |
+| V2-15 | high | Mehr Benutzer-Einstellungen: Anzeige, Filter und Bedienung | V2-05 | Geplant |
+| V2-16 | medium | Bots mit wählbarem Schwierigkeitsgrad | V2-01 | Geplant |
+| V2-17 | high | Admin-Zentrale: Rückblicke, Bestenlisten und Daten moderieren | V2-02, V2-03, V2-07 | Geplant |
+
+**Wichtig:** `Risiko-Würfeln` in `games/planned.js` ist nicht das neue Strategiebrettspiel Risiko. Die Strategie- und Hexfeldspiele erfordern eigenständige Grafik/Namen und eine Prüfung von Marken-/Designrechten. Der vorhandene Ticket-Admin ist nicht automatisch Plattform-Admin; die neue Admin-Zentrale soll mit nachweisbaren Berechtigungen und Audit arbeiten.
+
 ## Umsetzungsgrenzen
 - Namen dürfen weder zur Accountidentifizierung noch zur Bot-Filterung oder Rechtezuordnung dienen.
 - Alte namensbasierte Bestenlisten historisch getrennt und unverändert archivieren, nicht namensgleich einem Discord-Konto zuschreiben.
