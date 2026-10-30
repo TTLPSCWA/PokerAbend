@@ -19,8 +19,10 @@ export function mercyDeck() {
   return codes.map((c, i) => physical([c], i));
 }
 export function allWildDeck() {
-  // 56 einfache Farbwahlkarten und je acht der sieben Aktionsarten.
-  const codes = Array(56).fill('Ww'); for (const v of ['R', 'S', 'K', 'D', 'F', 'T', 'X']) codes.push(...Array(8).fill(v + 'w'));
+  // HHL33-Packung: 54 einfache Karten; die Aktionsarten sind unterschiedlich häufig.
+  // Fotografierter Kartenumfang: https://gigazine.net/news/20220514-uno-all-wild/
+  const codes = [];
+  for (const [v, count] of [['W', 54], ['R', 14], ['S', 14], ['K', 6], ['D', 10], ['F', 6], ['T', 4], ['X', 4]]) codes.push(...Array(count).fill(v + 'w'));
   return codes.map((c, i) => physical([c], i));
 }
 

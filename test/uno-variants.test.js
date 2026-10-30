@@ -18,6 +18,8 @@ test('UNO-Variantendecks: 112 doppelseitige Flip-, 168 No-Mercy- und 112 All-Wil
   const f = flipDeck(); assert.equal(f.length, 112); assert.ok(f.every((c) => c.faces.length === 2));
   for (let side = 0; side < 2; side++) { const faces = f.map((c) => c.faces[side]); assert.equal(faces.filter((c) => /\d/.test(c[0])).length, 72); assert.equal(faces.filter((c) => c[0] === 'L').length, 8); }
   assert.equal(mercyDeck().length, 168); assert.equal(new Set(mercyDeck().map((c) => c.id)).size, 168); assert.equal(allWildDeck().length, 112); assert.ok(allWildDeck().every((c) => c.faces[0][1] === 'w'));
+  const counts = Object.fromEntries(['W', 'R', 'S', 'K', 'D', 'F', 'T', 'X'].map((v) => [v, allWildDeck().filter((c) => c.faces[0][0] === v).length]));
+  assert.deepEqual(counts, { W: 54, R: 14, S: 14, K: 6, D: 10, F: 6, T: 4, X: 4 });
 });
 
 test('Flip dreht alle physischen Stapel; fremde aktive Seiten verlassen den Server nicht', () => {
