@@ -31,6 +31,8 @@ async function start(dataDir, password = '') {
 async function client(url) {
   const socket = io(url, { transports: ['websocket'], forceNew: true, reconnection: false });
   socket.state = null;
+  socket.achievementEvents = [];
+  socket.on('achievements', (data) => socket.achievementEvents.push(data));
   socket.on('state', (S) => { socket.state = S; });
   socket.ask = (event, data = {}) => new Promise((resolve, reject) => socket.timeout(5000).emit(event, data, (err, reply) => err ? reject(err) : resolve(reply)));
   await new Promise((resolve, reject) => { socket.once('connect', resolve); socket.once('connect_error', reject); });
@@ -40,13 +42,15 @@ async function client(url) {
 test('Rückblick-API verlangt Gruppenanmeldung und stellt beschädigte Archive nicht als leere Liste dar', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'review-auth-')); let server = await start(dir, 'Review-Testpasswort');
   try {
-    for (const path of ['/api/evenings', '/api/evenings/00000000-0000-0000-0000-000000000000', '/api/evenings/00000000-0000-0000-0000-000000000000/export']) {
+    for (const path of ['/api/evenings', '/api/evenings/00000000-0000-0000-0000-000000000000', '/api/evenings/00000000-0000-0000-0000-000000000000/export', '/api/achievements?name=Anna', '/api/achievements/players']) {
       const r = await fetch(server.url + path, { redirect: 'manual' }); assert.equal(r.status, 302); assert.match(r.headers.get('location'), /^\/login/);
     }
     const signed = await fetch(server.url + '/login', { method: 'POST', redirect: 'manual', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ password: 'Review-Testpasswort' }) });
     const cookie = signed.headers.get('set-cookie').split(';')[0];
     const listing = await fetch(server.url + '/api/evenings', { headers: { Cookie: cookie } }); assert.equal(listing.status, 200); assert.equal(listing.headers.get('cache-control'), 'no-store');
     assert.equal((await listing.json()).total, 0);
+    const badges = await fetch(server.url + '/api/achievements?name=Anna', { headers: { Cookie: cookie } }); assert.equal(badges.status, 200); assert.equal(badges.headers.get('cache-control'), 'no-store'); assert.equal((await badges.json()).unlocked, 0);
+    assert.equal((await fetch(server.url + '/api/achievements?name=' + 'a'.repeat(17), { headers: { Cookie: cookie } })).status, 400);
     await server.stop(); writeFileSync(join(dir, 'evening-reviews.json'), '{broken'); server = await start(dir);
     assert.equal((await fetch(server.url + '/api/evenings')).status, 503);
     assert.equal(readFileSync(join(dir, 'evening-reviews.json'), 'utf8'), '{broken');
@@ -99,6 +103,10 @@ test('Programm über WebSocket: Rechte, Spielwechsel, Tokens, Speichern, Neustar
     await until(() => a.state.partyProgram.status === 'between');
     assert.equal(a.state.partyProgram.standings[0].name, 'Anna');
     assert.equal(a.state.partyProgram.standings[0].points, 2);
+    const badgeProfile = async (name) => (await fetch(server.url + '/api/achievements?' + new URLSearchParams({ name }))).json();
+    assert.equal((await badgeProfile('Anna')).unlocked, 3); assert.equal((await badgeProfile('Zoe')).stats.played, 0, 'Zuschauer erhalten keine Spiel-Abzeichen');
+    await until(() => a.achievementEvents.length && b.achievementEvents.length);
+    assert.deepEqual(a.achievementEvents[0].names, ['Mit dabei', 'Erster Sieg', 'Party-Star']); assert.deepEqual(b.achievementEvents[0].names, ['Mit dabei']); assert.equal(z.achievementEvents.length, 0);
     const reviewId = a.state.partyProgram.id;
     const getReview = async () => (await fetch(server.url + '/api/evenings/' + reviewId)).json();
     const listReviews = async (suffix = '') => (await fetch(server.url + '/api/evenings' + suffix)).json();
@@ -128,6 +136,7 @@ test('Programm über WebSocket: Rechte, Spielwechsel, Tokens, Speichern, Neustar
     assert.equal(a.state.partyProgram.results.length, 2);
     assert.equal(a.state.partyProgram.standings.find((p) => p.name === 'Anna').points, 2);
     assert.deepEqual(a.state.partyProgram.winners, ['Anna']);
+    assert.equal((await badgeProfile('Anna')).stats.played, 2); assert.equal((await badgeProfile('Anna')).unlocked, 3); assert.equal(a.achievementEvents.length, 0, 'nach dem Neustart keine doppelte Meldung bereits erreichter Abzeichen');
     const review = await getReview();
     assert.equal(review.id, reviewId); assert.equal(review.status, 'done'); assert.equal(review.stations.length, 2); assert.deepEqual(review.winners, ['Anna']);
     for (const secret of ['987654321', created.token, joined.token, created.code, a.state.you.id]) assert.ok(!JSON.stringify(review).includes(secret));

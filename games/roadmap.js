@@ -34,13 +34,13 @@ export const ROADMAP = [
     ['Anpassbare Spielfelder', 'Das Spielfeld passt sich der Bildschirmgröße an; im Querformat gibt es eine eigene Anordnung.'],
     ['Kartengröße unter „Ich“', 'Normal, groß oder sehr groß pro Spieler einstellen.'],
   ], true) },
-  { id: 'spieleabend', titel: 'Spieleabend als Ganzes', satz: 'Aus einzelnen Partien wird ein geplanter Abend mit gemeinsamer Erinnerung.', stufe: 'jetzt', punkte: liste('abend', 'funktion', [
+  { id: 'spieleabend', titel: 'Spieleabend als Ganzes', satz: 'Aus einzelnen Partien wird ein geplanter Abend mit gemeinsamer Erinnerung.', stufe: 'erledigt', datum: '2026-10-30', punkte: liste('abend', 'funktion', [
     ['Abend-Modus', 'Alle Spiele tragen Platzierungspunkte zur gemeinsamen Abendwertung bei.'],
     ['Abend-Rückblick', 'Ergebnisse und besondere Momente eines Abends zusammen ansehen.'],
     ['Termin & Spiele-Abstimmung', 'Einen Termin planen, Zusagen sammeln und über die Spiele abstimmen.'],
     ['Erfolge & Abzeichen', 'Persönliche Meilensteine über mehrere Abende sammeln.'],
-  ]).map((p) => ['abend-1', 'abend-2', 'abend-3'].includes(p.id) ? { ...p, erledigt: true, datum: '2026-10-30' } : p) },
-  { id: 'benachrichtigungen', titel: 'Benachrichtigungen', satz: 'Eine Nachricht, wenn du dran bist oder der Tisch auf dich wartet.', stufe: 'spaeter', punkte: [punkt('push', 'Push-Mitteilungen', 'funktion', '„Du bist dran“ und „Tisch wartet“ auch außerhalb des aktiven Tabs.') ] },
+  ]).map((p) => ({ ...p, erledigt: true, datum: '2026-10-30' })) },
+  { id: 'benachrichtigungen', titel: 'Benachrichtigungen', satz: 'Eine Nachricht, wenn du dran bist oder der Tisch auf dich wartet.', stufe: 'jetzt', punkte: [punkt('push', 'Push-Mitteilungen', 'funktion', '„Du bist dran“ und „Tisch wartet“ auch außerhalb des aktiven Tabs.') ] },
   { id: 'betrieb', titel: 'Betrieb & Wartung', satz: 'Updates, Fehler und gespeicherte Abende werden verlässlicher betreut.', stufe: 'spaeter', punkte: liste('betrieb', 'betrieb', [
     ['Update-Hinweis', 'Vor einem geplanten Neustart rechtzeitig am Tisch Bescheid sagen.'],
     ['Admin-Seite', 'Zustand und Verwaltung der laufenden Instanz an einem Ort.'],

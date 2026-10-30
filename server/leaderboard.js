@@ -24,6 +24,16 @@ export function createLeaderboard(dataDir, { now = () => new Date() } = {}) {
   let dirty = false;
 
   return {
+    // Nur Statistik-Kopien: Erfolge benutzen dieselbe Identität und keine zweite Ergebnisdatei.
+    profile(name) {
+      const p = data.players[nameKey(name)];
+      return { name: p?.name || String(name || '').trim(), games: Object.entries(p?.games || {}).map(([id, g]) => ({ id, played: g.played, wins: g.wins,
+        months: Object.entries(g.months || {}).filter(([, stats]) => stats.played > 0).map(([m]) => m) })) };
+    },
+    names(query = '') {
+      const q = nameKey(query);
+      return Object.values(data.players).map((p) => p.name).filter((name) => nameKey(name).includes(q)).sort((a, b) => a.localeCompare(b, 'de'));
+    },
     // entries: [{ name, win, points }] – alle, die die Partie mitgespielt haben
     record(game, entries) {
       const m = monthOf(now());

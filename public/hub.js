@@ -32,6 +32,7 @@ function openProfile(first = false) {
   $('#p-name').value = profile.name;
   $('#p-error').textContent = '';
   $('#p-cancel').hidden = first;
+  $('#p-achievements').hidden = first;
   $('#p-presence-hidden').checked = !!store.get('poker:presenceHidden', false);
   d.dataset.first = first ? '1' : '';
   $('#p-avatars').innerHTML = AVATARS.map((a) => `<button type="button" class="avatar-opt" data-a="${a}" aria-pressed="${a === profileChoice}" aria-label="Avatar ${a}">${a}</button>`).join('');
@@ -97,6 +98,7 @@ const ICONS = {
   tische: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6"/><circle cx="17.5" cy="9" r="2.5"/><path d="M17 14c3 0 4.5 2 4.5 5"/>',
   favoriten: '<path d="m12 3 2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/>',
   bestenliste: '<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H4v1a4 4 0 0 0 4 4"/><path d="M16 6h4v1a4 4 0 0 1-4 4"/><path d="M12 13v4M8 20h8"/>',
+  erfolge: '<circle cx="12" cy="9" r="6"/><path d="m8 14-2 7 6-3 6 3-2-7m-6-6 2-2 2 2-2 2z"/>',
   spiele: '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>',
   karten: '<rect x="4" y="6" width="11" height="14" rx="2"/><path d="M9 3.5h8a2 2 0 0 1 2 2V16"/>',
   wuerfel: '<rect x="4" y="4" width="16" height="16" rx="3.5"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/><circle cx="9" cy="15" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/>',
@@ -107,7 +109,7 @@ const ICONS = {
   planung: '<path d="M4 5h16v15H4zM8 3v4M16 3v4M4 10h16m-9 4h6m-3-3v6"/>',
   tickets: '<path d="M4 4h16v5a3 3 0 0 0 0 6v5H4v-5a3 3 0 0 0 0-6z"/><path d="M12 7v2m0 3v2m0 3v1"/>',
 };
-const PAGES = ['start', 'spiele', 'favoriten', 'tische', 'bestenliste', 'roadmap', 'tickets', 'rueckblick', 'planung'];
+const PAGES = ['start', 'spiele', 'favoriten', 'tische', 'bestenliste', 'roadmap', 'tickets', 'rueckblick', 'planung', 'erfolge'];
 let route = { page: 'start', sub: '' };
 function parseRoute() {
   const [p = 'start', s = ''] = location.hash.replace(/^#/, '').split('/');
@@ -124,7 +126,7 @@ function navHTML() {
   const n = openTableCount();
   const badge = n ? `<span class="badge" aria-label="${n} offene${n === 1 ? 'r' : ''} Tisch${n === 1 ? '' : 'e'}">${n}</span>` : '';
   const games = account.games || [];
-  return `${item('#start', 'start', 'Start')}${item('#tische', 'tische', 'Offene Tische', badge)}${item('#favoriten', 'favoriten', 'Favoriten')}${item('#planung', 'planung', 'Abend planen')}${item('#bestenliste', 'bestenliste', 'Bestenliste')}${item('#rueckblick', 'rueckblick', 'Rückblick')}${item('#roadmap', 'roadmap', 'Roadmap')}${item('#tickets', 'tickets', 'Tickets')}
+  return `${item('#start', 'start', 'Start')}${item('#tische', 'tische', 'Offene Tische', badge)}${item('#favoriten', 'favoriten', 'Favoriten')}${item('#planung', 'planung', 'Abend planen')}${item('#bestenliste', 'bestenliste', 'Bestenliste')}${item('#erfolge', 'erfolge', 'Erfolge & Abzeichen')}${item('#rueckblick', 'rueckblick', 'Rückblick')}${item('#roadmap', 'roadmap', 'Roadmap')}${item('#tickets', 'tickets', 'Tickets')}
     <h2 class="side-title side-label">Spiele</h2>
     ${GAME_CATEGORIES.map(([id, title]) => item(`#spiele/${id}`, id, title, `<span class="count side-label" aria-label="${games.filter((g) => (g.category || 'karten') === id).length} Spiele">${games.filter((g) => (g.category || 'karten') === id).length}</span>`)).join('')}`;
 }
@@ -133,16 +135,16 @@ function tabbarHTML() {
   const tab = (href, key, label, on, extra = '') => `<a class="tab-item" href="${href}" ${on ? 'aria-current="page"' : ''}>${ico(ICONS[key])}<span>${label}</span>${extra}</a>`;
   const n = openTableCount();
   return tab('#start', 'start', 'Start', cur === 'start' || cur === 'planung') + tab('#spiele', 'spiele', 'Spiele', cur === 'spiele' || cur === 'favoriten')
-    + tab('#tische', 'tische', 'Tische', cur === 'tische', n ? `<span class="badge" aria-label="${n} offen">${n}</span>` : '') + tab('#bestenliste', 'bestenliste', 'Bestenliste', cur === 'bestenliste' || cur === 'rueckblick') + tab('#roadmap', 'roadmap', 'Roadmap', cur === 'roadmap') + tab('#tickets', 'tickets', 'Tickets', cur === 'tickets');
+    + tab('#tische', 'tische', 'Tische', cur === 'tische', n ? `<span class="badge" aria-label="${n} offen">${n}</span>` : '') + tab('#bestenliste', 'bestenliste', 'Bestenliste', ['bestenliste', 'rueckblick', 'erfolge'].includes(cur)) + tab('#roadmap', 'roadmap', 'Roadmap', cur === 'roadmap') + tab('#tickets', 'tickets', 'Tickets', cur === 'tickets');
 }
 
-const TITLES = { start: 'Start', spiele: 'Spiele', favoriten: 'Favoriten', tische: 'Offene Tische', bestenliste: 'Bestenliste', roadmap: 'Roadmap', tickets: 'Tickets', rueckblick: 'Abend-Rückblick', planung: 'Abend planen' };
+const TITLES = { start: 'Start', spiele: 'Spiele', favoriten: 'Favoriten', tische: 'Offene Tische', bestenliste: 'Bestenliste', roadmap: 'Roadmap', tickets: 'Tickets', rueckblick: 'Abend-Rückblick', planung: 'Abend planen', erfolge: 'Erfolge & Abzeichen' };
 let renderedPage = null;
 function renderHub(focus = false) {
   route = parseRoute();
   $('#side-nav').innerHTML = navHTML();
   $('#hub-tabbar').innerHTML = tabbarHTML();
-  const page = { start: pageStart, spiele: pageGames, favoriten: pageGames, tische: pageTables, bestenliste: pageBoard, roadmap: pageRoadmap, tickets: pageTickets, rueckblick: EveningReviews.page, planung: EveningPlans.page }[route.page];
+  const page = { start: pageStart, spiele: pageGames, favoriten: pageGames, tische: pageTables, bestenliste: pageBoard, roadmap: pageRoadmap, tickets: pageTickets, rueckblick: EveningReviews.page, planung: EveningPlans.page, erfolge: Achievements.page }[route.page];
   const main = $('#hub-main');
   const scroll = main.scrollTop;
   main.innerHTML = page();
@@ -321,7 +323,7 @@ let boardPeriod = 'all';
 let boardToken = 0;
 function pageBoard() {
   loadBoard();
-  return `<section class="hub-head"><h1>Bestenliste</h1><p>Alle Abende, nach Siegen sortiert. Wiedererkannt wird man am Namen.</p><a class="btn" href="#rueckblick">Abend-Rückblicke öffnen</a></section><div id="board-body" class="board" aria-live="polite"><p class="hint">Lade …</p></div>`;
+  return `<section class="hub-head"><h1>Bestenliste</h1><p>Alle Abende, nach Siegen sortiert. Wiedererkannt wird man am Namen.</p><div class="plan-actions"><a class="btn" href="#rueckblick">Abend-Rückblicke öffnen</a><a class="btn btn-brass" href="#erfolge">Erfolge & Abzeichen ansehen</a></div></section><div id="board-body" class="board" aria-live="polite"><p class="hint">Lade …</p></div>`;
 }
 async function loadBoard() {
   const token = ++boardToken;

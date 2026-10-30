@@ -1,0 +1,29 @@
+.achievement-player { display: flex; flex-wrap: wrap; align-items: end; gap: .75rem; margin-top: 1.5rem; }
+.achievement-player .field { flex: 1; min-width: 12rem; max-width: 26rem; }
+.achievement-summary { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 2rem; border: 1px solid var(--gold-line); border-radius: 16px; background: var(--panel); padding: 1.5rem; margin: 1.5rem 0; }
+.achievement-summary h2 { font-size: 1.8rem; margin: .25rem 0 .75rem; overflow-wrap: anywhere; }
+.achievement-summary p { color: var(--text-2); margin: 0; }
+.achievement-summary strong { color: var(--gold-text); }
+.achievement-summary dl { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0; }
+.achievement-summary dt { font-size: .85rem; color: var(--text-2); }
+.achievement-summary dd { font-size: 1.7rem; font-weight: 700; margin: 0; }
+.achievement-filters { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; }
+.achievement-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: 1rem; }
+.achievement-card { --medal: #c99167; padding: 1.1rem; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); }
+.achievement-card.tier-silver { --medal: #c5d2d6; }
+.achievement-card.tier-gold { --medal: var(--gold); }
+.achievement-card.earned { border-color: var(--medal); }
+.achievement-card-head { display: flex; align-items: center; flex-wrap: wrap; gap: .75rem; }
+.achievement-card h2 { font-size: 1.05rem; margin: .2rem 0 0; }
+.achievement-card small { font-size: .75rem; color: var(--text-2); }
+.achievement-card p { font-size: .9rem; margin-bottom: .75rem; }
+.achievement-state { font-size: .75rem; margin-left: auto; color: var(--text-2); }
+.earned .achievement-state { color: var(--gold-text); }
+.achievement-medal { display: grid; place-items: center; width: 48px; height: 48px; flex: none; border: 2px solid currentColor; border-radius: 50%; color: var(--medal); background: var(--panel-2); }
+.achievement-medal svg { width: 27px; height: 27px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.locked .achievement-medal { opacity: .55; }
+.achievement-count { display: block; text-align: right; }
+.achievement-card progress, .achievement-summary progress { display: block; width: 100%; height: 8px; margin: .75rem 0 .5rem; accent-color: var(--gold); border: 0; border-radius: 99px; overflow: hidden; background: var(--panel-2); }
+.achievement-card progress::-webkit-progress-bar, .achievement-summary progress::-webkit-progress-bar { background: var(--panel-2); }
+.achievement-card progress::-webkit-progress-value, .achievement-summary progress::-webkit-progress-value { background: var(--gold); }
+@media (max-width: 600px) { .achievement-summary { grid-template-columns: 1fr; gap: 1.5rem; padding: 1.1rem; } .achievement-filters .field { flex: 1; min-width: 9rem; } }

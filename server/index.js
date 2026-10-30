@@ -23,6 +23,7 @@ import { BOTS } from '../games/bots.js';
 import { configureBoards } from '../games/monopoly/boards.js';
 import { createReviewStore, reviewMarkdown } from './evening-reviews.js';
 import { createPlanAPI } from './plan-api.js';
+import { createAchievements } from './achievements.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -135,6 +136,15 @@ app.get('/roadmap', (_req, res) => {
 });
 app.use('/api/tickets', ticketAPI.router);
 app.use('/api/plans', createPlanAPI({ dir: DATA_DIR, games: Object.values(GAMES), secret: SECRET, secure: isSecure, trustProxy: TRUST_PROXY }));
+app.get('/api/achievements/players', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.json({ names: achievements.players(req.query.q) });
+});
+app.get('/api/achievements', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  try { res.json(achievements.detail(req.query.name)); }
+  catch (error) { res.status(error.status || 500).json({ error: error.message }); }
+});
 app.get('/api/evenings', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   if (!reviews) return res.status(503).json({ error: 'Das Rückblick-Archiv ist derzeit nicht lesbar. Die Spiele funktionieren weiterhin.' });
@@ -200,6 +210,7 @@ const presence = createPresence({
 const bots = createBotRunner({ isCurrent: (r) => rooms.get(r.code) === r, notify: (r) => { broadcast(r); if (!r.busy) save(); } });
 const codes = createCodes(); // gemeinsam für alle Spiele
 const leaderboard = createLeaderboard(DATA_DIR); // Bestenliste über alle Abende
+const achievements = createAchievements({ leaderboard, games: Object.values(GAMES) });
 
 // ---------- Speichern ----------
 // Verlauf pro Tisch in eigener Datei – der Spielstand bleibt klein, der Verlauf wird nur bei Änderungen geschrieben
@@ -258,7 +269,19 @@ function onRoomChange(room, kind, data) {
   if (kind === 'result') {
     if (recordProgramResult(room)) archiveReview(room);
     const botNames = new Set([...room.players.values()].filter((p) => p.bot).map((p) => p.name));
-    leaderboard.record(room.game, data?.entries?.filter((p) => !botNames.has(p.name))); save(); return;
+    const entries = data?.entries?.filter((p) => !botNames.has(p.name)) || [];
+    const before = new Map(entries.map((p) => [p.name, new Set(achievements.detail(p.name).badges.filter((b) => b.unlocked).map((b) => b.id))]));
+    leaderboard.record(room.game, entries);
+    // Erst dauerhaft speichern, dann die neuen Abzeichen melden.
+    try {
+      leaderboard.save();
+      for (const entry of entries) {
+        const earned = achievements.detail(entry.name).badges.filter((b) => b.unlocked && !before.get(entry.name).has(b.id));
+        const player = [...room.players.values()].find((p) => !p.bot && p.name === entry.name);
+        if (earned.length && player?.socketId) io.to(player.socketId).emit('achievements', { names: earned.map((b) => b.title), name: entry.name });
+      }
+    } catch (error) { console.error('Abzeichen konnten nicht gespeichert werden:', error.message); }
+    save(); return;
   }
   if (data?.to) {
     const p = room.players.get(data.to);
