@@ -22,6 +22,7 @@ import { addBot, removeBot, createBotRunner } from './bots.js';
 import { BOTS } from '../games/bots.js';
 import { configureBoards } from '../games/monopoly/boards.js';
 import { createReviewStore, reviewMarkdown } from './evening-reviews.js';
+import { createPlanAPI } from './plan-api.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -110,7 +111,7 @@ app.post('/logout', (req, res) => {
 
 // Alles ab hier nur angemeldet. Offen bleibt nur, was die Login-Seite braucht.
 // Manifest und Icons auch ohne Login – sonst kann das Handy die Seite nicht als App ablegen (sie verraten nichts)
-const OPEN = new Set(['/style.css', '/fonts/bricolage.woff2', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png']);
+const OPEN = new Set(['/style.css', '/login.js', '/fonts/bricolage.woff2', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png']);
 const isPage = (req) => req.method === 'GET' && (req.path === '/' || req.path === '/index.html');
 app.use((req, res, next) => {
   if (MODE === 'open' || OPEN.has(req.path)) return next();
@@ -133,6 +134,7 @@ app.get('/roadmap', (_req, res) => {
   res.json(resolvedRoadmap());
 });
 app.use('/api/tickets', ticketAPI.router);
+app.use('/api/plans', createPlanAPI({ dir: DATA_DIR, games: Object.values(GAMES), secret: SECRET, secure: isSecure, trustProxy: TRUST_PROXY }));
 app.get('/api/evenings', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   if (!reviews) return res.status(503).json({ error: 'Das Rückblick-Archiv ist derzeit nicht lesbar. Die Spiele funktionieren weiterhin.' });
@@ -474,7 +476,7 @@ io.on('connection', (socket) => {
     });
   };
 
-  on('create', ({ game: gameId = DEFAULT_GAME, name, avatar, settings }) => {
+  on('create', ({ game: gameId = DEFAULT_GAME, name, avatar, settings, unlisted }) => {
     const game = GAMES[gameId];
     if (!game) throw new Error(notPlayable(gameId));
     if (rooms.size >= MAX_ROOMS) throw new Error('Gerade sind zu viele Tische offen');
@@ -484,6 +486,7 @@ io.on('connection', (socket) => {
     try {
       room = game.create(code, settings, (kind, data) => onRoomChange(room, kind, data));
       room.game = game.id;
+      room.unlisted = unlisted === true;
       p = room.addPlayer(name, avatar);
     } catch (e) { codes.release(code); throw e; }
     rooms.set(code, room);

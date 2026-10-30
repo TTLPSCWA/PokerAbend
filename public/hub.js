@@ -104,14 +104,15 @@ const ICONS = {
   party: '<path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="m19 16 .8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/>',
   roadmap: '<path d="M6 4v16M6 5h12l-3 4 3 4H6"/><circle cx="6" cy="20" r="1"/>',
   rueckblick: '<path d="M4 5h16v15H4zM8 3v4M16 3v4M4 10h16M8 14h3M8 17h7"/>',
+  planung: '<path d="M4 5h16v15H4zM8 3v4M16 3v4M4 10h16m-9 4h6m-3-3v6"/>',
   tickets: '<path d="M4 4h16v5a3 3 0 0 0 0 6v5H4v-5a3 3 0 0 0 0-6z"/><path d="M12 7v2m0 3v2m0 3v1"/>',
 };
-const PAGES = ['start', 'spiele', 'favoriten', 'tische', 'bestenliste', 'roadmap', 'tickets', 'rueckblick'];
+const PAGES = ['start', 'spiele', 'favoriten', 'tische', 'bestenliste', 'roadmap', 'tickets', 'rueckblick', 'planung'];
 let route = { page: 'start', sub: '' };
 function parseRoute() {
   const [p = 'start', s = ''] = location.hash.replace(/^#/, '').split('/');
   const page = PAGES.includes(p) ? p : 'start';
-  return { page, sub: page === 'spiele' && GAME_CATEGORIES.some(([id]) => id === s) || page === 'tickets' && /^[1-9]\d{0,8}$/.test(s) || page === 'rueckblick' && EveningReviews.validId(s) ? s : '' };
+  return { page, sub: page === 'spiele' && GAME_CATEGORIES.some(([id]) => id === s) || page === 'tickets' && /^[1-9]\d{0,8}$/.test(s) || page === 'rueckblick' && EveningReviews.validId(s) || page === 'planung' && EveningPlans.validId(s) ? s : '' };
 }
 const hashOf = (page, sub = '') => `#${page}${sub ? '/' + sub : ''}`;
 let hubTables = [];                      // offene Tische (vom Server, siehe Teil H3)
@@ -119,11 +120,11 @@ const openTableCount = () => hubTables.length;
 
 function navHTML() {
   const cur = hashOf(route.page, route.sub);
-  const item = (href, key, label, extra = '') => `<a class="nav-item" href="${href}" ${cur === href || ['tickets', 'rueckblick'].includes(key) && route.page === key ? 'aria-current="page"' : ''}>${ico(ICONS[key])}<span class="side-label">${label}</span>${extra}</a>`;
+  const item = (href, key, label, extra = '') => `<a class="nav-item" href="${href}" ${cur === href || ['tickets', 'rueckblick', 'planung'].includes(key) && route.page === key ? 'aria-current="page"' : ''}>${ico(ICONS[key])}<span class="side-label">${label}</span>${extra}</a>`;
   const n = openTableCount();
   const badge = n ? `<span class="badge" aria-label="${n} offene${n === 1 ? 'r' : ''} Tisch${n === 1 ? '' : 'e'}">${n}</span>` : '';
   const games = account.games || [];
-  return `${item('#start', 'start', 'Start')}${item('#tische', 'tische', 'Offene Tische', badge)}${item('#favoriten', 'favoriten', 'Favoriten')}${item('#bestenliste', 'bestenliste', 'Bestenliste')}${item('#rueckblick', 'rueckblick', 'Rückblick')}${item('#roadmap', 'roadmap', 'Roadmap')}${item('#tickets', 'tickets', 'Tickets')}
+  return `${item('#start', 'start', 'Start')}${item('#tische', 'tische', 'Offene Tische', badge)}${item('#favoriten', 'favoriten', 'Favoriten')}${item('#planung', 'planung', 'Abend planen')}${item('#bestenliste', 'bestenliste', 'Bestenliste')}${item('#rueckblick', 'rueckblick', 'Rückblick')}${item('#roadmap', 'roadmap', 'Roadmap')}${item('#tickets', 'tickets', 'Tickets')}
     <h2 class="side-title side-label">Spiele</h2>
     ${GAME_CATEGORIES.map(([id, title]) => item(`#spiele/${id}`, id, title, `<span class="count side-label" aria-label="${games.filter((g) => (g.category || 'karten') === id).length} Spiele">${games.filter((g) => (g.category || 'karten') === id).length}</span>`)).join('')}`;
 }
@@ -131,17 +132,17 @@ function tabbarHTML() {
   const cur = route.page;
   const tab = (href, key, label, on, extra = '') => `<a class="tab-item" href="${href}" ${on ? 'aria-current="page"' : ''}>${ico(ICONS[key])}<span>${label}</span>${extra}</a>`;
   const n = openTableCount();
-  return tab('#start', 'start', 'Start', cur === 'start') + tab('#spiele', 'spiele', 'Spiele', cur === 'spiele' || cur === 'favoriten')
+  return tab('#start', 'start', 'Start', cur === 'start' || cur === 'planung') + tab('#spiele', 'spiele', 'Spiele', cur === 'spiele' || cur === 'favoriten')
     + tab('#tische', 'tische', 'Tische', cur === 'tische', n ? `<span class="badge" aria-label="${n} offen">${n}</span>` : '') + tab('#bestenliste', 'bestenliste', 'Bestenliste', cur === 'bestenliste' || cur === 'rueckblick') + tab('#roadmap', 'roadmap', 'Roadmap', cur === 'roadmap') + tab('#tickets', 'tickets', 'Tickets', cur === 'tickets');
 }
 
-const TITLES = { start: 'Start', spiele: 'Spiele', favoriten: 'Favoriten', tische: 'Offene Tische', bestenliste: 'Bestenliste', roadmap: 'Roadmap', tickets: 'Tickets', rueckblick: 'Abend-Rückblick' };
+const TITLES = { start: 'Start', spiele: 'Spiele', favoriten: 'Favoriten', tische: 'Offene Tische', bestenliste: 'Bestenliste', roadmap: 'Roadmap', tickets: 'Tickets', rueckblick: 'Abend-Rückblick', planung: 'Abend planen' };
 let renderedPage = null;
 function renderHub(focus = false) {
   route = parseRoute();
   $('#side-nav').innerHTML = navHTML();
   $('#hub-tabbar').innerHTML = tabbarHTML();
-  const page = { start: pageStart, spiele: pageGames, favoriten: pageGames, tische: pageTables, bestenliste: pageBoard, roadmap: pageRoadmap, tickets: pageTickets, rueckblick: EveningReviews.page }[route.page];
+  const page = { start: pageStart, spiele: pageGames, favoriten: pageGames, tische: pageTables, bestenliste: pageBoard, roadmap: pageRoadmap, tickets: pageTickets, rueckblick: EveningReviews.page, planung: EveningPlans.page }[route.page];
   const main = $('#hub-main');
   const scroll = main.scrollTop;
   main.innerHTML = page();
@@ -215,7 +216,7 @@ function pageStart() {
     <section class="hub-block" id="presence-slot">${presenceHTML()}</section>
     ${gamesPreviewHTML()}
     ${codeBoxHTML()}
-    <section class="hub-block"><h2>Euer letzter Spieleabend</h2><p>Gesamtwertung, Punkteverlauf und besondere Momente zusammen ansehen.</p><a class="btn" href="#rueckblick">Abend-Rückblicke öffnen</a></section>
+    <section class="hub-block"><h2>Eure Spieleabende</h2><p>Den nächsten Abend gemeinsam planen oder vergangene Ergebnisse ansehen.</p><div class="plan-actions"><a class="btn btn-brass" href="#planung">Nächsten Abend planen</a><a class="btn" href="#rueckblick">Abend-Rückblicke öffnen</a></div></section>
     <p class="hub-foot">Ohne Benutzerkonto. Nur Spielgeld, kein Echtgeld.</p>`;
 }
 // ---------- Spieleliste ----------

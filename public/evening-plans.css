@@ -1,0 +1,35 @@
+.plan-actions { display: flex; align-items: center; flex-wrap: wrap; gap: .7rem; margin: 1rem 0; }
+.plan-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: 1rem; }
+.plan-card { display: block; padding: 1.2rem; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); color: inherit; text-decoration: none; overflow-wrap: anywhere; }
+.plan-card:hover, .plan-card:focus-visible { border-color: var(--gold); }
+.plan-card h2 { font-size: 1.2rem; margin: .5rem 0; }
+.plan-card small, .plan-card p { color: var(--text-2); }
+.plan-filters { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
+.plan-filters .field:first-child { flex: 1; min-width: 12rem; }
+#plan-body h1, #plan-body h2, .plan-choice, .plan-slot { overflow-wrap: anywhere; }
+.plan-description { white-space: pre-wrap; overflow-wrap: anywhere; }
+.plan-slots { display: grid; gap: .75rem; }
+.plan-slot { display: flex; align-items: center; justify-content: space-between; gap: .75rem; border-bottom: 1px solid var(--line); padding: .6rem 0; }
+.plan-slot select { width: 9rem; flex: 0 0 auto; }
+.plan-slot small, .plan-game-grid small { display: block; color: var(--text-2); font-size: .8rem; }
+.plan-game-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: .65rem; margin: .75rem 0 1rem; }
+.plan-game-grid label { display: flex; align-items: center; gap: .5rem; padding: .6rem; min-height: 44px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+.plan-game-grid input, .plan-choice input { flex: none; width: 18px; height: 18px; accent-color: var(--gold); }
+.plan-choice { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; min-height: 44px; margin: .3rem 0; }
+.plan-fixed { border-left: 3px solid var(--gold); background: var(--panel); padding: 1rem; margin: 1.5rem 0; border-radius: 8px; }
+.plan-fixed h2 { font-size: 1.15rem; }
+.plan-people, .plan-manage details { border: 1px solid var(--line); border-radius: 10px; padding: 1rem; margin-top: 1.5rem; }
+.plan-people summary, .plan-manage summary, .plan-game-picker summary { cursor: pointer; min-height: 32px; font-weight: 600; }
+.plan-table { overflow-x: auto; margin-top: .75rem; }
+.plan-table table { min-width: 100%; white-space: nowrap; }
+.plan-propose { display: flex; align-items: end; flex-wrap: wrap; gap: .75rem; }
+.plan-propose .field { flex: 1; min-width: 12rem; }
+.plan-manage fieldset { border: 1px solid var(--line); margin: 1rem 0; padding: .75rem; }
+.plan-editor { width: min(760px, calc(100vw - 24px)); max-height: 90dvh; overflow-y: auto; }
+.plan-editor .field { margin: 1rem 0; }
+.plan-slot-edit { display: grid; grid-template-columns: 1fr auto; gap: .5rem; margin: 1rem 0; }
+.plan-slot-edit > span { grid-column: 1 / -1; }
+.plan-slot-edit input { min-width: 0; }
+.plan-game-picker { max-height: 280px; overflow-y: auto; padding: .5rem; border: 1px solid var(--line); border-radius: 8px; }
+#plan-import .btn { margin: .4rem; }
+@media (max-width: 600px) { .plan-slot { align-items: flex-start; flex-direction: column; } .plan-slot select { width: 100%; } }
