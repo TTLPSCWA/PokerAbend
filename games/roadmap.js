@@ -81,10 +81,26 @@ export const ROADMAP = [
   ]) },
   { id: 'englisch', titel: 'Englisch', satz: 'Sprache pro Spieler wechseln, einschließlich der Party-Inhalte.', stufe: 'spaeter', punkte: [punkt('englische-seite', 'Englische Oberfläche & Inhalte', 'funktion', 'Die ganze Seite übersetzen und englische Party-Inhalte anbieten.')] },
   { id: 'echtzeit', titel: 'Päckchen 8 – Echtzeit', satz: 'Alle bewegen sich gleichzeitig im gemeinsamen Spielfeld.', stufe: 'erledigt', datum: '2026-10-29', paeckchen: '8', punkte: [punkt('bauart-c', 'Bauart-C-Baustein', 'funktion', 'Serverberechnete Bewegung, kleine Zustandsbilder, Tastatur, Touch und Echtzeit-Bots.', true), ...spiele(['broeckelboden', 'kronenjagd', 'laser-huepfer'])] },
-  { id: 'discord-login', titel: 'Discord-Login', satz: 'Optional mit dem eigenen Discord-Konto wiederkommen.', stufe: 'spaeter', punkte: liste('discord', 'discord', [
-    ['Optionaler Discord-Login', 'Name und Bild aus Discord übernehmen und das Konto wiedererkennen.'],
+  { id: 'discord-login', titel: 'Discord-Login, Gastmodus & Spieler-ID', satz: 'Freiwillig anmelden, ohne Konto mitspielen und Statistiken eindeutig zuordnen.', stufe: 'spaeter', punkte: liste('discord', 'discord', [
+    ['Optionaler Discord-Login', 'Wer möchte, meldet sich sicher mit Discord an und erhält ein dauerhaftes Spielerprofil.'],
     ['Tisch-Nachricht', 'Im Discord Bescheid geben, wenn jemand einen Tisch aufmacht.'],
+    ['Als Gast spielen', 'Ohne Discord-Konto weiterhin Lobbys erstellen, Freunden per Raumcode beitreten und normal spielen.'],
+    ['Feste Game-ID', 'Registrierte Spieler erhalten eine unveränderliche, öffentliche Kennung für Profil und Statistiken.'],
+    ['Faire Bestenlisten', 'Nur verifizierte und gültige Partien zählen öffentlich; Gäste und Computergegner werden nicht gewertet.'],
+    ['Optionale Tischkamera', 'Auf Wunsch eigenes Kamerabild über den Browser am Tisch zeigen; keine automatische Übernahme von Discord-Videocalls.'],
   ]) },
+  { id: 'v2-spielerkomfort', titel: 'Mehr Einstellungen & Spielerkomfort', satz: 'Jeder gestaltet die Oberfläche so, wie sie zum eigenen Spieleabend passt.', stufe: 'spaeter', punkte: [
+    punkt('v2-liquid-glass', 'Ruhiges Liquid-Glass-Design', 'design', 'Modernisierte Oberfläche mit dezentem Hintergrund und minimalistischen Spielkacheln.'),
+    punkt('v2-einstellungen', 'Mehr Anzeige-Einstellungen', 'funktion', 'Spielkategorien, Menübereiche, Bestenlisten, Rückblicke und Erfolge einzeln ein- oder ausblenden.'),
+    punkt('v2-online-verbessern', 'Gerade online verbessern', 'funktion', 'Zuverlässiger Online- und Abwesenheitsstatus, mehrere Geräte erkennen und private Tische schützen.'),
+    punkt('v2-erfolge-ausbauen', 'Mehr Errungenschaften', 'funktion', 'Neue Erfolge und Herausforderungen pro Spiel sowie übersichtliche Fortschrittsanzeigen.'),
+    punkt('v2-bot-schwierigkeit', 'Bot-Schwierigkeitsgrade', 'funktion', 'Leicht, Mittel und Schwer für geeignete Computergegner auswählen.'),
+  ] },
+  { id: 'v2-admin-verwaltung', titel: 'Adminverwaltung für Ergebnisse & Rückblicke', satz: 'Fehlerhafte Einträge sicher moderieren und Änderungen nachvollziehbar halten.', stufe: 'spaeter', punkte: [
+    punkt('v2-admin-rueckblicke', 'Rückblicke verwalten', 'betrieb', 'Admins können Rückblicke suchen, korrigieren, ausblenden und bei Bedarf löschen oder wiederherstellen.'),
+    punkt('v2-admin-bestenlisten', 'Bestenlisten verwalten', 'betrieb', 'Falsche Wertungen mit Änderungsprotokoll korrigieren; Rangfolge und Erfolge werden konsistent neu berechnet.'),
+    punkt('v2-admin-sicherheit', 'Sichere Adminrechte', 'betrieb', 'Admin-Aktionen nur mit eigener Berechtigung, Bestätigung und protokollierten Änderungen.'),
+  ] },
   { id: 'poker-extras', titel: 'Poker-Extras', satz: 'Vorhandener Komfort und weitere Varianten für den Pokertisch.', stufe: 'spaeter', punkte: [
     punkt('turnier-blinds', 'Turniermodus mit steigenden Blinds', 'funktion', 'Blind-Level nach Zeit oder Händen mit konfigurierbarer Steigerung sind vorhanden.', true),
     punkt('time-bank', 'Time Bank', 'funktion', 'Zusätzliche, begrenzte Bedenkzeit pro Spieler.'),
