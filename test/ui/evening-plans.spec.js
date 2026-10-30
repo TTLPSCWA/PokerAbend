@@ -54,6 +54,7 @@ test('Planung: zwei Browser stimmen ab, schlagen Spiele vor und bereiten das gew
 
 test('Private Planung: Liste und Anmeldung, Direktlink, vorhandener Tisch, Wiederöffnen und Absagen', async ({ page, app, browser }) => {
   test.setTimeout(60000); await login(page, app); await selectGame(page, 'poker'); await page.locator('#host-form button[type=submit]').click();
+  await expect.poll(() => page.evaluate(() => lastState?.code)).toMatch(/^[A-Z2-9]{5}$/);
   const code = await page.evaluate(() => lastState.code); await page.evaluate(() => parkRoom());
   const link = await createPlan(page, { title: 'Privater Abend', privatePlan: true, slots: 1 });
   const context = await browser.newContext({ viewport: page.viewportSize() });
@@ -67,10 +68,13 @@ test('Private Planung: Liste und Anmeldung, Direktlink, vorhandener Tisch, Wiede
     await expect(guest).toHaveURL(link); await expect(guest.locator('#plan-body h1')).toHaveText('Privater Abend');
     await finalize(page); await page.getByRole('button', { name: 'Abendprogramm vorbereiten', exact: true }).click();
     await page.getByRole('button', { name: 'An meinem Tisch vorbereiten (privat)', exact: true }).click();
-    await expect(page.locator('#poker-program')).toContainText('Privater Abend'); expect(await page.evaluate(() => lastState.code)).toBe(code); expect(await page.evaluate(() => lastState.unlisted)).toBe(true);
+    await expect(page.locator('#poker-program')).toContainText('Privater Abend'); expect(await page.evaluate(() => lastState.code)).toBe(code); await expect.poll(() => page.evaluate(() => lastState?.unlisted)).toBe(true);
     await page.evaluate(() => parkRoom()); await page.goto(link); await page.getByRole('button', { name: 'Abendprogramm vorbereiten', exact: true }).click();
     await page.getByRole('button', { name: 'Neuen privaten Tisch vorbereiten', exact: true }).click(); await expect(page.locator('.program-banner')).toContainText('Privater Abend');
-    expect(await page.evaluate(() => lastState.code)).not.toBe(code); expect(await page.evaluate(() => lastState.unlisted)).toBe(true);
+    await expect(async () => {
+      const state = await page.evaluate(() => lastState && { code: lastState.code, unlisted: lastState.unlisted });
+      expect(state?.code).toMatch(/^[A-Z2-9]{5}$/); expect(state.code).not.toBe(code); expect(state.unlisted).toBe(true);
+    }).toPass({ timeout: 10000 });
     await page.evaluate(() => parkRoom()); await page.goto(link); await page.getByRole('button', { name: 'Abstimmung wieder öffnen', exact: true }).click();
     await expect(page.locator('#plan-ballot')).toBeVisible(); await page.getByRole('button', { name: 'Abend absagen', exact: true }).click(); await page.locator('#dlg-ok').click();
     await expect(page.locator('#plan-body')).toContainText('Dieser Abend wurde abgesagt');

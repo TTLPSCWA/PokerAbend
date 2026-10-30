@@ -1,4 +1,4 @@
-/* Startseite (Hub, hub.js): Seitenleiste ab 900 px, einklappbar auf dem Tablet, untere Leiste am Handy. Nur CSS, keine Bilder. */
+/* Hub-Struktur (hub.js): Sidebar, Tablet und mobile Navigation. Referenzgestaltung und lokaler Raumhintergrund: ui-theme.css. */
 .hub { min-height: 100dvh; display: grid; grid-template-columns: 250px minmax(0, 1fr); grid-template-rows: auto 1fr; }
 .hub[hidden] { display: none; }
 

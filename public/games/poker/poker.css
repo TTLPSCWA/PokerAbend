@@ -348,7 +348,7 @@ input[type='range']::-moz-range-thumb { width: 18px; height: 18px; border-radius
 @media (max-width: 640px) {
   :root { --seat-w: 96px; --av: 26px; --card-w: 34px; }
   .table-wrap { padding: 30px 34px 22px; }
-  .table { width: min(100%, calc((100dvh - var(--dock-h, 240px) - 110px - var(--program-h, 0px)) * .62)); }
+  .table { width: min(100%, calc((100dvh - var(--dock-h, 240px) - var(--topbar, 58px) - 52px - var(--program-h, 0px)) * .62)); }
   .rail, .felt { border-radius: 200px; }
   .felt { inset: 12px; }
   .board { gap: 4px; --card-w: min(34px, 15cqw); }

@@ -114,6 +114,7 @@ test('Langsames Laden des Ticket-Moduls: Anmeldung wartet auf die gemeinsamen Hu
     await expect(page.locator('#hub')).not.toBeVisible();
   } finally { release?.(); }
   await expect(page.getByRole('heading', { name: 'Ticket-Board', exact: true })).toBeVisible();
+  await expect(page.locator('.ticket-count')).toBeVisible();
   await page.unroute('**/tickets.js');
 });
 
