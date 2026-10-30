@@ -13,9 +13,9 @@ Diese Arbeit integriert ausschließlich Dokumentation, Roadmap-Metadaten und der
 | `planning/pokerabend-v2-roadmap`, `b0ab661`, 2026-10-30 15:49:08 +01:00 | 13 eigene Commits, 8 neue Dokumentationsdateien; main war 5 Commits weiter | PR #3 gezielt integriert: sechs Dateien unter `docs/roadmap/` und beide Agent-Einstiege. Baseline auf 46 Spiele aktualisiert, Main-Only verankert, überholte Implementierungspfade und Branch-Vorgaben korrigiert. Der archivierte Masterprompt ist bytegleich erhalten. |
 | `docs/public-roadmap-v2-ideas`, `b96d62e`, 2026-10-30 15:48:32 +01:00 | 3 eigene Commits, nur `games/planned.js`, `games/roadmap.js`, `test/roadmap.test.js`; main war 5 Commits weiter | PR #4 mit einem geprüften Patch dieser drei Dateien übernommen und um vollständige V2-Zuordnung ergänzt. Kein Überkopieren aktueller Dateien aus einem Altstand. |
 | `feature/partyspiel`, `c788dee`, 2026-10-25 11:08:02 +01:00 | 8 alte Commits gegenüber dem damaligen Acht-Spiele-Stand, heutiges main 48 Commits weiter | PR #2 inhaltlich abgelöst. Kein Rückbau der aktuellen Lobby und keine Rückkehr zur alten `/me.plannedPartyGames`-API. Alle 28 Ideen mit ursprünglichen Metadaten im Inventar gesichert und genau einer heutigen ID zugeordnet. |
-| lokaler `feat/liquid-glass-game-library`, `fd4dd93` | Vollständig Vorfahr von main | Bereits integriert; kein Remote-Branch dieses Namens vorhanden. Kann lokal mit normalem `git branch -d` entfernt werden. |
+| lokaler `feat/liquid-glass-game-library`, `fd4dd93` | Vollständig Vorfahr von main | Bereits integriert; kein Remote-Branch dieses Namens vorhanden. Nach erneutem Vorfahr-Nachweis lokal mit normalem `git branch -d` entfernt. |
 
-PR #1 war bereits geschlossen und nie gemergt; er enthält denselben Partyspiel-Stand wie PR #2. Sein Inhalt wird durch denselben Ideenabgleich abgedeckt. Die offenen PRs #2, #3 und #4 werden nach erfolgreicher geprüfter Übernahme auf GitHub mit einem Verweis auf den tatsächlichen main-Commit kommentiert und geschlossen. Die Inhalte werden direkt integriert; dies wird nicht als PR-Merge bezeichnet.
+PR #1 war bereits geschlossen und nie gemergt; er enthält denselben Partyspiel-Stand wie PR #2. Sein Inhalt wird durch denselben Ideenabgleich abgedeckt. PR #2, #3 und #4 wurden nach erfolgreicher Übernahme mit einem Verweis auf den tatsächlichen Integrationscommit `6c254120c731846f20dd5523964e5e6964d2e0a0` kommentiert und geschlossen. Alle drei haben `merged: false`: direkte inhaltliche Integration, kein PR-Merge.
 
 Maschinenlesbarer Herkunftsnachweis: [consolidation.json](./consolidation.json), einschließlich vollständiger Quell-SHAs, Original-Dateihashes, ursprünglicher Party-Metadaten und aktueller Aliaszuordnung. Die jeweiligen Branches sind nach erneutem Abgleich und gesichertem Push vollständig entbehrlich. Keine Löschung von `main` und kein Force-Push.
 
@@ -44,4 +44,12 @@ Compose-Dateien und Volumes bleiben unverändert; keine produktiven Cookies, Rau
 
 Geänderte Dateien: `AGENTS.md`, `CLAUDE.md`, `PROMPT.md`, `README.md`; `docs/roadmap/{README.md,DESIGN_GUIDE.md,MASTERPROMPT_V2_SOURCE.md,POKERABEND_V2_ROADMAP.md,V2_ADDENDUM_2026-10-30.md,plan.json,consolidation.json,CONSOLIDATION_2026-10-30.md}`; `games/{planned.js,roadmap.js}`; `test/{planned.test.js,roadmap.test.js,v2-roadmap.test.js}`; `test/ui/roadmap-presence.spec.js`.
 
-Vor Commit/Push wird origin/main erneut geprüft. Erst wenn Inhalte auf main gesichert und Prüfungen erfolgreich sind, werden die entbehrlichen Branches und erledigten PRs bereinigt. Der endgültige Remote-Status wird danach separat bestätigt. Danach endet der Auftrag ohne Beginn eines V2-Pakets.
+Vor Commit/Push wurde origin/main erneut geprüft; der Änderungsstand wurde direkt als `6c25412` nach main übertragen. GitHub Actions [41080052021](https://github.com/TTLPSCWA/PokerAbend/actions/runs/41080052021) war erfolgreich: Node-Tests, Docker-Build und GHCR-Veröffentlichung. Kein Produktivdeployment.
+
+## Verifizierter Bereinigungsstand
+
+Nach dem gesicherten Push und grüner CI wurden die Quell-SHAs nochmals mit den unveränderten Remote-Branches verglichen. Zusätzlich wurden alle 18 ursprünglichen Sicherheitsanforderungslisten, Abhängigkeiten, Prioritäten und Akzeptanzkriterien mit der konsolidierten Planung verglichen (nur die belegte Spielanzahl wurde aktualisiert); das Quellarchiv stimmt im Git-Inhalt mit seinem Ursprung überein.
+
+Gelöschte Remote-Branches: `planning/pokerabend-v2-roadmap`, `docs/public-roadmap-v2-ideas` und der vollständig abgelöste `feature/partyspiel`. Gelöschter lokaler Branch: `feat/liquid-glass-game-library`. Kein Force-Push, keine Änderung von main durch die Löschbefehle. GitHub meldete danach ausschließlich `main`; PR #1 bis #4 sind geschlossen, kein offener PR bleibt bestehen. Der maschinenlesbare Bereinigungsnachweis steht in `consolidation.json`.
+
+Keine offenen inhaltlichen Übernahmepunkte. Die tatsächliche Sichtbarkeit der neuen Roadmap-Daten auf einer laufenden Webseite setzt wie bisher ein separat freigegebenes Serverupdate voraus. Nach diesem Dokumentationsabschluss endet der Auftrag; kein V2-Paket wurde begonnen.

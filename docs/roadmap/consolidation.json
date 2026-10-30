@@ -637,5 +637,52 @@
   ],
   "current_work": [
     "benachrichtigungen"
-  ]
+  ],
+  "cleanup": {
+    "integration_commit": "6c254120c731846f20dd5523964e5e6964d2e0a0",
+    "remote_deleted": [
+      "planning/pokerabend-v2-roadmap",
+      "docs/public-roadmap-v2-ideas",
+      "feature/partyspiel"
+    ],
+    "local_deleted": [
+      "feat/liquid-glass-game-library"
+    ],
+    "closed_directly_integrated_prs": [
+      2,
+      3,
+      4
+    ],
+    "previously_closed_prs": [
+      1
+    ],
+    "prs_merged_by_this_work": [],
+    "remaining_remote_branches": [
+      "main"
+    ],
+    "remaining_local_branches": [
+      "main"
+    ],
+    "open_pull_requests": 0,
+    "tests": {
+      "targeted_roadmap": {
+        "passed": 14,
+        "failed": 0
+      },
+      "node": {
+        "passed": 738,
+        "failed": 0
+      },
+      "targeted_ui": {
+        "passed": 24,
+        "failed": 0
+      }
+    },
+    "ci": {
+      "url": "https://github.com/TTLPSCWA/PokerAbend/actions/runs/41080052021",
+      "conclusion": "success"
+    },
+    "production_deployment": false,
+    "v2_implementation_started": false
+  }
 }
