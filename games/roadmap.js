@@ -39,7 +39,7 @@ export const ROADMAP = [
     ['Abend-Rückblick', 'Ergebnisse und besondere Momente eines Abends zusammen ansehen.'],
     ['Termin & Spiele-Abstimmung', 'Einen Termin planen, Zusagen sammeln und über die Spiele abstimmen.'],
     ['Erfolge & Abzeichen', 'Persönliche Meilensteine über mehrere Abende sammeln.'],
-  ]) },
+  ]).map((p) => p.id === 'abend-1' ? { ...p, erledigt: true, datum: '2026-10-30' } : p) },
   { id: 'benachrichtigungen', titel: 'Benachrichtigungen', satz: 'Eine Nachricht, wenn du dran bist oder der Tisch auf dich wartet.', stufe: 'spaeter', punkte: [punkt('push', 'Push-Mitteilungen', 'funktion', '„Du bist dran“ und „Tisch wartet“ auch außerhalb des aktiven Tabs.') ] },
   { id: 'betrieb', titel: 'Betrieb & Wartung', satz: 'Updates, Fehler und gespeicherte Abende werden verlässlicher betreut.', stufe: 'spaeter', punkte: liste('betrieb', 'betrieb', [
     ['Update-Hinweis', 'Vor einem geplanten Neustart rechtzeitig am Tisch Bescheid sagen.'],

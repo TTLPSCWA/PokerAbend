@@ -122,6 +122,16 @@ Die Teilnehmer bleiben während des Programms fest; neue Gäste können zuschaue
 
 Programm, Einstellungen und bereits vergebene Programmpunkte werden im Raum gespeichert. Nach einem Server-Neustart setzt der Host fort; nur die noch nicht abgeschlossene Partie muss erneut gespielt werden. Die einzelnen Spiele werten zusätzlich wie bisher für die Bestenliste. Die Programmwertung selbst erzeugt dort keine weiteren Einträge.
 
+### Abend-Modus: alle Spiele gemeinsam werten
+
+Unter **Host → Abendprogramm planen → Abend-Modus · alle Spiele** lassen sich bis zu zwölf Stationen aus allen 45 Karten-, Würfel-, Brett- und Partyspielen frei zusammenstellen. Das geht an jedem Tisch, auch direkt bei Poker. Spiele im Auswahldialog sind nach Kategorien gruppiert; die gemeinsame Spielerzahl wird angezeigt. Jede Station hat eigene Regeln und Zeiten. Der Server prüft vor dem Start, ob alle Spiele zur festen Gruppe und zu vorhandenen Bots passen. Vorlagen werden wie die Party-Playlists im Browser gespeichert.
+
+Eine abgeschlossene Spielrunde zählt als Station. Unterschiedliche Punkteskalen werden in Platzierungen umgerechnet: Bei N Teilnehmern erhält Platz 1 N Abendpunkte, jeder weitere Platz einen weniger. Gleichstände teilen den Platz. Außerhalb von Poker haben tatsächliche Sieger bei gleichen Rohpunkten Vorrang. Spiele mit wenigen guten Punkten werden entsprechend umgekehrt gewertet. Zuschauer zählen nicht. **Gesamtwertung** zeigt den laufenden Stand; nach der letzten Station erscheint die Siegerehrung.
+
+**Poker und Omaha zählen je eine Hand.** Alle starten mit den für die Station eingestellten gleichen Chips. Der Netto-Chipgewinn dieser Hand bestimmt die Platzierung; eigene und fremde Karten sind kein Teil der Abendwertung. Automatische Folgehand, Nachkauf, Chipgeschenke und Korrekturen sind während des Programms gesperrt. Nach der Hand geht es über **Nächstes Programm-Spiel** weiter. Auch wiederholte Stationen starten frisch; eigene Fragen und Programmeinstellungen bleiben erhalten.
+
+Raumcode, Teilnehmer-IDs, Reconnect und bestehende Speicherdateien bleiben dieselben. Nach einem Abbruch wird nur die ungewertete Station wiederholt; bereits vergebene Abendpunkte zählen genau einmal. Neue Gäste dürfen zuschauen. **Programm beenden** ist zwischen Stationen möglich. Abend-Rückblick, Termin-/Spiele-Abstimmung und Erfolge bleiben weitere Roadmap-Schritte. Tests: `test/evening-mode.test.js`, `test/party-program-server.test.js`, `test/ui/evening-mode.spec.js`.
+
 ### Päckchen 7b: Zeichenspiele
 
 **Kritzelpost**, **Bildunterschrift** und **Malen & Raten** stehen unter Party Spiele und in den Abendprogrammen bereit, jeweils für **3–12 Menschen**. Bots sind für diese Spiele nicht verfügbar.

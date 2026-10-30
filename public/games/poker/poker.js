@@ -24,6 +24,7 @@ $('#game-root').innerHTML = `<div id="game" class="game" hidden>
     </div>
   </header>
 
+  <section id="poker-program" hidden></section>
   <section class="table-wrap">
     <button class="help-btn" data-help aria-label="Kurzregeln und Hausregeln" title="Kurzregeln">?</button>
     <div class="table" id="table">
@@ -271,6 +272,10 @@ const ringSVG = '<svg class="ring" viewBox="0 0 48 48" aria-hidden="true"><circl
 function render() {
   if (!S || $('#game').hidden) return;
   GameDesign.apply($('#game'), session.game);
+  $('#game').classList.toggle('has-program', !!S.partyProgram);
+  $('#poker-program').hidden = !S.partyProgram;
+  $('#poker-program').innerHTML = programBannerHTML(S);
+  document.documentElement.style.setProperty('--program-h', $('#poker-program').offsetHeight + 'px');
   if (!$('.table-wrap > .scene-backdrop')) $('.table-wrap').insertAdjacentHTML('afterbegin', GameDesign.backdrop(session.game));
   document.documentElement.style.setProperty('--topbar', $('.topbar').offsetHeight + 'px');
   $('#room-code').textContent = S.code;
@@ -364,6 +369,7 @@ function renderTable() {
     let sub = '';
     if (S.paused) sub = 'Pause – der Host macht weiter';
     else if (next !== null) sub = `Nächste Hand in <span data-countdown>${next}</span> s`;
+    else if (S.partyProgram && S.partyProgram.status !== 'stopped') sub = S.partyProgram.status === 'between' && S.you?.isHost ? '<button class="btn btn-brass btn-sm" data-program="next">Nächstes Programm-Spiel</button>' : '<button class="btn btn-sm" data-program="stand">Abendwertung</button>';
     else if (S.you?.isHost) sub = '<button class="btn btn-brass btn-sm" data-do="nextHand">Nächste Hand</button>';
     else if (!S.settings.autoNext) sub = 'Der Host startet die nächste Hand';
     msg = lines.join('') + afterOddsHTML(h) + (sub ? `<div class="sub" style="margin-top:6px">${sub}</div>` : '');
@@ -1005,7 +1011,7 @@ function renderPanel(force = false) {
       </div>`).join('');
     const go = S.you?.giftOut;
     const giftOut = go ? `<div class="notice" role="note">Dein Geschenk an <b>${esc(go.to)}</b> (${amt(go.amount)} Chips) wartet auf eine Antwort.</div>` : '';
-    body.innerHTML = giftIn + giftOut + `<table class="standings"><tbody>${S.standings.map((p, k) => `<tr>
+    body.innerHTML = programStandHTML(S) + giftIn + giftOut + `<table class="standings"><tbody>${S.standings.map((p, k) => `<tr>
         <td><span class="rank ${k < 3 ? 'r' + (k + 1) : ''}" aria-label="Platz ${k + 1}">${k + 1}</span></td>
         <td><span class="mini-av">${avatarHTML(p)}</span> ${esc(p.name)}${p.connected ? '' : ` <small style="color:var(--text-2)">${ICON.offline} offline</small>`}${p.rebuys ? `<br><small style="color:var(--text-2)">${p.rebuys}× nachgekauft</small>` : ''}</td>
         <td class="num">${amt(p.chips)}</td>
@@ -1054,14 +1060,15 @@ function renderPanel(force = false) {
         ${!S.started || !S.hand ? `<button class="btn btn-brass" data-do="start">${ICON.play} Spiel starten</button>` : `
           <button class="btn ${S.frozen ? 'btn-brass' : ''}" data-do="freeze">${S.frozen ? `${ICON.play} Weiterspielen` : `${ICON.pause} Sofort für alle anhalten`}</button>
           <button class="btn" data-do="pause">${S.paused ? `${ICON.play} Weiterspielen` : 'Pause nach dieser Hand'}</button>`}
-        ${S.hand?.done ? '<button class="btn" data-do="nextHand">Nächste Hand</button>' : ''}
+        ${S.hand?.done && (!S.partyProgram || S.partyProgram.status === 'stopped') ? '<button class="btn" data-do="nextHand">Nächste Hand</button>' : ''}
       </div>
       <div class="danger-zone">
         <button class="btn btn-outline-red" data-new-game ${S.hand && !S.hand.done ? 'disabled title="Geht nur zwischen zwei Händen"' : ''}>Neues Spiel starten</button>
         <p class="hint" style="margin:0">Alle wieder auf Startchips, Blinds auf Level 1, Nachkäufe auf 0. Spieler und Plätze bleiben, der alte Abendstand steht im Verlauf.</p>
       </div>
       <p class="hint" style="margin:0">„Sofort anhalten“ friert alles ein, auch den Zug-Timer. „Pause nach dieser Hand“ lässt die laufende Hand zu Ende spielen.</p>
-      ${botControlsHTML(S, !!(S.hand && !S.hand.done))}
+      ${programControlsHTML(S)}
+      ${botControlsHTML(S, programBusy(S) || programRunning(S))}
       ${unlistedSwitchHTML(S)}
       ${switchGameHTML('poker', !!(S.hand && !S.hand.done))}
       ${endGameHTML(!!(S.hand && !S.hand.done))}`;

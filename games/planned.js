@@ -13,6 +13,7 @@
 // Bei jedem fertigen Päckchen/jeder fertigen Funktion auch games/roadmap.js pflegen:
 // Etappe mit dem Commit-Datum auf 'erledigt', die nächste auf 'jetzt' setzen.
 // Fertig: Päckchen 9 – 6 nimmt!, Monopoly Deal und Monopoly. Als Nächstes folgt „Spieleabend als Ganzes“ aus der Roadmap.
+// Davon fertig: Abend-Modus mit gemeinsamer Wertung über alle Spielkategorien. Als Nächstes: Abend-Rückblick.
 // Ist ein Päckchen fertig, werden die Einträge des nächsten Päckchens auf status 'next' gesetzt. (Fertig: Päckchen 2b – Schlagfertig, Wer hat das gesagt? – Päckchen 4 – Mogeln, Präsident, Durak, Omaha – Päckchen 5 – Würfelpoker, Lügenwürfel, Chicago, Reversi, Dame, Domino – und Päckchen 6 – Zahlenzoo, Gedächtnisküche, Pfeilfieber, Sortierstation, Tickendes Paket, Werwolf samt Bauart-B-Baustein.)
 import { fan, cardsChip, dice, stairs, swim, bubbles, numberLine, flapBox, battle, mill, connect4, pawns, reversi, checkers, dominoes, hexBoard, chess, territory, glyph } from './art-kit.js';
 

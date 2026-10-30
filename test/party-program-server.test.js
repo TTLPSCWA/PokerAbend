@@ -89,3 +89,48 @@ test('Programm über WebSocket: Rechte, Spielwechsel, Tokens, Speichern, Neustar
     assert.ok((await a.ask('switchGame', { game: 'maumau' })).ok);
   } finally { clients.forEach((socket) => socket.close()); await server.stop(); }
 });
+
+test('Abend-Modus über WebSocket: Brett → Poker → Omaha → Karten, Neustart, feste Teilnehmer und Chip-Schutz', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'evening-program-')); let server = await start(dir); const clients = [];
+  try {
+    let a = await client(server.url), b = await client(server.url), z = await client(server.url); clients.push(a, b, z);
+    const created = await a.ask('create', { game: 'poker', name: 'Anna' }), joined = await b.ask('join', { code: created.code, name: 'Ben' });
+    await z.ask('join', { code: created.code, name: 'Zoe' }); await a.ask('sit', { seat: 0 }); await b.ask('sit', { seat: 1 });
+    const ids = [a.state.you.id, b.state.you.id];
+    assert.ok((await a.ask('programSave', { mode: 'abend', name: 'Bunter Abend', entries: [{ game: 'viergewinnt' }, { game: 'poker', settings: { startStack: 1000 } }, { game: 'omaha', settings: { startStack: 2000 } }, { game: 'maumau' }] })).ok);
+    assert.ok((await a.ask('programStart')).ok); await until(() => a.state?.game === 'viergewinnt');
+    assert.equal((await z.ask('sit')).ok, false);
+    for (let i = 0; i < 7; i++) { const active = a.state.turnId === ids[0] ? a : b; assert.ok((await active.ask('drop', { col: active === a ? 0 : 1 })).ok); }
+    await until(() => a.state.partyProgram.status === 'between');
+    assert.equal(a.state.partyProgram.standings.find((p) => p.id === ids[0]).points, 2);
+    await until(() => { try { return JSON.parse(readFileSync(join(dir, 'rooms.json'), 'utf8'))[0]?.partyProgram?.status === 'between'; } catch { return false; } });
+    a.close(); b.close(); z.close(); await server.stop(); server = await start(dir);
+    a = await client(server.url); b = await client(server.url); clients.push(a, b);
+    await a.ask('join', { code: created.code, token: created.token }); await b.ask('join', { code: created.code, token: joined.token });
+    for (const [game, stack] of [['poker', 1000], ['omaha', 2000]]) {
+      assert.ok((await a.ask('programNext')).ok); await until(() => a.state.game === game && a.state.hand && !a.state.hand.done);
+      assert.equal(a.state.settings.autoNext, false); assert.equal(a.state.settings.gifts, false); assert.equal(a.state.settings.rebuy, 'off');
+      assert.equal(a.state.seats.filter(Boolean).reduce((sum, s) => sum + s.stack, 0) + a.state.hand.bets, stack * 2);
+      assert.equal((await a.ask('adjust', { id: ids[0], amount: 10000 })).ok, false);
+      assert.equal((await a.ask('settings', { autoNext: true })).ok, false);
+      const otherCards = a.state.seats.find((s) => s?.id === ids[1]).cards;
+      assert.ok(otherCards.every((c) => c === '??'));
+      if (game === 'poker') {
+        assert.ok((await a.ask('abortRound')).ok); assert.equal(a.state.partyProgram.results.length, 1);
+        assert.ok((await a.ask('programNext')).ok); await until(() => a.state.game === 'poker' && a.state.hand && !a.state.hand.done);
+        assert.equal(a.state.partyProgram.index, 1); assert.equal(a.state.partyProgram.results.length, 1);
+        assert.equal(a.state.seats.filter(Boolean).reduce((sum, s) => sum + s.stack, 0) + a.state.hand.bets, stack * 2);
+      }
+      const active = a.state.seats[a.state.hand.toAct].id === ids[0] ? a : b;
+      assert.ok((await active.ask('action', { type: 'fold' })).ok); await until(() => a.state.partyProgram.status === 'between');
+      assert.equal((await a.ask('nextHand')).ok, false); assert.equal((await a.ask('rebuy')).ok, false);
+      assert.ok(!JSON.stringify(a.state.partyProgram).includes('handIds'));
+    }
+    assert.ok((await a.ask('programNext')).ok); await until(() => a.state.game === 'maumau');
+    assert.equal(a.state.you.id, ids[0]); assert.equal(a.state.code, created.code); assert.ok(Number.isInteger(a.state.roundNo));
+    assert.ok((await a.ask('abortRound')).ok); assert.equal(a.state.partyProgram.results.length, 3);
+    assert.ok((await a.ask('programNext')).ok); assert.equal(a.state.partyProgram.index, 3);
+    assert.ok((await b.ask('stand')).ok); await until(() => a.state.partyProgram.status === 'done');
+    assert.equal(a.state.partyProgram.results.length, 4); assert.equal(a.state.partyProgram.standings.length, 2);
+  } finally { clients.forEach((s) => s.close()); await server.stop(); }
+});

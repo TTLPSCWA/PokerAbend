@@ -344,13 +344,15 @@ function kitGame(def) {
         <td class="num">${pts(id)}</td><td class="num">${p.score}</td></tr>`;
     }).join('');
     const host = S.you?.isHost;
+    const eveningDone = S.partyProgram?.config.mode === 'abend' && S.partyProgram.status === 'done';
     return `<div class="kg-over" role="dialog" aria-labelledby="kg-over-title"><div class="kg-over-card">
-      <small class="kg-over-kicker">${RW} #${S.roundNo} vorbei</small>
-      <h2 id="kg-over-title">${esc(r.text)}</h2>
+      <small class="kg-over-kicker">${eveningDone ? 'Abend-Modus' : `${RW} #${S.roundNo} vorbei`}</small>
+      <h2 id="kg-over-title">${eveningDone ? 'Spieleabend beendet' : esc(r.text)}</h2>
+      ${eveningDone ? programStandHTML(S) : ''}
       ${rows ? `<table class="standings"><thead><tr><th>Name</th><th class="num">Runde</th><th class="num">Abend (${esc(S.scoreLabel)})</th></tr></thead><tbody>${rows}</tbody></table>
         <p class="hint" style="margin:0">${S.lowWins ? 'Wenig Punkte sind gut.' : 'Viel ist gut.'}</p>` : ''}
       ${def.resultExtra ? def.resultExtra(S) : ''}
-      ${S.partyProgram?.status === 'done' ? programStandHTML(S) : ''}
+      ${S.partyProgram?.status === 'done' && !eveningDone ? programStandHTML(S) : ''}
       <div class="kg-over-acts">
         <button class="btn btn-ghost" data-kit="closeResult">Schließen</button>
         ${host && S.partyProgram?.status === 'done' ? '<button type="button" class="btn btn-brass" data-program="plan">Neues Programm planen</button>' : host ? `<button class="btn" data-kit="switchPanel">Spiel wechseln</button><button class="btn btn-brass" data-kit="start" ${seatedCount() >= S.minPlayers ? '' : 'disabled'}>${S.partyProgram?.status === 'between' ? 'Nächstes Programm-Spiel' : `Nächste ${RW}`}</button>`

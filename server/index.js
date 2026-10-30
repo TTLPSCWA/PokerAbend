@@ -11,7 +11,7 @@ import { GAMES, DEFAULT_GAME, gameList, gameEvents, PLANNED, plannedGames } from
 import { resolvedRoadmap } from '../games/roadmap.js';
 import { createPresence } from './presence.js';
 import { createTicketAPI } from './ticket-api.js';
-import { configureProgram, beginProgram, nextProgramStep, recordProgramResult, publicProgram, restoreProgram, programActive, programGames, programDefaults } from './party-program.js';
+import { configureProgram, beginProgram, nextProgramStep, recordProgramResult, publicProgram, restoreProgram, programActive, programGames, programDefaults, programOptions, programSeats, validateProgramPlayers } from './party-program.js';
 import {
   COOKIE, loadSecret, createAuth, parseCookies, cookieHeader, limiter, bucket,
   securityHeaders, sameOrigin, clientIp, safeNext,
@@ -116,7 +116,7 @@ app.use((req, res, next) => {
 });
 app.get('/me', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
-  res.json({ mode: MODE, games: gameList(), planned: plannedGames(), partyTeamGames: programGames(true).map((g) => g.id), partyDefaults: programDefaults() });
+  res.json({ mode: MODE, games: gameList(), planned: plannedGames(), partyTeamGames: programGames(true).map((g) => g.id), partyDefaults: programDefaults(), programOptions: Object.fromEntries(Object.values(GAMES).map((g) => [g.id, programOptions(g)])) });
 });
 app.get('/roadmap', (_req, res) => {
   res.setHeader('Cache-Control', 'no-store');
@@ -287,13 +287,16 @@ function switchRoom(old, game, settings = {}, prepare = null) {
 
 function startProgramStep(room, id, program) {
   const entry = program.plan[program.index];
-  program.saved[room.game] = { settings: { ...room.settings }, extra: room.saveExtra?.() };
+  const extra = room.saveExtra?.();
+  program.saved[room.game] = { settings: { ...room.settings }, extra: program.config.mode === 'abend' ? extra?.custom ? { custom: extra.custom } : null : extra };
   const saved = program.saved[entry.game];
-  const next = switchRoom(room, GAMES[entry.game], { ...(saved?.settings || {}), ...entry.settings }, (r) => {
+  const poker = ['poker', 'omaha'].includes(entry.game);
+  const next = switchRoom(room, GAMES[entry.game], { ...(poker ? programDefaults()[entry.game] : saved?.settings || {}), ...entry.settings, ...(poker ? { autoNext: false, rebuy: 'off', gifts: false } : {}) }, (r) => {
     if (saved?.extra) r.loadExtra(saved.extra);
     r.partyProgram = program;
-    r.roundNo = room.roundNo;
-    r.validateStart(r.seats);
+    if (!r.table) r.roundNo = Number.isInteger(room.roundNo) ? room.roundNo : 0;
+    validateProgramPlayers(r, { ...program.config, entries: [entry] }, programSeats(r));
+    r.validateStart?.(programSeats(r));
   });
   // Beim Neustart wird nur die noch nicht gewertete Partie wiederholt.
   next.lastSnapshot = snapshotOf(next);
@@ -512,7 +515,7 @@ io.on('connection', (socket) => {
         const next = program.status === 'ready' ? beginProgram(room, p.id) : nextProgramStep(room, p.id);
         return { room: startProgramStep(room, p.id, next) };
       }
-      if (programActive(room) && ['newGame', 'settings'].includes(event)) throw new Error('Beende zuerst das Abendprogramm, um diese Einstellungen zu ändern');
+      if (programActive(room) && ['newGame', 'settings', 'adjust', 'gift', 'giftAnswer', 'rebuy', 'nextHand', 'sitOut', 'boardChoose', 'boardSave'].includes(event)) throw new Error('Beende zuerst das Abendprogramm, um diese Einstellungen zu ändern');
       if (programActive(room) && event === 'sit' && !program.roster.some((person) => person.id === p.id)) throw new Error('Dieses Programm läuft schon; du kannst zuschauen und beim nächsten mitspielen');
       const fn = GAMES[room.game]?.events[event];
       if (!fn) throw new Error('Das gibt es in diesem Spiel nicht');

@@ -436,6 +436,7 @@ export class Room extends BaseRoom {
     if (this.table.eligibleSeats().length < 2) return false;
     // Namen bleiben für die Wertung erhalten, auch wenn ein Spieler beim letzten Fold entfernt wird.
     this.handNames = Object.fromEntries(this.table.eligibleSeats().map((seat) => [seat, this.table.seats[seat].name]));
+    this.handIds = Object.fromEntries(this.table.eligibleSeats().map((seat) => [seat, this.table.seats[seat].id]));
     this.table.startHand();
     this.flushEvents();
     this.afterChange();
