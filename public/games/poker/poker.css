@@ -420,8 +420,13 @@ input[type='range']::-moz-range-thumb { width: 18px; height: 18px; border-radius
 }
 /* Niedrige Bildschirme (Handy quer, kleine Laptops): weniger Rand, damit der Tisch nicht zur Briefmarke wird */
 @media (max-height: 560px) and (min-width: 641px) {
-  .table-wrap { padding-top: 34px; padding-bottom: 38px; }
-  .table { width: min(100%, 1100px, calc((100dvh - 240px - var(--program-h, 0px)) * 2.05)); }
+  .table-wrap { padding-top: 34px; padding-bottom: 38px; container-type: size; }
+  /* Die Aktionsleiste kann je nach Hand unterschiedlich hoch sein. Tatsächlichen freien Platz verwenden. */
+  .table { width: min(100%, 1100px, calc(100cqh * 2.05)); }
+  .seat.me { display: none; }
+  .me-chips { display: inline-flex; }
+  .seat-cards .card.back { display: none; }
+  .seat-cards { height: auto; }
   .dock { min-height: 0; padding-top: 8px; padding-bottom: 8px; }
   .mine .cards { --card-w: calc(52px * var(--cs, 1)); }
 }

@@ -57,9 +57,11 @@ Testergebnisse, tatsächliche Änderungen, Kompatibilitätsmatrix, Bildschirmgr�
 | `public/ui-theme.css` | Gemeinsame Theme-Schicht für Hub, Navigation, Katalog, echte Tabellen/Karten, Formulare, Dialoge und Spielrahmen; keine kopierten Spieloberflächen |
 | `public/ui-theme.js`, `public/core.js` | Wiederverwendbare lokale Darstellungseinstellungen, sofortige Anwendung nach `savePrefs`, Systempräferenzen für Transparenz/Bewegung |
 | `public/index.html`, `public/hub.js` | Desktop-Header, Bibliotheksnavigation, vollständiges mobiles Bereichsmenü, konkreter Spiele-Picker vor dem bestehenden `openHost`, Profil-Einstellungen |
-| `public/hub.js` | Startseite mit maximal zwei hervorgehobenen echten Tischen, vier Katalogspielen, drei lokalen Favoriten/zuletzt geöffneten Spielen; Links zu vollständigen Ansichten; Präsenz und Einladungs-Code |
+| `public/hub.js` | Startseite mit maximal zwei hervorgehobenen echten Tischen, vier Katalogspielen (mobil zwei), drei lokalen Favoriten/zuletzt geöffneten Spielen; Links zu vollständigen Ansichten; Präsenz und Einladungs-Code |
 | `public/hub.js` | Kacheln als Standard für neue Browser, gespeicherte Listenansicht bleibt erhalten; echte Kategorie-Chips und zugängliche Spieltitel-Buttons |
 | `public/games/kit.js`, `public/games/poker/poker.js` | Ausschließlich zusätzlicher Darstellungs-Schalter im bestehenden Ich-Panel |
+| `public/games/poker/poker.css` | Im niedrigen Querformat Tischgröße aus der tatsächlich freien Containerhöhe; eigene Karten und Chips bleiben im Dock, kein abgeschnittener eigener Sitz darunter |
+| `public/games/kniffel/kniffel.css` | Dunklere mögliche Punkte/Nullen und lesbarer Zusatz im hellen Tabellenkopf; Würfeltablett und Punkteblatt bleiben erhalten |
 | `test/monopoly-variants.test.js` | Bereits vor dem Umbau gefundene zufällige Testabhängigkeit beseitigt, keine Regeländerung |
 | `test/ui/ui-redesign.spec.js` | Zusätzliche funktionale und responsive Abnahme, echte Spielstarts mit zusätzlichen Testverbindungen |
 | `scripts/capture-ui-redesign.mjs` | Reproduzierbare lokale Vorher-/Nachher-Aufnahmen mit eigener temporärer Datenbasis |
@@ -69,6 +71,28 @@ Wichtige Tokens: `--bg: #101815`, `--panel: #1A2521`, `--panel-2: #24332D`, `--l
 `--glass` und `--glass-blur` begrenzen Glas auf große Hub-Flächen und Dialoge: maximal 12 px, mobil 6 px, keine Filter auf jeder Spielkachel. Die Basis ist deckend und bleibt ohne `backdrop-filter` lesbar. „Glaseffekt reduzieren“ setzt deckende Flächen und entfernt den Filter. Die Systempräferenzen werden ebenfalls berücksichtigt. Bricolage bleibt lokal; Georgia verwendet die Systemschrift für Überschriften. Keine neue Abhängigkeit, kein externer Font, keine 3D-Bibliothek.
 
 Die Präferenzen bleiben unter `poker:prefs`; Favoriten, lokale zuletzt geöffnete Spiele und die Ansichts-/Sidebarwahl verwenden ihre bestehenden Schlüssel. Der lokale Verlauf ist ausdrücklich **keine** Liste laufender Tische. Weiterspielen verwendet weiterhin nur mit Token bestätigte Serverräume. Private Räume, Authentifizierung, Ticket-Admin, Socket-Ereignisse, Spiele/RNG und Datenformate wurden nicht geändert.
+
+Der zusätzliche Einstellungszugang im Hub hat einen vorhandenen Randfall sichtbar gemacht: Nach `leaveGame()` konnte `savePrefs()` noch das alte Poker-Modul mit leerem Zustand rendern. Es ruft dessen Darstellungs-Hook jetzt nur mit aktiver Session auf; Speicherung und gemeinsames Theme werden auch im Hub angewendet. Die Start-/Tischende-Abnahme prüft diesen Übergang wiederholt. Beim Gesamttest wurde außerdem die bisherige Aktionsbeschriftung „Nächsten Abend planen“ wiederhergestellt, damit bestehende Nutzungs-/Testverträge erhalten bleiben.
+
+## Kompatibilitätsumfang
+
+Die folgenden IDs wurden nicht neu implementiert. Sie nutzen den angepassten gemeinsamen Rahmen. Die automatisierte Abnahme öffnet den echten registrierten Katalog, lädt die Lobby, setzt die benötigten verbundenen Testspieler, startet über die bestehenden Socket-Ereignisse und prüft Spielfeld, Dock, Verlauf, Stand, Ich-/Host-Panel, Kurz-/Vollregeln, Abbruch und Tischende. Die Testspieler existieren ausschließlich auf isolierten temporären Testservern. Natürliche komplette Spielverläufe und Wertung sind durch die vorhandenen Simulations-/Spieltests sowie die bestehenden spezifischen UI-Suites abgedeckt; der neue Smoke-Test spielt nicht jede der 46 Partien bis zum regulären Sieg.
+
+| Bestehender Rahmen / Motivfamilie | Tatsächlich erfasste IDs |
+| --- | --- |
+| Karten (13) | `poker`, `omaha`, `maumau`, `farbenchaos`, `zehnetappen`, `stapelrennen`, `schwimmen`, `blackjack`, `mogeln`, `praesident`, `durak`, `sechs-nimmt`, `monopoly-deal` |
+| Würfel (8) | `maexchen`, `schocken`, `kniffel`, `shutthebox`, `zehntausend`, `wuerfelpoker`, `luegenwuerfel`, `chicago` |
+| Brett (9) | `huetchen`, `schiffe`, `viergewinnt`, `muehle`, `reversi`, `dame`, `domino`, `monopoly`, `spiel-des-lebens` |
+| Party (6) | `schaetzmeister`, `schlagfertig`, `werhatdasgesagt`, `tickendes-paket`, `werwolf`, `wer-bin-ich` |
+| Solo-Party (4) | `zahlenzoo`, `gedaechtnis-kueche`, `pfeilfieber`, `sortierstation` |
+| Zeichnen (3) | `kritzelpost`, `bildunterschrift`, `malen-raten` |
+| Echtzeit (3) | `broeckelboden`, `kronenjagd`, `laser-huepfer` |
+
+Die Spielefamilien dienen hier der technischen Abnahme. In der Bibliothek bleiben die vier echten Katalogkategorien maßgeblich; keine zweite manuelle Spieleliste wurde in die Anwendung eingebaut. Individuelle Spieloberflächen wurden nur bei Poker/Omaha (Querformat) und Kniffel (Kontrast) gezielt verändert. Die übrigen Spielmodule wurden auf Kompatibilität mit dem gemeinsamen Theme geprüft.
+
+Die zehn Hub-Routen werden bei **1440×900, 1920×1080, 768×1024, 390×844, 360×800 und 900×450** geprüft. Alle aktiven Spiele werden auf Desktop/Mobil geprüft; 15 repräsentative aktive Spiele erhalten zusätzlich die vier anderen Größen (Poker, Omaha, Kniffel, Mensch ärgere Dich nicht, Schiffe, Reversi, Dame, Mühle, Vier gewinnt, Phase 10, Monopoly, Monopoly Deal, Spiel des Lebens, Malen & Raten, Bröckelboden). Bestehende Brett-Fit-Prüfungen kontrollieren darüber hinaus die vollständigen Brettgrenzen.
+
+Kontrast-Stichprobe anhand der sRGB-Luminanz der tatsächlich verwendeten Farben: Haupttext/Panel **13,84:1**, Sekundärtext/Panel **8,16:1**, weißer Text/Primäraktion **5,42:1**, Kniffel-Punktevorschlag/weiß **6,96:1**, Nullvorschlag/weiß **5,49:1**, Zusatztext/heller Tabellenkopf **5,35:1**. Dies ist keine vollständige WCAG-Zertifizierung. Tastaturfokus, native Dialoge, Kategorien/Filterzustände, Tablet-Sidebar und das mobile Bereichsmenü werden funktional geprüft. Keine Daueranimation, keine Filter pro Spielkachel und keine zusätzlichen Bilddownloads.
 
 ## Screenshot-Abnahme
 

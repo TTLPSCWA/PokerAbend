@@ -64,10 +64,11 @@
 .view-toggle button[aria-pressed='true'] { background: var(--panel-2); color: var(--text); box-shadow: inset 0 1px 0 #FFFFFF12; }
 .games.tiles { grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); gap: 18px; }
 .games.home-games { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-.home-games .ga { height: 54px; margin-bottom: 0; }
-.home-games .ga .game-art { width: 50px; height: 50px; }
-.home-games .gr-desc { display: none; }
-.home-games .gr-actions { margin-top: 6px; padding-top: 10px; }
+.games.home-games > li { grid-template-columns: 50px minmax(0, 1fr); grid-template-rows: 1fr auto; padding: 18px; gap: 12px; }
+.games.home-games .ga { height: 54px; margin-bottom: 0; }
+.games.home-games .ga .game-art { width: 50px; height: 50px; }
+.games.home-games .gr-desc { display: none; }
+.games.home-games .gr-actions { grid-column: 1 / -1; margin-top: 6px; padding-top: 10px; }
 .games > li { padding: 22px; border-radius: 18px; background: var(--glass-soft); border: 1px solid var(--line); transition: background .15s, border-color .15s; box-shadow: inset 0 1px 0 #FFFFFF04; }
 .games > li:hover { border-color: #ADC2AF4D; background: #FFFFFF08; }
 .games > li .ga { background: none; border-radius: 0; }
@@ -183,6 +184,8 @@
   .home-primary { gap: 24px; }
   .home-panel { padding: 18px; }
   .games.home-games { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .games.home-games > li { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr auto; padding: 14px 12px; }
+  .home-games > li:nth-child(n + 3) { display: none; }
   .games.tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .games > li { padding: 14px 12px; border-radius: 14px; gap: 10px; }
   .game-tile .ga { height: 58px; margin: 0; }

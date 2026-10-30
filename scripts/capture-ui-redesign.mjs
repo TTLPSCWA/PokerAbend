@@ -53,11 +53,22 @@ try {
     for (const event of ['addBot', 'start']) { const r = await page.evaluate((event) => send(event), event); if (!r.ok) throw new Error(r.error); }
     await page.getByRole('button', { name: 'Würfeln', exact: true }).click(); await page.locator('.kn-pick').first().waitFor();
     await page.screenshot({ path: join(output, `${device}-kniffel.png`) });
+    if (stage === 'after' && device === 'desktop') {
+      await page.evaluate(() => send('closeTable'));
+      await page.locator('#hub:not([hidden])').waitFor();
+      await page.evaluate(() => { location.hash = '#spiele'; });
+      await page.locator('[data-host="poker"]').click();
+      await page.locator('#host-form button[type=submit]').click();
+      await page.locator('[data-sit]').first().click();
+      for (const event of ['addBot', 'start']) { const r = await page.evaluate((event) => send(event), event); if (!r.ok) throw new Error(r.error); }
+      await page.setViewportSize({ width: 900, height: 450 });
+      await page.screenshot({ path: join(output, 'desktop-poker-landscape.png') });
+    }
     await context.close();
   }
   writeFileSync(join(output, 'report.json'), JSON.stringify({ stage, errors, screens: ['login', 'home', 'library', 'tickets', 'ticket-detail', 'kniffel'], temporaryData: true }, null, 2));
   if (errors.length) throw new Error(errors.join('\n'));
-  console.log(`12 Screenshots ohne Browserfehler: ${output}`);
+  console.log(`${stage === 'after' ? 13 : 12} Screenshots ohne Browserfehler: ${output}`);
 } finally {
   await browser?.close();
   if (child.exitCode === null && child.signalCode === null) { const stopped = new Promise((resolve) => child.once('exit', resolve)); child.kill(); await stopped; }

@@ -248,7 +248,7 @@ function pageStart() {
     <div class="home-layout"><div class="home-primary">
       <section class="hub-block home-panel"><div class="hub-block-head"><h2>Am Tisch zusammenkommen</h2><a href="#tische">Alle Tische →</a></div><div data-tables="2">${tablesBlockHTML(2)}</div></section>
       ${gamesPreviewHTML()}
-      <section class="hub-block home-panel evening-links"><div><span class="eyebrow">Eure Spieleabende</span><h2>Vorfreude & Erinnerungen</h2><p>Plant euren nächsten Abend oder schaut auf die letzten Runden zurück.</p></div><div class="plan-actions"><a class="btn" href="#planung">Abend planen</a><a class="btn btn-ghost" href="#rueckblick">Rückblicke</a></div></section>
+      <section class="hub-block home-panel evening-links"><div><span class="eyebrow">Eure Spieleabende</span><h2>Vorfreude & Erinnerungen</h2><p>Plant euren nächsten Abend oder schaut auf die letzten Runden zurück.</p></div><div class="plan-actions"><a class="btn" href="#planung">Nächsten Abend planen</a><a class="btn btn-ghost" href="#rueckblick">Abend-Rückblicke öffnen</a></div></section>
     </div><aside class="home-secondary" aria-label="Deine Runde">
       ${localGamesHTML('favorites')}
       <section class="hub-block home-panel" id="presence-slot">${presenceHTML()}</section>
@@ -351,6 +351,7 @@ function gamesPreviewHTML() {
 function localGamesHTML(kind) {
   const favorite = kind === 'favorites', f = favs(), r = recent();
   const list = sortGames(account.games || []).filter((g) => favorite ? f.has(g.id) : r[g.id]).slice(0, 3);
+  if (!favorite && !list.length) return '';
   return `<section class="hub-block home-panel"><div class="hub-block-head"><h2>${favorite ? 'Deine Favoriten' : 'Zuletzt ausgewählt'}</h2>${favorite ? '<a href="#favoriten">Alle →</a>' : ''}</div><p class="local-note">${favorite ? 'Mit einem Stern für später merken.' : 'In diesem Browser · keine laufenden Tische'}</p>${list.length ? `<ul class="compact-games">${list.map((g) => `<li><button type="button" data-game-open="${esc(g.id)}"><span class="mini-art" aria-hidden="true">${g.art}</span><span><b>${esc(g.name)}</b><small>${esc(playersText(g))} · ${g.duration} Min.</small></span><span aria-hidden="true">→</span></button></li>`).join('')}</ul>` : `<p class="hint">${favorite ? 'Noch kein Lieblingsspiel? Vergib in der Bibliothek einen Stern.' : 'Hier erscheinen Spiele, die du an einem Tisch geöffnet hast.'}</p>`}</section>`;
 }
 function pageTables() {

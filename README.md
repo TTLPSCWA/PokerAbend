@@ -38,6 +38,8 @@ Voraussetzung ist Node.js 20 oder neuer.
 
 Die Browserprüfungen benötigen lokal installiertes Chrome. Screenshots liegen unter `artifacts/block-a/`; Fehlerberichte unter `test-results/`.
 
+Das [UI-Redesign-Protokoll](docs/ui-redesign.md) beschreibt Gestaltung, tatsächliche Änderungen, Testabdeckung und Vorher-/Nachher-Aufnahmen. Neue Vergleichsbilder lassen sich mit `node scripts/capture-ui-redesign.mjs after` erzeugen; der Aufruf nutzt einen eigenen lokalen Testserver und temporäre Daten.
+
 ## Online stellen
 
 //1. **Image bauen und pushen**  
