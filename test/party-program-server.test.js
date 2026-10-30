@@ -162,9 +162,15 @@ test('Abend-Modus über WebSocket: Brett → Poker → Omaha → Karten, Neustar
     await z.ask('join', { code: created.code, name: 'Zoe' }); await a.ask('sit', { seat: 0 }); await b.ask('sit', { seat: 1 });
     const ids = [a.state.you.id, b.state.you.id];
     assert.ok((await a.ask('programSave', { mode: 'abend', name: 'Bunter Abend', entries: [{ game: 'viergewinnt' }, { game: 'poker', settings: { startStack: 1000 } }, { game: 'omaha', settings: { startStack: 2000 } }, { game: 'maumau' }] })).ok);
-    assert.ok((await a.ask('programStart')).ok); await until(() => a.state?.game === 'viergewinnt');
+    assert.ok((await a.ask('programStart')).ok); await until(() => [a, b].every((s) => s.state?.game === 'viergewinnt' && s.state.phase === 'playing'));
     assert.equal((await z.ask('sit')).ok, false);
-    for (let i = 0; i < 7; i++) { const active = a.state.turnId === ids[0] ? a : b; assert.ok((await active.ask('drop', { col: active === a ? 0 : 1 })).ok); }
+    for (let i = 0; i < 7; i++) {
+      const active = a.state.turnId === ids[0] ? a : b, nextId = ids.find((id) => id !== active.state.you.id);
+      const reply = await active.ask('drop', { col: active === a ? 0 : 1 }); assert.ok(reply.ok, reply.error);
+      // Empfang auf einem Socket bestätigt nicht die Zustellung auf dem anderen.
+      // Erst nach dem bestätigten Zugwechsel das nächste Kommando senden.
+      await until(() => [a, b].every((s) => s.state.g.board.filter(Boolean).length === i + 1 && (i === 6 ? s.state.phase === 'over' : s.state.turnId === nextId)));
+    }
     await until(() => a.state.partyProgram.status === 'between');
     assert.equal(a.state.partyProgram.standings.find((p) => p.id === ids[0]).points, 2);
     await until(() => { try { return JSON.parse(readFileSync(join(dir, 'rooms.json'), 'utf8'))[0]?.partyProgram?.status === 'between'; } catch { return false; } });
