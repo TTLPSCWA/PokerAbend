@@ -37,17 +37,24 @@ Es liegt **kein separates freigegebenes Spielezimmer-Foto** bei. Deshalb entsteh
 - [x] 1: Tokens, App-Rahmen, Navigation, Profil, Login und Dialoge.
 - [x] 2: Spielebibliothek und Startseite mit echten Daten.
 - [x] 3: Übrige Hub-Seiten und Formulare harmonisieren.
-- [ ] 4: Gemeinsame Spielrahmen harmonisieren und alle 46 Spiele prüfen.
-- [ ] 5: Vollständige Abnahme, Screenshots und Abschlussbericht.
+- [x] 4: Gemeinsame Spielrahmen harmonisieren und alle 46 Spiele prüfen.
+- [x] 5: Vollständige Abnahme, Screenshots und Abschlussbericht.
 
 ## Testprotokoll
 
 - `npm.cmd ci --no-audit --no-fund --fetch-retries=0 --cache artifacts/npm-cache`: erfolgreich. Der erste eingeschränkte Netzwerkversuch wurde beendet und mit freigegebenem Netzwerkzugriff wiederholt; keine Lockfile-Änderung.
 - `npm.cmd test`: Baseline 730/731. Im vorhandenen Tempowürfel-Test war Ziel 17 ein Gemeinschaftsfeld, dessen zufällige Karte die Position ändern konnte. Der Test startet nun auf 8 und landet ausschließlich auf Grundstücken. Keine Änderung an der Spiellogik. Gezielte Suite danach: 13/13. Vollständige Wiederholung nach dem UI-Umbau: **731/731**.
 - Repräsentative bestehende Playwright-Suites (Katalog, Navigation, Tickets/Admin und Spielrahmen): Baseline **46/46**, nach Etappen 1–3 ebenfalls **46/46**.
-- `node scripts/capture-ui-redesign.mjs before`: 12 Vorher-Bilder, keine Browserfehler. `after` ebenfalls 12 Bilder; finale Aufnahme folgt nach dem Feinschliff.
+- `node node_modules/@playwright/test/cli.js test test/ui/ui-redesign.spec.js --project=desktop`: **13/13** vor dem abschließenden Feinschliff, einschließlich aller 46 Spielstarts und der sechs Bildschirmgrößen.
+- `npm.cmd run test:ui`: Gesamtabnahme mit **256 Fällen**, davon **254 bestanden, 1 fehlgeschlagen, 1 planmäßig übersprungen**, Laufzeit 17,2 Minuten. Der Fehler lag im vorhandenen P10-Variantentest: `expect.poll(() => lastState.variant)` konnte direkt nach Reload bei noch leerem Socket-Zustand werfen. Mit `lastState?.variant` wartet der Test auf die reale Zustandsantwort, statt vorher abzubrechen. Keine Änderung am Spiel oder Wiederverbinden.
+- `node node_modules/@playwright/test/cli.js test test/ui/paeckchen10.spec.js --grep "P10 Variantenwechsel" --repeat-each=3`: danach **6/6 bestanden** (je drei Wiederholungen Desktop/Mobil, 25,1 Sekunden). Insgesamt sind damit **alle 255 ausgeführten unterschiedlichen UI-Prüffälle erfolgreich validiert**. Der komplette 17-Minuten-Lauf wurde nach dieser reinen Wartebedingungs-Korrektur nicht erneut wiederholt; sein ursprüngliches Ergebnis bleibt hier ausdrücklich ausgewiesen.
+- Abschließender einfacher Nachlauf desselben Variantenfalls: **2/2 bestanden, Prozess-Exitcode 0** (`artifacts/redesign-variant-exitcheck.log`, `redesign-variant-exitcode.txt`).
+- Der eine übersprungene Fall ist die doppelte mobile Ausführung der Bildschirmgrößen-Matrix. Derselbe Test prüft bereits im Desktop-Projekt alle sechs Größen einschließlich 390 und 360 Pixel; die übrigen mobilen Prüfungen einschließlich aller 46 Spielstarts liefen vollständig.
+- Die abschließend ergänzte Kurzregeln-/Pokerhände-Prüfung für Poker und Omaha wurde über `node node_modules/@playwright/test/cli.js test test/ui/ui-redesign.spec.js --grep "Teil (1|5):"` auf beiden Geräten nachgeprüft: **4/4 Gruppen bestanden** (59,1 Sekunden). Diese Gruppen erfassen zusammen zehn Spiele, jeweils auf Desktop und Mobil.
+- `node scripts/capture-ui-redesign.mjs before`: **12 Vorher-Bilder**; abschließend `node scripts/capture-ui-redesign.mjs after`: **13 Nachher-Bilder**, jeweils keine Browserfehler. Zusätzlich **18** Hub-Bilder für die Größenmatrix und **152** aktive Spielansichten (46 Desktop, 46 Mobil, 60 weitere Größenvarianten).
+- `git diff --check`: ohne Fehler. Prüfung lokal mit Node **v24.22.0**, npm **11.19.1** und installiertem Chrome. Der unveränderte Docker-Workflow verwendet Node 22; hier wurde kein Image veröffentlicht und kein Produktionslauf durchgeführt.
 
-Testergebnisse, tatsächliche Änderungen, Kompatibilitätsmatrix, Bildschirmgrößen und Screenshotpfade werden im Verlauf ergänzt. Temporäre Testserver verwenden `POKER_NO_DOTENV=1` und eigene temporäre Datenverzeichnisse; `.env` und produktive Daten werden nicht gelesen oder verändert.
+Die Testlogs liegen lokal unter `artifacts/redesign-*.log`, insbesondere `redesign-stage4-unit.log`, `redesign-final-ui-r2.log`, `redesign-variant-recheck.log` und `redesign-final-capture.log`. Temporäre Testserver verwenden `POKER_NO_DOTENV=1` und eigene temporäre Datenverzeichnisse; `.env` und produktive Daten wurden nicht gelesen oder verändert.
 
 ## Umgesetzte Komponenten und Tokens
 
@@ -63,6 +70,7 @@ Testergebnisse, tatsächliche Änderungen, Kompatibilitätsmatrix, Bildschirmgr�
 | `public/games/poker/poker.css` | Im niedrigen Querformat Tischgröße aus der tatsächlich freien Containerhöhe; eigene Karten und Chips bleiben im Dock, kein abgeschnittener eigener Sitz darunter |
 | `public/games/kniffel/kniffel.css` | Dunklere mögliche Punkte/Nullen und lesbarer Zusatz im hellen Tabellenkopf; Würfeltablett und Punkteblatt bleiben erhalten |
 | `test/monopoly-variants.test.js` | Bereits vor dem Umbau gefundene zufällige Testabhängigkeit beseitigt, keine Regeländerung |
+| `test/ui/paeckchen10.spec.js` | Bestehender Poll wartet nach Reload auch bei zunächst leerem Zustand auf die tatsächliche Variante |
 | `test/ui/ui-redesign.spec.js` | Zusätzliche funktionale und responsive Abnahme, echte Spielstarts mit zusätzlichen Testverbindungen |
 | `scripts/capture-ui-redesign.mjs` | Reproduzierbare lokale Vorher-/Nachher-Aufnahmen mit eigener temporärer Datenbasis |
 
@@ -76,7 +84,7 @@ Der zusätzliche Einstellungszugang im Hub hat einen vorhandenen Randfall sichtb
 
 ## Kompatibilitätsumfang
 
-Die folgenden IDs wurden nicht neu implementiert. Sie nutzen den angepassten gemeinsamen Rahmen. Die automatisierte Abnahme öffnet den echten registrierten Katalog, lädt die Lobby, setzt die benötigten verbundenen Testspieler, startet über die bestehenden Socket-Ereignisse und prüft Spielfeld, Dock, Verlauf, Stand, Ich-/Host-Panel, Kurz-/Vollregeln, Abbruch und Tischende. Die Testspieler existieren ausschließlich auf isolierten temporären Testservern. Natürliche komplette Spielverläufe und Wertung sind durch die vorhandenen Simulations-/Spieltests sowie die bestehenden spezifischen UI-Suites abgedeckt; der neue Smoke-Test spielt nicht jede der 46 Partien bis zum regulären Sieg.
+Die folgenden IDs wurden nicht neu implementiert. Sie nutzen den angepassten gemeinsamen Rahmen. Die automatisierte Abnahme öffnet den echten registrierten Katalog, lädt die Lobby, setzt die benötigten verbundenen Testspieler, startet über die bestehenden Socket-Ereignisse und prüft Spielfeld, Dock, Verlauf, Stand, Ich-/Host-Panel, Kurzregeln, Abbruch und Tischende. Bei den Shared-Kit-Spielen öffnet sie außerdem die Vollregeln; bei Poker/Omaha deren vorhandene Pokerhände-Ansicht. Die Testspieler existieren ausschließlich auf isolierten temporären Testservern. Natürliche komplette Spielverläufe und Wertung sind durch die vorhandenen Simulations-/Spieltests sowie die bestehenden spezifischen UI-Suites abgedeckt; der neue Smoke-Test spielt nicht jede der 46 Partien bis zum regulären Sieg.
 
 | Bestehender Rahmen / Motivfamilie | Tatsächlich erfasste IDs |
 | --- | --- |
@@ -110,6 +118,12 @@ Die Bilder liegen absichtlich unter dem bereits ignorierten Verzeichnis `artifac
 | Tickets Mobil | [Bild](../artifacts/ui-redesign/before/mobil-tickets.png) | [Bild](../artifacts/ui-redesign/after/mobil-tickets.png) |
 
 Zusätzlich: Login und Ticket-Details auf Desktop/Mobil; responsive Ansichten unter `artifacts/ui-redesign/responsive/`, echte aktive Spielansichten unter `artifacts/ui-redesign/games/`. Die Referenz wurde visuell verglichen: Sidebar, großzügige Serif-Überschriften, dunkle ruhige Flächen, kleine einzelne Spielillustrationen und warme Akzente wurden aufgegriffen. Das nicht separat gelieferte Spielezimmerfoto und erfundene Inhalte des Mockups wurden nicht übernommen.
+
+## Verbleibende Punkte und Grenzen der Abnahme
+
+Es sind keine bekannten funktionalen Fehler aus dieser Abnahme offen. Optional fehlt weiterhin ein separat lizenziertes Spielezimmerfoto; der freigegebene CSS-Fallback ist fertig und braucht kein Bild. Die Referenzdatei wird ausschließlich als Dokumentation geführt und vom Frontend nicht geladen.
+
+Die Geräteprüfung erfolgte mit Chrome und emulierten Viewports/Touch-Kontexten, nicht auf physischer iOS-/Android-Hardware. Die Kontrast-Stichprobe ersetzt kein vollständiges Accessibility-Audit. PNGs und Logs sind lokale, bewusst nicht versionierte Prüfartefakte; Skript, neue Tests und dieses Protokoll sind im Feature-Branch enthalten. Keine Änderungen an `.env`, Produktionsdaten, Manifest oder Service-Worker-Caching. Keine Veröffentlichung nach main, GHCR oder auf den Server.
 
 ## Veröffentlichung: ausschließlich spätere Anleitung
 

@@ -147,11 +147,17 @@ for (let offset = 0; offset < 46; offset += 5) test(`Alle 46 Spiele, Teil ${1 + 
       await expect(page.locator(poker ? '#panel' : '#kg-panel')).toBeVisible();
       await page.locator(poker ? '#panel-close' : '.panel-head [data-kit="close"]').click();
     }
+    await page.getByRole('button', { name: 'Kurzregeln und Hausregeln', exact: true }).click();
     if (!poker) {
-      await page.getByRole('button', { name: 'Kurzregeln und Hausregeln', exact: true }).click();
       await page.getByRole('button', { name: 'Alle Regeln', exact: true }).click();
       await expect(page.locator('#kg-panel-title')).toHaveText('Regeln');
       await page.locator('.panel-head [data-kit="close"]').click();
+    } else {
+      await expect(page.locator('#help-title')).toContainText('kurz erklärt');
+      await page.getByRole('button', { name: 'Alles klar', exact: true }).click();
+      await page.locator('.hands-btn').click();
+      await expect(page.locator('#panel-title')).toHaveText('Pokerhände');
+      await page.locator('#panel-close').click();
     }
     await page.locator(poker ? '[data-panel="host"]' : '[data-kit-panel="host"]').click();
     await page.locator('[data-end="abort"]').click();

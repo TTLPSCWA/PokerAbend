@@ -68,8 +68,8 @@ for (const [game, variant, selector, count] of cases) test(`P10 ${game}/${varian
 test('P10 Variantenwechsel ist Host-Sache, bleibt nach Reload und hat eigene Bestenliste', async ({ page, app, browser }) => {
   await login(page, app); await selectGame(page, 'viergewinnt'); await page.locator('#host-form button[type=submit]').click();
   await page.locator('[data-kit-panel=host]').first().click(); await page.locator('[data-variant]').selectOption('five');
-  await expect.poll(() => page.evaluate(() => lastState.variant)).toBe('five'); await page.reload();
-  await expect.poll(() => page.evaluate(() => lastState.variant)).toBe('five');
+  await expect.poll(() => page.evaluate(() => lastState?.variant)).toBe('five'); await page.reload();
+  await expect.poll(() => page.evaluate(() => lastState?.variant)).toBe('five');
   expect((await page.evaluate(() => send('setVariant', { variant: 'falsch' }))).ok).toBe(false);
   const board = await page.evaluate(async () => (await fetch('/api/leaderboard?game=viergewinnt~five')).json());
   expect(board.game).toBe('viergewinnt~five'); expect(board.games.find((g) => g.id === board.game).name).toContain('Fünf in einer Reihe');

@@ -225,7 +225,7 @@ $('#host-dlg').addEventListener('submit', (e) => {
   });
 });
 
-// ---------- Seiten (werden in den nächsten Teilen gefüllt) ----------
+// ---------- Spielauswahl und Seiten ----------
 // Die Auswahl verwendet ausschließlich den registrierten Katalog und öffnet den normalen Host-Dialog.
 function openGamePicker() {
   if (!profile.name) { openProfile(true); return; }
