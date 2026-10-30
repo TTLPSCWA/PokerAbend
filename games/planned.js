@@ -12,9 +12,9 @@
 // Ablauf: Wird ein Spiel gebaut, kommt es nach games/<id>/, wird in games/index.js registriert und fliegt hier raus.
 // Bei jedem fertigen Päckchen/jeder fertigen Funktion auch games/roadmap.js pflegen:
 // Etappe mit dem Commit-Datum auf 'erledigt', die nächste auf 'jetzt' setzen.
-// Fertig: Päckchen 9 – 6 nimmt!, Monopoly Deal und Monopoly. Als Nächstes folgt „Spieleabend als Ganzes“ aus der Roadmap.
-// Fertig: Abend-Modus, Abend-Rückblick, Termin & Spiele-Abstimmung und Erfolge & Abzeichen. Als Nächstes: Benachrichtigungen.
+// Fertig: Päckchen 9, Abend-Modus, Abend-Rückblick, Termin & Spiele-Abstimmung und Erfolge & Abzeichen.
 // Ist ein Päckchen fertig, werden die Einträge des nächsten Päckchens auf status 'next' gesetzt. (Fertig: Päckchen 2b – Schlagfertig, Wer hat das gesagt? – Päckchen 4 – Mogeln, Präsident, Durak, Omaha – Päckchen 5 – Würfelpoker, Lügenwürfel, Chicago, Reversi, Dame, Domino – und Päckchen 6 – Zahlenzoo, Gedächtnisküche, Pfeilfieber, Sortierstation, Tickendes Paket, Werwolf samt Bauart-B-Baustein.)
+// Fertig: Päckchen 10 mit Klassiker-Varianten und Spiel des Lebens. Als Nächstes: Benachrichtigungen.
 import { fan, cardsChip, dice, stairs, swim, bubbles, numberLine, flapBox, battle, mill, connect4, pawns, reversi, checkers, dominoes, hexBoard, chess, territory, glyph } from './art-kit.js';
 
 const spiel = (o) => ({ type: 'game', status: 'planned', houseRules: [], ...o });
