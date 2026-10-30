@@ -31,7 +31,9 @@
     "Nur nach Umsetzung eines einzelnen freigegebenen Pakets Status, Nachweise und abhängige Punkte aktualisieren.",
     "Bestehende Spiele, Räume, Statistiken, Tickets, Pläne, Sicherheiten, technische IDs und Volume schützen.",
     "Vor Produktivmigration Backup und Rollback bestätigen.",
-    "Veraltete Baseline vor Umsetzung neu prüfen."
+    "Veraltete Baseline vor Umsetzung neu prüfen.",
+    "Ergänzungen V2-11 bis V2-17 nur in docs/roadmap planen; games/planned.js und games/roadmap.js bis zur konkreten Implementierungsfreigabe nicht verändern.",
+    "Jede Adminänderung an echten Statistiken benötigt eine serverseitige Rechteprüfung und ein nachvollziehbares Audit; keine stillen Direkt-Edits von Ranglistenwerten."
   ],
   "task_status_values": [
     "planned",
@@ -438,6 +440,280 @@
       "implementation_commit": null,
       "completed_at": null,
       "notes": []
+    },
+    {
+      "id": "V2-11",
+      "title": "Strategiebrettspiel Risiko (eigenständige Umsetzung)",
+      "phase": 11,
+      "depends_on": [
+        "V2-00"
+      ],
+      "priority": "later",
+      "goal": "Ein neues rundenbasiertes Gebietseroberungsspiel im Stil von Risiko planen: eigene Karte/Gebiete, Armeen, Verstärkung, Angriffs- und Verteidigungswürfel, Gebietswechsel, Missions-/Siegbedingungen, Regeln für mehrere Spieler, Zuschauer, Reconnect, Mobilbedienung und optional passende Bots. Nicht mit dem bestehenden Backlogspiel 'risiko-wuerfeln' verwechseln. Spielmechaniken sauber auf Spielfairness prüfen und eigene Assets/Marke entwerfen.",
+      "files": [
+        "games/index.js",
+        "games/planned.js",
+        "games/roadmap.js",
+        "games/risiko/ (neu)",
+        "public/games/risiko/ (neu)",
+        "games/bots.js",
+        "test/risiko.test.js (neu)",
+        "test/ui/risiko.spec.js (neu)"
+      ],
+      "security": [
+        "Karten-/Spielzustand und Würfelwürfe serverseitig autoritativ; keine klientseitig gefälschten Ergebnisse",
+        "Angriffsaktionen turngebunden validieren; Reconnect und Ausfall absichern",
+        "Originale Karte, eigene Gebiets- und Kartennamen, eigenständige Symbole; Marken-, Urheber- und Designrechte vor Veröffentlichung prüfen",
+        "Keine regelwidrige Sicht auf geheime Aufträge oder Handkarten"
+      ],
+      "acceptance": [
+        "Spiel mit mehreren Menschen über bestehende Lobbys und Raumcodes ausführbar",
+        "Legale Armee-/Gebietszüge, Siegbedingung und Würfelkonflikte automatisiert getestet",
+        "Eigene originelle Karte und UI ohne Übernahme geschützter Grafiken",
+        "Desktop und Mobile Safari getestet",
+        "Kein bestehendes Risiko-Würfelspiel verändert"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": []
+    },
+    {
+      "id": "V2-12",
+      "title": "Siedler von Catan-inspiriertes Hexfeld-Aufbauspiel",
+      "phase": 12,
+      "depends_on": [
+        "V2-00"
+      ],
+      "priority": "later",
+      "goal": "Ein eigenständiges Hexfeld-Siedlungs- und Handelsspiel als neues Multiplayer-Brettspiel planen: modulare Insel/Hexfelder, Rohstoffverteilung, Ertragswürfe, Siedlungen, Straßen, Städte, Handel zwischen Spielern und Bank, Räuber, Baukosten und Siegpunkte. Namen, Figuren, Karten, Layout und Grafik eigenständig gestalten. Originalitäts-/Markenprüfung vor öffentlicher Benennung als Catan.",
+      "files": [
+        "games/index.js",
+        "games/planned.js",
+        "games/roadmap.js",
+        "games/siedlungsspiel/ (neu)",
+        "public/games/siedlungsspiel/ (neu)",
+        "games/bots.js",
+        "test/siedlungsspiel.test.js (neu)",
+        "test/ui/siedlungsspiel.spec.js (neu)"
+      ],
+      "security": [
+        "Rohstoffe/Entwicklungskarten pro Spieler geheim halten",
+        "Würfe, Handelsangebote, Tauschvalidierung und Baurechte ausschließlich serverseitig",
+        "Exploit-Schutz gegen unautorisierte Tauschbestätigungen, Doppelzüge und Endlosschleifen",
+        "Geistiges Eigentum: keine offiziellen Namen, Logos, Kartenillustrationen oder Kopien übernehmen ohne Lizenz"
+      ],
+      "acceptance": [
+        "Multiplayer per vorhandener Lobby, Spielstand- und Reconnect-Systematik",
+        "Platzierungsregeln, Rohstoffverteilung, Handel, Räuber und Siegbedingungen getestet",
+        "Mobile und Desktop: skalierbares Hexfeldbrett",
+        "Originale markenunabhängige Gestaltung und endgültiger Produktname vor Launch festgelegt"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": []
+    },
+    {
+      "id": "V2-13",
+      "title": "Erfolge & Errungenschaften deutlich ausbauen",
+      "phase": 13,
+      "depends_on": [
+        "V2-03",
+        "V2-04"
+      ],
+      "priority": "medium",
+      "goal": "Mehr spielübergreifende und spielspezifische Errungenschaften, Meilensteine, Schwierigkeitsstufen, Fortschrittsbalken, Kategorien, seltene Auszeichnungen sowie optionale private/öffentliche Anzeige planen. Freischaltungen ausschließlich anhand bestätigter serverseitiger Ereignisse, kompatibel mit Game-ID und bestehender Fortschrittslogik. Neue Spiele später in ihren Paketen ergänzen.",
+      "files": [
+        "server/achievements.js",
+        "server/leaderboard.js",
+        "server/index.js",
+        "public/achievements.js",
+        "public/achievements.css",
+        "test/achievements.test.js",
+        "test/ui/achievements.spec.js"
+      ],
+      "security": [
+        "Kein Farming von öffentlichen Ranked-Erfolgen über Bots/Gäste/manipulierte Daten",
+        "Freischaltung idempotent; derselbe Rundenabschluss zählt nur einmal",
+        "Private und öffentlich sichtbare Achievements trennen",
+        "Alte Abzeichen/Statistiken nicht ohne nachweisbaren Match auf neue Accounts übertragen"
+      ],
+      "acceptance": [
+        "Zusätzliche klar definierte Erfolge und Fortschrittsanzeige",
+        "Verifizierte Ergebnisse lösen die passenden Abzeichen genau einmal aus",
+        "Verborgene Erfolge erscheinen nur gemäß Privacy-Präferenz",
+        "Bestehende Erfolge und Benachrichtigungen bleiben funktionsfähig"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": []
+    },
+    {
+      "id": "V2-14",
+      "title": "Gerade-online-Status und Presence verbessern",
+      "phase": 14,
+      "depends_on": [
+        "V2-01",
+        "V2-05",
+        "V2-07"
+      ],
+      "priority": "high",
+      "goal": "Online-/Abwesend-/Spielt-/Schaut-zu-Status zuverlässig geräte- und tabübergreifend anzeigen, an stabile Account-ID/Gast-ID statt Name binden. Onlineansicht übersichtlich gestalten, private Räume und Sichtbarkeit wahren; direkte Einladung/Beitritt über vorhandene öffentliche Räume beibehalten. Keine Freundesliste einführen.",
+      "files": [
+        "server/presence.js",
+        "server/index.js",
+        "public/hub.js",
+        "public/hub.css",
+        "test/presence.test.js",
+        "test/ui/roadmap-presence.spec.js"
+      ],
+      "security": [
+        "Unsichtbare Spieler dürfen weder in Online- noch Zuletzt-online-Listen erscheinen",
+        "Private Tische niemals über Status, Raumcode, Namen oder Spiel verraten",
+        "Rechte zu Zuschauer-/Beitritt-Aktionen am Server prüfen",
+        "Multi-Tab-Aktivität nicht doppelt zählen; Gast-IDs getrennt halten",
+        "Kein unnötiges dauerhaftes Aktivitäts-Tracking"
+      ],
+      "acceptance": [
+        "Korrekte Statuswechsel zwischen Startseite, aktivem Spiel, Zuschauer und Abwesenheit",
+        "Mehrere Tabs/Geräte eines Accounts werden nicht doppelt angezeigt",
+        "Zwei gleichnamige Personen bleiben getrennt",
+        "Unsichtbarkeit und private Tische bleiben geschützt",
+        "Safari und Reconnect überprüft"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": []
+    },
+    {
+      "id": "V2-15",
+      "title": "Mehr Benutzer-Einstellungen: Anzeige, Filter und Bedienung",
+      "phase": 15,
+      "depends_on": [
+        "V2-05"
+      ],
+      "priority": "high",
+      "goal": "Feingranulare Einstellungen ergänzen für Spielkategorien (z. B. Brettspiele), Startseitenblöcke, Ranglisten, Erfolge, Präsenz-Bereich, Rückblicke, Roadmap, Tickets, Favoriten, zuletzt gespielt, Sound, reduzierte Bewegung/Transparenz, Kartengröße, Benachrichtigungen und Bedienung. Gute Standardwerte, Vorschau/Reset, profilgebundene Synchronisierung und lokale Gast-Fallbacks. UI-Verbergen und öffentliche Privatsphäre strikt trennen.",
+      "files": [
+        "public/hub.js",
+        "public/hub.css",
+        "public/core.js",
+        "public/style.css",
+        "server/account-store.js (neu)",
+        "test/ui/look.spec.js",
+        "test/ui/lobby-menu.spec.js"
+      ],
+      "security": [
+        "Versteckte Funktionen bleiben autorisierungspflichtig; Ausblenden darf API-Rechte nicht ändern",
+        "Serverseitige Präferenzen schematisch validieren, erlaubte Felder/Maximalwerte begrenzen",
+        "Account-Privacy darf nicht durch UI-Flags umgangen werden",
+        "Direkte Raumlinks müssen auch bei versteckter Spielkategorie funktionieren"
+      ],
+      "acceptance": [
+        "Jeder Bereich unabhängig ein-/ausblendbar; Option 'Alles zurücksetzen'",
+        "Mobile Einstellungen zugänglich und ohne Layoutfehler",
+        "Weder verwaiste Navigation noch unerreichbare private Einstellungen",
+        "Discord-Nutzer Einstellungen geräteübergreifend, Gast im Browser behalten",
+        "Ausblendung beeinflusst keine Spielregeln oder Rechte"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": []
+    },
+    {
+      "id": "V2-16",
+      "title": "Bots mit wählbarem Schwierigkeitsgrad",
+      "phase": 16,
+      "depends_on": [
+        "V2-01"
+      ],
+      "priority": "medium",
+      "goal": "Drei zunächst klar definierte Stufen (Leicht, Mittel, Schwer) für geeignete vorhandene Computergegner planen, pro Spiel/Host oder pro Bot auswählbar, konsistenter Standard 'Mittel'. Spielabhängige, nachvollziehbare Strategien und gezielte Tests statt bloß künstlicher Wartezeiten; Spiel ohne entsprechende KI bleibt funktionsfähig. Abgrenzung von menschlichen Gästen und späterem Ranked-Modus beachten.",
+      "files": [
+        "server/bots.js",
+        "games/bots.js",
+        "server/index.js",
+        "public/games/kit.js",
+        "public/games/poker/poker.js",
+        "games/*/bot.js (soweit vorhanden)",
+        "test/bots.test.js",
+        "test/bot-strategy.test.js",
+        "test/ui/bots.spec.js"
+      ],
+      "security": [
+        "Botstrategien nutzen nur erlaubte Spieler- und öffentlich sichtbare Informationen; keine geheime Gegnerhand",
+        "Schwierigkeit darf keine Gewinn-/Ergebnisberechtigung für Ranglisten auslösen",
+        "Host-only bei Änderung, nicht mitten im laufenden Zug/Runde",
+        "Schwierigkeitswahl serverseitig prüfen; Performance und Timeouts begrenzen"
+      ],
+      "acceptance": [
+        "Leicht/Mittel/Schwer auswählbar bei mindestens geeigneten Pilotspielen",
+        "Schwer spielt im Test messbar stärker, ohne unfairen Informationszugriff",
+        "Bestehende Bot-Funktion und Reconnect bleiben erhalten",
+        "Spiele ohne unterstützte Stufen zeigen einen ehrlichen Fallback",
+        "Bots niemals in öffentlichen Ranglisten"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": []
+    },
+    {
+      "id": "V2-17",
+      "title": "Admin-Zentrale: Rückblicke, Bestenlisten und Daten moderieren",
+      "phase": 17,
+      "depends_on": [
+        "V2-02",
+        "V2-03",
+        "V2-07"
+      ],
+      "priority": "high",
+      "goal": "Eine abgesicherte Adminoberfläche mit Listen/Suche/Detailansicht für Abend-Rückblicke, historische und neue Bestenlisten, Spielerprofile sowie auf Wunsch weitere Wartungsdaten planen. Admins sollen fehlerhafte Einträge korrigieren, ausblenden, moderieren, logisch löschen und bei Bedarf wiederherstellen können; bei Rankings Korrekturen nachvollziehbar aus Wertungsereignissen ableiten statt verdeckt Summen umzuschreiben. Bestehende Ticket-Adminverwaltung konsistent einbinden.",
+      "files": [
+        "server/index.js",
+        "server/security.js",
+        "server/leaderboard.js",
+        "server/evening-reviews.js",
+        "server/ticket-api.js",
+        "server/admin-api.js (neu)",
+        "server/admin-audit.js (neu)",
+        "public/admin.js (neu)",
+        "public/admin.css (neu)",
+        "test/admin-api.test.js (neu)",
+        "test/ui/admin.spec.js (neu)"
+      ],
+      "security": [
+        "Rollen-/Rechteprüfung auf JEDEM Endpunkt; Discord-Login allein niemals Admin",
+        "MFA für Adminzugang erwägen; bestehendes TICKET_ADMIN_PASSWORD nicht automatisch zur globalen Freigabe machen",
+        "CSRF/IDOR/Ratelimits/Brute-Force-Schutz, Eingabevalidierung und sicheres HTML-Rendering",
+        "Soft-Delete/Restore mit Änderungsprotokoll (wer, wann, vorher/nachher, Grund); irreversible Löschung separat bestätigen",
+        "Sicherung und Restore vor Massenänderungen; Ergebnisse/Erfolge nach Korrekturen konsistent neu berechnen",
+        "Private Rückblicke und sensible Accountdaten nur für berechtigte Administratoren; Datensparsamkeit"
+      ],
+      "acceptance": [
+        "Normaler Discord-Account/Gast erhält niemals Adminrechte",
+        "Admin kann Rückblick bearbeiten, ausblenden, löschen und wiederherstellen; Rechte und Audit nachgewiesen",
+        "Ranglisteneinträge über dokumentierte Korrekturen moderieren; Rangfolge/Erfolge konsistent",
+        "Bestehende Ticketverwaltung funktioniert weiterhin",
+        "Jede destruktive Änderung erfordert Bestätigung, protokolliert Grund und ist testbar"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": []
+    }
+  ],
+  "updated_date": "2026-10-30",
+  "addenda": [
+    {
+      "file": "docs/roadmap/V2_ADDENDUM_2026-10-30.md",
+      "date": "2026-10-30",
+      "scope": "Sieben weitere Planungspakete V2-11..V2-17; alle ausschließlich geplant.",
+      "priority": "Bei Überschneidung mit archivierter Ursprungs-Spezifikation gilt dieses Addendum für den hier beschriebenen Umfang."
     }
   ]
 }
