@@ -44,7 +44,7 @@ test('Entdecken: verschiedene Spiele und Kategorien statt wiederholter Partien z
 
 test('Alle 17 Abzeichen sind über echte Katalogspiele erreichbar; Monate zählen nur einmal', () => {
   const result = progress(games.map((g) => row(g.id, 3, 2, ['2026-10', '2026-11', '2027-01', '2026-10', 'bad', '2026-13'])));
-  assert.equal(result.stats.activeMonths, 3); assert.equal(result.stats.categories, 4); assert.equal(result.stats.distinctGames, 45);
+  assert.equal(result.stats.activeMonths, 3); assert.equal(result.stats.categories, 4); assert.equal(result.stats.distinctGames, 46);
   assert.equal(result.unlocked, result.total);
 });
 

@@ -22,6 +22,7 @@ export class Room extends TurnRoom {
   defaultSettings() { return { stockSize: 20 }; }
 
   validateStart(ids) {
+    if (this.variant === 'team' && ids.length !== 4) throw new Error('Teamspiel braucht vier Spieler');
     // Neben den persönlichen Stapeln müssen fünf Handkarten für jeden übrig bleiben.
     const max = Math.floor(DECK_SIZE / ids.length) - HAND;
     if (this.settings.stockSize > max) throw new Error(`Für ${ids.length} Mitspieler sind höchstens ${max} Karten im eigenen Stapel möglich. Bitte die Stapelgröße im Host-Menü verringern.`);
@@ -29,6 +30,7 @@ export class Room extends TurnRoom {
 
   setupRound() {
     this.resetTable();
+    this.teamSeats = this.order.slice();
     const deck = [];
     for (let n = 1; n <= 12; n++) for (let k = 0; k < 12; k++) deck.push(n);
     for (let k = 0; k < 18; k++) deck.push(JOKER);
@@ -53,12 +55,14 @@ export class Room extends TurnRoom {
 
   // Welche Karte liegt an der Quelle? from: { kind: 'hand', index } | { kind: 'stock' } | { kind: 'pile', index }
   source(id, from) {
+    id = this.sourceOwner(id, from);
     if (from?.kind === 'hand') { const c = this.hand[id][from.index]; if (c === undefined) throw new Error('Diese Handkarte gibt es nicht'); return c; }
     if (from?.kind === 'stock') { const s = this.stock[id]; if (!s.length) throw new Error('Dein Stapel ist leer'); return s[s.length - 1]; }
     if (from?.kind === 'pile') { const p = this.piles[id][from.index]; if (!p?.length) throw new Error('Diese Ablage ist leer'); return p[p.length - 1]; }
     throw new Error('Woher soll die Karte kommen?');
   }
   take(id, from) {
+    id = this.sourceOwner(id, from);
     if (from.kind === 'hand') return this.hand[id].splice(from.index, 1)[0];
     if (from.kind === 'stock') return this.stock[id].pop();
     return this.piles[id][from.index].pop();
@@ -76,7 +80,7 @@ export class Room extends TurnRoom {
     this.say(`${this.name(id)} legt ${c === JOKER ? `Joker (als ${need})` : c}${from.kind === 'stock' ? ' vom Stapel' : ''}`, 'info', from.kind === 'stock' ? 'win' : 'action');
     this.act(id, `legt ${c === JOKER ? '★' : c}${from.kind === 'stock' ? ' vom Stapel' : ''}`);
     if (b.length === 12) { this.used.push(...b); this.build[Number(to)] = []; this.say('Eine Reihe ist voll und kommt weg'); }
-    if (!this.stock[id].length) return this.win(id);
+    if (this.winningTeam(id).every((p) => !this.stock[p].length)) return this.win(id);
     if (!this.hand[id].length) this.fill(id);
   }
 
@@ -105,12 +109,22 @@ export class Room extends TurnRoom {
   }
 
   win(id) {
-    const rest = this.order.filter((p) => p !== id).reduce((a, p) => a + this.stock[p].length, 0);
+    const winners = this.winningTeam(id);
+    const rest = this.order.filter((p) => !winners.includes(p)).reduce((a, p) => a + this.stock[p].length, 0);
     const pts = 25 + 5 * rest;
-    this.finishRound([id], `${this.name(id)} ist den Stapel los und gewinnt +${pts} Punkte`, { [id]: pts });
+    this.finishRound(winners, `${winners.map((p) => this.name(p)).join(' und ')} ist alle Spielstapel los und gewinnt +${pts} Punkte`, Object.fromEntries(winners.map((p) => [p, pts])));
+  }
+
+  partner(id) { return this.variant === 'team' && this.teamSeats?.includes(id) ? this.teamSeats[(this.teamSeats.indexOf(id) + 2) % 4] : null; }
+  winningTeam(id) { return this.variant === 'team' ? [id, this.partner(id)] : [id]; }
+  sourceOwner(id, from) {
+    if (!from?.owner || from.owner === id) return id;
+    if (from.owner !== this.partner(id) || from.kind === 'hand') throw new Error('Nur die offenen Stapel deines Partners sind spielbar');
+    return from.owner;
   }
 
   onDropOut(p) {
+    if (this.variant === 'team') { const winners = this.order.filter((id) => id !== p.id && id !== this.partner(p.id)); this.finishRound(winners, 'Teamspiel durch Ausscheiden beendet', Object.fromEntries(winners.map((id) => [id, 25]))); }
     for (const list of [this.stock[p.id], this.hand[p.id], ...(this.piles[p.id] || [])]) if (list) this.used.push(...list);
     delete this.stock[p.id]; delete this.hand[p.id]; delete this.piles[p.id];
   }
@@ -124,10 +138,15 @@ export class Room extends TurnRoom {
     return {
       build: this.build.map((b) => ({ next: b.length + 1, count: b.length, jokers: b.map((c, i) => (c === JOKER ? i : -1)).filter((i) => i >= 0) })),
       hand: this.hand[viewerId] ? [...this.hand[viewerId]] : null,
+      partner: this.partner(viewerId),
       deck: this.deck.length,
       canPass: this.phase === 'playing' && this.currentId === viewerId && !this.hand[viewerId]?.length && !this.deck.length && !this.used.length,
     };
   }
 
   static restore(data, onChange) { return TurnRoom.restoreInto(new this(data.code, data.settings, onChange), data); }
+}
+export class ShortRoom extends Room {
+  static OPTIONS = [{ key: 'stockSize', label: 'Karten im kurzen Spielstapel', type: 'number', min: 5, max: 15 }];
+  defaultSettings() { return { stockSize: 10 }; }
 }

@@ -1,4 +1,17 @@
 .kg-monopoly .kg-main { place-items:stretch; overflow:hidden; padding:10px; }
+.mo-board.mo-classic { grid-template-columns:1.45fr repeat(9,minmax(0,1fr)) 1.45fr; grid-template-rows:1.45fr repeat(9,minmax(0,1fr)) 1.45fr; background:#eee2c2; border:3px solid #493b29; }
+.mo-classic .mo-field { background:#f8efd7; border-color:#514936; }
+.mo-classic .mo-center { background:#eaddb9; }
+.mo-classic .mo-center h2 { font-family:Georgia,serif; letter-spacing:.08em; color:#6b352b; }
+.mo-classic .mo-corner { justify-content:center; align-items:center; gap:3px; }
+.mo-corner svg { width:38%; height:38%; color:#374337; }
+.mo-corner .mo-color { display:none; }
+.mo-decks { display:flex; gap:18px; }.mo-decks > span { width:84px; min-height:64px; border:2px solid #8d7046; border-radius:6px; background:#fcf4de; display:grid; place-items:center; font-size:10px; transform:rotate(-9deg); box-shadow:3px 3px 0 #bbad8c; }.mo-decks > span:last-child { transform:rotate(9deg); }.mo-decks b { font-size:28px; }.mo-decks svg { width:36px; height:30px; }
+.mo-token svg { width:100%; height:100%; }.mo-token-picker .btn { display:grid; justify-items:center; gap:4px; font-size:11px; }.mo-token-picker svg { width:32px; height:32px; }.mo-token-picker [aria-pressed=true] { outline:3px solid var(--gold); }
+.mo-speed-die { width:36px; height:36px; background:#c95137; color:white; border-radius:7px; display:grid; place-items:center; font-size:13px; font-weight:bold; border:2px solid #842815; }
+.mo-deed { background:#faf4df; color:#262820; padding:14px; border:2px solid #554a34; display:grid; gap:12px; }.mo-deed h3 { margin:-14px -14px 0; padding:16px; background:var(--deed); border-bottom:2px solid #554a34; color:#17271f; text-align:center; }.mo-deed .mo-rents td { border-color:#82785b; }
+.mo-board.mo-junior { grid-template-columns:repeat(7,minmax(0,1fr)); grid-template-rows:repeat(7,minmax(0,1fr)); }.mo-junior .mo-center { grid-area:2/2/7/7; }
+.mo-notes { display:flex; gap:4px; flex-wrap:wrap; justify-content:center; }.mo-note { background:var(--note); color:#283028; border:2px solid #5d614f; border-radius:3px; padding:4px 10px; font-family:Georgia,serif; box-shadow:inset 0 0 0 2px #ffffff80; font-weight:bold; }
 .mo-table { width:100%; height:100%; min-height:0; display:grid; grid-template-rows:auto minmax(0,1fr); gap:8px; }
 .mo-toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; font-size:12px; padding-right:52px; }.mo-toolbar .btn { min-height:32px; padding:5px 10px; }.mo-zoom { display:flex; gap:4px; align-items:center; }
 .mo-board-viewport { min-height:0; width:100%; overflow:auto; overscroll-behavior:contain; border-radius:12px; background:#111f1a; touch-action:pan-x pan-y pinch-zoom; }

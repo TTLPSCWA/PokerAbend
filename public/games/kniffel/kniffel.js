@@ -13,6 +13,7 @@
     largeStraight: '5 in Folge: 40', kniffel: '5 gleiche: 50', chance: 'alle Augen',
   };
   let keep = new Set();
+  let column = 0;
   let keepKey = '';
   const nameOf = (S, id) => esc(S.players.find((p) => p.id === id)?.name ?? '?');
 
@@ -20,6 +21,11 @@
     id: 'kniffel',
     look(S) {
       const g = S.g;
+      if (g.columnSheets) {
+        const columns = Object.keys(g.columnSheets).flatMap((id) => [0, 1, 2].map((column) => ({ id, column })));
+        const row = (f) => `<tr><th>${NAME[f]}</th>${columns.map(({ id, column }) => `<td class="num">${g.columnSheets[id][column][f] ?? '–'}</td>`).join('')}</tr>`;
+        return [{ title: 'Alle drei Spalten', html: `<div class="look-table"><table class="look-big"><thead><tr><th></th>${columns.map(({ id, column }) => `<th>${nameOf(S, id)} ×${column + 1}</th>`).join('')}</tr></thead><tbody>${[...UPPER, ...LOWER].map(row).join('')}<tr><th>Gewichtete Summe</th>${columns.map(({ id, column }) => `<td class="num">${g.columnTotals[id][column].total * (column + 1)}</td>`).join('')}</tr></tbody></table></div>` }];
+      }
       const ids = Object.keys(g.sheets);
       const cell = (id, f) => { const v = g.sheets[id][f]; return `<td class="num">${v === null ? '' : v === 0 ? '–' : v}</td>`; };
       const row = (f) => `<tr><th scope="row">${NAME[f]}</th>${ids.map((id) => cell(id, f)).join('')}</tr>`;
@@ -43,7 +49,7 @@
       'Nach 13 Runden gewinnt die höchste Summe.',
     ],
     house: () => [],
-    playerInfo: (p) => (p.total === null || p.total === undefined ? '' : `${p.total} Punkte · Runde ${Math.min(13, (p.filled || 0) + 1)}/13`),
+    playerInfo: (p, S) => { const n = S.variant === 'triple' ? 39 : 13; return p.total === null || p.total === undefined ? '' : `${p.total} Punkte · Runde ${Math.min(n, (p.filled || 0) + 1)}/${n}`; },
     onState(S) {
       const g = S.g;
       const key = g && S.turnId ? `${S.roundNo}:${S.turnId}:${g.rolls}` : '';
@@ -57,7 +63,8 @@
       return 'Trag ein Feld ein – grau stehen die Punkte, 0 heißt streichen';
     },
     main(S) {
-      const g = S.g;
+      const raw = S.g, triple = S.variant === 'triple';
+      const g = triple ? { ...raw, sheets: Object.fromEntries(Object.entries(raw.columnSheets).map(([id, columns]) => [id, columns[column]])), totals: Object.fromEntries(Object.entries(raw.columnTotals).map(([id, values]) => [id, values[column]])), options: raw.optionsByColumn?.[column] } : raw;
       const me = S.you?.id;
       const myTurn = S.turnId === me;
       // Würfel des Aktiven; wer dran ist, tippt sie an (liegen lassen)
@@ -90,7 +97,7 @@
         ${S.settings.extraBonus ? sumRow('Extra-Kniffel', (t) => t.extra || '–') : ''}
         ${sumRow('Gesamt', (t) => `<b>${t.total}</b>`, 'total')}
         </tbody></table></div>`;
-      return `<div class="kg-table kn-table">${tray}${sheet}</div>`;
+      return `<div class="kg-table kn-table">${triple ? `<div class="kg-acts">${[0, 1, 2].map((i) => `<button class="btn" data-g="column" data-column="${i}" aria-pressed="${column === i}">Spalte ×${i + 1}</button>`).join('')}</div>` : ''}${tray}${sheet}</div>`;
     },
     dock(S, myTurn) {
       if (!myTurn) return '';
@@ -101,13 +108,14 @@
     },
     async onClick(t, S) {
       const g = t.dataset.g;
+      if (g === 'column') { column = Number(t.dataset.column); kit.render(); return; }
       if (g === 'keep') { const i = Number(t.dataset.i); if (keep.has(i)) keep.delete(i); else keep.add(i); kit.render(); }
       else if (g === 'roll') send('roll', { keep: [...keep] });
       else if (g === 'score') {
         const f = t.dataset.f;
-        const v = S.g.options?.[f];
+        const v = S.variant === 'triple' ? S.g.optionsByColumn?.[column]?.[f] : S.g.options?.[f];
         if (!v && !(await ask({ title: `${NAME[f]} streichen?`, text: 'Das Feld bekommt 0 Punkte und ist für dieses Spiel belegt.', ok: 'Streichen', danger: true }))) return;
-        send('score', { field: f });
+        send('score', { field: f, column });
       }
     },
     rules: `<p>Fünf Würfel, 13 Runden. Wer am Ende die höchste Summe hat, gewinnt.</p>

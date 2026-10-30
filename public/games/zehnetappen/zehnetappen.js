@@ -118,7 +118,7 @@
       "Wer zuerst Phase 10 schafft, gewinnt (Gleichstand: weniger Strafpunkte).",
     ],
     house: (S) => (S.settings.exactSize ? ['Phase nur mit genauer Kartenanzahl auslegen'] : []),
-    playerInfo: (p) => `Phase ${p.phase}${p.laidDone ? ' ✓' : ''} · ${p.cards} Karten · ${p.penalty} Strafp.${p.skipped ? ' · <b>setzt aus</b>' : ''}`,
+    playerInfo: (p, S) => `Phase ${p.phase}${p.laidDone ? ' ✓' : ''} · ${p.cards} Karten · ${p.penalty} Strafp.${p.skipped ? ' · <b>setzt aus</b>' : ''}${p.partner ? ` · Partner: ${esc(S.players.find((q) => q.id === p.partner)?.name || '')}` : ''}`,
     seat: (p) => `${fanHTML(p.cards)}<span>${p.cards} Karten</span><span>Phase ${p.phase}${p.laidDone ? ' <b>✓ ausgelegt</b>' : ''}</span>${p.skipped ? '<b class="kg-call">setzt aus</b>' : ''}`,
     // „Stand“: Phasen aller Spieler als Tabelle
     standExtra(S) {
@@ -126,7 +126,7 @@
       if (!list.length || S.phase === 'lobby') return '';
       return `<h3>Phasen</h3><table class="standings ze-phases"><thead><tr><th>Name</th><th>Phase</th><th class="num">Strafpunkte</th></tr></thead><tbody>
         ${list.map((p) => `<tr><td><span class="mini-av">${avatarHTML(p)}</span> ${esc(p.name)}</td>
-          <td><b>${p.phase ?? '–'}</b>/10 ${p.laidDone ? '<span class="ze-ok">✓ liegt</span>' : ''}<small class="ze-ptext">${esc(S.g?.phases?.[p.id] || '')}</small></td>
+          <td><b>${p.phase ?? '–'}</b>/${S.variant === 'short' ? 5 : 10} ${p.laidDone ? '<span class="ze-ok">✓ liegt</span>' : ''}<small class="ze-ptext">${esc(S.g?.phases?.[p.id] || '')}</small></td>
           <td class="num">${p.penalty ?? 0}</td></tr>`).join('')}</tbody></table>`;
     },
     hint(S, myTurn) {
@@ -168,9 +168,9 @@
       const m = modeOf(S);
       const one = picked.size === 1 ? handCard(S, [...picked][0]) : null;
       const hitting = playing && m === 'hit' && one;
-      const n = Math.min(g.myPhase, 10);
+      const limit = S.variant === 'short' ? 5 : 10, n = Math.min(g.myPhase, limit);
       const phase = me?.inRound ? `<div class="ze-phase"><div><small>Deine Phase</small><b>Phase ${n}: ${esc(g.phaseText)}</b>${S.settings.exactSize ? '' : '<small class="ze-min">Mengen sind Mindestangaben – mehr Karten sind erlaubt</small>'}</div>
-        <div class="ze-progress" role="img" aria-label="Phase ${n} von 10">${[...Array(10)].map((_, i) => `<i class="${i < n - 1 ? 'done' : i === n - 1 ? 'now' : ''}"></i>`).join('')}<span>${n}/10</span></div></div>` : '';
+        <div class="ze-progress" role="img" aria-label="Phase ${n} von ${limit}">${[...Array(limit)].map((_, i) => `<i class="${i < n - 1 ? 'done' : i === n - 1 ? 'now' : ''}"></i>`).join('')}<span>${n}/${limit}</span></div></div>` : '';
       const laid = Object.entries(g.laid).filter(([, gs]) => gs.length).map(([id, gs]) => `<div class="ze-laid"><b>${name(id)}</b>${gs.map((gr, i) => {
         const sd = hitting ? sides(gr, one) : [];
         const fits = sd.length > 0;

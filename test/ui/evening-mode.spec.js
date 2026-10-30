@@ -12,7 +12,7 @@ test('Abend-Modus: alle Kategorien planen, Brett → Poker → Party, Reconnect 
     await expect.poll(() => page.evaluate(() => lastState.players.filter((p) => p.seated).length)).toBe(2);
     await page.locator('[data-kit-panel=host]').click(); await page.getByRole('button', { name: 'Abendprogramm planen', exact: true }).click();
     await expect(page.locator('#program-mode')).toHaveValue('abend');
-    await expect(page.locator('[data-program-game="0"] option')).toHaveCount(45);
+    await expect(page.locator('[data-program-game="0"] option')).toHaveCount(46);
     await expect(page.locator('[data-program-game="0"] option[value=kniffel]')).toHaveCount(1);
     await expect(page.locator('[data-program-game="0"] option[value=monopoly]')).toHaveCount(1);
     await page.getByLabel('Programmname', { exact: true }).fill('Unser bunter Abend');

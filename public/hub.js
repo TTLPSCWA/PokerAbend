@@ -188,6 +188,7 @@ function openHost(id) {
       <div><h2 id="host-title">${esc(g.name)} hosten</h2>
       <p class="host-meta">${esc(catTitle(g.category))} · ${esc(playersText(g))} · ca. ${g.duration} Min.</p></div>
       <p>${esc(g.description)}</p>
+      ${(g.variants || []).length > 1 ? `<label class="field"><span>Spielvariante</span><select class="input" id="host-variant">${g.variants.map((v) => `<option value="${v.id}">${esc(v.name)} · ${v.minPlayers}–${v.maxPlayers} Spieler</option>`).join('')}</select></label>` : ''}
       ${(g.createFields || []).length ? `<div class="host-fields">${g.createFields.map((f) => `<label class="field"><span>${esc(f.label)}</span>
         <input data-cf="${esc(f.key)}" type="${f.type === 'number' ? 'number' : 'text'}" ${f.min !== undefined ? `min="${f.min}"` : ''} ${f.step ? `step="${f.step}"` : ''} value="${esc(f.value)}"></label>`).join('')}</div>` : ''}
       <p class="hint">Alles Weitere stellst du am Tisch unter „Host“ ein.</p>
@@ -195,6 +196,16 @@ function openHost(id) {
       <button class="btn btn-brass btn-big" type="submit">Tisch erstellen</button>
     </form>`;
   d.dataset.game = id;
+  d.querySelector('#host-variant')?.addEventListener('change', (e) => {
+    const v = g.variants.find((v) => v.id === e.target.value);
+    d.querySelector('.host-meta').textContent = `${catTitle(g.category)} · ${v.minPlayers === v.maxPlayers ? v.minPlayers : `${v.minPlayers}–${v.maxPlayers}`} Spieler · ca. ${v.duration || g.duration} Min.`;
+    d.querySelectorAll('[data-cf]').forEach((input) => {
+      const option = v.options?.find((o) => o.key === input.dataset.cf);
+      if (v.defaults?.[input.dataset.cf] !== undefined) input.value = v.defaults[input.dataset.cf];
+      if (option?.min !== undefined) input.min = option.min;
+      if (option?.max !== undefined) input.max = option.max;
+    });
+  });
   d.showModal();
   d.querySelector('input, button.btn-brass')?.focus();
 }
@@ -203,7 +214,7 @@ $('#host-dlg').addEventListener('submit', (e) => {
   e.preventDefault();
   const d = $('#host-dlg');
   const settings = Object.fromEntries($$('[data-cf]', d).map((el) => [el.dataset.cf, el.value]));
-  socket.emit('create', { game: d.dataset.game, name: profile.name, avatar: profile.avatar, settings }, (r) => {
+  socket.emit('create', { game: d.dataset.game, name: profile.name, avatar: profile.avatar, settings, variant: $('#host-variant')?.value }, (r) => {
     if (!r?.ok) { $('#host-error').textContent = r?.error || 'Verbindung fehlgeschlagen'; return; }
     d.close();
     enterGame(r);
@@ -265,7 +276,7 @@ function gameHTML(g, tiles) {
   const action = g.planned ? `<span class="soon">${g.status === 'next' ? 'Bald' : 'Geplant'}</span>` : `<button type="button" class="btn btn-brass" data-host="${esc(g.id)}" aria-label="${esc(g.name)} hosten">Hosten</button>`;
   return `<li class="game-${tiles ? 'tile' : 'row'} cat-${esc(g.category)}${g.planned ? ' planned' : ''}" data-id="${esc(g.id)}" ${g.planned ? 'aria-disabled="true"' : ''}>
       <div class="ga">${g.art}</div>
-      <div class="gr-main"><b>${esc(g.name)}${fav ? ' <span class="fav-mark" aria-label="Favorit">★</span>' : ''}</b><small>${esc(meta)}</small><span class="gr-desc">${esc(g.description)}</span></div>
+      <div class="gr-main"><b>${esc(g.name)}${fav ? ' <span class="fav-mark" aria-label="Favorit">★</span>' : ''}</b><small>${esc(meta)}</small><span>${variantBadgesHTML(g)}</span><span class="gr-desc">${esc(g.description)}</span></div>
       <div class="gr-actions">${g.planned ? detail : star}${action}</div></li>`;
 }
 function gamesToolbarHTML() {

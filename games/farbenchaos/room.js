@@ -14,6 +14,7 @@ export class Room extends MauMau {
   static OPTIONS = [
     { key: 'handSize', label: 'Karten pro Spieler', type: 'number', min: 3, max: 10 },
     { key: 'stacking', label: '+2 und +4 stapeln', type: 'bool' },
+    { key: 'sevenZero', label: '7 tauscht Hände, 0 gibt alle Hände weiter', type: 'bool' },
     { key: 'drawUntil', label: 'Ziehen, bis eine Karte passt', type: 'bool' },
     { key: 'unoCall', label: '„UNO“ selbst sagen (vergessen = 2 Strafkarten)', type: 'bool' },
     { key: 'strictPlus4', label: '+4 nur, wenn man die Farbe nicht hat', type: 'bool' },
@@ -24,7 +25,11 @@ export class Room extends MauMau {
   constructor(code, settings, onChange) {
     super(code, settings, onChange, { minPlayers: 2, maxPlayers: 8, lowWins: false, scoreLabel: 'Punkte' });
   }
-  defaultSettings() { return { handSize: 7, stacking: false, drawUntil: false, unoCall: false, strictPlus4: false, startAction: false, catchCall: false }; }
+  defaultSettings() { return { handSize: 7, stacking: false, sevenZero: false, drawUntil: false, unoCall: false, strictPlus4: false, startAction: false, catchCall: false }; }
+  play(id, card, wish, called = false, target = null) {
+    if (this.settings.sevenZero && card[0] === '7' && (!this.order.includes(target) || target === id)) throw new Error('Wähle einen Mitspieler zum Tauschen');
+    this.swapTarget = target; return super.play(id, card, wish, called);
+  }
   callKey() { return 'unoCall'; }
   callPenalty() { return 2; }
   catchKey() { return 'catchCall'; }
@@ -74,6 +79,8 @@ export class Room extends MauMau {
 
   effect(c, wish) {
     const victim = this.peek(1);
+    if (this.settings.sevenZero && c[0] === '7') { const other = this.swapTarget; [this.hands[this.currentId], this.hands[other]] = [this.hands[other], this.hands[this.currentId]]; }
+    if (this.settings.sevenZero && c[0] === '0') { const before = { ...this.hands }; this.order.forEach((id, i) => { this.hands[this.order[(i + this.dir + this.order.length) % this.order.length]] = before[id]; }); }
     switch (c[0]) {
       case 'S': this.say(`${this.name(victim)} setzt aus`); this.act(victim, 'setzt aus'); return 2;
       case 'R':

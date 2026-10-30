@@ -164,8 +164,9 @@ export class Room extends TurnRoom {
   }
   checkWin(id) {
     const colors = new Set(this.sets[id]?.filter(complete).map((g) => g.color));
-    if (colors.size < 3) return false;
-    this.pending = null; this.finishRound([id], `${this.name(id)} hat drei vollständige Farbgruppen`, { [id]: 1 }); return true;
+    const target = this.variant === 'quick' ? 2 : 3;
+    if (colors.size < target) return false;
+    this.pending = null; this.finishRound([id], `${this.name(id)} hat ${target} vollständige Farbgruppen`, { [id]: 1 }); return true;
   }
   afterAction() {
     if (this.phase !== 'playing' || this.pending || this.checkWin(this.actor)) return;

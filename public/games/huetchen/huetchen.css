@@ -1,4 +1,11 @@
 /* Mensch ärgere Dich nicht: Spielbrett 11 × 11 wie das klassische Brett */
+.hc-4 { --pc:#9253bb; --pd:#583071; --pl:#d6a9ef; } .hc-5 { --pc:#e7852e; --pd:#995013; --pl:#ffca91; }
+.hb-hex { position:relative; width:min(100%,600px); aspect-ratio:1; background:#f1dfb9; border:5px solid #906336; border-radius:30px; }
+.hb-hex-cell,.hb-hex .hb-piece { position:absolute; width:3.8%; height:3.8%; transform:translate(-50%,-50%); margin:0; border-radius:50%; }
+.hb-hex-cell { background:#fffaf0; box-shadow:inset 0 0 0 1px #68583d; }
+.hb-hex .hb-piece { width:3.4%; height:3.4%; }
+.hb-hex .hb-piece.can,.hb-hex .hb-piece.can.sel { transform:translate(-50%,-50%) scale(1.15); }
+.hb-hex-die { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); color:#59442b; }
 .hb-wrap { width: min(100%, 560px, calc(100dvh - var(--topbar, 57px) - var(--dock-h, 90px) - 120px)); aspect-ratio: 1; min-width: 260px; }
 .hb-board { position: relative; display: grid; grid-template: repeat(11, minmax(0, 1fr)) / repeat(11, minmax(0, 1fr)); gap: 3px; width: 100%; height: 100%; padding: 10px;
   border-radius: 20px; background: #F2E3B8; box-shadow: 0 0 0 6px #8A5A2E, inset 0 0 0 2px #C9A86A, var(--shadow-2); }

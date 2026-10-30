@@ -6,6 +6,8 @@ function value(room, id, field) {
   return f.price * (1 + count / members.length * .7 + (count === members.length - 1 ? 1.3 : count === members.length ? 2 : 0)) - (room.owned[field].mortgage ? f.price / 2 : 0);
 }
 export function botMove(room, id) {
+  if (room.variant === 'junior') return room.onTimeout(id);
+  if (room.step === 'speed-choice' && !room.debt && !room.auction && !room.trade) return room.speedSelect(id, room.speedChoice === 'bus' ? room.dice[0] + room.dice[1] : room.bestDestination(id));
   if (room.debt) return room.onTimeout(id);
   if (room.auction) {
     const a = room.auction, max = Math.min(Math.floor(value(room, id, a.field)), room.people[id].money - 120);

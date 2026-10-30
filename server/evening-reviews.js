@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync, renameSync, mkdirSync, existsSync } from '
 import { join } from 'node:path';
 import { cleanText } from './security.js';
 import { AVATARS } from './base-room.js';
+import { variantName } from '../games/variants.js';
 
 export const REVIEW_ID = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/;
 export const MAX_REVIEWS = 500;
@@ -37,7 +38,7 @@ export function reviewFromRoom(room, games, now = Date.now()) {
   const keys = new Map(p.roster.map((person, i) => [person.id, 'p' + i]));
   return cleanReview({ id: p.id, name: p.config.name, mode: p.config.mode, status: p.results.length === p.plan.length ? 'done' : p.status, private: !!room.unlisted, startedAt: p.startedAt, endedAt: p.endedAt, updatedAt: now, planned: p.plan.length,
     players: p.roster.map((person) => ({ name: person.name, avatar: person.avatar, team: person.team })),
-    stations: p.results.map((r) => ({ index: r.index, game: r.game, gameName: games[r.game]?.name || r.game, at: r.at, scoreLabel: r.scoreLabel, lowWins: r.lowWins,
+    stations: p.results.map((r) => ({ index: r.index, game: r.game, gameName: variantName(r.game, games[r.game]?.name || r.game, r.variant), at: r.at, scoreLabel: r.scoreLabel, lowWins: r.lowWins,
       values: p.roster.filter((person) => Object.hasOwn(r.points, person.id)).map((person) => ({ player: keys.get(person.id), raw: r.raw?.[person.id], points: r.points[person.id], won: r.winners?.includes(person.id) })) })) });
 }
 

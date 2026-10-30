@@ -10,7 +10,14 @@ function table(game = 'maumau', n = 2, notify = () => {}) {
 }
 const config = (games) => ({ mode: 'abend', name: 'Bunter Abend', entries: games.map((game) => ({ game })) });
 
-test('Abend-Modus: alle 45 Spiele und ihre gültigen Optionen sind auswählbar, Party-Modi bleiben auf Partyspiele begrenzt', () => {
+test('Abendprogramm: Varianten und Auswahloptionen bleiben erhalten; Spielergrenzen gelten je Variante', () => {
+  const entries = [{ game: 'farbenchaos', variant: 'flip' }, { game: 'monopoly', variant: 'speed', settings: { theme: 'classic' } }];
+  const normalized = normalizeProgram({ mode: 'abend', entries }); assert.equal(normalized.entries[0].variant, 'flip'); assert.equal(normalized.entries[1].settings.theme, 'classic');
+  assert.throws(() => normalizeProgram({ mode: 'abend', entries: [{ game: 'monopoly', settings: { theme: 'falsch' } }] }));
+  const { r, ids } = table('maumau', 5); configureProgram(r, ids[0], { mode: 'abend', entries: [{ game: 'monopoly', variant: 'junior' }] }); assert.throws(() => beginProgram(r, ids[0]), /Mitspieler/); r.dispose();
+});
+
+test('Abend-Modus: alle 46 Spiele und ihre gültigen Optionen sind auswählbar, Party-Modi bleiben auf Partyspiele begrenzt', () => {
   const defaults = programDefaults();
   for (const game of Object.values(GAMES)) {
     const normalized = normalizeProgram({ ...config([game.id]), entries: [{ game: game.id, settings: defaults[game.id] }] });

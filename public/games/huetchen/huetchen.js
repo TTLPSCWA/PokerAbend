@@ -10,8 +10,8 @@
   const HOUSES = [[[0, 0], [1, 0], [0, 1], [1, 1]], [[9, 0], [10, 0], [9, 1], [10, 1]], [[9, 9], [10, 9], [9, 10], [10, 10]], [[0, 9], [1, 9], [0, 10], [1, 10]]];
   // Freie 2 × 2-Ecke neben der Mitte, je Farbe – dort steht, wer gerade würfelt
   const CORNER = ['3 / 3 / 5 / 5', '3 / 8 / 5 / 10', '8 / 8 / 10 / 10', '8 / 3 / 10 / 5'];
-  const NAMES = ['Rot', 'Blau', 'Grün', 'Gelb'];
-  const MARK = ['r', 'b', 'g', 'y']; // Farbsymbole wie bei den Karten (Dreieck, Raute, Quadrat, Kreis)
+  const NAMES = ['Rot', 'Blau', 'Grün', 'Gelb', 'Lila', 'Orange'];
+  const MARK = ['r', 'b', 'g', 'y', 'b', 'r'];
   let lastRoll = null;
   let sel = null;        // gewählte eigene Figur (Index)
   let prevPieces = null; // für die Zug-Animation
@@ -48,7 +48,7 @@
       "Wer zuerst alle vier im Ziel hat, gewinnt.",
     ],
     house: () => ['Die Runde endet beim ersten Sieger'],
-    playerInfo: (p) => (p.color !== null && p.color !== undefined ? `<span class="hc-dot hc-${p.color}">${colorMark(MARK[p.color])}</span>${NAMES[p.color]} · ${p.home}/4 im Ziel` : ''),
+    playerInfo: (p, S) => (p.color !== null && p.color !== undefined ? `<span class="hc-dot hc-${p.color}">${colorMark(MARK[p.color])}</span>${NAMES[p.color]} · ${p.home}/4 im Ziel${S.g?.partners?.[p.id] ? ` · Partner: ${esc(S.players.find((q) => q.id === S.g.partners[p.id])?.name || '')}` : ''}` : ''),
     direction: false, // man zieht immer im Uhrzeigersinn ums Brett
     onState(S, prev) {
       if (S.g?.rolled) lastRoll = S.g.rolled;
@@ -61,7 +61,7 @@
       if (!myTurn) return '';
       const g = S.g;
       if (g.rolled && sel !== null) {
-        const v = victim(g, S.you.id, sel);
+        const v = g.track === 60 ? null : victim(g, g.controlled || S.you.id, sel);
         const name = v ? esc(S.players.find((p) => p.id === v)?.name ?? '?') : '';
         return `Du hast eine <b>${g.rolled}</b> – ${v ? `<b class="hb-hit">schlägt ${name}!</b> ` : ''}nochmal antippen oder das leuchtende Feld = ziehen`;
       }
@@ -70,6 +70,7 @@
     },
     main(S) {
       const g = S.g;
+      if (g.track === 60) return hexBoard(S);
       const cells = new Map(); // "x,y" → HTML
       const key = (x, y) => `${x},${y}`;
       const area = (x, y) => `grid-area:${y + 1}/${x + 1}`;
@@ -82,7 +83,7 @@
       // Ziel der gewählten Figur leuchtet (rot bei Schlag) und ist selbst antippbar
       let goalCell = '';
       if (mine && g.rolled && sel !== null) {
-        const me = S.you.id, c = g.color[me];
+        const me = g.controlled || S.you.id, c = g.color[me];
         const t = target(g.pieces[me][sel], g.rolled);
         const [x, y] = where(c, t, sel);
         const hit = victim(g, me, sel);
@@ -94,7 +95,7 @@
         const who = esc(S.players.find((q) => q.id === id)?.name ?? '?');
         return list.map((p, i) => {
           const [x, y] = where(c, p, i);
-          const can = mine && id === S.you.id && g.options.includes(i);
+          const can = mine && id === (g.controlled || S.you.id) && g.options.includes(i);
           const hidden = moving.has(`${id}:${i}`) ? 'style="visibility:hidden;' : 'style="';
           const inner = `<span class="hb-top"></span>${colorMark(MARK[c])}`;
           return can
@@ -114,6 +115,7 @@
     // Figur hüpft Feld für Feld; geschlagene Figuren fliegen zurück ins Haus
     afterRender(S) {
       const g = S.g;
+      if (g?.track === 60) return;
       if (!g?.pieces) return;
       const before = prevPieces;
       prevPieces = JSON.parse(JSON.stringify(g.pieces));
@@ -137,6 +139,7 @@
     dock(S, myTurn) {
       if (!myTurn) return '';
       const g = S.g;
+      if (g.track === 60 && g.rolled) return g.options.map((piece) => `<button class="btn btn-brass" data-g="move" data-piece="${piece}">Figur ${piece + 1} ziehen</button>`).join('');
       if (g.rolled) return sel !== null ? `<button class="btn btn-brass" data-g="move" data-piece="${sel}">Ziehen</button>` : '';
       const tries = g.stuck ? ` (Versuch ${g.tries + 1} von 3)` : '';
       return `<button class="btn btn-brass" data-g="roll">Würfeln${tries}</button>`;
@@ -159,6 +162,19 @@
       </ul>
       <p><b>Bedienung:</b> Figur antippen – das Zielfeld leuchtet (rot mit ✕, wenn dort jemand geschlagen wird). Nochmal antippen oder das Zielfeld antippen zieht.</p>`,
   });
+
+  function hexBoard(S) {
+    const g = S.g, colors = ['#dc443c', '#3879df', '#3da866', '#e0b728', '#9b61c4', '#e88c36'];
+    const vertex = (side, radius) => { const a = (side * 60 - 90) * Math.PI / 180; return [50 + radius * Math.cos(a), 50 + radius * Math.sin(a)]; };
+    const path = Array.from({ length: 60 }, (_, i) => { const a = vertex(Math.floor(i / 10), 36), b = vertex(Math.floor(i / 10) + 1, 36), t = i % 10 / 10; return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]; });
+    const pos = (c, p, i) => p < 0 ? (() => { const v = vertex(c, 45); return [v[0] + (i % 2 ? 2 : -2), v[1] + (i < 2 ? -2 : 2)]; })() : p >= 60 ? vertex(c, 27 - (p - 60) * 5) : path[(c * 10 + p) % 60];
+    const style = ([x, y]) => `left:${x}%;top:${y}%`;
+    let fields = path.map((xy, i) => `<i class="hb-hex-cell" style="${style(xy)};${i % 10 === 0 ? `background:${colors[i / 10]}` : ''}"></i>`).join('');
+    for (let c = 0; c < 6; c++) for (let i = 0; i < 4; i++) fields += `<i class="hb-hex-cell" style="${style(pos(c, 60 + i, i))};background:${colors[c]}"></i>`;
+    const mine = S.turnId === S.you?.id;
+    const pieces = Object.entries(g.pieces).map(([id, list]) => list.map((p, i) => { const can = mine && id === g.controlled && g.options.includes(i); return `<button type="button" class="hb-piece hc-${g.color[id]} ${can ? 'can' : ''} ${can && sel === i ? 'sel' : ''}" style="${style(pos(g.color[id], p, i))}" ${can ? `data-g="pick" data-piece="${i}"` : 'disabled'} aria-label="${esc(S.players.find((p) => p.id === id)?.name || '')}, Figur ${i + 1}"><span class="hb-top"></span></button>`; }).join('')).join('');
+    return `<div class="kg-table"><div class="hb-hex" aria-label="Sechseckiges Brett mit 60 Feldern">${fields}${pieces}<div class="hb-hex-die">${g.rolled ? dieHTML(g.rolled, { cls: 'big' }) : '<b>6 Farben</b>'}</div></div></div>`;
+  }
 
   // Animation: eine Kopie der Figur springt von Feld zu Feld (je 110 ms), die echte Figur ist so lange unsichtbar.
   // Die Kopie liegt über der Seite (position: fixed) – so übersteht sie es, wenn der Tisch zwischendurch neu gezeichnet wird.

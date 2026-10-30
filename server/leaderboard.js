@@ -3,6 +3,7 @@
 // Eine Partie ist beim Poker eine Hand (Punkte = gewonnene/verlorene Chips), sonst eine Runde (Punkte der Runde).
 import { readFileSync, writeFileSync, renameSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { scoreKey } from '../games/variants.js';
 
 export const nameKey = (name) => String(name ?? '').trim().toLowerCase();
 const monthOf = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
@@ -27,15 +28,20 @@ export function createLeaderboard(dataDir, { now = () => new Date() } = {}) {
     // Nur Statistik-Kopien: Erfolge benutzen dieselbe Identität und keine zweite Ergebnisdatei.
     profile(name) {
       const p = data.players[nameKey(name)];
-      return { name: p?.name || String(name || '').trim(), games: Object.entries(p?.games || {}).map(([id, g]) => ({ id, played: g.played, wins: g.wins,
-        months: Object.entries(g.months || {}).filter(([, stats]) => stats.played > 0).map(([m]) => m) })) };
+      const games = new Map();
+      for (const [key, g] of Object.entries(p?.games || {})) {
+        const id = key.split('~')[0], row = games.get(id) || { id, played: 0, wins: 0, months: [] };
+        row.played += g.played; row.wins += g.wins; row.months = [...new Set([...row.months, ...Object.entries(g.months || {}).filter(([, s]) => s.played > 0).map(([m]) => m)])]; games.set(id, row);
+      }
+      return { name: p?.name || String(name || '').trim(), games: [...games.values()] };
     },
     names(query = '') {
       const q = nameKey(query);
       return Object.values(data.players).map((p) => p.name).filter((name) => nameKey(name).includes(q)).sort((a, b) => a.localeCompare(b, 'de'));
     },
     // entries: [{ name, win, points }] – alle, die die Partie mitgespielt haben
-    record(game, entries) {
+    record(game, entries, variant = 'classic') {
+      game = scoreKey(game, variant);
       const m = monthOf(now());
       for (const e of entries || []) {
         const k = nameKey(e?.name);

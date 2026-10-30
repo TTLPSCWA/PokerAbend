@@ -8,6 +8,15 @@ import { createLeaderboard } from '../server/leaderboard.js';
 import { Room as MauMau } from '../games/maumau/room.js';
 import { Room as Poker } from '../games/poker/room.js';
 
+test('Varianten haben eigene Bestenlistenzeilen, Erfolge aggregieren unter dem Hauptspiel', () => {
+  const lb = createLeaderboard(mkdtempSync(join(tmpdir(), 'lb-variants-')));
+  lb.record('farbenchaos', [{ name: 'Anna', win: true, points: 30 }]);
+  lb.record('farbenchaos', [{ name: 'Anna', win: true, points: 80 }], 'flip');
+  lb.record('farbenchaos', [{ name: 'Anna', win: false, points: 0 }], 'no-mercy');
+  assert.equal(lb.table('farbenchaos')[0].points, 30); assert.equal(lb.table('farbenchaos~flip')[0].points, 80);
+  const profile = lb.profile('anna'); assert.equal(profile.games.length, 1); assert.equal(profile.games[0].id, 'farbenchaos'); assert.equal(profile.games[0].played, 3); assert.equal(profile.games[0].wins, 2);
+});
+
 test('Bestenliste: zählt Partien, Siege, Punkte – Name ohne Groß/Klein, je Monat', () => {
   const dir = mkdtempSync(join(tmpdir(), 'lb-'));
   let date = new Date(2026, 9, 25); // Oktober

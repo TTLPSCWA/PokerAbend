@@ -128,6 +128,9 @@ export class Room extends TurnRoom {
   saveExtra() { return { progress: this.progress, penalty: this.penalty }; }
   loadExtra(x) { this.progress = x.progress || {}; this.penalty = x.penalty || {}; }
   phaseOf(id) { return this.progress[id] || 1; }
+  partner(id) { const seats = this.seats; return this.variant === 'team' && seats.includes(id) ? seats[(seats.indexOf(id) + 2) % 4] : null; }
+  validateStart(ids) { if (this.variant === 'team' && ids.length !== 4) throw new Error('Teamspiel braucht vier Spieler'); }
+  get phaseLimit() { return this.variant === 'short' ? 5 : 10; }
 
   setupRound() {
     if (this.gameOver) this.resetGame();
@@ -196,7 +199,7 @@ export class Room extends TurnRoom {
     if (this.step !== 'play') throw new Error('Erst eine Karte ziehen');
     if (this.done.has(id)) throw new Error('Deine Phase liegt schon');
     const n = this.phaseOf(id);
-    if (n > 10) throw new Error('Du hast alle Phasen geschafft');
+    if (n > this.phaseLimit) throw new Error('Du hast alle Phasen geschafft');
     let cards, groups;
     if (Array.isArray(groupIds) && groupIds.length) {
       if (groupIds.length !== PHASES[n].length) throw new Error(`Das passt nicht zu Phase ${n}: ${phaseText(n)}`);
@@ -263,29 +266,33 @@ export class Room extends TurnRoom {
 
   endRound(out) {
     const lines = [];
+    const completed = new Set(this.order.filter((p) => this.done.has(p) && (this.variant !== 'team' || this.done.has(this.partner(p)))));
     for (const p of this.order) {
       const pts = this.hands[p].reduce((a, c) => a + cardPoints(c), 0);
       this.penalty[p] = (this.penalty[p] || 0) + pts;
-      if (this.done.has(p)) this.progress[p] = this.phaseOf(p) + 1;
-      lines.push(`${this.name(p)}: Phase ${Math.min(10, this.phaseOf(p))}${this.phaseOf(p) > 10 ? ' geschafft' : ''}, ${this.penalty[p]} Strafpunkte`);
+      if (completed.has(p)) this.progress[p] = this.phaseOf(p) + 1;
+      lines.push(`${this.name(p)}: Phase ${Math.min(this.phaseLimit, this.phaseOf(p))}${this.phaseOf(p) > this.phaseLimit ? ' geschafft' : ''}, ${this.penalty[p]} Strafpunkte`);
     }
     this.say(`${this.name(out)} ist fertig. ${lines.join(' · ')}`, 'win');
-    const finished = this.order.filter((p) => this.phaseOf(p) > 10).sort((a, b) => this.penalty[a] - this.penalty[b]);
+    const teamPenalty = (p) => (this.penalty[p] || 0) + (this.variant === 'team' ? this.penalty[this.partner(p)] || 0 : 0);
+    const finished = this.order.filter((p) => this.phaseOf(p) > this.phaseLimit).sort((a, b) => teamPenalty(a) - teamPenalty(b));
     if (finished.length) {
       this.gameOver = true;
-      return this.finishRound([finished[0]], `${this.name(finished[0])} schafft alle zehn Phasen und gewinnt!`, { [finished[0]]: 1 });
+      const winners = this.variant === 'team' ? [finished[0], this.partner(finished[0])] : [finished[0]];
+      return this.finishRound(winners, `${winners.map((p) => this.name(p)).join(' und ')} schafft alle ${this.phaseLimit} Phasen und gewinnt!`, Object.fromEntries(winners.map((p) => [p, 1])));
     }
     this.finishRound([], `Runde vorbei – ${this.name(out)} ist zuerst fertig`);
   }
 
   onDropOut(p) {
+    if (this.variant === 'team') { const winners = this.order.filter((id) => id !== p.id && id !== this.partner(p.id)); this.finishRound(winners, 'Teamspiel durch Ausscheiden beendet', Object.fromEntries(winners.map((id) => [id, 1]))); }
     this.deck.unshift(...(this.hands[p.id] || []));
     delete this.hands[p.id];
     this.skip.delete(p.id);
   }
 
   publicPlayer(p) {
-    return { cards: this.hands[p.id]?.length ?? 0, phase: Math.min(10, this.phaseOf(p.id)), laidDone: this.done.has(p.id), penalty: this.penalty[p.id] || 0, skipped: this.skip.has(p.id) };
+    return { cards: this.hands[p.id]?.length ?? 0, phase: Math.min(this.phaseLimit, this.phaseOf(p.id)), laidDone: this.done.has(p.id), penalty: this.penalty[p.id] || 0, skipped: this.skip.has(p.id), partner: this.partner(p.id) };
   }
 
   gameView(viewerId) {
@@ -295,10 +302,11 @@ export class Room extends TurnRoom {
       laid: Object.fromEntries(Object.entries(this.laid).map(([id, gs]) => [id, gs.map((g) => ({ type: g.type, cards: g.cards, vals: g.vals }))])),
       top: this.discard[this.discard.length - 1] ?? null, deck: this.deck.length,
       step: this.currentId === viewerId ? this.step : null,
-      myPhase: this.phaseOf(viewerId), phaseText: phaseText(this.phaseOf(viewerId)),
+      myPhase: this.phaseOf(viewerId), phaseText: this.phaseOf(viewerId) > this.phaseLimit ? 'alle geschafft' : phaseText(this.phaseOf(viewerId)),
+      partner: this.partner(viewerId),
       // Aufbau der eigenen Phase für die Ausleg-Felder: [{ type, size }]
-      myGroups: (PHASES[this.phaseOf(viewerId)] || []).map(([type, size]) => ({ type, size })),
-      phases: Object.fromEntries(this.order.map((id) => [id, phaseText(this.phaseOf(id))])),
+      myGroups: (this.phaseOf(viewerId) > this.phaseLimit ? [] : PHASES[this.phaseOf(viewerId)] || []).map(([type, size]) => ({ type, size })),
+      phases: Object.fromEntries(this.order.map((id) => [id, this.phaseOf(id) > this.phaseLimit ? 'alle geschafft' : phaseText(this.phaseOf(id))])),
     };
   }
 

@@ -11,14 +11,14 @@ const DIRS = [[0, 1], [1, 0], [1, 1], [1, -1]];
 // Freie Reihe in einer Spalte (von unten) – oder -1, wenn voll. board[r * COLS + c], Reihe 0 = oben
 export const landing = (board, c) => { for (let r = ROWS - 1; r >= 0; r--) if (board[r * COLS + c] === null) return r; return -1; };
 // Gewinn-Reihe durch das Feld (r, c) für diesen Spieler – oder null
-export function winLine(board, r, c, who) {
+export function winLine(board, r, c, who, cols = COLS, rows = ROWS, need = 4) {
   for (const [dr, dc] of DIRS) {
     const line = [[r, c]];
     for (const s of [1, -1]) {
       let rr = r + dr * s, cc = c + dc * s;
-      while (rr >= 0 && rr < ROWS && cc >= 0 && cc < COLS && board[rr * COLS + cc] === who) { line.push([rr, cc]); rr += dr * s; cc += dc * s; }
+      while (rr >= 0 && rr < rows && cc >= 0 && cc < cols && board[rr * cols + cc] === who) { line.push([rr, cc]); rr += dr * s; cc += dc * s; }
     }
-    if (line.length >= 4) return line.map(([a, b]) => a * COLS + b).sort((x, y) => x - y);
+    if (line.length >= need) return line.map(([a, b]) => a * cols + b).sort((x, y) => x - y);
   }
   return null;
 }
@@ -82,10 +82,11 @@ export class Room extends TurnRoom {
     super(code, settings, onChange, { minPlayers: 2, maxPlayers: 2, lowWins: false, scoreLabel: 'Siege', winPoints: 1 });
     this.board = Array(COLS * ROWS).fill(null);
     this.win = null; this.last = null; this.colors = {};
+    this.cols = this.variant === 'five' ? 9 : COLS; this.rows = ROWS; this.need = this.variant === 'five' ? 5 : 4;
   }
   validateStart(ids) { if (ids.length !== 2) throw new Error('Vier gewinnt spielen genau zwei'); }
   setupRound() {
-    this.board = Array(COLS * ROWS).fill(null);
+    this.board = Array(this.cols * this.rows).fill(null);
     this.win = null; this.last = null;
     // Farbe nach Sitzplatz (Rot = wer zuerst saß), unabhängig davon, wer anfängt
     const bySeat = this.seats.filter((id) => this.order.includes(id));
@@ -96,31 +97,62 @@ export class Room extends TurnRoom {
   drop(id, col) {
     this.requireTurn(id);
     const c = Number(col);
-    if (!Number.isInteger(c) || c < 0 || c >= COLS) throw new Error('Diese Spalte gibt es nicht');
-    const r = landing(this.board, c);
+    if (!Number.isInteger(c) || c < 0 || c >= this.cols) throw new Error('Diese Spalte gibt es nicht');
+    const r = this.landing(c);
     if (r < 0) throw new Error('Die Spalte ist voll');
-    this.board[r * COLS + c] = id;
-    this.last = r * COLS + c;
+    this.board[r * this.cols + c] = id;
+    this.last = r * this.cols + c;
     this.act(id, `Spalte ${c + 1}`);
     this.say(`${this.name(id)} wirft in Spalte ${c + 1}`, 'info', 'action');
-    const line = winLine(this.board, r, c, id);
+    const line = winLine(this.board, r, c, id, this.cols, this.rows, this.need);
     if (line) {
       this.win = line;
       this.act(id, 'Vier gewinnt!');
-      return this.finishRound([id], `${this.name(id)} hat vier in einer Reihe und gewinnt!`, { [id]: 1 });
+      return this.finishRound([id], `${this.name(id)} hat ${this.need} in einer Reihe und gewinnt!`, { [id]: 1 });
     }
-    if (this.board.every((x) => x !== null)) return this.finishRound([], 'Das Feld ist voll – unentschieden');
+    if (this.variant !== 'pop-out' && this.board.every((x) => x !== null)) return this.finishRound([], 'Das Feld ist voll – unentschieden');
     this.next(1);
   }
+  landing(col, board = this.board) { for (let r = this.rows - 1; r >= 0; r--) if (board[r * this.cols + col] === null) return r; return -1; }
+  lineFor(id, board = this.board) { for (let i = 0; i < board.length; i++) if (board[i] === id) { const line = winLine(board, Math.floor(i / this.cols), i % this.cols, id, this.cols, this.rows, this.need); if (line) return line; } return null; }
+  pop(id, col) {
+    this.requireTurn(id); col = Number(col);
+    if (this.variant !== 'pop-out' || !Number.isInteger(col) || col < 0 || col >= this.cols || this.board[(this.rows - 1) * this.cols + col] !== id) throw new Error('Nur den eigenen untersten Stein herausziehen');
+    for (let r = this.rows - 1; r > 0; r--) this.board[r * this.cols + col] = this.board[(r - 1) * this.cols + col];
+    this.board[col] = null; this.last = null; this.act(id, `zieht unten aus Spalte ${col + 1}`);
+    // Der eigene Zug hat Vorrang, falls beide Farben gleichzeitig eine Reihe bekommen.
+    for (const who of [id, ...this.order.filter((p) => p !== id)]) { const line = this.lineFor(who); if (line) { this.win = line; return this.finishRound([who], `${this.name(who)} gewinnt nach dem Herausziehen`, { [who]: 1 }); } }
+    this.next();
+  }
+  variantBot(id, rng = Math.random) {
+    const foe = this.order.find((p) => p !== id), actions = [];
+    for (let c = 0; c < this.cols; c++) {
+      const r = this.landing(c);
+      if (r >= 0) actions.push({ c, pop: false, board: this.board.map((v, i) => i === r * this.cols + c ? id : v) });
+      if (this.variant === 'pop-out' && this.board[(this.rows - 1) * this.cols + c] === id) { const board = [...this.board]; for (let r = this.rows - 1; r > 0; r--) board[r * this.cols + c] = board[(r - 1) * this.cols + c]; board[c] = null; actions.push({ c, pop: true, board }); }
+    }
+    const rank = (a) => {
+      if (this.lineFor(id, a.board)) return 100000;
+      if (this.lineFor(foe, a.board)) return -100000;
+      let risk = 0;
+      for (let c = 0; c < this.cols; c++) { const r = this.landing(c, a.board); if (r < 0) continue; const b = [...a.board]; b[r * this.cols + c] = foe; if (this.lineFor(foe, b)) risk += 1000; }
+      return -risk - Math.abs(a.c - (this.cols - 1) / 2) - (a.pop ? 8 : 0) + rng();
+    };
+    const best = actions.map((a) => ({ ...a, value: rank(a) })).sort((a, b) => b.value - a.value)[0];
+    if (!best) return this.finishRound([], 'Keine legalen Züge – unentschieden');
+    return best.pop ? this.pop(id, best.c) : this.drop(id, best.c);
+  }
   onTimeout(id) {
+    if (this.variant !== 'classic') return this.variantBot(id);
     const foe = this.order.find((p) => p !== id);
     this.say(`${this.name(id)} war zu langsam – der Computer wirft`, 'warn');
     this.drop(id, botColumn(this.board, id, foe));
   }
 
   publicPlayer(p) { return { color: this.colors[p.id] ?? null }; }
-  gameView() {
-    return { board: [...this.board], colors: { ...this.colors }, win: this.win, last: this.last, cols: COLS, rows: ROWS };
+  gameView(viewerId) {
+    return { board: [...this.board], colors: { ...this.colors }, win: this.win, last: this.last, cols: this.cols, rows: this.rows, need: this.need,
+      canPop: this.variant === 'pop-out' && this.currentId === viewerId ? Array.from({ length: this.cols }, (_, c) => c).filter((c) => this.board[(this.rows - 1) * this.cols + c] === viewerId) : [] };
   }
   static restore(data, onChange) { return TurnRoom.restoreInto(new this(data.code, data.settings, onChange), data); }
 }

@@ -10,7 +10,7 @@
     return `<${tag} ${tag === 'button' ? 'type="button"' : 'role="img"'} class="kc kc-st ${n === 0 ? 'joker' : `st-${Math.ceil(n / 4)}`} ${cls}" ${attrs} aria-label="${n === 0 ? 'Joker' : n}">${n ? colorMark('bgr'[Math.ceil(n / 4) - 1]) : ''}
       <span class="cr tl">${corner}</span><span class="v">${n === 0 ? '★<small>Joker</small>' : n}</span><span class="cr br">${corner}</span></${tag}>`;
   };
-  const same = (a, b) => a && b && a.kind === b.kind && (a.index ?? 0) === (b.index ?? 0);
+  const same = (a, b) => a && b && a.kind === b.kind && (a.index ?? 0) === (b.index ?? 0) && (a.owner || null) === (b.owner || null);
 
   const kit = kitGame({
     id: 'stapelrennen',
@@ -63,6 +63,8 @@
       const g = S.g;
       const mine = S.turnId === S.you?.id;
       const me = S.players.find((p) => p.id === S.you?.id);
+      const partner = S.players.find((p) => p.id === g.partner);
+      const partnerHTML = partner ? `<div class="st-mine"><b>Partner: ${esc(partner.name)}</b><div class="st-row">${partner.stock ? num(partner.stockTop, { attrs: mine ? `data-g="pick" data-kind="stock" data-owner="${esc(partner.id)}"` : 'disabled' }) : ''}${(partner.piles || []).map((p, i) => p.length ? num(p.at(-1), { attrs: mine ? `data-g="pick" data-kind="pile" data-i="${i}" data-owner="${esc(partner.id)}"` : 'disabled' }) : '<span class="kc kc-empty"></span>').join('')}</div><small>Offene Partnerstapel sind mitspielbar. Beide Spielstapel müssen leer werden.</small></div>` : '';
       const build = g.build.map((b, i) => `<button type="button" class="st-build ${mine && sel ? 'can' : ''}" data-g="build" data-i="${i}" ${mine ? 'data-drop="build"' : ''} ${mine && sel ? '' : 'disabled'} aria-label="Baureihe ${i + 1}, braucht ${b.next}">
         ${b.count ? num(b.count, { tag: 'span' }) : '<span class="kc kc-empty"></span>'}<small>braucht <b class="st-need">${b.next}</b></small></button>`).join('');
       const piles = (p, own) => (p.piles || []).map((pile, i) => {
@@ -83,7 +85,7 @@
         <div class="st-stock">${me.stock ? num(me.stockTop, { cls: `big ${same(sel, { kind: 'stock' }) ? 'sel' : ''}`, attrs: mine ? 'data-g="pick" data-kind="stock" data-drag="stock"' : 'disabled' }) : '<span class="kc kc-empty big"></span>'}<small>Dein Stapel: <b>${me.stock}</b></small></div>
         </div></div>` : '';
       // Am großen Tisch sitzen die Gegner mit Stapel und Ablagen an ihren Plätzen
-      return `<div class="kg-table"><div class="st-builds">${build}</div>${mineHTML}${ui.ring ? '' : `<div class="st-others">${others}</div>`}</div>`;
+      return `<div class="kg-table"><div class="st-builds">${build}</div>${partnerHTML}${mineHTML}${ui.ring ? '' : `<div class="st-others">${others}</div>`}</div>`;
     },
     dock(S, myTurn) {
       const hand = (S.g.hand || []).map((n, i) => num(n, { cls: same(sel, { kind: 'hand', index: i }) ? 'sel' : '', attrs: myTurn ? `data-g="pick" data-kind="hand" data-i="${i}" data-drag="hand${i}"` : 'disabled' })).join('');
@@ -93,7 +95,7 @@
     onClick(t) {
       const g = t.dataset.g;
       if (g === 'pick') {
-        const next = { kind: t.dataset.kind, index: Number(t.dataset.i || 0) };
+        const next = { kind: t.dataset.kind, index: Number(t.dataset.i || 0), ...(t.dataset.owner ? { owner: t.dataset.owner } : {}) };
         sel = same(sel, next) ? null : next;
         kit.render();
       } else if (g === 'build' && sel) { send('play', { from: sel, to: Number(t.dataset.i) }); sel = null; }

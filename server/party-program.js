@@ -6,6 +6,7 @@ import { shuffle } from './random.js';
 import { BOTS } from '../games/bots.js';
 import { DEFAULT_SETTINGS as POKER_DEFAULTS } from '../games/poker/room.js';
 import { randomUUID, createHash } from 'node:crypto';
+import { variantOf } from '../games/variants.js';
 
 export const PROGRAM_MODES = ['mix', 'turnier', 'playlist', 'team', 'abend'];
 export const MAX_PROGRAM_GAMES = 12;
@@ -19,7 +20,7 @@ const POKER_OPTIONS = [
   { key: 'bigBlind', label: 'Big Blind', type: 'number', min: 2, max: 10000 },
   { key: 'turnTime', label: 'Sekunden pro Zug (0 = ohne)', type: 'number', min: 0, max: 300 },
 ];
-export const programOptions = (game) => ['poker', 'omaha'].includes(game.id) ? POKER_OPTIONS : game.options || [];
+export const programOptions = (game, variant = 'classic') => ['poker', 'omaha'].includes(game.id) ? POKER_OPTIONS : game.variants?.find((v) => v.id === variant)?.options || game.options || [];
 export const programDefaults = () => Object.fromEntries(eveningGames().map((game) => {
   const room = game.create('DEFAULTS', {}, () => {});
   const settings = Object.fromEntries(programOptions(game).map((o) => [o.key, room.settings[o.key]]));
@@ -35,13 +36,18 @@ export function normalizeProgram(input) {
   const allowed = new Set((input.mode === 'abend' ? eveningGames() : programGames(input.mode === 'team')).map((g) => g.id));
   const entries = input.entries.map((entry) => {
     if (!entry || !allowed.has(entry.game)) throw new Error('Dieses Spiel eignet sich nicht für diesen Party-Modus');
-    const game = GAMES[entry.game], settings = {};
+    const game = GAMES[entry.game], settings = {}, variant = entry.variant || 'classic';
+    variantOf(game.id, variant);
+    if (variant !== 'classic' && !game.variants?.some((v) => v.id === variant)) throw new Error('Diese Variante ist noch nicht verfügbar');
     const values = entry.settings && typeof entry.settings === 'object' ? entry.settings : {};
-    for (const option of programOptions(game)) {
+    for (const option of programOptions(game, variant)) {
       if (!Object.hasOwn(values, option.key)) continue;
       const value = values[option.key];
       if (option.type === 'bool') {
         if (typeof value !== 'boolean') throw new Error(`Ungültige Einstellung: ${option.label}`);
+        settings[option.key] = value;
+      } else if (option.type === 'select') {
+        if (!option.values.some((v) => v.value === value)) throw new Error(`Ungültige Einstellung: ${option.label}`);
         settings[option.key] = value;
       } else {
         const n = Number(value);
@@ -53,7 +59,7 @@ export function normalizeProgram(input) {
       const s = { ...POKER_DEFAULTS, ...settings };
       if (s.smallBlind > s.bigBlind || s.startStack < s.bigBlind) throw new Error('Poker: Small Blind höchstens Big Blind, Startchips mindestens Big Blind');
     }
-    return { game: game.id, settings };
+    return { game: game.id, settings, ...(variant !== 'classic' ? { variant } : {}) };
   });
   const teams = {};
   if (input.mode === 'team' && input.teams && typeof input.teams === 'object') for (const [id, team] of Object.entries(input.teams).slice(0, 30)) {
@@ -74,7 +80,8 @@ export function validateProgramPlayers(room, config, ids = programSeats(room)) {
   if (!ids?.length) throw new Error('Erst am Tisch mitspielen, dann das Programm starten');
   for (const entry of config.entries) {
     const game = GAMES[entry.game];
-    if (ids.length < game.minPlayers || ids.length > game.maxPlayers) throw new Error(`${game.name} braucht ${game.minPlayers}–${game.maxPlayers} Mitspieler; es sitzen ${ids.length} am Tisch`);
+    const v = game.variants?.find((v) => v.id === (entry.variant || 'classic')) || game;
+    if (ids.length < v.minPlayers || ids.length > v.maxPlayers) throw new Error(`${game.name} braucht ${v.minPlayers}–${v.maxPlayers} Mitspieler; es sitzen ${ids.length} am Tisch`);
     if (!BOTS[entry.game] && ids.some((id) => room.players.get(id)?.bot)) throw new Error(`${game.name} braucht menschliche Mitspieler; wähle ein anderes Spiel oder entferne die Bots`);
   }
   if (config.mode === 'team') {
@@ -139,7 +146,7 @@ export function recordProgramResult(room) {
   const hasResult = result.winners.length || members.some((id) => value(id) !== 0);
   const points = Object.fromEntries(ordered.map((id) => [id, hasResult ? members.length - ordered.filter((other) => compare(other, id) < 0).length : 0]));
   for (const [id, value] of Object.entries(points)) p.scores[id] = (p.scores[id] || 0) + value;
-  p.results.push({ index: p.index, game: room.game, points, raw: Object.fromEntries(members.map((id) => [id, value(id)])), at: Date.now(), lowWins: !!room.opts?.lowWins,
+  p.results.push({ index: p.index, game: room.game, ...(room.variant && room.variant !== 'classic' ? { variant: room.variant } : {}), points, raw: Object.fromEntries(members.map((id) => [id, value(id)])), at: Date.now(), lowWins: !!room.opts?.lowWins,
     scoreLabel: room.table ? 'Chips netto' : room.opts?.scoreLabel || 'Punkte', winners: result.winners.filter((id) => members.includes(id)) });
   p.status = p.index === p.plan.length - 1 ? 'done' : 'between';
   if (p.status === 'done') p.endedAt = Date.now();

@@ -2,11 +2,13 @@ import { TurnRoom } from '../../server/turn-room.js';
 import { die, shuffle } from '../../server/random.js';
 import { BOARD, COLORS, PROPERTIES, group, EVENTS, CHEST, redemption } from '../../public/games/monopoly/data.js';
 import { boardStore } from './boards.js';
+import { TOKENS } from '../../public/games/monopoly/tokens.js';
 export { BOARD, COLORS, PROPERTIES, group, EVENTS, CHEST };
 const integer = (n) => Number.isSafeInteger(n) && n >= 0;
 
 export class Room extends TurnRoom {
   static OPTIONS = [
+    { key: 'theme', label: 'Brettgestaltung', type: 'select', values: [{ value: 'modern', label: 'Bisheriges Thema' }, { value: 'classic', label: 'Klassik' }] },
     { key: 'startMoney', label: 'Startgeld', type: 'number', min: 200, max: 5000 },
     { key: 'timeLimit', label: 'Zeitlimit in Minuten (0 = ohne)', type: 'number', min: 0, max: 180 },
     { key: 'turnTime', label: 'Sekunden pro Entscheidung', type: 'number', min: 5, max: 180 },
@@ -16,19 +18,22 @@ export class Room extends TurnRoom {
     { key: 'noAuction', label: 'Keine Versteigerung bei Kaufverzicht', type: 'bool' },
     { key: 'quick', label: 'Schnellstart mit zwei zufälligen Grundstücken', type: 'bool' },
   ];
-  defaultSettings() { return { startMoney: 1500, timeLimit: 0, turnTime: 45, auctionTime: 15, parkingPot: false, doubleGo: false, noAuction: false, quick: false, board: 'default' }; }
+  defaultSettings() { return { theme: 'modern', startMoney: 1500, timeLimit: 0, turnTime: 45, auctionTime: 15, parkingPot: false, doubleGo: false, noAuction: false, quick: false, board: 'default' }; }
   clampSettings(input, base) { const s = super.clampSettings(input, base); if (typeof input.board === 'string' && /^[a-zA-Z0-9-]{1,50}$/.test(input.board)) s.board = input.board; return s; }
   constructor(code, settings, onChange) {
     super(code, settings, onChange, { minPlayers: 2, maxPlayers: 8, scoreLabel: 'Siege', winPoints: 1 });
     this.people = {}; this.owned = {}; this.bank = 10000000; this.pot = 0; this.stock = { houses: 32, hotels: 12 };
     this.auction = null; this.auctionQueue = []; this.trade = null; this.payments = []; this.debt = null; this.deferred = null;
     this.endTimer = null; this.roll = die; this.board = boardStore().get('default'); this.serial = 0; this.moveSerial = 0;
+    this.tokens = {};
   }
   validateStart() { this.board = boardStore().get(this.settings.board); }
   fieldName(i) { const at = PROPERTIES.indexOf(i); return at < 0 ? BOARD[i].name : this.board.names[at]; }
   chooseBoard(id, board) { this.requireHost(id); if (this.busy) throw new Error('Brettwechsel nur zwischen Partien'); this.board = boardStore().get(board); this.settings.board = board; this.say(`Brett: ${this.board.title}`); }
   saveBoard(id, input) { this.requireHost(id); if (this.busy) throw new Error('Bretter zwischen Partien anlegen'); const b = boardStore().save(input); this.chooseBoard(id, b.id); return b; }
   setupRound() {
+    const available = Object.keys(TOKENS).filter((t) => !this.order.some((id) => this.tokens[id] === t));
+    for (const id of this.order) if (!this.tokens[id]) this.tokens[id] = available.shift();
     this.people = Object.fromEntries(this.order.map((id) => [id, { money: this.settings.startMoney, position: 0, jail: false, tries: 0, free: [], out: false }]));
     this.owned = Object.fromEntries(PROPERTIES.map((i) => [i, { owner: null, level: 0, mortgage: false }]));
     this.bank = 10000000 - this.order.length * this.settings.startMoney; this.pot = 0; this.stock = { houses: 32, hotels: 12 };
@@ -39,6 +44,13 @@ export class Room extends TurnRoom {
     clearTimeout(this.endTimer);
     if (this.endsAt) { this.endTimer = setTimeout(() => { if (this.phase === 'playing') this.finishWealth(); this.onChange('state'); }, this.settings.timeLimit * 60000); this.endTimer.unref?.(); }
   }
+  chooseToken(id, token) {
+    if (!this.players.has(id) || !TOKENS[token]) throw new Error('Unbekannte Spielfigur');
+    if (Object.entries(this.tokens).some(([p, t]) => p !== id && t === token && this.seats.includes(p))) throw new Error('Diese Figur ist schon gewählt');
+    this.tokens[id] = token; this.act(id, `wählt ${TOKENS[token].name}`);
+  }
+  saveExtra() { return { tokens: this.tokens }; }
+  loadExtra(x) { this.tokens = x.tokens || {}; }
   get actor() { return this.order[this.turn] || null; }
   get currentId() { return this.phase !== 'playing' ? null : this.debt ? this.debt.from : this.auction ? this.auction.participants.find((id) => !this.auction.passed.includes(id) && id !== this.auction.leader) || this.actor : this.trade ? this.trade.to : this.actor; }
   onTurnStart() { this.turnNo++; this.doubles = 0; this.again = false; this.step = this.people[this.actor]?.jail ? 'jail' : 'roll'; this.act(this.actor, 'beginnt den Zug'); }
@@ -309,11 +321,11 @@ export class Room extends TurnRoom {
   }
   publicPlayer(p) { const q = this.people[p.id]; return q ? { money: q.money, position: q.position, jail: q.jail, out: q.out, wealth: this.wealth(p.id), properties: PROPERTIES.filter((i) => this.owned[i].owner === p.id).length } : {}; }
   gameView(id) {
-    return { board: structuredClone(this.board), people: structuredClone(this.people), owned: structuredClone(this.owned), stock: { ...this.stock }, pot: this.pot, actor: this.actor,
+    return { board: structuredClone(this.board), tokens: this.tokens, people: structuredClone(this.people), owned: structuredClone(this.owned), stock: { ...this.stock }, pot: this.pot, actor: this.actor,
       dice: [...this.dice], rollNo: this.rollNo, doubles: this.doubles, step: this.step, turnNo: this.turnNo, endsAt: this.endsAt, card: this.card, lastMove: this.lastMove ? structuredClone(this.lastMove) : null,
       auction: this.auction ? structuredClone(this.auction) : null, trade: this.trade ? structuredClone(this.trade) : null, debt: this.debt ? { ...this.debt } : null,
       possible: this.possible(id), liquidation: this.people[id] ? this.liquidation(id) : 0, boards: this.phase === 'lobby' ? boardStore().list() : null };
   }
-  view(id) { const v = super.view(id); v.monopolyBoards = boardStore().list(); return v; }
+  view(id) { const v = super.view(id); v.monopolyBoards = boardStore().list(); v.monopolyTokens = this.tokens; return v; }
   static restore(data, onChange) { const r = TurnRoom.restoreInto(new this(data.code, data.settings, onChange), data); try { r.board = boardStore().get(r.settings.board); } catch { r.settings.board = 'default'; } return r; }
 }

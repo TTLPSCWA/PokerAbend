@@ -3,6 +3,7 @@
 const PAPER = '#F7F3E8';
 const INK = '#1A1A1A';
 const wrap = (inner) => `<svg class="game-art" viewBox="0 0 64 64" aria-hidden="true" focusable="false">${inner}</svg>`;
+export const lifeJourney = () => wrap('<path d="M4 47Q16 5 31 28T60 12" fill="none" stroke="#b8d99a" stroke-width="15"/><path d="M4 47Q16 5 31 28T60 12" fill="none" stroke="#655e58" stroke-width="9"/><path d="M4 47Q16 5 31 28T60 12" fill="none" stroke="#fff6cc" stroke-width="1.5" stroke-dasharray="3 3"/><g transform="translate(15 32) rotate(22)"><rect x="0" y="0" width="28" height="15" rx="5" fill="#e7a868" stroke="#573b29"/><rect x="7" y="-5" width="13" height="12" rx="3" fill="#d4edeb" stroke="#573b29"/><circle cx="6" cy="15" r="4" fill="#33433e"/><circle cx="23" cy="15" r="4" fill="#33433e"/></g><circle cx="50" cy="48" r="12" fill="#ebcf91" stroke="#6f593c"/><path d="M50 38v20m-10-10h20m-17-7 14 14m-14 0 14-14" stroke="#9a6a45"/><circle cx="50" cy="48" r="3" fill="#7e5144"/>');
 
 // ---------- Karten ----------
 const mark = (kind, cx, cy, color) => {

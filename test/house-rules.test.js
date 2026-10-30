@@ -22,7 +22,8 @@ test('Optionen: jedes Spiel beschreibt sie, Host ändert sie nur zwischen den Ru
     if (g.id === 'poker' || g.id === 'omaha') continue;
     const r = g.create('X', {}, () => {});
     for (const o of g.options) {
-      assert.ok(o.label && ['bool', 'number'].includes(o.type), `${g.id}.${o.key}`);
+      assert.ok(o.label && ['bool', 'number', 'select'].includes(o.type), `${g.id}.${o.key}`);
+      if (o.type === 'select') { assert.ok(o.values.length > 1); assert.ok(o.values.some((v) => v.value === r.settings[o.key])); }
       assert.ok(o.key in r.settings, `${g.id}.${o.key} hat einen Standardwert`);
     }
     r.dispose();

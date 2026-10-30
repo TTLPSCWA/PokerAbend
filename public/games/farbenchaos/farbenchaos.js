@@ -1,14 +1,14 @@
 // UNO im Browser (Regeln: games/farbenchaos/room.js). Bedienung wie Mau-Mau (kitShedding), eigene Karten.
 'use strict';
 {
-  const COLOR = { r: 'Rot', y: 'Gelb', g: 'Grün', b: 'Blau', w: 'Schwarz' };
-  const LABEL = { S: 'Aussetzen', R: 'Richtungswechsel', D: 'plus zwei', W: 'Farbwahl', F: 'Farbwahl plus vier' };
+  const COLOR = { r: 'Rot', y: 'Gelb', g: 'Grün', b: 'Blau', w: 'Schwarz', p: 'Pink', t: 'Türkis', o: 'Orange', v: 'Lila' };
+  const LABEL = { S: 'Aussetzen', R: 'Richtungswechsel', D: 'plus zwei', W: 'Farbwahl', F: 'plus vier', I: 'plus eins', H: 'plus fünf', B: 'Farbwahl plus zwei', L: 'Flip', E: 'Alle aussetzen', C: 'Zieh bis Farbe', A: 'Alle ablegen', U: 'plus sechs', Z: 'plus zehn', V: 'Richtung plus vier', Q: 'Farbroulette', K: 'Zwei aussetzen', T: 'Gezieltes plus zwei', X: 'Hände tauschen' };
   // Symbole selbst gezeichnet: Aussetzen = Kreis mit Strich, Richtungswechsel = zwei Pfeile, Farbwahl = vierfarbiger Kreis
   const SKIP = '<svg class="sym" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="3"/><path d="M6.5 17.5l11-11" stroke="currentColor" stroke-width="3"/></svg>';
   const REV = '<svg class="sym" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h12M12 4.5 16.5 9 12 13.5M20 15H8M12 10.5 7.5 15 12 19.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const WHEEL = '<span class="wheel" aria-hidden="true"></span>';
-  const BIG = { S: SKIP, R: REV, D: '+2', W: WHEEL, F: `${WHEEL}<b class="plus4">+4</b>` };
-  const CORNER = { S: SKIP, R: REV, D: '+2', W: '<span class="wheel mini"></span>', F: '+4' };
+  const BIG = { S: SKIP, R: REV, D: '+2', W: WHEEL, F: '+4', I: '+1', H: '+5', B: '+2', L: '↻', E: '⊘∀', C: '+色', A: '↓∀', U: '+6', Z: '+10', V: '⇄+4', Q: '色↻', K: '⊘2', T: '◎+2', X: '⇆' };
+  const CORNER = { ...BIG, W: '<span class="wheel mini"></span>' };
   // Karte: zwei Zeichen, Wert + Farbe (z. B. "7r", "Sg", "Fw"). Aufbau wie gewohnt: Werte in zwei Ecken, groß im schrägen Oval.
   const card = (c, { cls = '', attrs = '' } = {}) => {
     const corner = CORNER[c[0]] || c[0];
@@ -43,9 +43,15 @@
       color: (c) => COLORS.indexOf(c[1]) * 100 + VALS.indexOf(c[0]),
       number: (c) => VALS.indexOf(c[0]) * 10 + COLORS.indexOf(c[1]),
     },
-    needsWish: (c) => c[1] === 'w',
+    needsWish: (c, S) => S.variant !== 'all-wild' && c[1] === 'w' && c[0] !== 'Q',
+    needsTarget: (c, S) => (S.variant === 'no-mercy' || S.settings.sevenZero) && c[0] === '7' || S.variant === 'all-wild' && ['T', 'X'].includes(c[0]),
     // Farbwahl: vier große Farbkreise (mit Name und Form – nicht nur Farbe)
-    wishes: ['r', 'y', 'g', 'b'].map((k) => [k, `<span class="wc-dot">${colorMark(k)}</span><span>${COLOR[k]}</span>`, `wish-circle fc-${k}`]),
+    wishes: (S) => (S.g.colors || ['r', 'y', 'g', 'b']).map((k) => [k, `<span class="wc-dot">${colorMark(k)}</span><span>${COLOR[k]}</span>`, `wish-circle fc-${k}`]),
+    seat: (p, S) => p.eliminated ? '<span>Ausgeschieden (25 Karten)</span>' : S.g.inactiveHands?.[p.id] ? `<div class="uno-backs">${S.g.inactiveHands[p.id].map((c) => card(c, { attrs: 'disabled', cls: 'inactive' })).join('')}</div><small>Inaktive Seite · ${p.cards} Karten</small>` : null,
+    extraMain: (S) => `${S.variant === 'flip' ? `<p class="hint">${S.g.side ? 'Dunkle' : 'Helle'} Seite · Gegner zeigen die inaktive Seite</p>${S.g.drawBack ? `<div class="uno-drawback">${card(S.g.drawBack, { attrs: 'disabled' })}<small>Rückseite des Nachziehstapels</small></div>` : ''}<div class="uno-backs">${S.players.filter((p) => p.inRound && p.id !== S.you?.id).map((p) => `<div><small>${esc(p.name)} · inaktive Seite</small><div>${(S.g.inactiveHands?.[p.id] || []).map((c) => card(c, { attrs: 'disabled' })).join('')}</div></div>`).join('')}</div>` : ''}${S.g.revealed?.length ? `<details><summary>Aufgedeckte Roulette-Karten (${S.g.revealed.length})</summary><div class="uno-backs">${S.g.revealed.map((c) => card(c, { attrs: 'disabled' })).join('')}</div></details>` : ''}${S.g.challengeHand ? `<details open><summary>Bei der Anfechtung vorgezeigte Hand</summary><div class="uno-backs">${S.g.challengeHand.map((c) => card(c, { attrs: 'disabled' })).join('')}</div></details>` : ''}`,
+    specialHint: (S, mine) => mine && S.g.colorChoice ? 'Wähle eine Farbe für die offene Entscheidung' : mine && S.g.challenge ? 'Ziehstrafe annehmen oder die letzte Plus-Karte anfechten' : S.variant === 'all-wild' && mine ? 'Jede Karte passt – Aktionskarten wirken sofort' : null,
+    specialDock: (S, mine) => !mine ? null : S.g.colorChoice ? `<div class="kg-wishes">${S.g.colors.map((c) => `<button class="btn wish-circle fc-${c}" data-g="chooseColor" data-color="${c}">${COLOR[c]}</button>`).join('')}</div>` : S.g.challenge ? '<button class="btn" data-g="acceptDraw">Strafe ziehen</button><button class="btn" data-g="challengeDraw">Anfechten (+2 bei Irrtum)</button>' : null,
+    onClick: (t) => { const g = t.dataset.g; if (g === 'chooseColor') { send('chooseColor', { color: t.dataset.color }); return true; } if (['acceptDraw', 'challengeDraw'].includes(g)) { send('challenge', { challenge: g === 'challengeDraw' }); return true; } return false; },
     // Gewählte Farbe: leuchtender Ring um die Ablage (dazu steht „Gewünscht: Rot“ darunter)
     pileClass: (g) => (g.wish && g.top?.[1] === 'w' ? `wish-ring ring-${g.wish}` : ''),
     wishName: (w) => COLOR[w],

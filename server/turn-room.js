@@ -6,6 +6,7 @@ export class TurnRoom extends BaseRoom {
   // opts: { minPlayers, maxPlayers, lowWins (wenig Punkte = gut), scoreLabel, winPoints (Punkte für einen Sieg, wenn Punkte = Siege) }
   constructor(code, settings, onChange, opts) {
     super(code, onChange);
+    this.variant = settings?.variant || 'classic';
     this.opts = { minPlayers: 2, maxPlayers: 6, lowWins: false, scoreLabel: 'Punkte', ...opts };
     this.settings = this.clampSettings(settings || {}, this.defaultSettings());
     this.seats = [];      // Mitspieler (IDs) in Sitzreihenfolge
@@ -33,6 +34,7 @@ export class TurnRoom extends BaseRoom {
     for (const o of this.constructor.OPTIONS || []) {
       if (!(o.key in input)) continue;
       if (o.type === 'bool') s[o.key] = !!input[o.key];
+      else if (o.type === 'select') { if (o.values.some((v) => v.value === input[o.key])) s[o.key] = input[o.key]; }
       else { const n = Math.floor(Number(input[o.key])); if (Number.isFinite(n) && n >= o.min && n <= o.max) s[o.key] = n; }
     }
     return s;
@@ -139,6 +141,7 @@ export class TurnRoom extends BaseRoom {
     const ids = this.seats.filter((x) => this.players.has(x));
     if (ids.length < this.opts.minPlayers) throw new Error(`Es müssen mindestens ${this.opts.minPlayers} mitspielen`);
     this.validateStart(ids);
+    if (ids.length > this.opts.maxPlayers) throw new Error(`Diese Variante erlaubt höchstens ${this.opts.maxPlayers} Mitspieler`);
     // Wer anfängt, wechselt jede Runde
     const s = this.roundNo % ids.length;
     this.order = [...ids.slice(s), ...ids.slice(0, s)];
@@ -148,6 +151,7 @@ export class TurnRoom extends BaseRoom {
     this.result = null;
     this.acts = {}; this.moves = [];
     this.say(`Runde #${this.roundNo}`, 'hand');
+    if (this.variant !== 'classic') this.say(`Variante: ${this.variantLabel || this.variant}`);
     this.setupRound();
     this.roundPlayers = [...this.order]; // für die Bestenliste (auch wer unterwegs ausscheidet)
     if (this.phase === 'playing') this.onTurnStart();
@@ -227,6 +231,7 @@ export class TurnRoom extends BaseRoom {
     people.sort((a, b) => (this.seats.indexOf(a.id) + 1 || 99) - (this.seats.indexOf(b.id) + 1 || 99));
     return {
       code: this.code, game: this.game, now: Date.now(),
+      variant: this.variant, variantName: this.variantLabel || this.variant,
       you: me ? { id: me.id, name: me.name, isHost: me.id === this.hostId, playing: this.seats.includes(me.id), inRound: this.order.includes(me.id) } : null,
       hostId: this.hostId, settings: this.settings, phase: this.phase, roundNo: this.roundNo, turnId: this.currentId, deadline: this.deadline, dir: this.dir, acts: this.phase === 'lobby' ? {} : this.acts, moves: this.phase === 'lobby' ? [] : this.moves.slice(-40),
       minPlayers: this.opts.minPlayers, maxPlayers: this.opts.maxPlayers, scoreLabel: this.opts.scoreLabel, lowWins: this.opts.lowWins,
@@ -246,6 +251,7 @@ export class TurnRoom extends BaseRoom {
   snapshot() {
     return {
       code: this.code, settings: this.settings, hostId: this.hostId, roundNo: this.roundNo, scores: this.scores, wins: this.wins, seats: this.seats,
+      ...(this.variant !== 'classic' ? { variant: this.variant } : {}),
       extra: this.saveExtra(),
       players: [...this.players.values()].filter((p) => !p.kicked).map((p) => ({ id: p.id, token: p.token, name: p.name, avatar: p.avatar, bot: !!p.bot })),
     };

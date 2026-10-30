@@ -9,7 +9,6 @@ import { handValue } from './schwimmen/room.js';
 import { randomFleet, around, SIZE } from './schiffe/room.js';
 import { total as bjTotal, cardValue } from './blackjack/room.js';
 import { newDeck, score7, omahaScore } from './poker/engine/cards.js';
-import { GOAL, TRACK } from './huetchen/room.js';
 import { judge } from './schocken/room.js';
 import { botColumn } from './viergewinnt/room.js';
 import { combos as stbCombos } from './shutthebox/room.js';
@@ -22,11 +21,13 @@ import { LETTERS as PAKET_LETTERS } from './tickendes-paket/room.js';
 import { botMove as sechsNimmt } from './sechs-nimmt/room.js';
 import { botMove as monopolyDeal } from './monopoly-deal/room.js';
 import { botMove as monopoly } from './monopoly/bot.js';
+const lifeBot = (room, id) => room.botMove(id);
 
 const one = (list, rng) => list[Math.floor(rng() * list.length)];
 
 // Mau-Mau und UNO: passende Karte spielen, sonst ziehen, sonst weiter
 function shedding(room, id, rng) {
+  if (room.variantBot) return room.variantBot(id, rng);
   if (room.forgot === id) room.lateCall(id);
   else if (room.forgot) room.catchForgot(id);
   const v = room.gameView(id);
@@ -38,7 +39,8 @@ function shedding(room, id, rng) {
     const c = rng() < 0.15 ? one(v.playable, rng) : [...v.playable].sort((a, b) => value(b) - value(a))[0];
     const wishes = ['c', 's', 'h', 'd', 'r', 'y', 'g', 'b'].filter((w) => room.validWish(w));
     wishes.sort((a, b) => v.hand.filter((x) => x !== c && x[1] === b).length - v.hand.filter((x) => x !== c && x[1] === a).length);
-    return room.play(id, c, room.needsWish(c) ? wishes[0] : undefined, true);
+    const target = room.order.filter((p) => p !== id).sort((a, b) => room.hands[a].length - room.hands[b].length)[0];
+    return room.play(id, c, room.needsWish(c) ? wishes[0] : undefined, true, target);
   }
   return v.drawn ? room.pass(id) : room.draw(id);
 }
@@ -86,12 +88,13 @@ function schocken(room, id, rng) {
 // und bedrohte Hütchen in Sicherheit ziehen
 function huetchen(room, id, rng) {
   if (room.rolled === null) return room.throwDice(id);
-  const foes = room.order.filter((p) => p !== id).flatMap((p) => room.pieces[p].filter((x) => x >= 0 && x < TRACK).map((x) => room.abs(p, x)));
-  const danger = (progress) => progress >= 0 && progress < GOAL && foes.some((f) => { const k = (room.abs(id, progress) - f + TRACK) % TRACK; return k >= 1 && k <= 6; });
+  const owner = room.controlled(id), TRACK = room.track, GOAL = room.track;
+  const foes = room.order.filter((p) => p !== owner && p !== room.partner(owner)).flatMap((p) => room.pieces[p].filter((x) => x >= 0 && x < TRACK).map((x) => room.abs(p, x)));
+  const danger = (progress) => progress >= 0 && progress < GOAL && foes.some((f) => { const k = (room.abs(owner, progress) - f + TRACK) % TRACK; return k >= 1 && k <= 6; });
   const value = (i) => {
-    const from = room.pieces[id][i];
+    const from = room.pieces[owner][i];
     const to = from < 0 ? 0 : from + room.rolled;
-    return (to >= GOAL ? 100 : 0) + (room.captures(id, i, room.rolled) ? 60 : 0) + (from < 0 ? 25 : to)
+    return (to >= GOAL ? 100 : 0) + (room.captures(owner, i, room.rolled) ? 60 : 0) + (from < 0 ? 25 : to)
       + (danger(from) ? 8 : 0) - (to < GOAL && danger(to) ? 10 : 0) + rng() * 2;
   };
   return room.move(id, [...room.options].sort((a, b) => value(b) - value(a))[0]);
@@ -160,6 +163,8 @@ function zehnetappen(room, id, rng) {
 // Skip-Bo: was passt, auf die Baureihen (Stapel zuerst), sonst abwerfen
 function stapelrennen(room, id, rng) {
   const sources = [];
+  const partner = room.partner(id);
+  if (partner) { const s = room.stock[partner]; if (s.length) sources.push([{ kind: 'stock', owner: partner }, s.at(-1)]); room.piles[partner].forEach((p, index) => { if (p.length) sources.push([{ kind: 'pile', index, owner: partner }, p.at(-1)]); }); }
   const stock = room.stock[id];
   if (stock.length) sources.push([{ kind: 'stock' }, stock[stock.length - 1]]);
   room.hand[id].forEach((n, i) => sources.push([{ kind: 'hand', index: i }, n]));
@@ -208,6 +213,7 @@ function schwimmen(room, id, rng) {
 // sonst neben offene Treffer; sonst im Schachbrettmuster suchen. Ohne Berühren bleiben Felder um versenkte Schiffe frei.
 function schiffe(room, id, rng) {
   if (room.step === 'place') return room.place(id, randomFleet(room.fleet(), room.settings.touch, rng));
+  if (room.variant === 'salvo') return room.salvo(id, room.salvoTargets(id, rng));
   const mine = room.shots[id];
   const sunk = room.sea(room.other(id), id).sunk.flatMap((ship) => ship.cells);
   const sunkCells = new Set(sunk);
@@ -274,6 +280,7 @@ function kniffelKeep(d, open) {
   return d.map((x, i) => (x === f ? i : -1)).filter((i) => i >= 0);
 }
 function kniffel(room, id, rng) {
+  if (room.variant === 'triple') return room.botMove(id);
   const sheet = room.sheets[id];
   const open = (f) => sheet[f] === null;
   if (!room.rolls) return room.throwDice(id, []);
@@ -299,6 +306,7 @@ function kniffel(room, id, rng) {
 
 // Vier gewinnt: eigener Sieg, Gegner blocken, Mitte.
 function viergewinnt(room, id, rng) {
+  if (room.variant !== 'classic') return room.variantBot(id, rng);
   const foe = room.order.find((p) => p !== id);
   return room.drop(id, botColumn(room.board, id, foe, rng));
 }
@@ -491,4 +499,4 @@ function tickendesPaket(room, id, rng) {
 }
 void PAKET_LETTERS;
 
-export const BOTS = { monopoly, 'monopoly-deal': monopolyDeal, 'sechs-nimmt': sechsNimmt, broeckelboden: partyBot, kronenjagd: partyBot, 'laser-huepfer': partyBot, 'tickendes-paket': tickendesPaket, werwolf: partyBot, zahlenzoo: partyBot, 'gedaechtnis-kueche': partyBot, pfeilfieber: partyBot, sortierstation: partyBot, wuerfelpoker, luegenwuerfel, chicago: (room, id) => room.throwDice(id), reversi: (room, id, rng) => room.place(id, reversiMove(room.board, id, rng)), dame: (room, id, rng) => { const m = dameMove(room.board, room.color(id), room.chain, rng); return room.move(id, m.from, m.to); }, domino, omaha: poker, mogeln, praesident, durak, poker, maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, schiffe, blackjack, kniffel, viergewinnt, shutthebox, zehntausend, muehle, schaetzmeister, schlagfertig: partyBot, werhatdasgesagt: partyBot };
+export const BOTS = { 'spiel-des-lebens': lifeBot, monopoly, 'monopoly-deal': monopolyDeal, 'sechs-nimmt': sechsNimmt, broeckelboden: partyBot, kronenjagd: partyBot, 'laser-huepfer': partyBot, 'tickendes-paket': tickendesPaket, werwolf: partyBot, zahlenzoo: partyBot, 'gedaechtnis-kueche': partyBot, pfeilfieber: partyBot, sortierstation: partyBot, wuerfelpoker, luegenwuerfel, chicago: (room, id) => room.throwDice(id), reversi: (room, id, rng) => room.place(id, reversiMove(room.board, id, rng)), dame: (room, id, rng) => { const m = dameMove(room.board, room.color(id), room.chain, rng); return room.move(id, m.from, m.to); }, domino, omaha: poker, mogeln, praesident, durak, poker, maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, schiffe, blackjack, kniffel, viergewinnt, shutthebox, zehntausend, muehle, schaetzmeister, schlagfertig: partyBot, werhatdasgesagt: partyBot };

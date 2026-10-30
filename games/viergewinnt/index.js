@@ -5,6 +5,7 @@ import { connect4 } from '../art-kit.js';
 
 export default turnGame(Room, {
   id: 'viergewinnt',
+  implementedVariants: ['pop-out', 'five'],
   name: 'Vier gewinnt',
   description: 'Steine in Spalten fallen lassen – wer zuerst vier in einer Reihe hat, gewinnt.',
   category: 'brett', // Karten, Würfel oder Brett – gruppiert die Startseite
@@ -15,5 +16,6 @@ export default turnGame(Room, {
   createHint: 'Wer mitspielen will, klickt am Tisch auf „Mitspielen“ – genau zwei. Der Host startet die Partie.',
   events: {
     drop: (room, p, { col }) => room.drop(p.id, col),
+    pop: (room, p, { col }) => room.pop(p.id, col),
   },
 });

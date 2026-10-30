@@ -5,6 +5,7 @@ import { pawns } from '../art-kit.js';
 
 export default turnGame(Room, {
   id: 'huetchen',
+  implementedVariants: ['six', 'team'],
   name: 'Mensch ärgere Dich nicht',
   description: 'Würfeln, rauskommen mit der 6, andere rauswerfen. Wer zuerst alle vier Figuren im Ziel hat, gewinnt.',
   category: 'brett', // Karten, Würfel oder Brett – gruppiert die Startseite

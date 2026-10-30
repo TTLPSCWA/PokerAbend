@@ -107,6 +107,33 @@ Technik: `server/tickets.js` kapselt Daten, Rechte und Markdown; `server/ticket-
 
 ## Spiele
 
+### Päckchen 10: Varianten und Spiel des Lebens
+
+Die **Spielvariante** wird beim Hosten und zwischen Partien unter **Host → Variante** gewählt. Ein Wechsel setzt den lokalen Tischstand und ein vorbereitetes Abendprogramm zurück. Die Auswahl bleibt bei einem Server-Neustart erhalten. Varianten sind auch pro Station im Abend-Modus wählbar. Hub-Plaketten zeigen die verfügbaren Varianten; der Verlauf nennt die aktive Variante. Die Bestenliste führt beispielsweise **UNO Flip** getrennt von UNO. Erfolge und Abzeichen zählen beide unter dem Hauptspiel zusammen.
+
+| Spiel | Neue Varianten |
+| --- | --- |
+| Monopoly | Tempowürfel; Junior mit 24 Feldern und 2–4 Spielern |
+| UNO | Flip (2–10), No Mercy (2–6), All Wild (2–10); Grundversion mit optionaler 7–0-Hausregel |
+| Kniffel | Dreifach-Kniffel mit drei Spalten ×1, ×2, ×3 |
+| Mensch ärgere Dich nicht | Sechseck mit 60 Feldern für bis zu sechs Spieler; Team 2 gegen 2 |
+| Vier gewinnt | Pop Out; Fünf in einer Reihe auf 9×6 |
+| Schiffe versenken | Salvo mit verdeckten, gleichzeitig aufgelösten Salven |
+| Skip-Bo | Kurze Partie mit zehn Spielstapelkarten; Partnerschaft 2 gegen 2 |
+| Phase 10 | Kurze Partie mit fünf Phasen; kooperative Teamvariante 2 gegen 2 |
+| Monopoly Deal | Schnelle Partie: zwei vollständige Sätze gewinnen |
+| Spiel des Lebens | Klassisch (ca. 45 Minuten); Schnelles Leben (ca. 20 Minuten), jeweils 2–6 Spieler |
+
+**Monopoly** hat zusätzlich das wählbare Thema **Klassik**: cremefarbenes Brett, große Eckfelder mit eigenen Zeichnungen, Besitzkarten mit Farbkopf und Mietstaffel, farbige Geldscheine und acht eigene SVG-Spielfiguren. Jeder wählt seine Figur in der Lobby oder unter „Ich“. Eigene Stadtbretter bleiben im bisherigen Editor verfügbar. Beim Tempowürfel startet die zusätzliche Funktion für jeden Spieler erst nach seinem ersten Überqueren von Los. Zahlen werden addiert, Bus und Dreierpasch verlangen eine Zielwahl; Glück wird erst nach Abschluss des ersten Feldes ausgeführt. Standard-Startgeld: 2.500. Junior startet mit 31 Geld, bei vier Spielern mit 20; freie Grundstücke werden automatisch gekauft. Beim ersten Bankrott gewinnt das meiste Bargeld, bei Gleichstand entscheidet der Grundstückswert.
+
+**UNO Flip** verwendet 112 physische Karten mit zwei Seiten. Flip kehrt auch die Reihenfolge beider Stapel um. Die inaktiven Seiten fremder Hände und die Rückseite des Nachziehstapels sind sichtbar; aktive fremde Handseiten bleiben auf dem Server. Zieh-bis-Farbe und Farbwahl +2 können angefochten werden. Die Partie ist bei 500 Punkten gewonnen. **No Mercy** hat 168 Karten, stapelt nach dem Wert der *letzten* Ziehkarte und scheidet Spieler sofort ab 25 Karten aus. **All Wild** löst einen verpflichtenden Handtausch vor der Siegerprüfung auf; gezieltes +2 überspringt den Betroffenen nicht. Alle Varianten haben eigene Aktionssymbole und kantige Kartenflächen ohne Original-Logo oder Oval.
+
+**Spiel des Lebens** ist eine eigene Fassung mit serverseitigem Drehrad 1–10, kurviger Landschaft und Autos mit Familiensteckern. Studium kostet 100.000 aus zwei Krediten, direkter Beruf überspringt den Studienweg. Überquerte Zahltage zahlen Gehalt; Abschluss, Hochzeit, Hauskauf, beide Weggabelungen und Ruhestand halten die Fahrt an. Berufe haben eigene Fähigkeiten; Lebensereignisse bringen Geld, Kinder, Gehaltserhöhungen oder neue Berufe. Kredite geben je 50.000 und kosten 60.000 bei der Tilgung. Verdeckte Lebenskarten (50.000–250.000) werden erst am Ende aufgedeckt. Ruhestand bringt 4/3/2/1, danach je eine Bonuskarte. Die Endabrechnung verkauft Häuser nach geradem/ungeradem Dreh und zählt Bargeld + Hausverkäufe + Lebenskarten + 50.000 je Kind − offene Kredite. Karte vergrößern, verschieben oder mit „Zu deinem Auto“ verfolgen; Bots übernehmen alle Entscheidungen.
+
+**Teamregeln:** Gegenüberliegende Plätze sind Partner. Bei Mensch ärgere Dich nicht zieht man erst nach vier eigenen Zielfiguren für den Partner; Partner werden nicht geschlagen. Skip-Bo folgt den Partnerschaftsregeln: offene Partnerstapel mitnutzen, beide Spielstapel leeren. Phase 10 ist eine ausdrücklich kooperative Tischvariante: Beide Partner müssen dieselbe Phase in derselben Runde auslegen, bevor beide aufsteigen; Gleichstände entscheidet ihre gemeinsame Strafpunktzahl. Ein Ausstieg beendet ein Teamspiel zugunsten des anderen Teams.
+
+Regelgrundlagen: [Tempowürfel (Hasbro)](https://www.hasbro.com/common/instruct/00009.pdf), [Monopoly Junior (Hasbro)](https://instructions.hasbro.com/en-us/instruction/Monopoly-Junior-Game-Instructions), [UNO Flip (Mattel)](https://service.mattel.com/instruction-sheets/files/GDR44%20UNO%20Flip%5BEnglish_French_German_Spanish_Portuguese%5D%5B5LG%5D.pdf), [No Mercy (Mattel)](https://service.mattel.com/instruction_sheets/HVW18-Eng.pdf), [All Wild (Mattel)](https://service.mattel.com/instruction_sheets/HHL33-Eng.pdf), [Skip-Bo-Partnerschaft (Mattel)](https://service.mattel.com/instruction_sheets/42050-0520.pdf). Straßen-, Ereignis- und Berufstexte sowie sämtliche neuen Zeichnungen stammen aus diesem Projekt. Junior verwendet die angefragte Startgeldregel 31/20; Spiel des Lebens und Phase-10-Teams sind die oben beschriebenen eigenen Fassungen.
+
 ### Päckchen 7: Party-Abendprogramme
 
 An einem Party-Tisch erst mitspielen, dann unter **Host → Abendprogramm planen** den Modus wählen:
@@ -124,7 +151,7 @@ Programm, Einstellungen und bereits vergebene Programmpunkte werden im Raum gesp
 
 ### Abend-Modus: alle Spiele gemeinsam werten
 
-Unter **Host → Abendprogramm planen → Abend-Modus · alle Spiele** lassen sich bis zu zwölf Stationen aus allen 45 Karten-, Würfel-, Brett- und Partyspielen frei zusammenstellen. Das geht an jedem Tisch, auch direkt bei Poker. Spiele im Auswahldialog sind nach Kategorien gruppiert; die gemeinsame Spielerzahl wird angezeigt. Jede Station hat eigene Regeln und Zeiten. Der Server prüft vor dem Start, ob alle Spiele zur festen Gruppe und zu vorhandenen Bots passen. Vorlagen werden wie die Party-Playlists im Browser gespeichert.
+Unter **Host → Abendprogramm planen → Abend-Modus · alle Spiele** lassen sich bis zu zwölf Stationen aus allen 46 Karten-, Würfel-, Brett- und Partyspielen frei zusammenstellen. Das geht an jedem Tisch, auch direkt bei Poker. Spiele im Auswahldialog sind nach Kategorien gruppiert; die gemeinsame Spielerzahl wird angezeigt. Jede Station hat eigene Regeln und Zeiten. Der Server prüft vor dem Start, ob alle Spiele zur festen Gruppe und zu vorhandenen Bots passen. Vorlagen werden wie die Party-Playlists im Browser gespeichert.
 
 Eine abgeschlossene Spielrunde zählt als Station. Unterschiedliche Punkteskalen werden in Platzierungen umgerechnet: Bei N Teilnehmern erhält Platz 1 N Abendpunkte, jeder weitere Platz einen weniger. Gleichstände teilen den Platz. Außerhalb von Poker haben tatsächliche Sieger bei gleichen Rohpunkten Vorrang. Spiele mit wenigen guten Punkten werden entsprechend umgekehrt gewertet. Zuschauer zählen nicht. **Gesamtwertung** zeigt den laufenden Stand; nach der letzten Station erscheint die Siegerehrung.
 
@@ -184,7 +211,7 @@ Mit **Pfeiltasten/WASD** bewegen, auf dem Handy die **Richtungsknöpfe halten**.
 
 Spielzeit: 10–180 Sekunden, standardmäßig 60. Bei Bröckelboden und Laser-Hüpfer gewinnt der letzte Überlebende; nach Zeitablauf teilen sich die Überlebenden den Sieg. Jede überstandene Platzierung bringt 100 Punkte. Gleichzeitig Ausscheidende erhalten dieselbe Wertung; fallen alle sofort gleichzeitig aus, ist die Partie unentschieden.
 
-Wiederverbinden behält Figur und Punkte. Bei Tabwechsel, geöffnetem Menü oder ausbleibenden Eingaben bleibt die Figur stehen; die Runde läuft weiter. Der Host kann abbrechen oder den Tisch schließen. Ein Server-Neustart lädt die gespeicherten Teilnehmer, Einstellungen und abgeschlossenen Wertungen; die laufende Runde muss der Host neu starten. Im Abendprogramm bleiben bereits abgeschlossene Spiele gewertet. Die nummerierten Päckchen bis einschließlich 9, das Ticket-Board und Design & Töne sind gebaut; als Nächstes folgt „Spieleabend als Ganzes“ auf der Roadmap.
+Wiederverbinden behält Figur und Punkte. Bei Tabwechsel, geöffnetem Menü oder ausbleibenden Eingaben bleibt die Figur stehen; die Runde läuft weiter. Der Host kann abbrechen oder den Tisch schließen. Ein Server-Neustart lädt die gespeicherten Teilnehmer, Einstellungen und abgeschlossenen Wertungen; die laufende Runde muss der Host neu starten. Im Abendprogramm bleiben bereits abgeschlossene Spiele gewertet. Die nummerierten Päckchen bis einschließlich 10, das Ticket-Board, Design & Töne und „Spieleabend als Ganzes“ sind gebaut; als Nächstes folgen Benachrichtigungen auf der Roadmap.
 
 | Spiel | Spieler | Kurz |
 | --- | --- | --- |
@@ -233,6 +260,7 @@ Wiederverbinden behält Figur und Punkte. Bei Tabwechsel, geöffnetem Menü oder
 | 6 nimmt! | 2–10 | Zehn Karten verdeckt und gleichzeitig wählen. Die sechste Karte nimmt die Reihe; wenigste Hornochsen bis Ziel 66 gewinnen |
 | Monopoly Deal | 2–5 | 106 Karten, Bank und Grundstückssätze, Mieten und Just-Say-No-Ketten. Drei vollständige Farben gewinnen |
 | Monopoly | 2–8 | Spieleabend-Stadt mit 40 Feldern, eigenen Brettnamen, Versteigerung, Handel, Gebäuden, Hypotheken und Bankrott |
+| Spiel des Lebens | 2–6 | Drehrad, Studium/Beruf, Gehälter, Familien- und Lebensmomente, Häuser, Kredite und Endvermögen; auch als kurze Partie |
 
 Die Startseite ist ein Hub (siehe „Startseite“ weiter unten). Die Kategorie (`karten`, `wuerfel`, `brett`, `party`), Spielerzahl, Dauer und das Spielbild legt jedes Spiel in seinem `games/<spiel>/index.js` fest.
 
@@ -280,7 +308,7 @@ Gehen bei Skip-Bo während der Runde die Nachziehkarten aus, darf ein Spieler oh
 - Nach jeder Runde zeigt ein großes Fenster die Punkte; der Host startet dort die nächste Runde oder wechselt das Spiel.
 - Unter „Ich“ (pro Browser gemerkt): **Farbsymbole** auf farbigen Karten (Rot ▲, Gelb ●, Grün ■, Blau ◆ – Standard an), **Töne** (Karten, Würfel, „UNO!“ – alles per Web Audio erzeugt, keine Dateien), **Animationen aus** (gilt auch bei „Bewegung reduzieren“ am Gerät), **Erste Schritte** (kurze Einführung beim ersten Spiel jeder Art), bei Mau-Mau das **Kartenblatt** (französisch oder deutsch).
 - **Kartengröße** unter „Ich“: Normal, Groß oder Sehr groß. Vergrößert die eigenen Handkarten in allen Kartenspielen einschließlich Poker/Omaha, wird im Browser gespeichert und verändert keine fremden Karten oder Ablagen.
-- **Design & Töne:** Alle 45 Spiele verwenden ihre Spielbilder auch am Tisch, mit passenden Akzentfarben und kurzen Aktionsklängen. „Ton ausprobieren“ hilft beim Einstellen; stumm bleibt alles stumm. Neue-Runde- und Aktionsimpulse beachten „Animationen aus“ und die Geräteeinstellung für reduzierte Bewegung.
+- **Design & Töne:** Alle 46 Spiele verwenden ihre Spielbilder auch am Tisch, mit passenden Akzentfarben und kurzen Aktionsklängen. „Ton ausprobieren“ hilft beim Einstellen; stumm bleibt alles stumm. Neue-Runde- und Aktionsimpulse beachten „Animationen aus“ und die Geräteeinstellung für reduzierte Bewegung.
 - **Querformat:** Bei 641 px oder mehr Breite und höchstens 560 px Höhe stehen Aktionen bei Karten-, Würfel- und Brettspielen rechts neben dem Tisch. Die Aktionsleiste lässt sich unabhängig scrollen. Reversi, Dame, Mühle, Hütchen und Vier gewinnt passen ihre Brettgröße an den verfügbaren Platz an; Schiffe zeigt die Meere und Kniffel Würfel und Punkteblatt nebeneinander. Zeichen-, Solo- und Echtzeitspiele nutzen ihre eigenen angepassten Spielflächen.
 
 ### Päckchen 9 – Monopoly & Co.

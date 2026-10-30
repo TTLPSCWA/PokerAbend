@@ -1,10 +1,12 @@
 // Spielmodul Kniffel – Regeln in room.js
 import { Room } from './room.js';
+import { TripleRoom } from './triple.js';
 import { turnGame } from '../../server/turn-game.js';
 import { dice } from '../art-kit.js';
 
 export default turnGame(Room, {
   id: 'kniffel',
+  variantRooms: { triple: TripleRoom },
   name: 'Kniffel',
   description: 'Fünf Würfel, drei Würfe, 13 Felder: Pasch, Full House, Straßen, Kniffel. Die höchste Summe gewinnt.',
   category: 'wuerfel', // Karten, Würfel oder Brett – gruppiert die Startseite
@@ -15,6 +17,6 @@ export default turnGame(Room, {
   createHint: 'Wer mitspielen will, klickt am Tisch auf „Mitspielen“ – allein geht auch. Der Host startet das Spiel.',
   events: {
     roll: (room, p, { keep }) => room.throwDice(p.id, Array.isArray(keep) ? keep.slice(0, 5) : []),
-    score: (room, p, { field }) => room.score(p.id, String(field ?? '').slice(0, 20)),
+    score: (room, p, { field, column }) => room.score(p.id, String(field ?? '').slice(0, 20), column === undefined ? 0 : Number(column)),
   },
 });

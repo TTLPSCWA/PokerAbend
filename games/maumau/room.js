@@ -145,8 +145,9 @@ export class Room extends TurnRoom {
     this.say(`${this.name(id)} spielt ${this.cardName(card)}`, 'info', 'action');
     this.act(id, `legt ${this.cardName(card)}`);
     const steps = this.effect(card, wish);
-    if (!hand.length) return this.win(id);
-    if (hand.length === 1) {
+    const empty = this.order.find((p) => !this.hands[p].length);
+    if (empty) return this.win(empty);
+    if (this.hands[id].length === 1) {
       const word = this.lastCardCall();
       if (this.catching() && !called) this.forgot = id; // die anderen dürfen melden
       else if (this.needCall() && !called) {

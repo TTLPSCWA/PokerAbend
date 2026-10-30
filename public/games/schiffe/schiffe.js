@@ -55,6 +55,7 @@
   let selShip = null;       // gewähltes Schiff beim Setzen
   let horizontal = true;    // Ausrichtung fürs nächste Setzen
   let aim = null;           // Handy: gewähltes Ziel, „Feuer“ schießt
+  let volley = new Set(), volleyKey = '';
   const nameOf = (S, id) => esc(S.players.find((p) => p.id === id)?.name ?? '?');
   const meIn = (S) => S.you && S.g?.seas?.[S.you.id];
   const foeOf = (S, id) => Object.keys(S.g.seas).find((x) => x !== id);
@@ -70,7 +71,7 @@
       for (let c = 0; c < SIZE; c++) {
         const i = r * SIZE + c;
         const shot = shots[i];
-        const cls = ['sv-cell', own.has(i) ? 'ship' : '', sunk.has(i) ? 'sunk' : '', shot === 'hit' ? 'hit' : '', shot === 'miss' ? 'miss' : '', sel === i ? 'aim' : '',
+        const cls = ['sv-cell', own.has(i) ? 'ship' : '', sunk.has(i) ? 'sunk' : '', shot === 'hit' ? 'hit' : '', shot === 'miss' ? 'miss' : '', (sel instanceof Set ? sel.has(i) : sel === i) ? 'aim' : '',
           place && selShip !== null && own.get(i) === selShip ? 'picked' : ''].filter(Boolean).join(' ');
         const mark = shot === 'hit' ? '<i aria-hidden="true">✕</i>' : shot === 'miss' ? '<i aria-hidden="true">•</i>' : '';
         const state = sunk.has(i) ? 'versenkt' : shot === 'hit' ? 'Treffer' : shot === 'miss' ? 'Wasser' : own.has(i) ? 'Schiff' : 'frei';
@@ -108,6 +109,8 @@
     onState(S) {
       const g = S.g;
       if (!g) return;
+      const vk = `${S.variant}:${S.roundNo}:${g.salvoRound}`;
+      if (vk !== volleyKey) { volleyKey = vk; volley.clear(); }
       const key = `${S.roundNo}:${g.fleet.join(',')}`;
       if (key !== draftKey) { draftKey = key; draft = g.fleet.map(() => null); selShip = 0; horizontal = true; }
       // Ziel vergessen, wenn ich nicht mehr dran bin oder das Feld inzwischen beschossen ist
@@ -124,6 +127,7 @@
         return 'Wähle unten ein Schiff, dann tipp aufs Meer – oder „Zufällig verteilen“';
       }
       if (!mine) return `${nameOf(S, S.turnId)} schießt`;
+      if (S.variant === 'salvo') return g.salvoReady?.[S.you.id] ? 'Salve abgegeben – warte auf die andere Flotte' : `Wähle ${g.salvoQuota} verschiedene Ziele. Beide Salven werden gemeinsam aufgelöst.`;
       if (!myTurn) return `${nameOf(S, S.turnId)} schießt auf dein Meer`;
       if (aim !== null) return `Ziel <b>${cellName(aim)}</b> – „Feuer“ oder ein anderes Feld wählen`;
       return 'Tipp ein Feld im gegnerischen Meer an';
@@ -145,9 +149,10 @@
         return `<div class="kg-table sv-wrap"><div class="sv-two">${ids.map((id) => board(g.seas[id], { ships: shipList(g.seas[id].ships), small: true, title: `Meer von ${nameOf(S, id)}`, label: over ? 'aufgedeckt' : '' })).join('')}</div></div>`;
       }
       const foe = foeOf(S, me);
-      const myTurn = S.turnId === me;
+      const salvo = S.variant === 'salvo';
+      const myTurn = salvo ? !g.salvoReady?.[me] : S.turnId === me;
       return `<div class="kg-table sv-wrap"><div class="sv-two">
-        ${board(g.seas[foe], { ships: shipList(g.seas[foe].sunk), target: myTurn, sel: aim, title: `Meer von ${nameOf(S, foe)}`, label: myTurn ? 'du schießt' : '' })}
+        ${board(g.seas[foe], { ships: shipList(g.seas[foe].sunk), target: myTurn, sel: salvo ? volley : aim, title: `Meer von ${nameOf(S, foe)}`, label: myTurn ? 'du schießt' : '' })}
         ${board(mine, { ships: shipList(mine.ships), small: true, title: 'Dein Meer' })}
       </div></div>`;
     },
@@ -166,6 +171,7 @@
             <button class="btn btn-ghost" data-g="clear">Alles neu</button>
             <button class="btn ${done ? 'btn-brass' : ''}" data-g="ready" ${done ? '' : 'disabled title="Erst alle Schiffe setzen"'}>Fertig</button></div>`;
       }
+      if (S.variant === 'salvo') return g.salvoReady?.[S.you.id] ? '<p class="hint">Salve festgelegt</p>' : `<button class="btn btn-brass" data-g="salvo" ${volley.size === g.salvoQuota ? '' : 'disabled'}>Salve abgeben (${volley.size}/${g.salvoQuota})</button>`;
       if (myTurn && aim !== null) return `<button class="btn btn-brass sv-fire" data-g="fire">Feuer auf ${cellName(aim)}</button><button class="btn btn-ghost" data-g="noaim">Anderes Feld</button>`;
       return '';
     },
@@ -196,8 +202,10 @@
       else if (g === 'clear') { draft = fleet.map(() => null); selShip = 0; kit.render(); }
       else if (g === 'ready') send('place', { ships: draft });
       else if (g === 'unplace') send('unplace');
+      else if (g === 'salvo') send('salvo', { cells: [...volley] });
       else if (g === 'aim') {
         const i = Number(t.dataset.i);
+        if (S.variant === 'salvo') { if (volley.has(i)) volley.delete(i); else if (volley.size < S.g.salvoQuota) volley.add(i); kit.render(); return; }
         if (FINE.matches || aim === i) { aim = null; send('shoot', { cell: i }); } // Maus: sofort; Handy: zweimal tippen oder „Feuer“
         else { aim = i; kit.render(); }
       } else if (g === 'fire' && aim !== null) { const i = aim; aim = null; send('shoot', { cell: i }); }

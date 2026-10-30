@@ -1,10 +1,11 @@
 // Spielmodul Schiffe versenken – Regeln in room.js
-import { Room } from './room.js';
+import { Room, SalvoRoom } from './room.js';
 import { turnGame } from '../../server/turn-game.js';
 import { battle } from '../art-kit.js';
 
 export default turnGame(Room, {
   id: 'schiffe',
+  variantRooms: { salvo: SalvoRoom },
   name: 'Schiffe versenken',
   description: 'Flotte verstecken, abwechselnd schießen: Wasser, Treffer, versenkt. Wer zuerst alle Schiffe des anderen versenkt, gewinnt.',
   category: 'brett', // Karten, Würfel oder Brett – gruppiert die Startseite
@@ -17,5 +18,6 @@ export default turnGame(Room, {
     place: (room, p, { ships }) => room.place(p.id, Array.isArray(ships) ? ships.slice(0, 12).map((s) => ({ cell: Number(s?.cell), horizontal: !!s?.horizontal })) : null),
     unplace: (room, p) => room.unplace(p.id),
     shoot: (room, p, { cell }) => room.shoot(p.id, cell),
+    salvo: (room, p, { cells }) => room.salvo(p.id, cells),
   },
 });

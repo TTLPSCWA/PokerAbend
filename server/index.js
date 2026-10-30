@@ -24,6 +24,7 @@ import { configureBoards } from '../games/monopoly/boards.js';
 import { createReviewStore, reviewMarkdown } from './evening-reviews.js';
 import { createPlanAPI } from './plan-api.js';
 import { createAchievements } from './achievements.js';
+import { variantOf, variantName, scoreKey } from '../games/variants.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -164,6 +165,10 @@ const GAME_INFO = Object.fromEntries(Object.values(GAMES).map((g) => {
   const r = g.create('INFO', {}, () => {}); const info = { id: g.id, name: g.name, lowWins: !!r.opts?.lowWins, scoreLabel: r.opts?.scoreLabel || 'Chips' }; r.dispose?.();
   return [g.id, info];
 }));
+for (const game of Object.values(GAMES)) for (const v of game.variants || []) if (v.id !== 'classic') {
+  const room = game.create('INFO', { variant: v.id }, () => {});
+  GAME_INFO[scoreKey(game.id, v.id)] = { id: scoreKey(game.id, v.id), name: variantName(game.id, game.name, v.id), lowWins: !!room.opts.lowWins, scoreLabel: room.opts.scoreLabel }; room.dispose();
+}
 app.get('/api/leaderboard', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   const game = GAME_INFO[req.query.game] ? String(req.query.game) : DEFAULT_GAME;
@@ -271,7 +276,7 @@ function onRoomChange(room, kind, data) {
     const botNames = new Set([...room.players.values()].filter((p) => p.bot).map((p) => p.name));
     const entries = data?.entries?.filter((p) => !botNames.has(p.name)) || [];
     const before = new Map(entries.map((p) => [p.name, new Set(achievements.detail(p.name).badges.filter((b) => b.unlocked).map((b) => b.id))]));
-    leaderboard.record(room.game, entries);
+    leaderboard.record(room.game, entries, room.variant || 'classic');
     // Erst dauerhaft speichern, dann die neuen Abzeichen melden.
     try {
       leaderboard.save();
@@ -317,7 +322,7 @@ function switchRoom(old, game, settings = {}, prepare = null) {
   }
   next.hostId = next.players.has(old.hostId) ? old.hostId : [...next.players.keys()][0];
   next.unlisted = !!old.unlisted;
-  next.say(`Jetzt: ${game.name} (vorher ${before}${summary ? ` – ${summary}` : ''})`, 'summary');
+  next.say(`Jetzt: ${variantName(game.id, game.name, next.variant)} (vorher ${before}${summary ? ` – ${summary}` : ''})`, 'summary');
   // Menschen zuerst hinsetzen; Bots, für die kein Platz mehr ist, verlassen den Raum (zuschauen bringt ihnen nichts)
   const isBot = (id) => next.players.get(id)?.bot;
   let seat = 0;
@@ -338,10 +343,10 @@ function switchRoom(old, game, settings = {}, prepare = null) {
 function startProgramStep(room, id, program) {
   const entry = program.plan[program.index];
   const extra = room.saveExtra?.();
-  program.saved[room.game] = { settings: { ...room.settings }, extra: program.config.mode === 'abend' ? extra?.custom ? { custom: extra.custom } : null : extra };
-  const saved = program.saved[entry.game];
+  program.saved[scoreKey(room.game, room.variant || 'classic')] = { settings: { ...room.settings }, extra: program.config.mode === 'abend' ? extra?.custom ? { custom: extra.custom } : null : extra };
+  const saved = program.saved[scoreKey(entry.game, entry.variant || 'classic')];
   const poker = ['poker', 'omaha'].includes(entry.game);
-  const next = switchRoom(room, GAMES[entry.game], { ...(poker ? programDefaults()[entry.game] : saved?.settings || {}), ...entry.settings, ...(poker ? { autoNext: false, rebuy: 'off', gifts: false } : {}) }, (r) => {
+  const next = switchRoom(room, GAMES[entry.game], { ...(poker ? programDefaults()[entry.game] : saved?.settings || {}), ...entry.settings, variant: entry.variant || 'classic', ...(poker ? { autoNext: false, rebuy: 'off', gifts: false } : {}) }, (r) => {
     if (saved?.extra) r.loadExtra(saved.extra);
     r.partyProgram = program;
     if (!r.table) r.roundNo = Number.isInteger(room.roundNo) ? room.roundNo : 0;
@@ -499,7 +504,7 @@ io.on('connection', (socket) => {
     });
   };
 
-  on('create', ({ game: gameId = DEFAULT_GAME, name, avatar, settings, unlisted }) => {
+  on('create', ({ game: gameId = DEFAULT_GAME, name, avatar, settings, unlisted, variant }) => {
     const game = GAMES[gameId];
     if (!game) throw new Error(notPlayable(gameId));
     if (rooms.size >= MAX_ROOMS) throw new Error('Gerade sind zu viele Tische offen');
@@ -507,7 +512,7 @@ io.on('connection', (socket) => {
     const code = codes.take(game.id);
     let room, p;
     try {
-      room = game.create(code, settings, (kind, data) => onRoomChange(room, kind, data));
+      room = game.create(code, variant ? { ...settings, variant } : settings, (kind, data) => onRoomChange(room, kind, data));
       room.game = game.id;
       room.unlisted = unlisted === true;
       p = room.addPlayer(name, avatar);
@@ -587,6 +592,13 @@ io.on('connection', (socket) => {
   });
 
   on('programSave', (data, room, p) => { configureProgram(room, p.id, data); });
+  on('setVariant', ({ variant }, room, p) => {
+    room.requireHost(p.id);
+    if (room.busy || programActive(room)) throw new Error('Variantenwechsel nur zwischen Partien und außerhalb eines laufenden Programms');
+    const v = variantOf(room.game, variant), seated = programSeats(room);
+    if (seated.length > (v.maxPlayers || GAMES[room.game].maxPlayers)) throw new Error('Für diese Variante sitzen zu viele Spieler am Tisch');
+    return { room: switchRoom(room, GAMES[room.game], { variant, ...(room.game === 'monopoly' && variant !== 'junior' ? { board: room.settings.board || 'default', theme: room.settings.theme || 'modern' } : {}) }) };
+  });
   on('programStart', (_data, room, p) => ({ room: startProgramStep(room, p.id, beginProgram(room, p.id)) }));
   on('programNext', (_data, room, p) => ({ room: startProgramStep(room, p.id, nextProgramStep(room, p.id)) }));
   on('programStop', (_data, room, p) => {
@@ -684,7 +696,7 @@ process.on('uncaughtException', (e) => console.error('Unerwarteter Fehler:', e))
 process.on('unhandledRejection', (e) => console.error('Unerwarteter Fehler:', e));
 
 // Ein Spiel darf keine Plattform-Ereignisse überschreiben
-const RESERVED = ['create', 'join', 'kick', 'makeHost', 'history', 'react', 'switchGame', 'disconnect', 'addBot', 'removeBot', 'lobby', 'peek', 'unlisted', 'park', 'leave', 'abortRound', 'closeTable', 'look', 'presence', 'programSave', 'programStart', 'programNext', 'programStop'];
+const RESERVED = ['create', 'join', 'kick', 'makeHost', 'history', 'react', 'switchGame', 'setVariant', 'disconnect', 'addBot', 'removeBot', 'lobby', 'peek', 'unlisted', 'park', 'leave', 'abortRound', 'closeTable', 'look', 'presence', 'programSave', 'programStart', 'programNext', 'programStop'];
 for (const g of Object.values(GAMES)) {
   const clash = Object.keys(g.events).filter((e) => RESERVED.includes(e));
   if (clash.length) throw new Error(`Spiel ${g.id}: Ereignisse ${clash.join(', ')} gehören der Plattform`);

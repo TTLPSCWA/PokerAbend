@@ -44,13 +44,14 @@ import laserHuepfer from './laser-huepfer/index.js';
 import sechsNimmt from './sechs-nimmt/index.js';
 import monopolyDeal from './monopoly-deal/index.js';
 import monopoly from './monopoly/index.js';
+import spielDesLebens from './spiel-des-lebens/index.js';
 
-export const GAMES = Object.fromEntries([poker, maumau, farbenchaos, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, blackjack, kniffel, schiffe, viergewinnt, shutthebox, zehntausend, muehle, schaetzmeister, schlagfertig, werhatdasgesagt, mogeln, praesident, durak, omaha, wuerfelpoker, luegenwuerfel, chicago, reversi, dame, domino, zahlenzoo, gedaechtnisKueche, pfeilfieber, sortierstation, tickendesPaket, werwolf, werBinIch, kritzelpost, bildunterschrift, malenRaten, broeckelboden, kronenjagd, laserHuepfer, sechsNimmt, monopolyDeal, monopoly].map((g) => [g.id, g]));
+export const GAMES = Object.fromEntries([poker, maumau, farbenchaos, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, blackjack, kniffel, schiffe, viergewinnt, shutthebox, zehntausend, muehle, schaetzmeister, schlagfertig, werhatdasgesagt, mogeln, praesident, durak, omaha, wuerfelpoker, luegenwuerfel, chicago, reversi, dame, domino, zahlenzoo, gedaechtnisKueche, pfeilfieber, sortierstation, tickendesPaket, werwolf, werBinIch, kritzelpost, bildunterschrift, malenRaten, broeckelboden, kronenjagd, laserHuepfer, sechsNimmt, monopolyDeal, monopoly, spielDesLebens].map((g) => [g.id, g]));
 export const DEFAULT_GAME = 'poker'; // alte Spielstände ohne Spielart sind Poker
 
 // Was die Startseite über die Spiele wissen muss
-export const gameList = () => Object.values(GAMES).map(({ id, name, description, players, category = 'karten', minPlayers, maxPlayers, duration, art, createFields, createHint, options = [] }) => ({
-  id, name, description, players, category, minPlayers, maxPlayers, duration, art, createFields, createHint, options,
+export const gameList = () => Object.values(GAMES).map(({ id, name, description, players, category = 'karten', minPlayers, maxPlayers, duration, art, createFields, createHint, variants, create, options = [] }) => ({
+  id, name, description, players, category, minPlayers, maxPlayers, duration, art, createFields, createHint, options, ...(variants ? { variants: variants.map((v) => { const r = create('META', { variant: v.id }, () => {}); const defaults = { ...r.settings }; r.dispose(); return { ...v, defaults }; }) } : {}),
 }));
 export { PLANNED, plannedGames } from './planned.js';
 // Kategorien der Startseite, in dieser Reihenfolge

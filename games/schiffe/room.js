@@ -84,6 +84,7 @@ export class Room extends TurnRoom {
     this.ready = new Set();
     this.shots = {};         // ID → { Zelle: 'hit' | 'miss' } – Schüsse DIESES Spielers aufs gegnerische Meer
     this.sunk = {};          // ID → [Schiffsindex] – versenkte Schiffe DIESES Spielers
+    this.salvos = {}; this.salvoRound = 1; this.lastSalvo = null;
   }
   fleet() { return this.settings.classic ? FLEETS.classic : FLEETS.standard; }
   validateStart(ids) { if (ids.length !== 2) throw new Error('Schiffe versenken spielen genau zwei'); }
@@ -94,6 +95,7 @@ export class Room extends TurnRoom {
   // Beim Setzen ist niemand „dran“ – für die Plattform zählt, wer noch nicht fertig ist
   get currentId() {
     if (this.phase === 'playing' && this.step === 'place') return this.order.find((p) => !this.ready.has(p)) ?? null;
+    if (this.phase === 'playing' && this.variant === 'salvo') return this.order.find((p) => !this.salvos[p]) ?? null;
     return super.currentId;
   }
   timerActive() { return this.step === 'shoot'; }
@@ -125,6 +127,7 @@ export class Room extends TurnRoom {
 
   // ---------- Schießen ----------
   shoot(id, cell) {
+    if (this.variant === 'salvo') throw new Error('Wähle deine ganze Salve und schicke sie gemeinsam ab');
     this.requireTurn(id);
     if (this.step !== 'shoot') throw new Error('Erst müssen alle ihre Schiffe setzen');
     cell = Number(cell);
@@ -156,9 +159,36 @@ export class Room extends TurnRoom {
   // Zeit abgelaufen: zufällig auf ein freies Feld
   onTimeout(id) {
     if (this.step !== 'shoot' || !id) return;
+    if (this.variant === 'salvo') return this.salvo(id, this.salvoTargets(id));
     const free = [...Array(SIZE * SIZE).keys()].filter((c) => !this.shots[id][c]);
     this.say(`${this.name(id)} war zu langsam – es wird zufällig geschossen`, 'warn');
     this.shoot(id, free[Math.floor(Math.random() * free.length)]);
+  }
+
+  salvoQuota(id) { return Math.min((this.ships[id]?.length || 0) - (this.sunk[this.other(id)]?.length || 0), SIZE * SIZE - Object.keys(this.shots[id] || {}).length); }
+  salvoTargets(id, rng = Math.random) {
+    const shots = this.shots[id], hits = Object.keys(shots).map(Number).filter((c) => shots[c] === 'hit'), chosen = [];
+    const sunk = new Set(this.sea(this.other(id), id).sunk.flatMap((s) => s.cells));
+    const free = Array.from({ length: SIZE * SIZE }, (_, i) => i).filter((c) => !shots[c]);
+    const ranked = free.map((cell) => ({ cell, rank: hits.filter((h) => !sunk.has(h) && Math.abs(Math.floor(cell / SIZE) - Math.floor(h / SIZE)) + Math.abs(cell % SIZE - h % SIZE) === 1).length * 10 + ((Math.floor(cell / SIZE) + cell) % 2 === 0 ? 1 : 0) + rng() }));
+    ranked.sort((a, b) => b.rank - a.rank); for (const r of ranked.slice(0, this.salvoQuota(id))) chosen.push(r.cell); return chosen;
+  }
+  salvo(id, cells) {
+    if (this.phase !== 'playing' || this.step !== 'shoot' || this.variant !== 'salvo' || !this.order.includes(id)) throw new Error('Gerade ist keine Salve möglich');
+    if (this.salvos[id]) throw new Error('Deine Salve ist verbindlich abgegeben');
+    if (!Array.isArray(cells) || cells.length !== this.salvoQuota(id) || new Set(cells).size !== cells.length || cells.some((c) => !Number.isInteger(c) || c < 0 || c >= SIZE * SIZE || this.shots[id][c])) throw new Error('Wähle genau so viele neue Ziele wie eigene Schiffe übrig sind');
+    this.salvos[id] = [...cells]; this.act(id, 'hat die Salve abgegeben');
+    if (!this.order.every((p) => this.salvos[p])) return;
+    const result = {};
+    for (const who of this.order) {
+      const foe = this.other(who); result[who] = [];
+      for (const c of this.salvos[who]) { const hit = this.ships[foe].some((s) => s.cells.includes(c)); this.shots[who][c] = hit ? 'hit' : 'miss'; result[who].push({ cell: c, hit }); }
+      this.sunk[who] = this.ships[foe].map((s, i) => s.cells.every((c) => this.shots[who][c] === 'hit') ? i : -1).filter((i) => i >= 0);
+    }
+    this.lastSalvo = { round: this.salvoRound, shots: result }; this.salvos = {}; this.salvoRound++; this.moveNo++;
+    const winners = this.order.filter((who) => this.sunk[who].length === this.ships[this.other(who)].length);
+    if (winners.length) return this.finishRound(winners.length === 1 ? winners : [], winners.length === 1 ? `${this.name(winners[0])} versenkt die Flotte mit einer Salve` : 'Beide Flotten gleichzeitig versenkt – unentschieden', winners.length === 1 ? { [winners[0]]: 1 } : {});
+    this.say('Beide Salven sind aufgedeckt');
   }
 
   publicPlayer(p) {
@@ -186,8 +216,13 @@ export class Room extends TurnRoom {
     return {
       step: this.step, fleet: this.fleet(), size: SIZE,
       seas: Object.fromEntries(this.order.map((id) => [id, this.sea(id, viewerId)])),
+      ...(this.variant === 'salvo' ? { salvoRound: this.salvoRound, salvoQuota: this.order.includes(viewerId) ? this.salvoQuota(viewerId) : 0, salvoReady: Object.fromEntries(this.order.map((p) => [p, !!this.salvos[p]])), mySalvo: this.salvos[viewerId]?.slice() || [], lastSalvo: this.lastSalvo } : {}),
     };
   }
 
   static restore(data, onChange) { return TurnRoom.restoreInto(new this(data.code, data.settings, onChange), data); }
+}
+
+export class SalvoRoom extends Room {
+  static OPTIONS = Room.OPTIONS.filter((o) => o.key !== 'again');
 }

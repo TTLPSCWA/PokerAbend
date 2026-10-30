@@ -161,8 +161,8 @@ function kitGame(def) {
 
   const nameOf = (id) => S.players.find((p) => p.id === id)?.name ?? '?';
   // Regel-Optionen kommen vom Server (games/<id>/room.js → static OPTIONS), über /me in account.games
-  const gameOptions = () => account.games.find((g) => g.id === def.id)?.options || [];
-  const optionLines = () => gameOptions().map((o) => `${esc(o.label)}: <b>${o.type === 'bool' ? (S.settings[o.key] ? 'an' : 'aus') : esc(S.settings[o.key])}</b>`);
+  const gameOptions = () => variantMeta(def.id, S?.variant)?.options || account.games.find((g) => g.id === def.id)?.options || [];
+  const optionLines = () => gameOptions().map((o) => `${esc(o.label)}: <b>${o.type === 'bool' ? (S.settings[o.key] ? 'an' : 'aus') : esc(o.type === 'select' ? o.values.find((v) => v.value === S.settings[o.key])?.label || S.settings[o.key] : S.settings[o.key])}</b>`);
   const seatedCount = () => S.players.filter((p) => p.seated).length;
 
   // Große Bildschirme: Gegner sitzen rund um den Tisch. Handy und kleine Fenster: kompakte Leiste oben.
@@ -266,7 +266,7 @@ function kitGame(def) {
       : S.phase === 'over' ? `${RW} #${S.roundNo} vorbei` : 'Noch nicht gestartet');
     // Zug-Timer: Restzeit (läuft im Sekundentakt weiter, siehe tickClock)
     const clock = S.phase === 'playing' && S.deadline ? ` · <span id="kg-clock" class="${myTurn ? 'mine' : ''}"></span>` : '';
-    $('#kg-meta').innerHTML = `<div class="blinds">${esc(def.name)}</div><div class="meta-sub">${status}${clock}</div>`;
+    $('#kg-meta').innerHTML = `<div class="blinds">${esc(def.name)}${S.variant && S.variant !== 'classic' ? ` <span class="variant-title">${esc(S.variantName)}</span>` : ''}</div><div class="meta-sub">${status}${clock}</div>`;
     tickClock();
     document.body.classList.toggle('kg-myturn', !!myTurn);
 
@@ -327,6 +327,7 @@ function kitGame(def) {
       <p>${n} von höchstens ${S.maxPlayers} spielen mit${enough ? '.' : ` – es braucht mindestens ${S.minPlayers}.`}</p>
       <p class="hint">${S.you?.isHost ? (enough ? 'Du bist Host: Starte die Runde unten.' : 'Teil den Link oben, damit die anderen dazukommen.') : 'Der Host startet die Runde.'}
         Die Regeln stehen oben unter „Regeln“.</p>
+      ${def.lobbyExtra?.(S) || ''}
     </div>`;
   }
 
@@ -427,9 +428,10 @@ function kitGame(def) {
         </tbody></table>
         <p class="hint">${S.lowWins ? 'Wenig Punkte sind gut.' : 'Viel ist gut.'}</p>
         ${def.standExtra ? def.standExtra(S) : ''}
-        <button class="btn btn-sm btn-ghost" data-leaderboard="${def.id}">Bestenliste aller Abende</button>`;
+        <button class="btn btn-sm btn-ghost" data-leaderboard="${def.id}${S.variant && S.variant !== 'classic' ? '~' + S.variant : ''}">Bestenliste aller Abende</button>`;
     } else if (panel === 'rules') {
-      body.innerHTML = `<div class="kg-rules">${def.rules}</div>`;
+      const ownRules = S.variant && S.variant !== 'classic' && (S.game === 'farbenchaos' || S.game === 'monopoly' && S.variant === 'junior');
+      body.innerHTML = `<div class="kg-rules">${variantRulesHTML(S)}${ownRules ? '' : def.rules}</div>`;
     } else if (panel === 'me') {
       // Persönliche Einstellungen – gelten in diesem Browser für alle Spiele (gleicher Speicher wie beim Poker)
       const t = (k, label, sub = '') => `<label class="toggle"><span>${label}${sub ? `<small>${sub}</small>` : ''}</span><input type="checkbox" role="switch" data-pref="${k}" ${prefs[k] ? 'checked' : ''}></label>`;
@@ -441,22 +443,25 @@ function kitGame(def) {
         ${t('calm', 'Animationen aus', 'Karten, Würfel und Figuren springen ohne Bewegung an ihren Platz. Ist am Gerät „Bewegung reduzieren“ an, gilt das sowieso.')}
         ${t('intros', 'Erste Schritte zeigen', 'Kurze Einführung beim ersten Spiel jeder Art. Einschalten zeigt sie wieder.')}
         ${def.prefs ? def.prefs() : ''}
+        ${def.meExtra?.(S) || ''}
       </div>`;
     } else if (panel === 'host') {
       if (!S.you?.isHost) { openPanel(null); return; }
       const others = S.players.filter((p) => p.id !== S.you.id);
       const off = S.phase === 'playing' || programRunning(S) ? 'disabled' : '';
       const opts = gameOptions();
-      const nums = opts.filter((o) => o.type !== 'bool').map((o) => `<label class="field"><span>${esc(o.label)}</span>
+      const selects = opts.filter((o) => o.type === 'select').map((o) => `<label class="field"><span>${esc(o.label)}</span><select data-kit-set="${o.key}" ${off}>${o.values.map((v) => `<option value="${esc(v.value)}" ${S.settings[o.key] === v.value ? 'selected' : ''}>${esc(v.label)}</option>`).join('')}</select></label>`).join('');
+      const nums = opts.filter((o) => o.type !== 'bool' && o.type !== 'select').map((o) => `<label class="field"><span>${esc(o.label)}</span>
         <input type="number" data-kit-set="${o.key}" min="${o.min}" max="${o.max}" value="${esc(S.settings[o.key])}" ${off}></label>`).join('');
       const bools = opts.filter((o) => o.type === 'bool').map((o) => `<label class="toggle"><span>${esc(o.label)}</span>
         <input type="checkbox" role="switch" data-kit-set="${o.key}" ${S.settings[o.key] ? 'checked' : ''} ${off}></label>`).join('');
-      const fields = opts.length ? `${nums ? `<div class="host-grid">${nums}</div>` : ''}<div class="kg-switches">${bools}</div>` : '';
+      const fields = opts.length ? `${selects}${nums ? `<div class="host-grid">${nums}</div>` : ''}<div class="kg-switches">${bools}</div>` : '';
       body.innerHTML = `<div class="big-actions">
           ${S.phase !== 'playing' ? `<button class="btn btn-brass" data-kit="start">${ICON.play} ${S.phase === 'over' ? 'Nochmal' : S.roundNo ? `Nächste ${RW}` : `${RW} starten`}</button>` : ''}
           <button class="btn btn-outline-red" data-kit="newGame" ${S.phase === 'playing' ? 'disabled title="Geht nur zwischen zwei Runden"' : ''}>Neues Spiel (Punkte auf null)</button>
         </div>
         ${programControlsHTML(S)}
+        ${variantControlsHTML(S)}
         ${def.noBots ? '' : botControlsHTML(S, S.phase === 'playing' || programRunning(S))}
         ${unlistedSwitchHTML(S)}
         ${fields ? `<h3>Regeln an diesem Tisch</h3>${fields}<p class="hint" style="margin:0">Änderungen gehen nur zwischen den Runden. Die Standardwerte sind unsere üblichen Hausregeln – alle sehen die aktiven Regeln unter „?“.</p>` : ''}
@@ -510,7 +515,7 @@ function kitGame(def) {
       if (S.phase === 'playing' && S.you?.inRound && !(await ask({ title: 'Aus der Runde aussteigen?', text: 'Deine Karten bzw. dein Spielstand in dieser Runde sind dann weg.', ok: 'Aussteigen', danger: true }))) return;
       send('stand');
     } else if (k === 'help') {
-      showHelp({ title: `${def.name} – kurz erklärt`, short: def.short || [], house: [...optionLines(), ...(def.house?.(S) || [])], more: () => openPanel('rules', true) });
+      showHelp({ title: `${def.name} – kurz erklärt`, short: variantRuleLines(S)?.slice(1) || def.short || [], house: [...optionLines(), ...(def.house?.(S) || [])], more: () => openPanel('rules', true) });
     } else if (k === 'look') openLook(lookSheet(S));
     else if (k === 'start') send('start');
     else if (k === 'newGame') {
@@ -559,7 +564,7 @@ function kitGame(def) {
       savePrefs();
       return;
     }
-    if (t.dataset?.kitSet) send('settings', { [t.dataset.kitSet]: t.type === 'checkbox' ? t.checked : Number(t.value) }).then((r) => r?.ok && toast('Gespeichert – gilt ab der nächsten Runde'));
+    if (t.dataset?.kitSet) send('settings', { [t.dataset.kitSet]: t.type === 'checkbox' ? t.checked : t.tagName === 'SELECT' ? t.value : Number(t.value) }).then((r) => r?.ok && toast('Gespeichert – gilt ab der nächsten Runde'));
     else if (t.closest?.('#kg') && t.dataset?.g !== undefined) def.onChange?.(t, S, e);
   });
   document.addEventListener('keydown', (e) => {
@@ -614,7 +619,13 @@ function kitGame(def) {
 // opts: { id, name, rules, card(c, extra) → HTML, wishes: [[Wert, Beschriftung, Klasse]], wishLabel, lastWord }
 function kitShedding(opts) {
   let wishFor = null; // Karte, für die gerade eine Farbe gewählt wird
+  let targetFor = null, chosenTarget = null;
   let callArmed = false; // „Mau“/„UNO“ für den nächsten Zug angesagt
+  function prepare(c, S) {
+    if (opts.needsTarget?.(c, S) && !chosenTarget) { targetFor = c; kit.render(); return; }
+    if (opts.needsWish(c, S)) { wishFor = c; kit.render(); return; }
+    send('play', { card: c, call: callArmed, target: chosenTarget }); chosenTarget = null; callArmed = false;
+  }
   const kit = kitGame({
     id: opts.id, name: opts.name, house: opts.house, sort: opts.sort, prefs: opts.prefs, translate: opts.translate, intro: opts.intro,
     look: (S) => [{ title: 'Zuletzt gelegt', html: lookMoves(S.moves, { filter: (m) => /^legt /.test(m.t), n: 10 }) }],
@@ -623,9 +634,10 @@ function kitShedding(opts) {
     get short() { return opts.short; },
     peek: true,
     playerInfo: (p) => `${p.cards} Karte${p.cards === 1 ? '' : 'n'}${p.last ? ` · <b class="kg-call">${opts.lastWord}</b>` : ''}`,
-    seat: (p) => `${fanHTML(p.cards)}<span>${p.cards} Karte${p.cards === 1 ? '' : 'n'}</span>${p.last ? `<b class="kg-call">${opts.lastWord}</b>` : ''}`,
+    seat: (p, S) => opts.seat?.(p, S) ?? `${fanHTML(p.cards)}<span>${p.cards} Karte${p.cards === 1 ? '' : 'n'}</span>${p.last ? `<b class="kg-call">${opts.lastWord}</b>` : ''}`,
     hint(S, myTurn) {
       const g = S.g;
+      const special = opts.specialHint?.(S, myTurn); if (special) return special;
       if (g.forgot && g.forgot !== S.you?.id) return `<b>${esc(S.players.find((p) => p.id === g.forgot)?.name ?? '?')} hat „${opts.lastWord.replace('!', '')}“ vergessen</b> – tipp schnell auf „Erwischt!“`;
       if (!myTurn) return `${esc(S.players.find((p) => p.id === S.turnId)?.name ?? '?')} ist dran`;
       if (wishFor) return esc(opts.wishLabel);
@@ -638,6 +650,8 @@ function kitShedding(opts) {
     onDrop(src) { if (src.dataset.card) src.click(); }, // Ablage ist das einzige Ziel – Ziehen = Antippen
     onState(S) {
       if (!S.g?.playable?.includes(wishFor)) wishFor = null; // Karte weg oder nicht mehr spielbar
+      if (targetFor && !S.g?.playable?.includes(targetFor)) { targetFor = null; chosenTarget = null; }
+      if (S.turnId !== S.you?.id) chosenTarget = null;
       if (S.turnId !== S.you?.id) callArmed = false;
     },
     main(S) {
@@ -653,7 +667,7 @@ function kitShedding(opts) {
           <div class="kg-pile kg-discard ${opts.pileClass ? opts.pileClass(g) : ''}" data-drop="discard">${g.top ? opts.card(g.top, { cls: 'big', attrs: 'disabled' }) : ''}${penalty}<small>Ablage</small></div>
           ${wishBig}
         </div>
-        <div class="kg-chips">${wish}${pending}</div>
+        <div class="kg-chips">${wish}${pending}</div>${opts.extraMain?.(S) || ''}
       </div>`;
     },
     dock(S, myTurn) {
@@ -665,29 +679,34 @@ function kitShedding(opts) {
         attrs: `data-g="card" data-card="${c}" data-peek="${c}:${i}" ${myTurn && playable.has(c) ? `data-drag="${c}"` : ''} ${myTurn ? '' : 'disabled'}`,
       })).join('');
       let acts = '';
-      if (myTurn && wishFor) {
-        acts = `<div class="kg-wishes" role="group" aria-label="${esc(opts.wishLabel)}">${opts.wishes.map(([v, l, cls]) => `<button class="btn wish ${cls}" data-g="wish" data-wish="${v}">${l}</button>`).join('')}</div>
+      if (myTurn && targetFor) {
+        acts = `<div class="kg-acts">${S.players.filter((p) => p.inRound && p.id !== S.you.id && !p.eliminated).map((p) => `<button class="btn" data-g="target" data-target="${esc(p.id)}">${esc(p.name)} (${p.cards} Karten)</button>`).join('')}<button class="btn btn-ghost" data-g="nowish">Abbrechen</button></div>`;
+      } else if (myTurn && wishFor) {
+        const wishes = typeof opts.wishes === 'function' ? opts.wishes(S) : opts.wishes;
+        acts = `<div class="kg-wishes" role="group" aria-label="${esc(opts.wishLabel)}">${wishes.map(([v, l, cls]) => `<button class="btn wish ${cls}" data-g="wish" data-wish="${v}">${l}</button>`).join('')}</div>
           <button class="btn btn-ghost" data-g="nowish">Abbrechen</button>`;
       } else if (myTurn) {
         const call = g.callNeeded && (g.hand || []).length === 2
           ? `<button class="btn btn-call ${callArmed ? 'armed' : ''}" data-g="call" aria-pressed="${callArmed}" title="Bei der vorletzten Karte selbst sagen – sonst gibt es Strafkarten">${callArmed ? '✓ ' : ''}${opts.lastWord}</button>` : '';
         acts = call + (g.drawn
-          ? '<button class="btn" data-g="pass">Weiter</button>'
+          ? g.mustPlay ? '<span class="hint">Gezogene Karte ausspielen</span>' : '<button class="btn" data-g="pass">Weiter</button>'
           : `<button class="btn ${playable.size ? '' : 'btn-brass'}" data-g="draw">${g.pending ? `${g.pending} Karten ziehen` : 'Karte ziehen'}</button>`);
       }
       if (g.forgot === S.you?.id) acts = `<button class="btn btn-call" data-g="late">${opts.lastWord}</button>` + acts;
       else if (g.forgot) acts = `<button class="btn btn-call catch" data-g="catch">Erwischt! (+2 für ${esc(S.players.find((p) => p.id === g.forgot)?.name ?? '?')})</button>` + acts;
+      acts = opts.specialDock?.(S, myTurn) ?? acts;
       return `<div class="kg-hand" role="group" aria-label="Deine Karten">${hand}</div><div class="kg-acts">${acts}</div>`;
     },
     onClick(t, S) {
+      if (opts.onClick?.(t, S)) return;
       const g = t.dataset.g;
       if (g === 'card') {
         const c = t.dataset.card;
-        if (opts.needsWish(c)) { wishFor = c; kit.render(); return; }
-        send('play', { card: c, call: callArmed }); callArmed = false;
-      } else if (g === 'wish') { send('play', { card: wishFor, wish: t.dataset.wish, call: callArmed }); wishFor = null; callArmed = false; }
+        chosenTarget = null; prepare(c, S);
+      } else if (g === 'target') { const c = targetFor; targetFor = null; chosenTarget = t.dataset.target; prepare(c, S); }
+      else if (g === 'wish') { send('play', { card: wishFor, wish: t.dataset.wish, call: callArmed, target: chosenTarget }); wishFor = null; callArmed = false; chosenTarget = null; }
       else if (g === 'call') { callArmed = !callArmed; kit.render(); }
-      else if (g === 'nowish') { wishFor = null; kit.render(); }
+      else if (g === 'nowish') { wishFor = null; targetFor = null; chosenTarget = null; kit.render(); }
       else if (g === 'draw') send('draw');
       else if (g === 'pass') send('pass');
       else if (g === 'catch') send('catch');

@@ -2,6 +2,7 @@ import { Room } from './room.js';
 import { turnGame } from '../../server/turn-game.js';
 import { propertyCards } from '../art-kit.js';
 export default turnGame(Room, {
+  implementedVariants: ['quick'],
   id: 'monopoly-deal', name: 'Monopoly Deal', category: 'karten', minPlayers: 2, maxPlayers: 5, duration: 20, players: '2–5 Spieler',
   description: 'Grundstücke, Mieten und Gegenaktionen: Drei verschiedene volle Sätze gewinnen.', art: propertyCards(), createFields: [],
   events: {

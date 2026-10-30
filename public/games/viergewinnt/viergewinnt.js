@@ -56,11 +56,11 @@
       }).join('');
       if (fresh) seenLast = g.last;
       const filled = g.board.filter((x) => x !== null).length;
-      return `<div class="kg-table vg-wrap"><div class="vg-board" role="grid" aria-label="Spielfeld, ${filled} von 42 Feldern belegt">${cols}</div>
-        ${g.win ? `<p class="vg-banner" role="status">Vier in einer Reihe: ${nameOf(S, g.board[g.win[0]])}!</p>` : ''}</div>`;
+      return `<div class="kg-table vg-wrap"><div class="vg-board" style="grid-template-columns:repeat(${g.cols},minmax(0,1fr))" role="grid" aria-label="Spielfeld, ${filled} von ${g.cols * g.rows} Feldern belegt">${cols}</div>
+        ${g.win ? `<p class="vg-banner" role="status">${g.need || 4} in einer Reihe: ${nameOf(S, g.board[g.win[0]])}!</p>` : ''}</div>`;
     },
-    dock: () => '',
-    onClick(t) { if (t.dataset.g === 'col') send('drop', { col: Number(t.dataset.c) }); },
+    dock: (S) => (S.g.canPop || []).map((c) => `<button class="btn" data-g="pop" data-c="${c}">Spalte ${c + 1} unten herausziehen</button>`).join(''),
+    onClick(t) { if (t.dataset.g === 'col') send('drop', { col: Number(t.dataset.c) }); if (t.dataset.g === 'pop') send('pop', { col: Number(t.dataset.c) }); },
     rules: `<p>7 Spalten, 6 Reihen. Die Steine fallen immer ganz nach unten.</p>
       <ul>
         <li>Abwechselnd wirft jeder einen Stein in eine Spalte, die noch nicht voll ist.</li>

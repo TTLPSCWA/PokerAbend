@@ -5,6 +5,7 @@ import { fan } from '../art-kit.js';
 
 export default turnGame(Room, {
   id: 'zehnetappen',
+  implementedVariants: ['short', 'team'],
   name: 'Phase 10',
   description: 'Zehn Aufgaben nacheinander: Drillinge, Folgen, eine Farbe … Wer zuerst Phase 10 schafft, gewinnt.',
   category: 'karten', // Karten, Würfel oder Brett – gruppiert die Startseite
