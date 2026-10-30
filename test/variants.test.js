@@ -78,8 +78,8 @@ test('Monopoly Deal kurz gewinnt mit genau zwei vollständigen Farben', () => {
   assert.equal(r.checkWin(a), true); assert.deepEqual(r.result.winners, [a]); r.dispose();
 });
 
-test('Phase-10-Teams: acht komplette Spiele mit gemeinsamem Fortschritt bis Phase zehn', () => {
-  for (let k = 0; k < 8; k++) {
+test('Phase-10-Teams: 24 komplette Spiele mit gemeinsamem Fortschritt bis Phase zehn', () => {
+  for (let k = 0; k < 24; k++) {
     const { r, ids } = setup('zehnetappen', 'team', 4), rng = seeded(k + 282); let rounds = 0;
     while (!r.gameOver && rounds++ < 500) {
       let actions = 0; while (r.phase === 'playing' && actions++ < 10000) BOTS.zehnetappen(r, r.currentId, rng);
@@ -88,6 +88,14 @@ test('Phase-10-Teams: acht komplette Spiele mit gemeinsamem Fortschritt bis Phas
     }
     assert.ok(r.gameOver); assert.equal(r.result.winners.length, 2); r.dispose();
   }
+});
+
+test('Phase-10-Bot nimmt keine scheinbar passende Ablage für einen bereits festgelegten Joker', () => {
+  const { r, ids: [a] } = setup('zehnetappen', 'team', 4);
+  r.done.add(a); r.laid[a] = [{ type: 'run', cards: [{ id: 501, c: 'r', n: 1 }, { id: 502, c: 'j', n: 0 }, { id: 503, c: 'r', n: 3 }], vals: [1, 2, 3] }];
+  r.discard = [{ id: 504, c: 'g', n: 2 }]; r.deck = [{ id: 505, c: 'b', n: 4 }];
+  BOTS.zehnetappen(r, a, () => 0);
+  assert.equal(r.discard.at(-1).id, 504); assert.equal(r.hands[a].at(-1).id, 505); r.dispose();
 });
 
 for (const [game, variant, count, limit] of [['viergewinnt', 'five', 2, 100], ['viergewinnt', 'pop-out', 2, 2000], ['schiffe', 'salvo', 2, 250], ['kniffel', 'triple', 2, 650], ['huetchen', 'six', 6, 20000], ['huetchen', 'team', 4, 15000], ['stapelrennen', 'short', 3, 3000], ['stapelrennen', 'team', 4, 7000]]) {

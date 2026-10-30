@@ -1,7 +1,7 @@
 // Einfache Computer-Züge für die Rundenspiele: regelkonform, mit etwas Zufall.
 // Jede Funktion macht genau eine Aktion für den Spieler id, der gerade dran ist.
 // Für Massentests und echte Bot-Mitspieler; Entscheidungen nutzen nur eigene bzw. offene Informationen.
-import { PHASES, partition, validGroup, cardPoints, hitSide } from './zehnetappen/room.js';
+import { PHASES, partition, cardPoints, hitSide } from './zehnetappen/room.js';
 import { JOKER } from './stapelrennen/room.js';
 import { valueOf } from './maexchen/room.js';
 import { UPPER } from './kniffel/room.js';
@@ -123,7 +123,7 @@ function findPhase(hand, groups, limit = 4000) {
 function usefulness(room, id, card, hand) {
   if (card.c === 'j') return 100;
   if (card.c === 's') return -100;
-  if (room.done.has(id)) return Object.values(room.laid).some((gs) => gs.some((g) => validGroup(g.type, [...g.cards, card]))) ? 50 : -cardPoints(card) / 5;
+  if (room.done.has(id)) return Object.values(room.laid).some((gs) => gs.some((g) => hitSide(g, card))) ? 50 : -cardPoints(card) / 5;
   const others = hand.filter((x) => x !== card && x.c !== 's' && x.c !== 'j');
   let u = 0;
   for (const [type] of PHASES[room.phaseOf(id)]) {
@@ -139,7 +139,9 @@ function usefulness(room, id, card, hand) {
 function zehnetappen(room, id, rng) {
   if (room.step === 'draw') {
     const top = room.discard[room.discard.length - 1];
-    const want = top && top.c !== 's' && usefulness(room, id, top, room.hands[id]) >= 4;
+    // Auch eine nützliche Ablage gelegentlich liegen lassen: sonst können vier
+    // unveränderte Hände dieselben Karten endlos im Kreis tauschen.
+    const want = top && top.c !== 's' && usefulness(room, id, top, room.hands[id]) >= 4 && rng() < .9;
     return room.drawCard(id, want ? 'discard' : 'deck');
   }
   const hand = room.hands[id];
@@ -156,7 +158,7 @@ function zehnetappen(room, id, rng) {
   }
   // Die unnützeste Karte abwerfen; Aussetzen trifft, wer am weitesten ist
   const c = [...hand].sort((a, b) => usefulness(room, id, a, hand) - usefulness(room, id, b, hand) + (rng() - 0.5) * 0.2)[0];
-  const others = room.order.filter((p) => p !== id);
+  const others = room.order.filter((p) => p !== id && p !== room.partner(id));
   const ahead = (p) => room.phaseOf(p) * 20 + (room.done.has(p) ? 10 : 0) - room.hands[p].length + rng();
   return room.throwAway(id, c.id, c.c === 's' ? others.sort((a, b) => ahead(b) - ahead(a))[0] : undefined);
 }
