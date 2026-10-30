@@ -15,11 +15,11 @@ const profile = {
 function renderProfileChip() {
   const chip = $('#profile-chip');
   if (chip) {
-    chip.innerHTML = `<span class="chip-av" aria-hidden="true">${esc(profile.avatar)}</span><span class="chip-txt"><b>${esc(profile.name || 'Profil anlegen')}</b><small>Profil ändern</small></span>`;
-    chip.setAttribute('aria-label', profile.name ? `Profil ändern, du bist ${profile.name}` : 'Profil anlegen');
+    chip.innerHTML = I18n.html`<span class="chip-av" aria-hidden="true">${esc(profile.avatar)}</span><span class="chip-txt"><b>${esc(profile.name || I18n.t('Profil anlegen'))}</b><small>Profil ändern</small></span>`;
+    chip.setAttribute('aria-label', profile.name ? I18n.html`Profil ändern, du bist ${profile.name}` : I18n.t('Profil anlegen'));
   }
   const av = $('#profile-avatar');
-  if (av) { av.innerHTML = `<span class="profile-avatar-image">${esc(profile.avatar)}</span><span class="profile-avatar-name">${esc(profile.name || 'Profil')}</span><span class="profile-chevron" aria-hidden="true">⌄</span>`; av.setAttribute('aria-label', profile.name ? `Profil ändern, du bist ${profile.name}` : 'Profil anlegen'); }
+  if (av) { av.innerHTML = `<span class="profile-avatar-image">${esc(profile.avatar)}</span><span class="profile-avatar-name">${esc(profile.name || I18n.t('Profil'))}</span><span class="profile-chevron" aria-hidden="true">⌄</span>`; av.setAttribute('aria-label', profile.name ? I18n.html`Profil ändern, du bist ${profile.name}` : I18n.t('Profil anlegen')); }
 }
 
 // first = allererster Besuch: der Dialog lässt sich nicht wegklicken, bis ein Name da ist
@@ -28,7 +28,7 @@ function openProfile(first = false) {
   const d = $('#profile-dlg');
   if (d.open) return;
   profileChoice = profile.name ? profile.avatar : AVATARS[Math.floor(Math.random() * AVATARS.length)];
-  $('#profile-title').textContent = first ? 'Wie heißt du?' : 'Ich';
+  $('#profile-title').textContent = first ? I18n.t('Wie heißt du?') : I18n.t('Ich');
   $('#p-name').value = profile.name;
   $('#p-error').textContent = '';
   $('#p-cancel').hidden = first;
@@ -36,7 +36,7 @@ function openProfile(first = false) {
   $('#p-presence-hidden').checked = !!store.get('poker:presenceHidden', false);
   $('#p-preferences').innerHTML = UITheme.preferences();
   d.dataset.first = first ? '1' : '';
-  $('#p-avatars').innerHTML = AVATARS.map((a) => `<button type="button" class="avatar-opt" data-a="${a}" aria-pressed="${a === profileChoice}" aria-label="Avatar ${a}">${a}</button>`).join('');
+  $('#p-avatars').innerHTML = AVATARS.map((a) => I18n.html`<button type="button" class="avatar-opt" data-a="${a}" aria-pressed="${a === profileChoice}" aria-label="Avatar ${a}">${a}</button>`).join('');
   d.showModal();
   $('#p-name').focus();
 }
@@ -48,7 +48,7 @@ $('#p-avatars').addEventListener('click', (e) => {
 $('#profile-form').addEventListener('submit', (e) => {
   e.preventDefault();
   const name = $('#p-name').value.replace(/[\u0000-\u001f\u007f-\u009f]/g, '').trim().slice(0, 16);
-  if (!name) { $('#p-error').textContent = 'Bitte gib einen Namen ein.'; $('#p-name').focus(); return; }
+  if (!name) { $('#p-error').textContent = I18n.t('Bitte gib einen Namen ein.'); $('#p-name').focus(); return; }
   profile.save(name, profileChoice);
   store.set('poker:presenceHidden', $('#p-presence-hidden').checked);
   reportPresence(true);
@@ -70,7 +70,7 @@ function joinTable(code) {
   return new Promise((resolve) => {
     socket.emit('join', { code: c, name: profile.name, avatar: profile.avatar, token }, (r) => {
       if (r && r.ok === false && r.suggestion) {
-        toast(`„${profile.name}“ ist an diesem Tisch schon vergeben – du spielst hier als „${r.suggestion}“`);
+        toast(I18n.html`„${profile.name}“ ist an diesem Tisch schon vergeben – du spielst hier als „${r.suggestion}“`);
         socket.emit('join', { code: c, name: r.suggestion, avatar: profile.avatar, token: null }, resolve);
       } else resolve(r);
     });
@@ -80,11 +80,11 @@ function joinTable(code) {
 async function joinAndEnter(code, mode = '') {
   if (!profile.name) { openProfile(true); return false; }
   const r = await joinTable(code);
-  if (!r?.ok) { toast(r?.error || 'Verbindung fehlgeschlagen', true); return false; }
+  if (!r?.ok) { toast(r?.error || I18n.t('Verbindung fehlgeschlagen'), true); return false; }
   if (mode === 'sit') {
     // Poker braucht einen bestimmten Platz – den sucht man am Tisch aus
-    if (r.game === 'poker' || r.game === 'omaha') toast('Such dir am Tisch einen freien Platz aus');
-    else socket.emit('sit', {}, (s) => { if (!s?.ok) toast(s?.error || 'Der Platz ist leider schon weg – du schaust zu', true); });
+    if (r.game === 'poker' || r.game === 'omaha') toast(I18n.t('Such dir am Tisch einen freien Platz aus'));
+    else socket.emit('sit', {}, (s) => { if (!s?.ok) toast(s?.error || I18n.t('Der Platz ist leider schon weg – du schaust zu'), true); });
   }
   enterGame(r);
   return true;
@@ -123,26 +123,27 @@ const openTableCount = () => hubTables.length;
 
 function navHTML() {
   const cur = hashOf(route.page, route.sub);
-  const item = (href, key, label, extra = '') => `<a class="nav-item" href="${href}" aria-label="${label}" title="${label}" ${cur === href || ['tickets', 'rueckblick', 'planung'].includes(key) && route.page === key ? 'aria-current="page"' : ''}>${ico(ICONS[key])}<span class="side-label">${label}</span>${extra}</a>`;
+  const item = (href, key, label, extra = '') => `<a class="nav-item" href="${href}" aria-label="${I18n.t(label)}" title="${I18n.t(label)}" ${cur === href || ['tickets', 'rueckblick', 'planung'].includes(key) && route.page === key ? 'aria-current="page"' : ''}>${ico(ICONS[key])}<span class="side-label">${I18n.t(label)}</span>${extra}</a>`;
   const n = openTableCount();
-  const badge = n ? `<span class="badge" aria-label="${n} offene${n === 1 ? 'r' : ''} Tisch${n === 1 ? '' : 'e'}">${n}</span>` : '';
+  const badge = n ? I18n.html`<span class="badge" aria-label="${n} offene${n === 1 ? 'r' : ''} Tisch${n === 1 ? '' : 'e'}">${n}</span>` : '';
   const games = account.games || [];
-  return `${item('#start', 'start', 'Start')}${item('#spiele', 'spiele', 'Spielebibliothek')}${item('#tische', 'tische', 'Offene Tische', badge)}${item('#favoriten', 'favoriten', 'Favoriten')}${item('#planung', 'planung', 'Abend planen')}${item('#bestenliste', 'bestenliste', 'Bestenliste')}${item('#erfolge', 'erfolge', 'Erfolge & Abzeichen')}${item('#rueckblick', 'rueckblick', 'Rückblick')}${item('#roadmap', 'roadmap', 'Roadmap')}${item('#tickets', 'tickets', 'Tickets')}
+  return I18n.html`${item('#start', 'start', I18n.t('Start'))}${item('#spiele', 'spiele', I18n.t('Spielebibliothek'))}${item('#tische', 'tische', I18n.t('Offene Tische'), badge)}${item('#favoriten', 'favoriten', I18n.t('Favoriten'))}${item('#planung', 'planung', I18n.t('Abend planen'))}${item('#bestenliste', 'bestenliste', I18n.t('Bestenliste'))}${item('#erfolge', 'erfolge', I18n.t('Erfolge & Abzeichen'))}${item('#rueckblick', 'rueckblick', I18n.t('Rückblick'))}${item('#roadmap', 'roadmap', 'Roadmap')}${item('#tickets', 'tickets', 'Tickets')}
     <details class="side-categories" ${route.sub && route.page === 'spiele' ? 'open' : ''}><summary class="nav-item">${ico(ICONS.karten)}<span class="side-label">Spielarten</span></summary>
-    ${GAME_CATEGORIES.map(([id, title]) => item(`#spiele/${id}`, id, title, `<span class="count side-label" aria-label="${games.filter((g) => (g.category || 'karten') === id).length} Spiele">${games.filter((g) => (g.category || 'karten') === id).length}</span>`)).join('')}</details>`;
+    ${GAME_CATEGORIES.map(([id, title]) => item(I18n.html`#spiele/${id}`, id, title, I18n.html`<span class="count side-label" aria-label="${games.filter((g) => (g.category || 'karten') === id).length} Spiele">${games.filter((g) => (g.category || 'karten') === id).length}</span>`)).join('')}</details>`;
 }
 function tabbarHTML() {
   const cur = route.page;
-  const tab = (href, key, label, on, extra = '') => `<a class="tab-item" href="${href}" ${on ? 'aria-current="page"' : ''}>${ico(ICONS[key])}<span>${label}</span>${extra}</a>`;
+  const tab = (href, key, label, on, extra = '') => `<a class="tab-item" href="${href}" ${on ? 'aria-current="page"' : ''}>${ico(ICONS[key])}<span>${I18n.t(label)}</span>${extra}</a>`;
   const n = openTableCount();
-  return tab('#start', 'start', 'Start', cur === 'start' || cur === 'planung') + tab('#spiele', 'spiele', 'Spiele', cur === 'spiele' || cur === 'favoriten')
-    + tab('#tische', 'tische', 'Tische', cur === 'tische', n ? `<span class="badge" aria-label="${n} offen">${n}</span>` : '') + tab('#bestenliste', 'bestenliste', 'Bestenliste', ['bestenliste', 'rueckblick', 'erfolge'].includes(cur)) + tab('#roadmap', 'roadmap', 'Roadmap', cur === 'roadmap') + tab('#tickets', 'tickets', 'Tickets', cur === 'tickets');
+  return tab('#start', 'start', I18n.t('Start'), cur === 'start' || cur === 'planung') + tab('#spiele', 'spiele', I18n.t('Spiele'), cur === 'spiele' || cur === 'favoriten')
+    + tab('#tische', 'tische', I18n.t('Tische'), cur === 'tische', n ? I18n.html`<span class="badge" aria-label="${n} offen">${n}</span>` : '') + tab('#bestenliste', 'bestenliste', I18n.t('Bestenliste'), ['bestenliste', 'rueckblick', 'erfolge'].includes(cur)) + tab('#roadmap', 'roadmap', 'Roadmap', cur === 'roadmap') + tab('#tickets', 'tickets', 'Tickets', cur === 'tickets');
 }
 
 const TITLES = { start: 'Start', spiele: 'Spiele', favoriten: 'Favoriten', tische: 'Offene Tische', bestenliste: 'Bestenliste', roadmap: 'Roadmap', tickets: 'Tickets', rueckblick: 'Abend-Rückblick', planung: 'Abend planen', erfolge: 'Erfolge & Abzeichen' };
 let renderedPage = null;
 function renderHub(focus = false) {
   route = parseRoute();
+  $('#hub-language').innerHTML = I18n.selector();
   $('#side-nav').innerHTML = navHTML();
   $('#hub-tabbar').innerHTML = tabbarHTML();
   $('#hub-menu-nav').innerHTML = navHTML();
@@ -150,10 +151,10 @@ function renderHub(focus = false) {
   const main = $('#hub-main');
   $('#hub').dataset.page = route.page;
   const catalog = ['spiele', 'favoriten'].includes(route.page);
-  $('#hub-search-slot').innerHTML = `<form id="hub-search-form" role="search"><label class="search"><span class="sr-only">${catalog ? 'Spiel suchen' : 'Spiele suchen'}</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="${catalog ? 'games-search' : 'hub-search'}" type="search" placeholder="Spiele suchen …" value="${catalog ? esc(gamesQuery) : ''}" autocomplete="off"></label></form>`;
+  $('#hub-search-slot').innerHTML = I18n.html`<form id="hub-search-form" role="search"><label class="search"><span class="sr-only">${catalog ? I18n.t('Spiel suchen') : I18n.t('Spiele suchen')}</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="${catalog ? 'games-search' : 'hub-search'}" type="search" placeholder="Spiele suchen …" value="${catalog ? esc(gamesQuery) : ''}" autocomplete="off"></label></form>`;
   const scroll = main.scrollTop;
   main.innerHTML = page();
-  document.title = `${TITLES[route.page]} – Spieleabend`;
+  document.title = I18n.html`${I18n.t(TITLES[route.page])} – Spieleabend`;
   if (focus || renderedPage !== route.page + route.sub) { main.focus({ preventScroll: true }); scrollTo(0, 0); } else main.scrollTop = scroll;
   renderedPage = route.page + route.sub;
   afterPage?.();
@@ -189,14 +190,14 @@ function openHost(id) {
   if (!g) return;
   if (!profile.name) { openProfile(true); return; }
   const d = $('#host-dlg');
-  d.innerHTML = `<form id="host-form" autocomplete="off">
+  d.innerHTML = I18n.html`<form id="host-form" autocomplete="off">
       <button type="button" class="host-close" data-host-close aria-label="Schließen">✕</button>
       <div class="host-art cat-${esc(g.category)}">${g.art}</div>
-      <div><h2 id="host-title">${esc(g.name)} hosten</h2>
-      <p class="host-meta">${esc(catTitle(g.category))} · ${esc(playersText(g))} · ca. ${g.duration} Min.</p></div>
-      <p>${esc(g.description)}</p>
-      ${(g.variants || []).length > 1 ? `<label class="field"><span>Spielvariante</span><select class="input" id="host-variant">${g.variants.map((v) => `<option value="${v.id}">${esc(v.name)} · ${v.minPlayers}–${v.maxPlayers} Spieler</option>`).join('')}</select></label>` : ''}
-      ${(g.createFields || []).length ? `<div class="host-fields">${g.createFields.map((f) => `<label class="field"><span>${esc(f.label)}</span>
+      <div><h2 id="host-title">${uiText(g.name)} hosten</h2>
+      <p class="host-meta">${uiText(catTitle(g.category))} · ${esc(playersText(g))} · ca. ${g.duration} Min.</p></div>
+      <p>${uiText(g.description)}</p>
+      ${(g.variants || []).length > 1 ? I18n.html`<label class="field"><span>Spielvariante</span><select class="input" id="host-variant">${g.variants.map((v) => I18n.html`<option value="${v.id}">${esc(v.name)} · ${v.minPlayers}–${v.maxPlayers} Spieler</option>`).join('')}</select></label>` : ''}
+      ${(g.createFields || []).length ? `<div class="host-fields">${g.createFields.map((f) => `<label class="field"><span>${uiText(f.label)}</span>
         <input data-cf="${esc(f.key)}" type="${f.type === 'number' ? 'number' : 'text'}" ${f.min !== undefined ? `min="${f.min}"` : ''} ${f.step ? `step="${f.step}"` : ''} value="${esc(f.value)}"></label>`).join('')}</div>` : ''}
       <p class="hint">Alles Weitere stellst du am Tisch unter „Host“ ein.</p>
       <p id="host-error" class="error" role="alert"></p>
@@ -205,7 +206,7 @@ function openHost(id) {
   d.dataset.game = id;
   d.querySelector('#host-variant')?.addEventListener('change', (e) => {
     const v = g.variants.find((v) => v.id === e.target.value);
-    d.querySelector('.host-meta').textContent = `${catTitle(g.category)} · ${v.minPlayers === v.maxPlayers ? v.minPlayers : `${v.minPlayers}–${v.maxPlayers}`} Spieler · ca. ${v.duration || g.duration} Min.`;
+    d.querySelector('.host-meta').textContent = I18n.html`${catTitle(g.category)} · ${v.minPlayers === v.maxPlayers ? v.minPlayers : `${v.minPlayers}–${v.maxPlayers}`} Spieler · ca. ${v.duration || g.duration} Min.`;
     d.querySelectorAll('[data-cf]').forEach((input) => {
       const option = v.options?.find((o) => o.key === input.dataset.cf);
       if (v.defaults?.[input.dataset.cf] !== undefined) input.value = v.defaults[input.dataset.cf];
@@ -222,7 +223,7 @@ $('#host-dlg').addEventListener('submit', (e) => {
   const d = $('#host-dlg');
   const settings = Object.fromEntries($$('[data-cf]', d).map((el) => [el.dataset.cf, el.value]));
   socket.emit('create', { game: d.dataset.game, name: profile.name, avatar: profile.avatar, settings, variant: $('#host-variant')?.value }, (r) => {
-    if (!r?.ok) { $('#host-error').textContent = r?.error || 'Verbindung fehlgeschlagen'; return; }
+    if (!r?.ok) { $('#host-error').textContent = r?.error || I18n.t('Verbindung fehlgeschlagen'); return; }
     d.close();
     enterGame(r);
   });
@@ -234,11 +235,11 @@ function openGamePicker() {
   if (!profile.name) { openProfile(true); return; }
   const d = $('#host-dlg');
   d.dataset.game = '';
-  d.innerHTML = `<div class="game-picker"><button type="button" class="host-close" data-host-close aria-label="Schließen">✕</button><span class="eyebrow">Ein neuer Abend beginnt</span><h2 id="host-title">Was möchtet ihr spielen?</h2><p>Wähle ein Spiel. Danach legst du euren Tisch an und teilst den Code.</p><label class="field"><span>Spiel auswählen</span><input type="search" id="picker-search" placeholder="Name oder Beschreibung" autocomplete="off"></label><ul id="picker-games" class="compact-games"></ul></div>`;
+  d.innerHTML = I18n.html`<div class="game-picker"><button type="button" class="host-close" data-host-close aria-label="Schließen">✕</button><span class="eyebrow">Ein neuer Abend beginnt</span><h2 id="host-title">Was möchtet ihr spielen?</h2><p>Wähle ein Spiel. Danach legst du euren Tisch an und teilst den Code.</p><label class="field"><span>Spiel auswählen</span><input type="search" id="picker-search" placeholder="Name oder Beschreibung" autocomplete="off"></label><ul id="picker-games" class="compact-games"></ul></div>`;
   const render = (query = '') => {
-    const q = query.trim().toLocaleLowerCase('de');
-    const games = sortGames(account.games || []).filter((g) => `${g.name} ${g.description}`.toLocaleLowerCase('de').includes(q));
-    $('#picker-games').innerHTML = games.map((g) => `<li><button type="button" data-host="${esc(g.id)}"><span class="mini-art" aria-hidden="true">${g.art}</span><span><b>${esc(g.name)}</b><small>${esc(playersText(g))} · ${g.duration} Min.</small></span><span aria-hidden="true">→</span></button></li>`).join('') || '<li class="hint" role="status">Kein Spiel gefunden. Versuche einen anderen Namen.</li>';
+    const q = query.trim().toLocaleLowerCase(I18n.locale);
+    const games = sortGames(account.games || []).filter((g) => `${g.name} ${g.description} ${I18n.t(g.name)} ${I18n.t(g.description)}`.toLocaleLowerCase(I18n.locale).includes(q));
+    $('#picker-games').innerHTML = games.map((g) => I18n.html`<li><button type="button" data-host="${esc(g.id)}"><span class="mini-art" aria-hidden="true">${g.art}</span><span><b>${uiText(g.name)}</b><small>${esc(playersText(g))} · ${g.duration} Min.</small></span><span aria-hidden="true">→</span></button></li>`).join('') || I18n.html('<li class="hint" role="status">Kein Spiel gefunden. Versuche einen anderen Namen.</li>');
   };
   render();
   $('#picker-search').addEventListener('input', (e) => render(e.target.value));
@@ -247,7 +248,7 @@ function openGamePicker() {
 }
 function pageStart() {
   loadResume();
-  return `<section class="hub-head welcome"><div><h1>Spielebibliothek</h1><p>Willkommen, ${esc(profile.name)}. Entdecke euer nächstes Spiel.<br>Gemeinsam mehr Spieleabende erleben.</p></div><button type="button" class="btn btn-brass" data-create-table><span aria-hidden="true">⊕</span> Tisch erstellen</button></section>
+  return I18n.html`<section class="hub-head welcome"><div><h1>Spielebibliothek</h1><p>Willkommen, ${esc(profile.name)}. Entdecke euer nächstes Spiel.<br>Gemeinsam mehr Spieleabende erleben.</p></div><button type="button" class="btn btn-brass" data-create-table><span aria-hidden="true">⊕</span> Tisch erstellen</button></section>
     ${categoryTabsHTML(false)}
     <div class="home-layout"><div class="home-primary">
       ${gamesPreviewHTML()}
@@ -272,16 +273,16 @@ let gamesQuery = '';
 let gamesView = store.get('poker:view', 'tiles') === 'list' ? 'list' : 'tiles';
 const CHIPS = [['all', 'Alle'], ['fav', '★ Favoriten'], ['p2', '2 Spieler'], ['p34', '3–4 Spieler'], ['p56', '5–6 Spieler'], ['p7', '7+ Spieler'], ['short', 'Kurz (< 15 Min.)']];
 const RANGES = { p2: [2, 2], p34: [3, 4], p56: [5, 6], p7: [7, 99] };
-const catTitle = (id) => (GAME_CATEGORIES.find(([c]) => c === id) || [, ''])[1];
+const catTitle = (id) => I18n.t((GAME_CATEGORIES.find(([c]) => c === id) || [, ''])[1]);
 const plannedAll = () => account.planned || [];
 // 'next' bleibt mit „Bald“ in der Spieleliste. Der übrige Backlog gehört zur Roadmap.
 const allGames = () => [...(account.games || []), ...plannedAll().filter((p) => p.status === 'next').map((p) => ({ ...p, planned: true }))];
-const playersText = (g) => (g.minPlayers === g.maxPlayers ? `${g.maxPlayers} Spieler` : `${g.minPlayers}–${g.maxPlayers} Spieler`);
+const playersText = (g) => (g.minPlayers === g.maxPlayers ? I18n.html`${g.maxPlayers} Spieler` : I18n.html`${g.minPlayers}–${g.maxPlayers} Spieler`);
 
 // Sortierung: Favoriten zuerst, dann zuletzt gespielt, dann alphabetisch; Geplantes ans Ende
 function sortGames(list) {
   const f = favs(), r = recent();
-  return [...list].sort((a, b) => (a.planned ? 1 : 0) - (b.planned ? 1 : 0) || f.has(b.id) - f.has(a.id) || (r[b.id] || 0) - (r[a.id] || 0) || a.name.localeCompare(b.name, 'de'));
+  return [...list].sort((a, b) => (a.planned ? 1 : 0) - (b.planned ? 1 : 0) || f.has(b.id) - f.has(a.id) || (r[b.id] || 0) - (r[a.id] || 0) || I18n.t(a.name).localeCompare(I18n.t(b.name), I18n.locale));
 }
 const visibleGames = () => filterGames(allGames());
 function filterGames(list) {
@@ -294,38 +295,38 @@ function filterGames(list) {
     if (RANGES[filter]) return g.minPlayers <= RANGES[filter][1] && g.maxPlayers >= RANGES[filter][0];
     if (filter === 'short') return g.duration < 15;
     return true;
-  }).filter((g) => !q || g.name.toLowerCase().includes(q) || (g.description || '').toLowerCase().includes(q)));
+  }).filter((g) => !q || [g.name, g.description || '', I18n.t(g.name), I18n.t(g.description || '')].some((text) => text.toLocaleLowerCase(I18n.locale).includes(q))));
 }
 function gameHTML(g, tiles) {
   const fav = favs().has(g.id);
   const count = g.minPlayers === g.maxPlayers ? g.minPlayers : `${g.minPlayers}–${g.maxPlayers}`;
-  const meta = `<span class="gr-meta"><span aria-label="${esc(playersText(g))}">${ico(ICONS.tische)}${esc(count)}</span><span>${ico('<circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/>')}ca. ${g.duration} Min.</span></span>`;
-  const star = g.planned ? '' : `<button type="button" class="star" data-fav="${esc(g.id)}" aria-pressed="${fav}" aria-label="${esc(g.name)} ${fav ? 'aus den Favoriten nehmen' : 'zu den Favoriten'}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg></button>`;
-  const detail = g.planned ? `<button type="button" class="btn btn-ghost" data-plan="${esc(g.id)}" aria-label="${esc(g.name)}: Beschreibung und Regeln">Regeln</button>` : '';
-  const action = g.planned ? `<span class="soon">${g.status === 'next' ? 'Bald' : 'Geplant'}</span>` : `<button type="button" class="btn btn-brass" data-host="${esc(g.id)}" aria-label="${esc(g.name)} hosten">Hosten</button>`;
+  const meta = I18n.html`<span class="gr-meta"><span aria-label="${esc(playersText(g))}">${ico(ICONS.tische)}${esc(count)}</span><span>${ico('<circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/>')}ca. ${g.duration} Min.</span></span>`;
+  const star = g.planned ? '' : `<button type="button" class="star" data-fav="${esc(g.id)}" aria-pressed="${fav}" aria-label="${uiText(g.name)} ${fav ? I18n.t('aus den Favoriten nehmen') : I18n.t('zu den Favoriten')}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg></button>`;
+  const detail = g.planned ? I18n.html`<button type="button" class="btn btn-ghost" data-plan="${esc(g.id)}" aria-label="${uiText(g.name)}: Beschreibung und Regeln">Regeln</button>` : '';
+  const action = g.planned ? `<span class="soon">${g.status === 'next' ? I18n.t('Bald') : I18n.t('Geplant')}</span>` : I18n.html`<button type="button" class="btn btn-brass" data-host="${esc(g.id)}" aria-label="${uiText(g.name)} hosten">Hosten</button>`;
   return `<li class="game-${tiles ? 'tile' : 'row'} cat-${esc(g.category)}${g.planned ? ' planned' : ''}" data-id="${esc(g.id)}" ${g.planned ? 'aria-disabled="true"' : ''}>
       <div class="ga">${g.art}</div>
-      <div class="gr-main">${g.planned ? `<b>${esc(g.name)}</b>` : `<button type="button" class="game-title" data-game-open="${esc(g.id)}" aria-label="${esc(g.name)} auswählen"><b>${esc(g.name)}</b></button>`}<small>${esc(catTitle(g.category))}</small>${meta}<span>${variantBadgesHTML(g)}</span><span class="gr-desc">${esc(g.description)}</span></div>
+      <div class="gr-main">${g.planned ? `<b>${uiText(g.name)}</b>` : I18n.html`<button type="button" class="game-title" data-game-open="${esc(g.id)}" aria-label="${uiText(g.name)} auswählen"><b>${uiText(g.name)}</b></button>`}<small>${uiText(catTitle(g.category))}</small>${meta}<span>${variantBadgesHTML(g)}</span><span class="gr-desc">${uiText(g.description)}</span></div>
       <div class="gr-actions">${g.planned ? detail : star}${action}</div></li>`;
 }
 function gamesToolbarHTML() {
   const filter = route.page === 'favoriten' ? 'fav' : gamesFilter;
-  const chips = CHIPS.filter(([id]) => route.page !== 'favoriten' || id !== 'fav').map(([id, label]) => `<button type="button" class="chip" data-chip="${id}" aria-pressed="${filter === id}">${label}</button>`).join('');
-  return `<div class="chips" role="group" aria-label="Filter">${chips}</div>
+  const chips = CHIPS.filter(([id]) => route.page !== 'favoriten' || id !== 'fav').map(([id, label]) => `<button type="button" class="chip" data-chip="${id}" aria-pressed="${filter === id}">${I18n.t(label)}</button>`).join('');
+  return I18n.html`<div class="chips" role="group" aria-label="Filter">${chips}</div>
     <div class="view-toggle" role="group" aria-label="Ansicht"><button type="button" data-view="list" aria-pressed="${gamesView === 'list'}">Liste</button><button type="button" data-view="tiles" aria-pressed="${gamesView === 'tiles'}">Kacheln</button></div>`;
 }
 function gamesBodyHTML() {
   const list = visibleGames();
-  if (!list.length) return `<p class="hint">${route.page === 'favoriten' ? 'Noch keine Favoriten – tipp bei einem Spiel auf den Stern.' : 'Dazu gibt es kein Spiel. Probier einen anderen Filter.'}</p>`;
+  if (!list.length) return `<p class="hint">${route.page === 'favoriten' ? I18n.t('Noch keine Favoriten – tipp bei einem Spiel auf den Stern.') : I18n.t('Dazu gibt es kein Spiel. Probier einen anderen Filter.')}</p>`;
   return `<ul class="games ${gamesView === 'tiles' ? 'tiles' : 'rows'}">${list.map((g) => gameHTML(g, gamesView === 'tiles')).join('')}</ul>`;
 }
 function pageGames() {
-  const title = route.page === 'favoriten' ? 'Deine Favoriten' : route.sub ? catTitle(route.sub) : 'Spielebibliothek';
-  return `<section class="hub-head library-head"><div><h1>${esc(title)}</h1><p>${route.page === 'favoriten' ? 'Deine Auswahl, nur in diesem Browser gespeichert.' : 'Entdecke neue Spiele. Finde eure nächste Runde. Gemeinsam mehr Spieleabende erleben.'}</p></div><button type="button" class="btn btn-brass" data-create-table>⊕ Tisch erstellen</button></section>
-    ${categoryTabsHTML(true)}<div class="home-layout library-layout"><div class="home-primary"><section class="home-panel library-panel"><div class="hub-block-head"><h2>${route.page === 'favoriten' ? 'Deine Auswahl' : 'Alle Spiele'}</h2><span class="library-count">${(account.games || []).length} spielbar</span></div><div class="games-tools"><div id="games-toolbar" class="toolbar">${gamesToolbarHTML()}</div></div><div id="games-body">${gamesBodyHTML()}</div></section></div><aside class="home-secondary" aria-label="Deine Runde">${localGamesHTML('favorites')}<section class="hub-block home-panel" id="presence-slot">${presenceHTML()}</section>${codeBoxHTML()}</aside></div>`;
+  const title = route.page === 'favoriten' ? I18n.t('Deine Favoriten') : route.sub ? catTitle(route.sub) : I18n.t('Spielebibliothek');
+  return I18n.html`<section class="hub-head library-head"><div><h1>${esc(title)}</h1><p>${route.page === 'favoriten' ? I18n.t('Deine Auswahl, nur in diesem Browser gespeichert.') : I18n.t('Entdecke neue Spiele. Finde eure nächste Runde. Gemeinsam mehr Spieleabende erleben.')}</p></div><button type="button" class="btn btn-brass" data-create-table>⊕ Tisch erstellen</button></section>
+    ${categoryTabsHTML(true)}<div class="home-layout library-layout"><div class="home-primary"><section class="home-panel library-panel"><div class="hub-block-head"><h2>${route.page === 'favoriten' ? I18n.t('Deine Auswahl') : I18n.t('Alle Spiele')}</h2><span class="library-count">${(account.games || []).length} spielbar</span></div><div class="games-tools"><div id="games-toolbar" class="toolbar">${gamesToolbarHTML()}</div></div><div id="games-body">${gamesBodyHTML()}</div></section></div><aside class="home-secondary" aria-label="Deine Runde">${localGamesHTML('favorites')}<section class="hub-block home-panel" id="presence-slot">${presenceHTML()}</section>${codeBoxHTML()}</aside></div>`;
 }
 function categoryTabsHTML(all) {
-  return `<nav class="category-tabs ${all ? '' : 'home-categories'}" aria-label="Spielkategorien">${all ? `<a class="category-all" href="#spiele" ${!route.sub && route.page === 'spiele' ? 'aria-current="page"' : ''}>${ico(ICONS.spiele)}Alle Spiele<span>${(account.games || []).length}</span></a>` : ''}${GAME_CATEGORIES.map(([id, label]) => `<a href="#spiele/${id}" ${route.sub === id ? 'aria-current="page"' : ''}>${ico(ICONS[id])}${label}</a>`).join('')}</nav>`;
+  return I18n.html`<nav class="category-tabs ${all ? '' : 'home-categories'}" aria-label="Spielkategorien">${all ? I18n.html`<a class="category-all" href="#spiele" ${!route.sub && route.page === 'spiele' ? 'aria-current="page"' : ''}>${ico(ICONS.spiele)}Alle Spiele<span>${(account.games || []).length}</span></a>` : ''}${GAME_CATEGORIES.map(([id, label]) => `<a href="#spiele/${id}" ${route.sub === id ? 'aria-current="page"' : ''}>${ico(ICONS[id])}${I18n.t(label)}</a>`).join('')}</nav>`;
 }
 function refreshGames() {
   $('#games-toolbar').innerHTML = gamesToolbarHTML(); $('#games-body').innerHTML = gamesBodyHTML();
@@ -337,15 +338,15 @@ function openPlan(id) {
   if (!g) return;
   const list = (items) => `<ul class="plan-rules">${items.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>`;
   const d = $('#host-dlg');
-  d.innerHTML = `<div class="plan-detail">
+  d.innerHTML = I18n.html`<div class="plan-detail">
       <button type="button" class="host-close" data-host-close aria-label="Schließen">✕</button>
       <div class="host-art cat-${esc(g.category)}">${g.art}</div>
-      <div><h2 id="host-title">${esc(g.name)}</h2><p class="host-meta">${esc(catTitle(g.category))} · ${esc(playersText(g))} · ca. ${g.duration} Min.</p></div>
-      <p><span class="soon">${g.status === 'available' ? 'Erledigt' : g.status === 'next' ? 'Bald' : 'Geplant'}</span> ${g.status === 'available' ? 'Bereits spielbar.' : 'Noch nicht spielbar.'}</p>
-      <p>${esc(g.description)}</p>
-      ${g.vorbild ? `<p class="hint">Vorbild (nur die Mechanik): ${esc(g.vorbild)}</p>` : ''}
-      <h3>Regeln</h3>${g.rules?.length ? list(g.rules) : '<p>Die vollständigen Spielregeln findest du am Tisch unter „Regeln“.</p>'}
-      ${g.houseRules?.length ? `<h3>Mögliche Hausregeln</h3>${list(g.houseRules)}` : ''}
+      <div><h2 id="host-title">${uiText(g.name)}</h2><p class="host-meta">${uiText(catTitle(g.category))} · ${esc(playersText(g))} · ca. ${g.duration} Min.</p></div>
+      <p><span class="soon">${g.status === 'available' ? I18n.t('Erledigt') : g.status === 'next' ? I18n.t('Bald') : I18n.t('Geplant')}</span> ${g.status === 'available' ? I18n.t('Bereits spielbar.') : I18n.t('Noch nicht spielbar.')}</p>
+      <p>${uiText(g.description)}</p>
+      ${g.vorbild ? I18n.html`<p class="hint">Vorbild (nur die Mechanik): ${esc(g.vorbild)}</p>` : ''}
+      <h3>Regeln</h3>${g.rules?.length ? list(g.rules) : I18n.html('<p>Die vollständigen Spielregeln findest du am Tisch unter „Regeln“.</p>')}
+      ${g.houseRules?.length ? I18n.html`<h3>Mögliche Hausregeln</h3>${list(g.houseRules)}` : ''}
       <button type="button" class="btn btn-ghost" data-host-close>Schließen</button></div>`;
   d.dataset.game = '';
   d.showModal();
@@ -354,17 +355,17 @@ function openPlan(id) {
 function gamesPreviewHTML() {
   const ranked = sortGames(account.games || []);
   const list = favs().size || Object.keys(recent()).length ? ranked.slice(0, 4) : ['poker', 'kniffel', 'reversi', 'werwolf'].map((id) => ranked.find((g) => g.id === id)).filter(Boolean);
-  return `<section class="hub-block home-panel featured-games"><div class="hub-block-head"><h2>Spiele entdecken</h2><a href="#spiele">Alle ansehen →</a></div><ul class="games tiles home-games">${list.map((g) => gameHTML(g, true)).join('')}</ul></section>`;
+  return I18n.html`<section class="hub-block home-panel featured-games"><div class="hub-block-head"><h2>Spiele entdecken</h2><a href="#spiele">Alle ansehen →</a></div><ul class="games tiles home-games">${list.map((g) => gameHTML(g, true)).join('')}</ul></section>`;
 }
 function localGamesHTML(kind) {
   const favorite = kind === 'favorites', f = favs(), r = recent();
   const list = sortGames(account.games || []).filter((g) => favorite ? f.has(g.id) : r[g.id]).slice(0, 3);
   if (!favorite && !list.length) return '';
-  return `<section class="hub-block home-panel" data-local-games="${kind}"><div class="hub-block-head"><h2>${favorite ? 'Deine Favoriten' : 'Zuletzt ausgewählt'}</h2>${favorite ? '<a href="#favoriten">Alle →</a>' : ''}</div><p class="local-note">${favorite ? 'Mit einem Stern für später merken.' : 'In diesem Browser · keine laufenden Tische'}</p>${list.length ? `<ul class="compact-games">${list.map((g) => `<li><button type="button" data-game-open="${esc(g.id)}"><span class="mini-art" aria-hidden="true">${g.art}</span><span><b>${esc(g.name)}</b><small>${esc(playersText(g))} · ${g.duration} Min.</small></span><span aria-hidden="true">→</span></button></li>`).join('')}</ul>` : `<p class="hint">${favorite ? 'Noch kein Lieblingsspiel? Vergib in der Bibliothek einen Stern.' : 'Hier erscheinen Spiele, die du an einem Tisch geöffnet hast.'}</p>`}</section>`;
+  return `<section class="hub-block home-panel" data-local-games="${kind}"><div class="hub-block-head"><h2>${favorite ? I18n.t('Deine Favoriten') : I18n.t('Zuletzt ausgewählt')}</h2>${favorite ? I18n.html('<a href="#favoriten">Alle →</a>') : ''}</div><p class="local-note">${favorite ? I18n.t('Mit einem Stern für später merken.') : I18n.t('In diesem Browser · keine laufenden Tische')}</p>${list.length ? `<ul class="compact-games">${list.map((g) => I18n.html`<li><button type="button" data-game-open="${esc(g.id)}"><span class="mini-art" aria-hidden="true">${g.art}</span><span><b>${uiText(g.name)}</b><small>${esc(playersText(g))} · ${g.duration} Min.</small></span><span aria-hidden="true">→</span></button></li>`).join('')}</ul>` : `<p class="hint">${favorite ? I18n.t('Noch kein Lieblingsspiel? Vergib in der Bibliothek einen Stern.') : I18n.t('Hier erscheinen Spiele, die du an einem Tisch geöffnet hast.')}</p>`}</section>`;
 }
 function pageTables() {
   loadResume();
-  return `<section class="hub-head"><h1>Offene Tische</h1><p>Alle Tische, an die du dich setzen oder bei denen du zuschauen kannst – live aktuell.</p></section>
+  return I18n.html`<section class="hub-head"><h1>Offene Tische</h1><p>Alle Tische, an die du dich setzen oder bei denen du zuschauen kannst – live aktuell.</p></section>
     <section class="hub-block"><div data-tables="0">${tablesBlockHTML(0)}</div></section>${codeBoxHTML()}`;
 }
 // ---------- Bestenliste (Seite) ----------
@@ -374,7 +375,7 @@ let boardPeriod = 'all';
 let boardToken = 0;
 function pageBoard() {
   loadBoard();
-  return `<section class="hub-head"><h1>Bestenliste</h1><p>Alle Abende, nach Siegen sortiert. Wiedererkannt wird man am Namen.</p><div class="plan-actions"><a class="btn" href="#rueckblick">Abend-Rückblicke öffnen</a><a class="btn btn-brass" href="#erfolge">Erfolge & Abzeichen ansehen</a></div></section><div id="board-body" class="board" aria-live="polite"><p class="hint">Lade …</p></div>`;
+  return I18n.html`<section class="hub-head"><h1>Bestenliste</h1><p>Alle Abende, nach Siegen sortiert. Wiedererkannt wird man am Namen.</p><div class="plan-actions"><a class="btn" href="#rueckblick">Abend-Rückblicke öffnen</a><a class="btn btn-brass" href="#erfolge">Erfolge & Abzeichen ansehen</a></div></section><div id="board-body" class="board" aria-live="polite"><p class="hint">Lade …</p></div>`;
 }
 async function loadBoard() {
   const token = ++boardToken;
@@ -392,7 +393,7 @@ document.addEventListener('change', (e) => {
 
 // Code von außen eintippen
 function codeBoxHTML() {
-  return `<section class="hub-block home-panel code-box"><h2>Ein Platz ist für dich frei?</h2><p class="local-note">Mit eurem Tisch-Code direkt zur Runde.</p>
+  return I18n.html`<section class="hub-block home-panel code-box"><h2>Ein Platz ist für dich frei?</h2><p class="local-note">Mit eurem Tisch-Code direkt zur Runde.</p>
     <form id="code-form" class="code-form" autocomplete="off"><label class="sr-only" for="code-in">Tisch-Code</label>
       <input id="code-in" class="code-input" maxlength="5" placeholder="ABCDE" autocapitalize="characters" spellcheck="false">
       <button class="btn btn-brass" type="submit">Beitreten</button></form></section>`;
@@ -403,7 +404,7 @@ document.addEventListener('submit', (e) => {
   if (e.target.id !== 'code-form') return;
   e.preventDefault();
   const code = $('#code-in').value.trim().toUpperCase();
-  if (!code) { toast('Gib erst einen Code ein', true); return; }
+  if (!code) { toast(I18n.t('Gib erst einen Code ein'), true); return; }
   joinAndEnter(code);
 });
 document.addEventListener('click', (e) => {
@@ -438,16 +439,16 @@ socket.on('lobby', (list) => { hubTables = list; refreshTables(); });
 
 function tableCardHTML(t, mine = false) {
   const free = t.max - t.seats.length;
-  const seats = t.seats.map((s) => `<li class="tc-seat"><span class="tc-av" aria-hidden="true">${esc(s.avatar || '🙂')}</span>${esc(s.name)}${s.bot ? ' <small>(Computer)</small>' : ''}</li>`).join('');
-  const actions = mine ? `<button type="button" class="btn btn-brass" data-join="${esc(t.code)}">Zurück an den Tisch</button>`
-    : free > 0 ? `<button type="button" class="btn btn-brass" data-join="${esc(t.code)}" data-mode="sit">Dazusetzen</button><button type="button" class="btn btn-ghost" data-join="${esc(t.code)}" data-mode="watch">Zuschauen</button>`
-      : `<button type="button" class="btn btn-brass" data-join="${esc(t.code)}" data-mode="watch">Zuschauen</button>`;
-  return `<article class="table-card cat-${esc(t.category)}${mine ? ' mine' : ''}" aria-label="${esc(t.gameName)}, Tisch ${esc(t.code)}">
-      <header><span class="tc-cat">${mine ? 'Dein Tisch' : esc(CAT_NAME[t.category] || '')}</span><span class="tc-code">${esc(t.code)}</span></header>
+  const seats = t.seats.map((s) => `<li class="tc-seat"><span class="tc-av" aria-hidden="true">${esc(s.avatar || '🙂')}</span>${esc(s.name)}${s.bot ? I18n.html(' <small>(Computer)</small>') : ''}</li>`).join('');
+  const actions = mine ? I18n.html`<button type="button" class="btn btn-brass" data-join="${esc(t.code)}">Zurück an den Tisch</button>`
+    : free > 0 ? I18n.html`<button type="button" class="btn btn-brass" data-join="${esc(t.code)}" data-mode="sit">Dazusetzen</button><button type="button" class="btn btn-ghost" data-join="${esc(t.code)}" data-mode="watch">Zuschauen</button>`
+      : I18n.html`<button type="button" class="btn btn-brass" data-join="${esc(t.code)}" data-mode="watch">Zuschauen</button>`;
+  return I18n.html`<article class="table-card cat-${esc(t.category)}${mine ? ' mine' : ''}" aria-label="${esc(t.gameName)}, Tisch ${esc(t.code)}">
+      <header><span class="tc-cat">${mine ? I18n.t('Dein Tisch') : esc(CAT_NAME[t.category] || '')}</span><span class="tc-code">${esc(t.code)}</span></header>
       <h3>${esc(t.gameName)}</h3>
       <p class="tc-host">Host: ${esc(t.host?.avatar || '')} ${esc(t.host?.name || '?')}</p>
-      <ul class="tc-seats" aria-label="Am Tisch">${seats || '<li class="tc-empty">Noch niemand sitzt</li>'}</ul>
-      <p class="tc-meta"><b>${t.seats.length} von ${t.max}</b> Plätzen belegt · ${esc(t.status)}${t.watchers ? ` · ${t.watchers} schau${t.watchers === 1 ? 't' : 'en'} zu` : ''}</p>
+      <ul class="tc-seats" aria-label="Am Tisch">${seats || I18n.html('<li class="tc-empty">Noch niemand sitzt</li>')}</ul>
+      <p class="tc-meta"><b>${t.seats.length} von ${t.max}</b> Plätzen belegt · ${esc(t.status)}${t.watchers ? I18n.html` · ${t.watchers} schau${t.watchers === 1 ? 't' : 'en'} zu` : ''}</p>
       <div class="tc-actions">${actions}</div></article>`;
 }
 // limit 0 = alle
@@ -456,9 +457,9 @@ function tablesBlockHTML(limit) {
   const list = hubTables.filter((t) => !mine.has(t.code));
   const tables = [...hubResume.map((t) => [t, true]), ...list.map((t) => [t, false])];
   const cards = (limit ? tables.slice(0, limit) : tables).map(([t, mine]) => tableCardHTML(t, mine));
-  if (!cards.length) return `<div class="empty-tables"><p><b>Gerade spielt niemand.</b> Mach doch einen Tisch auf!</p><button type="button" class="btn btn-brass" data-create-table>Tisch aufmachen</button></div>`;
-  const more = limit && tables.length > limit ? `<p class="more"><a href="#tische">Alle ${tables.length} Tische ansehen</a></p>` : '';
-  return `<div class="table-grid">${cards.join('')}<a class="table-card table-new" href="#spiele"><span class="plus" aria-hidden="true">+</span><b>Neuen Tisch aufmachen</b></a></div>${more}`;
+  if (!cards.length) return I18n.html`<div class="empty-tables"><p><b>Gerade spielt niemand.</b> Mach doch einen Tisch auf!</p><button type="button" class="btn btn-brass" data-create-table>Tisch aufmachen</button></div>`;
+  const more = limit && tables.length > limit ? I18n.html`<p class="more"><a href="#tische">Alle ${tables.length} Tische ansehen</a></p>` : '';
+  return I18n.html`<div class="table-grid">${cards.join('')}<a class="table-card table-new" href="#spiele"><span class="plus" aria-hidden="true">+</span><b>Neuen Tisch aufmachen</b></a></div>${more}`;
 }
 // Nur die Tisch-Bereiche und Zähler neu zeichnen, damit Eingaben (Code) und Fokus erhalten bleiben
 let shownCount = -1;
@@ -508,7 +509,7 @@ document.addEventListener('submit', (e) => {
 function syncSideToggle() {
   const open = $('#hub').classList.contains('side-open');
   $('#side-toggle').setAttribute('aria-expanded', String(open));
-  $('#side-toggle').setAttribute('aria-label', open ? 'Seitenleiste einklappen' : 'Seitenleiste ausklappen');
+  $('#side-toggle').setAttribute('aria-label', open ? I18n.t('Seitenleiste einklappen') : I18n.t('Seitenleiste ausklappen'));
 }
 $('#hub').classList.toggle('side-open', store.get('poker:sidebar', 'closed') === 'open');
 syncSideToggle();
@@ -534,29 +535,29 @@ async function loadRoadmap() {
   roadmapRequest = (async () => {
     try {
       const response = await fetch('/roadmap');
-      if (!response.ok) throw new Error('Roadmap konnte nicht geladen werden.');
+      if (!response.ok) throw new Error(I18n.t('Roadmap konnte nicht geladen werden.'));
       roadmapData = await response.json();
-    } catch { roadmapError = 'Roadmap konnte nicht geladen werden. Bitte versuche es erneut.'; }
+    } catch { roadmapError = I18n.t('Roadmap konnte nicht geladen werden. Bitte versuche es erneut.'); }
     finally { roadmapRequest = null; if (hubVisible() && route.page === 'roadmap') renderHub(); }
   })();
 }
 function pageRoadmap() {
   if (!roadmapData && !roadmapRequest && !roadmapError) loadRoadmap();
-  return `<section class="hub-head"><h1>Roadmap</h1><p>Was wir gerade bauen, was als Nächstes kommt und was schon fertig ist.</p></section>
-    <div class="chips roadmap-filters" role="group" aria-label="Roadmap filtern">${ROADMAP_FILTERS.map(([id, title]) => `<button type="button" class="chip" data-roadmap-filter="${id}" aria-pressed="${roadmapFilter === id}">${title}</button>`).join('')}</div>
+  return I18n.html`<section class="hub-head"><h1>Roadmap</h1><p>Was wir gerade bauen, was als Nächstes kommt und was schon fertig ist.</p></section>
+    <div class="chips roadmap-filters" role="group" aria-label="Roadmap filtern">${ROADMAP_FILTERS.map(([id, title]) => `<button type="button" class="chip" data-roadmap-filter="${id}" aria-pressed="${roadmapFilter === id}">${I18n.t(title)}</button>`).join('')}</div>
     <div id="roadmap-body">${roadmapBodyHTML()}</div>`;
 }
 function roadmapBodyHTML() {
-  if (!roadmapData) return roadmapError ? `<p role="alert">${esc(roadmapError)}</p><button type="button" class="btn" data-roadmap-retry>Erneut versuchen</button>` : '<p role="status">Roadmap wird geladen …</p>';
+  if (!roadmapData) return roadmapError ? I18n.html`<p role="alert">${esc(roadmapError)}</p><button type="button" class="btn" data-roadmap-retry>Erneut versuchen</button>` : I18n.html('<p role="status">Roadmap wird geladen …</p>');
   const matches = (p) => roadmapFilter === 'alle' || p.art === roadmapFilter || roadmapFilter === 'funktion' && ['discord', 'betrieb'].includes(p.art);
   const open = store.get('poker:roadmapOpen', {});
   const card = (e, points) => {
     const done = e.punkte.filter((p) => p.erledigt).length, total = e.punkte.length;
     return `<article class="roadmap-card ${e.stufe === 'jetzt' ? 'current' : ''}" aria-labelledby="roadmap-${esc(e.id)}">
-      <h3 id="roadmap-${esc(e.id)}">${esc(e.titel)}</h3>${e.datum ? `<time datetime="${e.datum}">${new Date(e.datum + 'T12:00:00').toLocaleDateString('de-DE')}</time>` : ''}<p>${esc(e.satz)}</p>
-      ${total > 1 ? `<div class="roadmap-progress"><span>${done} von ${total} erledigt</span><progress max="${total}" value="${done}" aria-label="Fortschritt: ${esc(e.titel)}"></progress></div>` : ''}
-      <ul class="roadmap-points">${points.map((p) => `<li>${p.art === 'spiel' && p.spiel ? `<button type="button" class="roadmap-point" data-plan="${esc(p.id)}" aria-label="${esc(p.titel)}: Beschreibung und Regeln">` : '<div class="roadmap-point">'}
-        <span class="roadmap-art" aria-hidden="true">${p.spiel?.art || ico(ART_ICON[p.art])}</span><span><b>${esc(p.titel)}</b><small>${ART_LABEL[p.art]}${p.erledigt ? ' · Erledigt ✓' : ''}</small><span>${esc(p.text)}</span></span>
+      <h3 id="roadmap-${esc(e.id)}">${uiText(e.titel)}</h3>${e.datum ? `<time datetime="${e.datum}">${new Date(e.datum + 'T12:00:00').toLocaleDateString(I18n.locale)}</time>` : ''}<p>${uiText(e.satz)}</p>
+      ${total > 1 ? I18n.html`<div class="roadmap-progress"><span>${done} von ${total} erledigt</span><progress max="${total}" value="${done}" aria-label="Fortschritt: ${esc(e.titel)}"></progress></div>` : ''}
+      <ul class="roadmap-points">${points.map((p) => `<li>${p.art === 'spiel' && p.spiel ? I18n.html`<button type="button" class="roadmap-point" data-plan="${esc(p.id)}" aria-label="${esc(p.titel)}: Beschreibung und Regeln">` : '<div class="roadmap-point">'}
+        <span class="roadmap-art" aria-hidden="true">${p.spiel?.art || ico(ART_ICON[p.art])}</span><span><b>${uiText(p.titel)}</b><small>${I18n.t(ART_LABEL[p.art])}${p.erledigt ? I18n.t(' · Erledigt ✓') : ''}</small><span>${uiText(p.text)}</span></span>
         ${p.art === 'spiel' && p.spiel ? '</button>' : '</div>'}</li>`).join('')}</ul></article>`;
   };
   const html = ROADMAP_STAGES.map(([stage, title]) => {
@@ -565,10 +566,10 @@ function roadmapBodyHTML() {
     if (!list.length) return '';
     const content = `<div class="roadmap-cards">${list.map(([e, points]) => card(e, points)).join('')}</div>`;
     return ['spaeter', 'gross', 'erledigt'].includes(stage)
-      ? `<details class="roadmap-stage" data-roadmap-stage="${stage}" ${open?.[stage] === true ? 'open' : ''}><summary>${title}<span>${list.length} ${list.length === 1 ? 'Etappe' : 'Etappen'}</span></summary>${content}</details>`
-      : `<section class="roadmap-stage"><h2>${title}</h2>${content}</section>`;
+      ? `<details class="roadmap-stage" data-roadmap-stage="${stage}" ${open?.[stage] === true ? 'open' : ''}><summary>${I18n.t(title)}<span>${list.length} ${list.length === 1 ? 'Etappe' : 'Etappen'}</span></summary>${content}</details>`
+      : `<section class="roadmap-stage"><h2>${I18n.t(title)}</h2>${content}</section>`;
   }).join('');
-  return html || '<p class="hint">Zu diesem Filter gibt es noch keine Einträge.</p>';
+  return html || I18n.html('<p class="hint">Zu diesem Filter gibt es noch keine Einträge.</p>');
 }
 document.addEventListener('click', (e) => {
   const b = e.target.closest('[data-roadmap-filter]');
@@ -597,19 +598,19 @@ function reportPresence(force = false) {
 }
 function relativeSeen(at) {
   const mins = Math.floor(Math.max(0, Date.now() - at) / 60000);
-  return mins < 1 ? 'gerade eben' : mins < 60 ? `vor ${mins} Min.` : `vor ${Math.floor(mins / 60)} Std.`;
+  return mins < 1 ? I18n.t('gerade eben') : mins < 60 ? I18n.html`vor ${mins} Min.` : I18n.html`vor ${Math.floor(mins / 60)} Std.`;
 }
 function presenceHTML() {
   const me = profile.name.trim().toLowerCase();
   const recentlySeen = hubPresence.recent.filter((p) => Date.now() - p.at < 86400000);
   const people = [...hubPresence.online].sort((a, b) => (b.key === me) - (a.key === me) || a.name.localeCompare(b.name, 'de'));
-  const list = `<ul class="presence-list">${people.map((p) => `<li><span class="presence-avatar" aria-hidden="true">${esc(p.avatar)}</span><div><b>${esc(p.name)}${p.key === me ? ' (du)' : ''}</b><small>${esc(p.status)}</small></div>
-    ${p.code && p.key !== me ? `<div class="presence-actions">${p.canJoin ? `<button type="button" class="btn btn-brass" data-join="${esc(p.code)}" data-mode="sit">Mitspielen</button>` : ''}<button type="button" class="btn btn-ghost" data-join="${esc(p.code)}" data-mode="watch">Zuschauen</button></div>` : ''}</li>`).join('')}</ul>`;
-  const recent = `<details class="presence-recent" data-presence-details="recent"><summary>Zuletzt online (${recentlySeen.length})</summary><ul class="presence-list">${recentlySeen.map((p) => `<li><span class="presence-avatar" aria-hidden="true">${esc(p.avatar)}</span><div><b>${esc(p.name)}</b><small><time datetime="${new Date(p.at).toISOString()}">${relativeSeen(p.at)}</time></small></div></li>`).join('') || '<li>Noch niemand in den letzten 24 Stunden.</li>'}</ul></details>`;
-  const title = `Gerade online (${people.length})`;
-  return `<div class="presence-desktop"><h2>${title}</h2>${list || ''}</div>
-    <details class="presence-mobile" data-presence-details="online"><summary><span>${title}</span><span class="presence-avatars" aria-hidden="true">${people.slice(0, 5).map((p) => `<span>${esc(p.avatar)}</span>`).join('')}</span></summary>${list}</details>
-    ${people.length ? '' : '<p class="hint">Gerade ist niemand sichtbar online.</p>'}${recent}`;
+  const list = `<ul class="presence-list">${people.map((p) => `<li><span class="presence-avatar" aria-hidden="true">${esc(p.avatar)}</span><div><b>${esc(p.name)}${p.key === me ? I18n.t(' (du)') : ''}</b><small>${uiText(p.status)}</small></div>
+    ${p.code && p.key !== me ? I18n.html`<div class="presence-actions">${p.canJoin ? I18n.html`<button type="button" class="btn btn-brass" data-join="${esc(p.code)}" data-mode="sit">Mitspielen</button>` : ''}<button type="button" class="btn btn-ghost" data-join="${esc(p.code)}" data-mode="watch">Zuschauen</button></div>` : ''}</li>`).join('')}</ul>`;
+  const recent = I18n.html`<details class="presence-recent" data-presence-details="recent"><summary>Zuletzt online (${recentlySeen.length})</summary><ul class="presence-list">${recentlySeen.map((p) => `<li><span class="presence-avatar" aria-hidden="true">${esc(p.avatar)}</span><div><b>${esc(p.name)}</b><small><time datetime="${new Date(p.at).toISOString()}">${relativeSeen(p.at)}</time></small></div></li>`).join('') || I18n.html('<li>Noch niemand in den letzten 24 Stunden.</li>')}</ul></details>`;
+  const title = I18n.html`Gerade online (${people.length})`;
+  return `<div class="presence-desktop"><h2>${I18n.t(title)}</h2>${list || ''}</div>
+    <details class="presence-mobile" data-presence-details="online"><summary><span>${I18n.t(title)}</span><span class="presence-avatars" aria-hidden="true">${people.slice(0, 5).map((p) => `<span>${esc(p.avatar)}</span>`).join('')}</span></summary>${list}</details>
+    ${people.length ? '' : I18n.html('<p class="hint">Gerade ist niemand sichtbar online.</p>')}${recent}`;
 }
 function refreshPresence() {
   const slot = $('#presence-slot');

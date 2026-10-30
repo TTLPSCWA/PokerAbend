@@ -1,7 +1,7 @@
 // Schätzmeister im Browser (Regeln: games/schaetzmeister/room.js). Alle schätzen eine Zahl, danach zeigt ein Zahlenstrahl alle Schätzungen und die richtige Antwort.
 'use strict';
 {
-  const unitText = (u) => (u ? ` ${esc(u)}` : '');
+  const unitText = (u, en) => (u ? ` ${esc(I18n.content(u, en))}` : '');
 
   // Zahlenstrahl: Schätzungen als Avatar + Name, in Bahnen übereinander gelegt; bei sehr weit auseinanderliegenden Werten logarithmisch
   function numberLine(S, R) {
@@ -22,8 +22,8 @@
     const bestPts = Math.max(0, ...R.guesses.filter((g) => !g.spectator).map((g) => g.pts));
     const markers = items.map((g, i) => `<span class="sm-m ${g.pts && g.pts === bestPts && !g.spectator ? 'win' : ''} ${g.id === S.you?.id ? 'me' : ''} ${g.spectator ? 'spec' : ''}" style="left:${g.x}%;top:${44 + g.lane * 52}px;--i:${i}">
         <i aria-hidden="true">${avatarHTML(pkPlayer(S, g.id))}</i><small>${esc(pkName(S, g.id))}</small></span>`).join('');
-    const label = `Zahlenstrahl: richtig ${pkFmt(R.answer)}${R.unit ? ' ' + R.unit : ''}; ${R.guesses.map((g) => `${pkName(S, g.id)} ${pkFmt(g.value)}`).join(', ')}`;
-    return `<div class="sm-line" style="height:${height}px" role="img" aria-label="${esc(label)}">
+    const label = I18n.html`Zahlenstrahl: richtig ${pkFmt(R.answer)}${R.unit ? ' ' + R.unit : ''}; ${R.guesses.map((g) => `${pkName(S, g.id)} ${pkFmt(g.value)}`).join(', ')}`;
+    return I18n.html`<div class="sm-line" style="height:${height}px" role="img" aria-label="${esc(label)}">
         <div class="sm-axis"></div>
         <div class="sm-flag" style="left:${pos(R.answer)}%"><span>Richtig</span></div>${markers}</div>
       <p class="sm-scale">${pkFmt(lo)} bis ${pkFmt(hi)}${log ? ' · logarithmische Skala, weil die Schätzungen weit auseinanderliegen' : ''}</p>`;
@@ -44,48 +44,52 @@
       'Am nächsten dran: 3 Punkte, Zweiter 2, Dritter 1. Gleich weit weg = gleiche Punkte. Genau richtig: +2.',
       'Wer nichts eingibt, bekommt keine Punkte. Wer am Ende die meisten Punkte hat, gewinnt.',
     ],
-    hint: (S) => (S.g.mine === null ? 'Gib deine Schätzung als Zahl ein – Komma für Dezimalstellen' : 'Deine Schätzung steht – du kannst sie bis zum Ende der Zeit noch ändern'),
+    hint: (S) => (S.g.mine === null ? I18n.t('Gib deine Schätzung als Zahl ein – Komma für Dezimalstellen') : I18n.t('Deine Schätzung steht – du kannst sie bis zum Ende der Zeit noch ändern')),
     question(S) {
       const G = S.g;
-      return `<div class="pk-q"><h2>${esc(G.question)}</h2>${G.unit ? `<p>Antwort in: <b>${esc(G.unit)}</b></p>` : ''}</div>`;
+      return `<div class="pk-q"><h2>${esc(I18n.content(G.question, G.questionEn))}</h2>${G.unit ? I18n.html`<p>Antwort in: <b>${esc(I18n.content(G.unit, G.unitEn))}</b></p>` : ''}</div>`;
     },
     board(S) {
       const G = S.g;
-      return `<div class="pk-wait">${G.mine !== null
-        ? `<p class="pk-mine">Deine Schätzung: <b>${pkFmt(G.mine)}</b>${unitText(G.unit)}</p>`
-        : G.canAnswer ? '<p class="pk-mine pk-open">Du hast noch nicht geschätzt</p>' : ''}
+      return I18n.html`<div class="pk-wait">${G.mine !== null
+        ? I18n.html`<p class="pk-mine">Deine Schätzung: <b>${pkFmt(G.mine)}</b>${unitText(G.unit, G.unitEn)}</p>`
+        : G.canAnswer ? I18n.html('<p class="pk-mine pk-open">Du hast noch nicht geschätzt</p>') : ''}
         <p>Die Schätzungen der anderen siehst du, sobald alle fertig sind oder die Zeit abläuft.</p></div>`;
     },
     writeForm(S) {
       const G = S.g;
       return pkForm({
-        kind: 'guess', label: 'Deine Schätzung als Zahl', placeholder: G.unit ? `Deine Schätzung in ${G.unit}` : 'Deine Schätzung', inputmode: 'decimal', max: 30,
-        value: G.mine === null ? '' : String(G.mine).replace('.', ','), button: G.mine === null ? 'Schätzen' : 'Ändern',
-        note: G.mine === null ? 'Punkt = Tausendertrenner, Komma = Dezimalzeichen' : `Abgegeben: <b>${pkFmt(G.mine)}</b>`,
+        kind: 'guess', label: I18n.t('Deine Schätzung als Zahl'), placeholder: G.unit ? I18n.html`Deine Schätzung in ${I18n.content(G.unit, G.unitEn)}` : I18n.t('Deine Schätzung'), inputmode: 'decimal', max: 30,
+        value: G.mine === null ? '' : I18n.language === 'en' ? String(G.mine) : String(G.mine).replace('.', ','), button: G.mine === null ? I18n.t('Schätzen') : I18n.t('Ändern'),
+        note: G.mine === null ? I18n.t('Punkt = Tausendertrenner, Komma = Dezimalzeichen') : I18n.html`Abgegeben: <b>${pkFmt(G.mine)}</b>`,
       });
     },
     dockState: (S) => `${S.g?.mine ?? ''}`,
-    submit: (kind, text) => send('guess', { text }),
+    submit: (kind, text) => {
+      const value = I18n.number(text);
+      if (value === null) { toast('Please enter a number, for example 206 or 3.5', true); return Promise.resolve({ ok: false }); }
+      return send('guess', { text: value });
+    },
     reveal(S) {
       const R = S.g.reveal;
       const rows = R.guesses.map((g) => {
         const diff = Math.abs(g.value - R.answer);
-        return `<li class="${g.pts && !g.spectator ? 'win' : ''} ${g.id === S.you?.id ? 'me' : ''}">${pkAvatar(S, g.id)}<span class="nm">${esc(pkName(S, g.id))}${g.id === S.you?.id ? ' <small>(du)</small>' : ''}</span>
-          <span class="val">${pkFmt(g.value)}${unitText(R.unit)}<small>${g.exact ? 'genau richtig!' : `${pkFmt(diff)} daneben`}</small></span>
-          <span class="pts pk-pts">${g.spectator ? 'Zuschauer' : g.pts ? `+${g.pts}` : '0'}</span></li>`;
+        return `<li class="${g.pts && !g.spectator ? 'win' : ''} ${g.id === S.you?.id ? 'me' : ''}">${pkAvatar(S, g.id)}<span class="nm">${esc(pkName(S, g.id))}${g.id === S.you?.id ? I18n.html(' <small>(du)</small>') : ''}</span>
+          <span class="val">${pkFmt(g.value)}${unitText(R.unit, R.unitEn)}<small>${g.exact ? I18n.t('genau richtig!') : I18n.html`${pkFmt(diff)} daneben`}</small></span>
+          <span class="pts pk-pts">${g.spectator ? I18n.t('Zuschauer') : g.pts ? `+${g.pts}` : '0'}</span></li>`;
       }).join('');
       const missing = R.missing.map((id) => esc(pkName(S, id))).join(', ');
-      return `<div class="sm-answer" role="status"><small>Richtig ist</small><b>${pkFmt(R.answer)}</b><span>${esc(R.unit)}</span></div>
-        ${R.guesses.length ? numberLine(S, R) : '<p class="hint">Niemand hat geschätzt.</p>'}
+      return I18n.html`<div class="sm-answer" role="status"><small>Richtig ist</small><b>${pkFmt(R.answer)}</b><span>${esc(I18n.content(R.unit, R.unitEn))}</span></div>
+        ${R.guesses.length ? numberLine(S, R) : I18n.html('<p class="hint">Niemand hat geschätzt.</p>')}
         <ol class="sm-rank">${rows}</ol>
-        ${missing ? `<p class="hint" style="margin:0">Keine Schätzung: ${missing}</p>` : ''}
+        ${missing ? I18n.html`<p class="hint" style="margin:0">Keine Schätzung: ${missing}</p>` : ''}
         <p class="sm-src">Quelle: ${esc(R.src)}</p>`;
     },
     custom: {
-      help: 'Eine Frage pro Zeile im Format <b>Frage | Zahl | Einheit</b> (die Einheit ist optional). Bis zu 100 Fragen.',
+      help: I18n.html('Eine Frage pro Zeile im Format <b>Frage | Zahl | Einheit</b> (die Einheit ist optional). Bis zu 100 Fragen.'),
       example: 'Wie viele Stufen hat unser Treppenhaus? | 56 | Stufen',
     },
-    rules: `<p>Pro Runde eine Schätzfrage, deren Antwort eine Zahl ist. Alle schätzen gleichzeitig; erst nach der Zeit (oder wenn alle abgegeben haben) werden alle Schätzungen und die richtige Antwort gezeigt.</p>
+    rules: I18n.html`<p>Pro Runde eine Schätzfrage, deren Antwort eine Zahl ist. Alle schätzen gleichzeitig; erst nach der Zeit (oder wenn alle abgegeben haben) werden alle Schätzungen und die richtige Antwort gezeigt.</p>
       <ul>
         <li><b>Punkte:</b> am nächsten dran 3, Zweiter 2, Dritter 1. Wer gleich weit weg liegt, bekommt gleich viele Punkte; danach geht es mit dem nächsten Abstand weiter. Genau richtig: +2 Bonus.</li>
         <li><b>Prozent-Wertung (Hausregel):</b> höchstens 5 % daneben 3 Punkte, bis 15 % 2 Punkte, bis 30 % 1 Punkt – gut bei sehr großen Zahlen.</li>

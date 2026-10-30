@@ -16,7 +16,7 @@
       'Ein Fehler setzt die Folge zurück und kostet Zeit.',
       'Wer in der Zeit die meisten Folgen schafft, gewinnt. Der Server prüft alle Eingaben.',
     ],
-    rules: `<p>Eine Folge von Pfeilen (hoch, runter, links, rechts) erscheint – bei allen dieselbe, in derselben Reihenfolge.</p>
+    rules: I18n.html`<p>Eine Folge von Pfeilen (hoch, runter, links, rechts) erscheint – bei allen dieselbe, in derselben Reihenfolge.</p>
       <ul>
         <li>Tipp die Pfeile in der gleichen Reihenfolge nach: <b>Pfeiltasten</b> oder die Knöpfe auf dem Bildschirm.</li>
         <li>Eine geschaffte Folge gibt <b>10 Punkte</b>. Ein <b>Fehler</b> setzt die Folge zurück, sperrt dich eine halbe Sekunde und kostet 2 Punkte.</li>
@@ -37,10 +37,10 @@
       const rev = !!c.S.settings.reverse;
       const seq = st.seq.map((a, k) => `<i class="${k < st.pos ? 'done' : ''} ${k === st.pos ? 'now' : ''}" aria-hidden="true">${c.L.ARROWS[rev ? a ^ 1 : a]}</i>`).join('');
       const btns = c.L.ARROWS.map((a, k) => `<button type="button" class="pf-btn" data-pf="${k}" ${locked ? 'disabled' : ''} aria-label="${['Hoch', 'Runter', 'Links', 'Rechts'][k]}">${a}</button>`).join('');
-      return `<div class="pf-wrap"><div class="so-bar" role="progressbar" aria-label="Zeit" aria-valuemin="0" aria-valuemax="${Math.round(c.round.playMs / 1000)}" aria-valuenow="${left}"><i style="width:${Math.max(0, 100 - (c.t / c.round.playMs) * 100)}%"></i></div>
+      return I18n.html`<div class="pf-wrap"><div class="so-bar" role="progressbar" aria-label="Zeit" aria-valuemin="0" aria-valuemax="${Math.round(c.round.playMs / 1000)}" aria-valuenow="${left}"><i style="width:${Math.max(0, 100 - (c.t / c.round.playMs) * 100)}%"></i></div>
         <div class="pf-info"><b class="so-score">${st.completed} Folge${st.completed === 1 ? '' : 'n'}</b><span>${st.errors} Fehler</span><span>${left} s</span></div>
         <div class="pf-seq ${locked ? 'locked' : ''}" role="status" aria-label="Folge ${rev ? '(Pfeile umkehren)' : ''}">${seq}</div>
-        <div class="so-btns pf-pad">${btns}</div>${rev ? '<small>Rückwärts-Modus: tipp jeweils den entgegengesetzten Pfeil</small>' : ''}</div>`;
+        <div class="so-btns pf-pad">${btns}</div>${rev ? I18n.html('<small>Rückwärts-Modus: tipp jeweils den entgegengesetzten Pfeil</small>') : ''}</div>`;
     },
     hint: () => 'Tipp die Pfeile nach – Pfeiltasten oder Knöpfe',
     press(c, tok) {
@@ -56,7 +56,7 @@
       this.press(c, k);
     },
     payload: (c) => ({ inputs: c.local.inputs || [] }),
-    solution: (sol) => `<div class="sm-answer" role="status"><small>Die erste Folge war</small><b class="pf-first">${sol.first.map((a) => ['↑', '↓', '←', '→'][a]).join(' ')}</b></div>`,
+    solution: (sol) => I18n.html`<div class="sm-answer" role="status"><small>Die erste Folge war</small><b class="pf-first">${sol.first.map((a) => ['↑', '↓', '←', '→'][a]).join(' ')}</b></div>`,
   });
   // Knöpfe reagieren sofort beim Drücken (nicht erst beim Loslassen)
   document.addEventListener('pointerdown', (e) => {

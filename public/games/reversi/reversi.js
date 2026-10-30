@@ -22,9 +22,9 @@
       'Schwarz fängt an: das ist, wer die Partie beginnt.',
     ],
     house: () => [],
-    playerInfo: (p) => (p.color === null || p.color === undefined ? '' : `<span class="rv-dot rv-${p.color}">${colorMark(MARK[p.color])}</span>${COLOR[p.color]} · ${p.discs} Steine`),
+    playerInfo: (p) => (p.color === null || p.color === undefined ? '' : I18n.html`<span class="rv-dot rv-${p.color}">${colorMark(MARK[p.color])}</span>${COLOR[p.color]} · ${p.discs} Steine`),
     hint(S, myTurn) {
-      if (!myTurn) return `${nameOf(S, S.turnId)} ist dran`;
+      if (!myTurn) return I18n.html`${nameOf(S, S.turnId)} ist dran`;
       return S.g.legal.length ? 'Tipp ein Feld mit Punkt an' : '';
     },
     main(S) {
@@ -38,11 +38,11 @@
         const label = owner === null ? `${cname(i)}${legal.has(i) ? ', erlaubt' : ''}` : `${cname(i)} ${COLOR[g.colors[owner]]}`;
         return legal.has(i) ? `<button type="button" class="rv-cell can" data-g="cell" data-c="${i}" aria-label="${label}">${inner}</button>` : `<div class="rv-cell" role="gridcell" aria-label="${label}">${inner}</div>`;
       }).join('');
-      return `<div class="kg-table rv-wrap"><div class="rv-board" role="grid" aria-label="Spielfeld">${cells}</div></div>`;
+      return I18n.html`<div class="kg-table rv-wrap"><div class="rv-board" role="grid" aria-label="Spielfeld">${cells}</div></div>`;
     },
     dock: () => '',
     onClick(t) { if (t.dataset.g === 'cell') send('place', { cell: Number(t.dataset.c) }); },
-    rules: `<p>8 × 8 Felder, in der Mitte liegen je zwei schwarze und weiße Steine. Schwarz (wer die Partie anfängt) beginnt.</p>
+    rules: I18n.html`<p>8 × 8 Felder, in der Mitte liegen je zwei schwarze und weiße Steine. Schwarz (wer die Partie anfängt) beginnt.</p>
       <ul>
         <li>Setze einen Stein so, dass in mindestens einer Richtung (waagerecht, senkrecht, diagonal) eine <b>Reihe gegnerischer Steine</b> zwischen ihm und einem eigenen Stein liegt.</li>
         <li>Alle so eingeschlossenen Steine werden <b>umgedreht</b>.</li>

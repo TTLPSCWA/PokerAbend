@@ -4,10 +4,11 @@
 // Fragen liegen in fragen.json (keine Fragen zu Gesundheit, Beziehungen, Politik, Religion, Geld-Details).
 // Hausregel „nur eigene Fragen“: gespielt wird nur aus der Liste des Hosts (Host-Menü, eine Frage pro Zeile).
 import { readFileSync } from 'node:fs';
+import { bilingual } from '../party-english.js';
 import { PartyRoom, partyOptions, cleanAnswer, NO_ANSWER, PLACEHOLDERS } from '../party-room.js';
 import { shuffle } from '../../server/random.js';
 
-const CATALOG = JSON.parse(readFileSync(new URL('./fragen.json', import.meta.url), 'utf8'));
+const CATALOG = bilingual('werhatdasgesagt', JSON.parse(readFileSync(new URL('./fragen.json', import.meta.url), 'utf8')));
 export const PTS_RIGHT = 100;
 export const PTS_DISGUISE = 50;
 
@@ -110,20 +111,20 @@ export class Room extends PartyRoom {
 
   stageView(viewerId) {
     if (this.stage === 'write') {
-      return { prompt: this.cur.q, canWrite: this.order.includes(viewerId), mine: this.answers[viewerId] ?? null };
+      return { prompt: this.cur.q, promptEn: this.cur.en, canWrite: this.order.includes(viewerId), mine: this.answers[viewerId] ?? null };
     }
     if (this.stage === 'vote') {
       const s = this.step();
       const can = this.canGuess(viewerId, s);
       return {
-        prompt: this.cur.q, step: this.sub + 1, steps: this.steps.length,
+        prompt: this.cur.q, promptEn: this.cur.en, step: this.sub + 1, steps: this.steps.length,
         text: this.answers[s.author] || NO_ANSWER, // nur der Text – der Autor steht erst in der Auflösung im Zustand
         mine: s.author === viewerId, canGuess: can,
         myGuess: s.guesses[viewerId] ?? null,
         candidates: can ? this.order.filter((p) => p !== viewerId) : [],
       };
     }
-    return { prompt: this.cur.q, results: this.results, gains: this.gains };
+    return { prompt: this.cur.q, promptEn: this.cur.en, results: this.results, gains: this.gains };
   }
   static restore(data, onChange) { return PartyRoom.restoreInto(new this(data.code, data.settings, onChange), data); }
 }

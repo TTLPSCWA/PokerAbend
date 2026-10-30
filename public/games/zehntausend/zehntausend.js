@@ -1,7 +1,7 @@
 // Zehntausend im Browser (Regeln: games/zehntausend/room.js). Würfel antippen = zum Herauslegen wählen, die Wertung steht sofort daneben.
 'use strict';
 {
-  const fmt = (n) => Number(n || 0).toLocaleString('de-DE');
+  const fmt = (n) => Number(n || 0).toLocaleString(I18n.locale);
   const base = (f) => (f === 1 ? 1000 : f * 100);
   // Gleiche Wertung wie auf dem Server: beste Aufteilung, jeder Würfel muss punkten (sonst -1)
   function scoreDice(vals, { straight = 2000, threePairs = true } = {}) {
@@ -41,7 +41,7 @@
     look(S) {
       const g = S.g;
       const ids = Object.keys(g.banked).sort((a, b) => g.banked[b] - g.banked[a]);
-      return [{ title: 'Punkte aller', note: `Ziel: ${fmt(g.target)}`, html: `<ul class="look-list">${ids.map((id) => `<li><b>${esc(S.players.find((p) => p.id === id)?.name ?? '?')}</b>: ${fmt(g.banked[id])}${g.entered.includes(id) ? '' : ' · noch nicht drin'}</li>`).join('')}</ul>` }];
+      return [{ title: 'Punkte aller', note: I18n.html`Ziel: ${fmt(g.target)}`, html: `<ul class="look-list">${ids.map((id) => `<li><b>${esc(S.players.find((p) => p.id === id)?.name ?? '?')}</b>: ${fmt(g.banked[id])}${g.entered.includes(id) ? '' : ' · noch nicht drin'}</li>`).join('')}</ul>` }];
     },
     name: 'Zehntausend',
     direction: false,
@@ -67,10 +67,10 @@
     },
     hint(S, myTurn) {
       const g = S.g;
-      if (!myTurn) return `${nameOf(S, S.turnId)} würfelt${g.turnPoints ? ` – Zug ${fmt(g.turnPoints)}` : ''}`;
+      if (!myTurn) return I18n.html`${nameOf(S, S.turnId)} würfelt${g.turnPoints ? I18n.html` – Zug ${fmt(g.turnPoints)}` : ''}`;
       if (g.rolled) return 'Tipp die Würfel an, die du herauslegst – jeder muss punkten';
-      if (!g.turnPoints) return g.final ? 'Dein letzter Zug – würfle' : 'Würfle';
-      return g.canBank ? `Weiterwürfeln mit ${g.remaining} Würfel${g.remaining === 1 ? '' : 'n'} – oder ${fmt(g.turnPoints)} sichern` : `Noch nicht eingestiegen: ${fmt(g.entry)} nötig – weiterwürfeln`;
+      if (!g.turnPoints) return g.final ? 'Dein letzter Zug – würfle' : I18n.t('Würfle');
+      return g.canBank ? I18n.html`Weiterwürfeln mit ${g.remaining} Würfel${g.remaining === 1 ? '' : 'n'} – oder ${fmt(g.turnPoints)} sichern` : I18n.html`Noch nicht eingestiegen: ${fmt(g.entry)} nötig – weiterwürfeln`;
     },
     main(S) {
       const g = S.g;
@@ -78,21 +78,21 @@
       // Punktestände zum Ziel
       const ids = Object.keys(g.banked).sort((a, b) => g.banked[b] - g.banked[a]);
       const track = `<div class="zt-track">${ids.map((id) => `<div class="zt-row ${id === S.turnId ? 'turn' : ''} ${id === S.you?.id ? 'me' : ''}">
-        <span class="zt-name">${nameOf(S, id)}${g.entered.includes(id) ? '' : ' <small>(noch nicht drin)</small>'}</span>
+        <span class="zt-name">${nameOf(S, id)}${g.entered.includes(id) ? '' : I18n.html(' <small>(noch nicht drin)</small>')}</span>
         <span class="zt-bar" aria-hidden="true"><i style="width:${Math.min(100, (g.banked[id] / g.target) * 100)}%"></i></span>
         <b>${fmt(g.banked[id])}</b></div>`).join('')}</div>`;
-      const final = g.final ? `<p class="zt-banner" role="status">${nameOf(S, g.final.by)} hat ${fmt(g.target)} – letzte Runde für: ${g.final.left.map((id) => nameOf(S, id)).join(', ') || '–'}</p>` : '';
-      const loss = g.lastLoss && !g.rolled && !g.turnPoints ? `<p class="zt-loss" role="status">Niete! ${nameOf(S, g.lastLoss.id)}${g.lastLoss.points ? ` verliert ${fmt(g.lastLoss.points)}` : ''} (${g.lastLoss.dice.join(' ')})</p>` : '';
+      const final = g.final ? I18n.html`<p class="zt-banner" role="status">${nameOf(S, g.final.by)} hat ${fmt(g.target)} – letzte Runde für: ${g.final.left.map((id) => nameOf(S, id)).join(', ') || '–'}</p>` : '';
+      const loss = g.lastLoss && !g.rolled && !g.turnPoints ? I18n.html`<p class="zt-loss" role="status">Niete! ${nameOf(S, g.lastLoss.id)}${g.lastLoss.points ? I18n.html` verliert ${fmt(g.lastLoss.points)}` : ''} (${g.lastLoss.dice.join(' ')})</p>` : '';
       // Herausgelegt in diesem Zug
       const aside = g.aside.length ? `<div class="zt-aside">${g.aside.map((a) => `<span class="zt-group">${a.dice.map((d) => dieHTML(d, { cls: 'small' })).join('')}<b>+${fmt(a.points)}</b></span>`).join('')}</div>` : '';
       // Aktueller Wurf: antippen = auswählen
       const pick = [...sel].map((i) => g.dice[i]);
       const score = pick.length ? scoreDice(pick, g.scoring) : 0;
       const dice = g.rolled ? g.dice.map((d, i) => (myTurn
-        ? dieHTML(d, { tag: 'button', cls: `big ${sel.has(i) ? 'kept' : ''}`, attrs: `type="button" data-g="pick" data-i="${i}" aria-pressed="${sel.has(i)}"` })
-        : dieHTML(d, { cls: 'big' }))).join('') : `<span class="zt-wait">${g.remaining} Würfel bereit</span>`;
-      const preview = myTurn && g.rolled ? `<span class="zt-preview ${pick.length ? (score > 0 ? 'ok' : 'bad') : ''}">${pick.length ? (score > 0 ? `Auswahl: +${fmt(score)}` : 'Auswahl punktet nicht ganz') : 'Würfel wählen'}</span>` : '';
-      return `<div class="kg-table zt-table">${final}${track}
+        ? dieHTML(d, { tag: 'button', cls: I18n.html`big ${sel.has(i) ? 'kept' : ''}`, attrs: `type="button" data-g="pick" data-i="${i}" aria-pressed="${sel.has(i)}"` })
+        : dieHTML(d, { cls: 'big' }))).join('') : I18n.html`<span class="zt-wait">${g.remaining} Würfel bereit</span>`;
+      const preview = myTurn && g.rolled ? `<span class="zt-preview ${pick.length ? (score > 0 ? 'ok' : 'bad') : ''}">${pick.length ? (score > 0 ? I18n.html`Auswahl: +${fmt(score)}` : 'Auswahl punktet nicht ganz') : 'Würfel wählen'}</span>` : '';
+      return I18n.html`<div class="kg-table zt-table">${final}${track}
         <div class="zt-turn"><div class="zt-points"><small>${nameOf(S, S.turnId)} · dieser Zug</small><b>${fmt(g.turnPoints)}</b></div>${aside}
           <div class="zt-dice">${dice}</div>${preview}</div>${loss}</div>`;
     },
@@ -102,11 +102,11 @@
       if (g.rolled) {
         const pick = [...sel].map((i) => g.dice[i]);
         const score = pick.length ? scoreDice(pick, g.scoring) : -1;
-        return `<button class="btn btn-brass" data-g="take" ${score > 0 ? '' : 'disabled title="Jeder herausgelegte Würfel muss punkten"'}>Herauslegen${score > 0 ? ` +${fmt(score)}` : ''}</button>
+        return I18n.html`<button class="btn btn-brass" data-g="take" ${score > 0 ? '' : 'disabled title="Jeder herausgelegte Würfel muss punkten"'}>Herauslegen${score > 0 ? ` +${fmt(score)}` : ''}</button>
           <button class="btn" data-g="best">Beste Auswahl</button>`;
       }
-      const bank = g.turnPoints ? `<button class="btn ${g.canBank ? 'btn-brass' : ''}" data-g="bank" ${g.canBank ? '' : `disabled title="Zum Einstieg brauchst du ${fmt(g.entry)} in einem Zug"`}>Aufhören: +${fmt(g.turnPoints)} sichern</button>` : '';
-      return `<button class="btn ${g.turnPoints ? '' : 'btn-brass'}" data-g="roll">Würfeln (${g.remaining} Würfel)</button>${bank}`;
+      const bank = g.turnPoints ? I18n.html`<button class="btn ${g.canBank ? 'btn-brass' : ''}" data-g="bank" ${g.canBank ? '' : `disabled title="Zum Einstieg brauchst du ${fmt(g.entry)} in einem Zug"`}>Aufhören: +${fmt(g.turnPoints)} sichern</button>` : '';
+      return I18n.html`<button class="btn ${g.turnPoints ? '' : 'btn-brass'}" data-g="roll">Würfeln (${g.remaining} Würfel)</button>${bank}`;
     },
     onClick(t, S) {
       const g = t.dataset.g;
@@ -116,7 +116,7 @@
       else if (g === 'roll') send('roll');
       else if (g === 'bank') send('bank');
     },
-    rules: `<p>Sechs Würfel. Wer zuerst das Ziel (Standard 10.000) erreicht, löst die letzte Runde aus – danach gewinnt, wer am meisten hat.</p>
+    rules: I18n.html`<p>Sechs Würfel. Wer zuerst das Ziel (Standard 10.000) erreicht, löst die letzte Runde aus – danach gewinnt, wer am meisten hat.</p>
       <ul>
         <li><b>Zug:</b> würfeln, mindestens einen punktenden Würfel herauslegen. Dann mit den übrigen weiterwürfeln oder <b>aufhören</b> und die Zugpunkte anschreiben.</li>
         <li><b>Niete:</b> Punktet ein Wurf gar nicht, sind alle Punkte dieses Zuges verloren.</li>

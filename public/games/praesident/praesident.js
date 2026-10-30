@@ -4,7 +4,7 @@
   let sel = new Set();
   const ORDER = '3456789TJQKA2';
   const RANK_NAME = { T: 'Zehner', J: 'Buben', Q: 'Damen', K: 'Könige', A: 'Asse', 2: 'Zweier' };
-  const rn = (r) => RANK_NAME[r] || `${r}er`;
+  const rn = (r) => RANK_NAME[r] || I18n.html`${r}er`;
   const nameOf = (S, id) => esc(S.players.find((p) => p.id === id)?.name ?? '?');
   const pw = (c) => ORDER.indexOf(c[0]);
 
@@ -23,8 +23,8 @@
       'Wer zuerst keine Karten mehr hat, wird Präsident. In der nächsten Runde tauscht das Schlusslicht seine beste Karte gegen die schlechteste des Präsidenten.',
     ],
     house: () => [],
-    playerInfo: (p) => (p.place ? `${p.place}. Platz` : `${p.cards} Karte${p.cards === 1 ? '' : 'n'}`),
-    seat: (p) => (p.place ? `<span>${p.place}. Platz</span>` : `${fanHTML(p.cards)}<span>${p.cards} Karte${p.cards === 1 ? '' : 'n'}</span>`),
+    playerInfo: (p) => (p.place ? I18n.html`${p.place}. Platz` : I18n.html`${p.cards} Karte${p.cards === 1 ? '' : 'n'}`),
+    seat: (p) => (p.place ? I18n.html`<span>${p.place}. Platz</span>` : I18n.html`${fanHTML(p.cards)}<span>${p.cards} Karte${p.cards === 1 ? '' : 'n'}</span>`),
     onState(S) {
       const h = new Set(S.g?.hand || []);
       sel = new Set([...sel].filter((c) => h.has(c)));
@@ -32,17 +32,17 @@
     },
     hint(S, myTurn) {
       const t = S.g.table;
-      if (!myTurn) return `${nameOf(S, S.turnId)} ist dran`;
-      return t ? `Überbiete ${t.count} × ${rn(t.rank)} mit ${t.count} höheren Karten – oder passe` : 'Du spielst aus: 1 bis 4 Karten gleichen Werts';
+      if (!myTurn) return I18n.html`${nameOf(S, S.turnId)} ist dran`;
+      return t ? I18n.html`Überbiete ${t.count} × ${rn(t.rank)} mit ${t.count} höheren Karten – oder passe` : 'Du spielst aus: 1 bis 4 Karten gleichen Werts';
     },
     main(S) {
       const g = S.g;
       const t = g.table;
-      const table = t ? `<div class="pr-table"><small>${nameOf(S, t.by)} hat gelegt</small><div class="pr-cards">${t.cards.map((c) => frenchCard(c, { cls: 'big', attrs: 'disabled tabindex="-1"' })).join('')}</div></div>`
-        : '<div class="pr-table empty"><small>Der Tisch ist frei – wer dran ist, spielt aus</small></div>';
-      const passed = g.passed.length ? `<div class="kg-chip">Gepasst: ${g.passed.map((id) => nameOf(S, id)).join(', ')}</div>` : '';
-      const places = g.places.length ? `<div class="kg-chip">Fertig: ${g.places.map((id, i) => `${i + 1}. ${nameOf(S, id)}`).join(' · ')}</div>` : '';
-      const ex = g.exchange ? `<div class="kg-chip">Kartentausch: ${nameOf(S, g.exchange.from)} → ${nameOf(S, g.exchange.to)} ${frenchCard(g.exchange.gave, { cls: 'mini', attrs: 'disabled tabindex="-1"' })}</div>` : '';
+      const table = t ? I18n.html`<div class="pr-table"><small>${nameOf(S, t.by)} hat gelegt</small><div class="pr-cards">${t.cards.map((c) => frenchCard(c, { cls: 'big', attrs: 'disabled tabindex="-1"' })).join('')}</div></div>`
+        : I18n.html('<div class="pr-table empty"><small>Der Tisch ist frei – wer dran ist, spielt aus</small></div>');
+      const passed = g.passed.length ? I18n.html`<div class="kg-chip">Gepasst: ${g.passed.map((id) => nameOf(S, id)).join(', ')}</div>` : '';
+      const places = g.places.length ? I18n.html`<div class="kg-chip">Fertig: ${g.places.map((id, i) => `${i + 1}. ${nameOf(S, id)}`).join(' · ')}</div>` : '';
+      const ex = g.exchange ? I18n.html`<div class="kg-chip">Kartentausch: ${nameOf(S, g.exchange.from)} → ${nameOf(S, g.exchange.to)} ${frenchCard(g.exchange.gave, { cls: 'mini', attrs: 'disabled tabindex="-1"' })}</div>` : '';
       return `<div class="kg-table pr-wrap">${table}<div class="kg-chips">${passed}${places}${ex}</div></div>`;
     },
     dock(S, myTurn) {
@@ -54,9 +54,9 @@
       const hand = (g.hand || []).map((c) => frenchCard(c, { cls: `${sel.has(c) ? 'sel' : ''} ${fits(c) ? 'can' : ''}`, attrs: myTurn ? `data-g="pick" data-c="${c}"` : 'disabled' })).join('');
       const n = sel.size;
       const ok = n && (!t || n === t.count);
-      const acts = myTurn ? `<button class="btn btn-brass" data-g="play" ${ok ? '' : 'disabled'}>${n ? `${n} × ${rn([...sel][0][0])} ablegen` : 'Karten wählen'}</button>
-        ${g.canPass ? '<button class="btn" data-g="pass">Passen</button>' : ''}` : '';
-      return `<div class="kg-hand" role="group" aria-label="Deine Karten">${hand}</div><div class="kg-acts">${acts}</div>`;
+      const acts = myTurn ? `<button class="btn btn-brass" data-g="play" ${ok ? '' : 'disabled'}>${n ? I18n.html`${n} × ${rn([...sel][0][0])} ablegen` : 'Karten wählen'}</button>
+        ${g.canPass ? I18n.html('<button class="btn" data-g="pass">Passen</button>') : ''}` : '';
+      return I18n.html`<div class="kg-hand" role="group" aria-label="Deine Karten">${hand}</div><div class="kg-acts">${acts}</div>`;
     },
     onClick(t, S) {
       const g = t.dataset.g;
@@ -68,7 +68,7 @@
       } else if (g === 'play') { const cards = [...sel]; sel = new Set(); send('play', { cards }); }
       else if (g === 'pass') { sel = new Set(); send('pass'); }
     },
-    rules: `<p>52 Karten, alle werden verteilt. Rangfolge (niedrig → hoch): <b>3 4 5 6 7 8 9 10 B D K A 2</b>.</p>
+    rules: I18n.html`<p>52 Karten, alle werden verteilt. Rangfolge (niedrig → hoch): <b>3 4 5 6 7 8 9 10 B D K A 2</b>.</p>
       <ul>
         <li>Der Starter legt 1 bis 4 Karten gleichen Werts. Danach muss man mit <b>genau so vielen</b> Karten <b>höheren Werts</b> überbieten – oder <b>passen</b>.</li>
         <li>Haben alle anderen gepasst, ist der Tisch frei. Wer zuletzt gelegt hat, spielt neu aus.</li>

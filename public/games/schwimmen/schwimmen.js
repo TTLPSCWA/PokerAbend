@@ -15,8 +15,8 @@
   let sel = null;          // { side: 'hand' | 'mid', i }
   let closedDeal = 0;      // „Letzter Durchgang“ zugeklappt bis zu diesem Durchgang
   const nameOf = (S, id) => esc(S.players.find((p) => p.id === id)?.name ?? '?');
-  const lives = (p) => `<span class="lives" aria-hidden="true">${'♥'.repeat(p.lives || 0)}</span><span class="sr-only">${p.lives} Leben</span>`;
-  const badges = (p) => `${p.swimming ? '<b class="sw-badge swim">schwimmt</b>' : ''}${p.knocked ? '<b class="sw-badge knock">klopft</b>' : ''}`;
+  const lives = (p) => I18n.html`<span class="lives" aria-hidden="true">${'♥'.repeat(p.lives || 0)}</span><span class="sr-only">${p.lives} Leben</span>`;
+  const badges = (p) => `${p.swimming ? I18n.html('<b class="sw-badge swim">schwimmt</b>') : ''}${p.knocked ? I18n.html('<b class="sw-badge knock">klopft</b>') : ''}`;
 
   const kit = kitGame({
     id: 'schwimmen',
@@ -26,12 +26,12 @@
     name: 'Schwimmen',
     // Erste Schritte beim ersten Spiel (3 Schritte, abschaltbar unter „Ich“)
     intro: [
-      ['Ziel', 'Sammle in <b>einer Farbe</b> möglichst viele Punkte: Ass 11, Bilder 10, Zahlen nach Augen. 31 ist das Höchste.'],
+      ['Ziel', I18n.html('Sammle in <b>einer Farbe</b> möglichst viele Punkte: Ass 11, Bilder 10, Zahlen nach Augen. 31 ist das Höchste.')],
       ['Dein Zug', 'Tipp eine deiner Karten und eine aus der Mitte an – dann tauschen sie. Oder alle drei tauschen, schieben oder klopfen.'],
       ['Leben', 'Wer am Ende eines Durchgangs am wenigsten hat, verliert ein Leben. Ohne Leben schwimmst du noch einmal mit – danach bist du raus.'],
     ],
     short: [
-      'Gezählt wird nur die beste <b>Farbe</b>: Ass 11, König/Dame/Bube 10, Zahlen nach Augen. Drei gleiche Werte = 30½.',
+      I18n.html('Gezählt wird nur die beste <b>Farbe</b>: Ass 11, König/Dame/Bube 10, Zahlen nach Augen. Drei gleiche Werte = 30½.'),
       'Zug: eine Karte mit der Mitte tauschen, alle drei tauschen, schieben oder klopfen.',
       'Schieben alle hintereinander, kommen neue Karten in die Mitte.',
       'Klopfen (ab der zweiten Runde): jeder andere hat noch einen Zug, dann wird aufgedeckt.',
@@ -42,7 +42,7 @@
     prefs: deckPrefHTML,
     translate: deckTranslate,
     playerInfo: (p) => (p.out ? 'raus' : `${lives(p)}${badges(p)}`),
-    seat: (p) => (p.out ? '<span>raus</span>' : `${fanHTML(3)}${lives(p)}${badges(p)}`),
+    seat: (p) => (p.out ? I18n.html('<span>raus</span>') : `${fanHTML(3)}${lives(p)}${badges(p)}`),
     sounds(S, prev) {
       if (prev.g && S.g && S.g.dealNo !== prev.g.dealNo) return 'shuffle';
       return null;
@@ -52,10 +52,10 @@
     },
     hint(S, myTurn) {
       const g = S.g;
-      if (!myTurn) return `${nameOf(S, S.turnId)} ist dran${g.knocker ? ' – letzter Zug nach dem Klopfen' : ''}`;
+      if (!myTurn) return I18n.html`${nameOf(S, S.turnId)} ist dran${g.knocker ? ' – letzter Zug nach dem Klopfen' : ''}`;
       if (sel?.side === 'hand') return 'Jetzt eine Karte aus der Mitte antippen – die beiden tauschen';
       if (sel?.side === 'mid') return 'Jetzt eine deiner Karten antippen – die beiden tauschen';
-      if (g.lastTurn) return `${nameOf(S, g.knocker)} hat geklopft – dein letzter Zug: tauschen oder schieben`;
+      if (g.lastTurn) return I18n.html`${nameOf(S, g.knocker)} hat geklopft – dein letzter Zug: tauschen oder schieben`;
       return 'Tipp eine deiner Karten und eine aus der Mitte an – oder alle drei tauschen, schieben, klopfen';
     },
     main(S) {
@@ -63,24 +63,24 @@
       const myTurn = S.turnId === S.you?.id;
       const fire = S.settings.fire;
       const mid = g.middle.map((c, i) => deckCard(c, {
-        cls: `big ${sel?.side === 'mid' && sel.i === i ? 'sel' : ''} ${myTurn && sel?.side === 'hand' ? 'can' : ''}`,
+        cls: I18n.html`big ${sel?.side === 'mid' && sel.i === i ? 'sel' : ''} ${myTurn && sel?.side === 'hand' ? 'can' : ''}`,
         attrs: myTurn ? `data-g="mid" data-i="${i}" data-drop="mid"` : 'disabled',
       })).join('');
-      const knock = g.knocker ? `<div class="kg-chip warn">${nameOf(S, g.knocker)} hat geklopft – jeder hat noch einen Zug</div>` : '';
-      const passes = g.passStreak ? `<div class="kg-chip">${g.passStreak} von ${S.players.filter((p) => p.inRound).length} haben geschoben</div>` : '';
+      const knock = g.knocker ? I18n.html`<div class="kg-chip warn">${nameOf(S, g.knocker)} hat geklopft – jeder hat noch einen Zug</div>` : '';
+      const passes = g.passStreak ? I18n.html`<div class="kg-chip">${g.passStreak} von ${S.players.filter((p) => p.inRound).length} haben geschoben</div>` : '';
       // Eigener Wert groß
       let mine = '';
       if (g.hand) {
         const v = value(g.hand, fire);
-        mine = `<div class="sw-value" role="status"><small>Dein Wert</small><b>${vText(v.v)}</b>${v.suit ? `<span>in ${deckSuitSign(v.suit)} ${esc(deckSuitName(v.suit))}</span>` : '<span>drei gleiche</span>'}</div>`;
+        mine = I18n.html`<div class="sw-value" role="status"><small>Dein Wert</small><b>${vText(v.v)}</b>${v.suit ? I18n.html`<span>in ${deckSuitSign(v.suit)} ${esc(deckSuitName(v.suit))}</span>` : I18n.html('<span>drei gleiche</span>')}</div>`;
       }
       // Aufgedeckt: letzter Durchgang
       let last = '';
       const L = g.lastDeal;
       if (L) {
-        const why = L.reason === '31' ? `${nameOf(S, L.hero)} hatte 31!` : L.reason === 'feuer' ? `Feuer! ${nameOf(S, L.hero)} hatte drei Asse` : L.knocker ? `${nameOf(S, L.knocker)} hatte geklopft` : 'Aufgedeckt';
+        const why = L.reason === '31' ? I18n.html`${nameOf(S, L.hero)} hatte 31!` : L.reason === 'feuer' ? I18n.html`Feuer! ${nameOf(S, L.hero)} hatte drei Asse` : L.knocker ? I18n.html`${nameOf(S, L.knocker)} hatte geklopft` : 'Aufgedeckt';
         const ids = Object.keys(L.hands).sort((a, b) => L.values[b] - L.values[a]);
-        last = `<details class="sw-last" ${closedDeal >= L.no ? '' : 'open'} data-deal="${L.no}">
+        last = I18n.html`<details class="sw-last" ${closedDeal >= L.no ? '' : 'open'} data-deal="${L.no}">
           <summary>Durchgang ${L.no}: ${why}</summary>
           <ol>${ids.map((id) => {
             const lost = L.losers.includes(id);
@@ -90,7 +90,7 @@
               <span class="sw-v">${vText(L.values[id])}</span><small>${lost ? `✗ ${fate}` : ''}</small></li>`;
           }).join('')}</ol></details>`;
       }
-      return `<div class="kg-table sw-table">
+      return I18n.html`<div class="kg-table sw-table">
         <div class="sw-center">
           <div class="sw-mid" role="group" aria-label="Mitte">${mid}</div>
           ${mine}
@@ -107,12 +107,12 @@
       })).join('');
       let acts = '';
       if (myTurn) {
-        acts = `<button class="btn" data-g="swapAll">Alle drei tauschen</button>
-          ${S.settings.passing ? '<button class="btn" data-g="pass">Schieben</button>' : ''}
-          ${g.knocker ? '' : `<button class="btn ${g.canKnock ? 'btn-brass' : ''}" data-g="knock" ${g.canKnock ? '' : 'disabled title="Klopfen geht erst ab der zweiten Runde"'}>Klopfen</button>`}
-          ${sel ? '<button class="btn btn-ghost" data-g="nosel">Abbrechen</button>' : ''}`;
+        acts = I18n.html`<button class="btn" data-g="swapAll">Alle drei tauschen</button>
+          ${S.settings.passing ? I18n.html('<button class="btn" data-g="pass">Schieben</button>') : ''}
+          ${g.knocker ? '' : I18n.html`<button class="btn ${g.canKnock ? 'btn-brass' : ''}" data-g="knock" ${g.canKnock ? '' : 'disabled title="Klopfen geht erst ab der zweiten Runde"'}>Klopfen</button>`}
+          ${sel ? I18n.html('<button class="btn btn-ghost" data-g="nosel">Abbrechen</button>') : ''}`;
       }
-      return `<div class="kg-hand" role="group" aria-label="Deine Karten">${hand}</div><div class="kg-acts">${acts}</div>`;
+      return I18n.html`<div class="kg-hand" role="group" aria-label="Deine Karten">${hand}</div><div class="kg-acts">${acts}</div>`;
     },
     // Ziehen (Maus): eigene Karte auf eine Karte der Mitte = tauschen
     onDrop(src, z) {
@@ -132,7 +132,7 @@
       else if (g === 'knock') { sel = null; send('knock'); }
       else if (g === 'nosel') { sel = null; kit.render(); }
     },
-    rules: `<p>32 Karten (7 bis Ass). Jeder hat 3 Karten, 3 liegen offen in der Mitte.</p>
+    rules: I18n.html`<p>32 Karten (7 bis Ass). Jeder hat 3 Karten, 3 liegen offen in der Mitte.</p>
       <p><b>Wert:</b> Gezählt wird nur die höchste Summe <b>einer Farbe</b> – Ass 11, König, Dame, Bube 10, Zahlen nach Augen. Drei gleiche Werte (z. B. drei 8er) = 30½. Das Beste ist <b>31</b>: Ass und zwei Zehnerkarten einer Farbe.</p>
       <ul>
         <li><b>Zug:</b> eine Karte mit der Mitte tauschen, alle drei tauschen, schieben (nichts tun) oder klopfen.</li>

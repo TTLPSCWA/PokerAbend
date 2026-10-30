@@ -653,3 +653,8 @@ button.die { cursor: pointer; }
   .top-left .code-chip b { letter-spacing: .06em; }
   .home-btn { min-width: 40px; min-height: 40px; }
 }
+/* Personal language setting, shared by login, hub and game preferences. */
+.language-choice { display: inline-flex; align-items: center; gap: .5rem; font-size: .85rem; }
+.language-choice select { font: inherit; color: #f7f3e8; background: #1a2521; border: 1px solid #a99a76; border-radius: .5rem; padding: .35rem .5rem; min-height: 36px; }
+.hub-top .language-choice > span { display: none; }
+@media (max-width: 600px) { .hub-top .language-choice select { max-width: 78px; padding-inline: .15rem; } }

@@ -13,7 +13,7 @@
   const COLOR = ['Weiß', 'Schwarz'];
   let from = null; // gewählter eigener Stein beim Ziehen
   const nameOf = (S, id) => esc(S.players.find((p) => p.id === id)?.name ?? '?');
-  const pos = (p) => `left:${((XY[p][0] + 0.5) / 7) * 100}%;top:${((XY[p][1] + 0.5) / 7) * 100}%`;
+  const pos = (p) => I18n.html`left:${((XY[p][0] + 0.5) / 7) * 100}%;top:${((XY[p][1] + 0.5) / 7) * 100}%`;
   const closes = (board, who, to, src = null) => { const b = [...board]; if (src !== null) b[src] = null; b[to] = who; return MILLS.some((m) => m.includes(to) && m.every((q) => b[q] === who)); };
   const stone = (color) => `<span class="mu-stone mu-${color}" aria-hidden="true"></span>`;
 
@@ -23,7 +23,7 @@
 
   const kit = kitGame({
     id: 'muehle',
-    moveDetail: (m) => (m.d && m.d.to !== undefined ? `<span class="look-d">${m.d.from === null || m.d.from === undefined ? '' : `Punkt ${m.d.from + 1} → `}Punkt ${m.d.to + 1}</span>` : ''),
+    moveDetail: (m) => (m.d && m.d.to !== undefined ? I18n.html`<span class="look-d">${m.d.from === null || m.d.from === undefined ? '' : I18n.html`Punkt ${m.d.from + 1} → `}Punkt ${m.d.to + 1}</span>` : ''),
     name: 'Mühle',
     direction: false,
     // Erste Schritte beim ersten Spiel (3 Schritte, abschaltbar unter „Ich“)
@@ -40,13 +40,13 @@
       'Unentschieden: 50 Züge ohne Schlagen oder dreimal dieselbe Stellung.',
     ],
     house: () => [],
-    playerInfo: (p) => (p.color === null || p.color === undefined ? '' : `<span class="mu-dot mu-${p.color}"></span>${COLOR[p.color]} · ${p.hand ? `${p.hand} zum Setzen · ` : ''}${p.stones} auf dem Brett${p.flying ? ' · <b>springt</b>' : ''}`),
+    playerInfo: (p) => (p.color === null || p.color === undefined ? '' : I18n.html`<span class="mu-dot mu-${p.color}"></span>${COLOR[p.color]} · ${p.hand ? I18n.html`${p.hand} zum Setzen · ` : ''}${p.stones} auf dem Brett${p.flying ? I18n.html(' · <b>springt</b>') : ''}`),
     onState(S, prev) { if (S.turnId !== prev?.turnId || S.g?.step !== 'move') from = null; },
     hint(S, myTurn) {
       const g = S.g;
-      if (!myTurn) return `${nameOf(S, S.turnId)} ist dran`;
-      if (g.step === 'remove') return '<b>Mühle!</b> Tipp einen rot markierten Stein an, um ihn zu nehmen';
-      if (g.legal?.place) return `Setz einen Stein auf einen freien Punkt (noch ${g.inHand[S.you.id]})`;
+      if (!myTurn) return I18n.html`${nameOf(S, S.turnId)} ist dran`;
+      if (g.step === 'remove') return I18n.html('<b>Mühle!</b> Tipp einen rot markierten Stein an, um ihn zu nehmen');
+      if (g.legal?.place) return I18n.html`Setz einen Stein auf einen freien Punkt (noch ${g.inHand[S.you.id]})`;
       if (from !== null) return g.flying ? 'Du springst: tipp einen freien Punkt an' : 'Tipp ein leuchtendes Ziel an';
       return g.flying ? 'Du hast nur noch 3 Steine und darfst springen – tipp einen eigenen Stein an' : 'Tipp einen eigenen Stein an, der ziehen kann';
     },
@@ -65,12 +65,12 @@
         const color = owner === null ? null : g.colors[owner];
         const cls = [color === null ? 'empty' : '', last && (last.to === p || last.from === p) ? 'last' : '', from === p ? 'sel' : ''];
         let action = null, label = '';
-        if (removable.has(p)) { action = 'take'; cls.push('hit'); label = `${COLOR[color]}en Stein nehmen`; }
+        if (removable.has(p)) { action = 'take'; cls.push('hit'); label = I18n.html`${COLOR[color]}en Stein nehmen`; }
         else if (placeable.has(p)) { action = 'place'; cls.push('can'); if (closes(g.board, me, p)) cls.push('mill'); label = 'hier setzen'; }
         else if (targets.has(p)) { action = 'to'; cls.push('target'); if (closes(g.board, me, p, from)) cls.push('mill'); label = 'hierhin ziehen'; }
         else if (movable.has(p)) { action = 'from'; cls.push('mine'); label = 'diesen Stein ziehen'; }
-        const inner = (color === null ? '' : stone(color)) + (cls.includes('mill') ? '<em class="mu-millmark">Mühle</em>' : '') + (cls.includes('hit') ? '<b class="mu-x" aria-hidden="true">✕</b>' : '');
-        const name = `Punkt ${p + 1}${color === null ? ' frei' : ` ${COLOR[color]}`}`;
+        const inner = (color === null ? '' : stone(color)) + (cls.includes('mill') ? I18n.html('<em class="mu-millmark">Mühle</em>') : '') + (cls.includes('hit') ? '<b class="mu-x" aria-hidden="true">✕</b>' : '');
+        const name = I18n.html`Punkt ${p + 1}${color === null ? ' frei' : ` ${COLOR[color]}`}`;
         return action
           ? `<button type="button" class="mu-pt ${cls.join(' ')}" style="${pos(p)}" data-g="${action}" data-p="${p}" aria-label="${name} – ${label}">${inner}</button>`
           : `<span class="mu-pt ${cls.join(' ')}" style="${pos(p)}" role="img" aria-label="${name}">${inner}</span>`;
@@ -78,15 +78,15 @@
       // Gebildete Mühlen als goldene Linie
       const mills = (g.mills || []).map((m) => { const [a, , c] = m.map((p) => XY[p]); return `<line x1="${a[0]}" y1="${a[1]}" x2="${c[0]}" y2="${c[1]}"/>`; }).join('');
       const side = (id) => `<div class="mu-side ${id === S.turnId ? 'turn' : ''}"><span class="mu-stack">${'<i></i>'.repeat(g.inHand[id] || 0)}</span>
-        <small>${nameOf(S, id)} (${COLOR[g.colors[id]]}): ${g.inHand[id] ? `${g.inHand[id]} zum Setzen` : 'alle gesetzt'}</small></div>`;
+        <small>${nameOf(S, id)} (${COLOR[g.colors[id]]}): ${g.inHand[id] ? I18n.html`${g.inHand[id]} zum Setzen` : 'alle gesetzt'}</small></div>`;
       const ids = Object.keys(g.colors).sort((x, y) => g.colors[x] - g.colors[y]);
-      return `<div class="kg-table mu-wrap">
+      return I18n.html`<div class="kg-table mu-wrap">
         <div class="mu-sides">${ids.map(side).join('')}</div>
         <div class="mu-board ${myColor === 1 ? 'me-black' : ''}" role="group" aria-label="Mühle-Brett">
           <svg viewBox="-0.5 -0.5 7 7" class="mu-lines" aria-hidden="true">${LINES}<g class="mu-mills">${mills}</g></svg>${pts}</div>
-        ${g.drawLimit ? `<small class="mu-quiet">Züge ohne Schlagen: ${g.quiet} von ${g.drawLimit}</small>` : ''}</div>`;
+        ${g.drawLimit ? I18n.html`<small class="mu-quiet">Züge ohne Schlagen: ${g.quiet} von ${g.drawLimit}</small>` : ''}</div>`;
     },
-    dock(S, myTurn) { return myTurn && from !== null ? '<button class="btn btn-ghost" data-g="unsel">Anderen Stein wählen</button>' : ''; },
+    dock(S, myTurn) { return myTurn && from !== null ? I18n.html('<button class="btn btn-ghost" data-g="unsel">Anderen Stein wählen</button>') : ''; },
     onClick(t) {
       const g = t.dataset.g, p = Number(t.dataset.p);
       if (g === 'place') send('place', { point: p });
@@ -95,7 +95,7 @@
       else if (g === 'take') send('capture', { point: p });
       else if (g === 'unsel') { from = null; kit.render(); }
     },
-    rules: `<p>Ein Brett mit 24 Punkten auf drei Quadraten. Jeder hat 9 Steine, Weiß spielt, wer zuerst am Tisch saß. Wer anfängt, wechselt jede Partie.</p>
+    rules: I18n.html`<p>Ein Brett mit 24 Punkten auf drei Quadraten. Jeder hat 9 Steine, Weiß spielt, wer zuerst am Tisch saß. Wer anfängt, wechselt jede Partie.</p>
       <ul>
         <li><b>Setzen:</b> abwechselnd einen Stein auf einen freien Punkt, bis alle 9 gesetzt sind.</li>
         <li><b>Ziehen:</b> abwechselnd einen eigenen Stein entlang einer Linie auf den benachbarten freien Punkt.</li>

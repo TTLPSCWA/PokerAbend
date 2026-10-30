@@ -1,6 +1,6 @@
 'use strict';
 const Achievements = (() => {
-  const groups = { mitspielen: 'Mitspielen', gewinnen: 'Gewinnen', entdecken: 'Entdecken' };
+  const groups = { mitspielen: I18n.t('Mitspielen'), gewinnen: I18n.t('Gewinnen'), entdecken: 'Entdecken' };
   const paths = {
     play: '<path d="m9 5 11 7-11 7z"/>',
     trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4m-4 2v4m-4 3h8"/>',
@@ -21,25 +21,25 @@ const Achievements = (() => {
   function cards() {
     if (!data || !$('#achievement-cards')) return;
     const filtered = data.badges.filter((b) => (group === 'all' || b.group === group) && (state === 'all' || b.unlocked === (state === 'unlocked')));
-    $('#achievement-cards').innerHTML = filtered.map((b) => `<article class="achievement-card ${b.unlocked ? 'earned' : 'locked'} tier-${b.tier}" data-badge="${esc(b.id)}"><div class="achievement-card-head"><div class="achievement-medal" aria-hidden="true"><svg viewBox="0 0 24 24">${paths[b.icon] || paths.trophy}</svg></div><div><small>${groups[b.group]} · ${{ bronze: 'Bronze', silver: 'Silber', gold: 'Gold' }[b.tier]}</small><h2>${esc(b.title)}</h2></div><span class="achievement-state">${b.unlocked ? '✓ Erreicht' : 'Noch offen'}</span></div><p>${esc(b.description)}</p><progress value="${b.progress}" max="${b.target}" aria-label="${esc(b.title)}: ${b.progress} von ${b.target}"></progress><small class="achievement-count">${b.progress.toLocaleString('de-DE')} / ${b.target.toLocaleString('de-DE')}</small></article>`).join('') || '<p>Für diesen Filter gibt es keine Abzeichen.</p>';
-    $('#achievement-result-count').textContent = `${filtered.length} Abzeichen angezeigt`;
+    $('#achievement-cards').innerHTML = filtered.map((b) => I18n.html`<article class="achievement-card ${b.unlocked ? 'earned' : 'locked'} tier-${b.tier}" data-badge="${esc(b.id)}"><div class="achievement-card-head"><div class="achievement-medal" aria-hidden="true"><svg viewBox="0 0 24 24">${paths[b.icon] || paths.trophy}</svg></div><div><small>${groups[b.group]} · ${{ bronze: 'Bronze', silver: 'Silber', gold: 'Gold' }[b.tier]}</small><h2>${esc(b.title)}</h2></div><span class="achievement-state">${b.unlocked ? '✓ Erreicht' : 'Noch offen'}</span></div><p>${esc(b.description)}</p><progress value="${b.progress}" max="${b.target}" aria-label="${esc(b.title)}: ${b.progress} von ${b.target}"></progress><small class="achievement-count">${b.progress.toLocaleString(I18n.locale)} / ${b.target.toLocaleString(I18n.locale)}</small></article>`).join('') || I18n.html('<p>Für diesen Filter gibt es keine Abzeichen.</p>');
+    $('#achievement-result-count').textContent = I18n.html`${filtered.length} Abzeichen angezeigt`;
   }
   function render(result) {
     data = result; selectedName = result.name;
     $('#achievement-name').value = result.name;
-    $('#achievement-body').innerHTML = `<section class="achievement-summary"><div><p>Erfolge für</p><h2>${esc(result.name || 'deinen Namen')}</h2><strong>${result.unlocked} von ${result.total} Abzeichen erreicht</strong><progress value="${result.unlocked}" max="${result.total}" aria-label="${result.unlocked} von ${result.total} Abzeichen erreicht"></progress></div><dl>${[['Partien', result.stats.played], ['Siege', result.stats.wins], ['Spiele', result.stats.distinctGames], ['Kategorien', result.stats.categories]].map(([label, value]) => `<div><dt>${label}</dt><dd>${value.toLocaleString('de-DE')}</dd></div>`).join('')}</dl></section>
-      ${!result.recorded ? '<p class="notice">Für diesen Namen gibt es noch keine gewerteten Partien. Spiele eine Partie zu Ende, um das erste Abzeichen zu erhalten.</p>' : ''}
+    $('#achievement-body').innerHTML = I18n.html`<section class="achievement-summary"><div><p>Erfolge für</p><h2>${esc(result.name || 'deinen Namen')}</h2><strong>${result.unlocked} von ${result.total} Abzeichen erreicht</strong><progress value="${result.unlocked}" max="${result.total}" aria-label="${result.unlocked} von ${result.total} Abzeichen erreicht"></progress></div><dl>${[['Partien', result.stats.played], [I18n.t('Siege'), result.stats.wins], [I18n.t('Spiele'), result.stats.distinctGames], ['Kategorien', result.stats.categories]].map(([label, value]) => `<div><dt>${label}</dt><dd>${value.toLocaleString(I18n.locale)}</dd></div>`).join('')}</dl></section>
+      ${!result.recorded ? I18n.html('<p class="notice">Für diesen Namen gibt es noch keine gewerteten Partien. Spiele eine Partie zu Ende, um das erste Abzeichen zu erhalten.</p>') : ''}
       <div class="achievement-filters"><label class="field"><span>Bereich</span><select class="input" id="achievement-group" aria-label="Abzeichen-Bereich">${Object.entries({ all: 'Alle Bereiche', ...groups }).map(([v, label]) => `<option value="${v}" ${v === group ? 'selected' : ''}>${label}</option>`).join('')}</select></label><label class="field"><span>Fortschritt</span><select class="input" id="achievement-state" aria-label="Abzeichen-Fortschritt">${[['all', 'Alle Abzeichen'], ['unlocked', 'Erreicht'], ['locked', 'Noch offen']].map(([v, label]) => `<option value="${v}" ${v === state ? 'selected' : ''}>${label}</option>`).join('')}</select></label></div><p id="achievement-result-count" class="hint" role="status"></p><div class="achievement-grid" id="achievement-cards"></div>`;
     cards();
   }
   async function load(name, g) {
     try { const result = await request('?' + new URLSearchParams({ name })); if (active(g)) render(result); }
-    catch (error) { if (active(g)) $('#achievement-body').innerHTML = `<p class="error" role="alert">${esc(error.message)}</p><button class="btn" data-achievements-refresh>Erneut versuchen</button>`; }
+    catch (error) { if (active(g)) $('#achievement-body').innerHTML = I18n.html`<p class="error" role="alert">${esc(error.message)}</p><button class="btn" data-achievements-refresh>Erneut versuchen</button>`; }
   }
   function page() {
     const name = selectedName ?? profile.name, g = ++generation; data = null;
     queueMicrotask(() => load(name, g));
-    return `<section class="hub-head"><h1>Erfolge & Abzeichen</h1><p>Deine Meilensteine über alle gewerteten Partien und Spieleabende.</p></section><p class="hint">Wie in der Bestenliste zählt der Anzeigename. Gleiche Namen teilen den Fortschritt; ein anderer Name hat einen eigenen Stand.</p>
+    return I18n.html`<section class="hub-head"><h1>Erfolge & Abzeichen</h1><p>Deine Meilensteine über alle gewerteten Partien und Spieleabende.</p></section><p class="hint">Wie in der Bestenliste zählt der Anzeigename. Gleiche Namen teilen den Fortschritt; ein anderer Name hat einen eigenen Stand.</p>
       <form id="achievement-player" class="achievement-player"><label class="field"><span>Spielername</span><input class="input" id="achievement-name" maxlength="16" required list="achievement-players" value="${esc(name)}" autocomplete="off"><datalist id="achievement-players"></datalist></label><button class="btn btn-brass" type="submit">Erfolge ansehen</button><button class="btn" type="button" data-achievements-own>Meine Erfolge</button></form><p class="hint">Poker und Omaha zählen pro Hand, andere Spiele pro gewerteter Partie. Zuschauer und abgebrochene Partien zählen nicht. Bereits gespeicherte Ergebnisse gelten ebenfalls.</p><div id="achievement-body" aria-live="polite"><p>Lade Erfolge …</p></div>`;
   }
   function open() {
@@ -71,7 +71,7 @@ const Achievements = (() => {
   });
   socket.on('achievements', (event) => {
     if (!Array.isArray(event?.names) || !event.names.length) return;
-    toast(`Neue Abzeichen für ${event.name}: ${event.names.slice(0, 3).join(' · ')}${event.names.length > 3 ? ` (+${event.names.length - 3})` : ''}`);
+    toast(I18n.html`Neue Abzeichen für ${event.name}: ${event.names.slice(0, 3).join(' · ')}${event.names.length > 3 ? ` (+${event.names.length - 3})` : ''}`);
     if (hubVisible() && route.page === 'erfolge') load(selectedName ?? profile.name, ++generation);
   });
   return { page, open };

@@ -5,7 +5,7 @@
   const nameOf = (S, id) => esc(S.players.find((p) => p.id === id)?.name ?? '?');
   const half = (n) => `<span class="dn-half" aria-hidden="true">${[...Array(9)].map((_, i) => `<i class="${PIPS[n]?.includes(i) ? 'on' : ''}"></i>`).join('')}</span>`;
   // Stein waagerecht (Kette, Hand): [a, b]
-  const tile = (a, b, { cls = '', attrs = '', tag = 'span' } = {}) => `<${tag} class="dn-tile ${cls}" ${attrs} ${tag === 'button' ? 'type="button"' : 'role="img"'} aria-label="Stein ${a} zu ${b}">${half(a)}<span class="dn-bar"></span>${half(b)}</${tag}>`;
+  const tile = (a, b, { cls = '', attrs = '', tag = 'span' } = {}) => I18n.html`<${tag} class="dn-tile ${cls}" ${attrs} ${tag === 'button' ? 'type="button"' : 'role="img"'} aria-label="Stein ${a} zu ${b}">${half(a)}<span class="dn-bar"></span>${half(b)}</${tag}>`;
   const parts = (t) => t.split('-').map(Number);
 
   const kit = kitGame({
@@ -25,32 +25,32 @@
       'Wer zuerst alle Steine los ist, gewinnt. Ist alles blockiert, gewinnt, wer die wenigsten Augen hat.',
     ],
     house: () => [],
-    playerInfo: (p) => (p.tiles === undefined ? '' : `${p.tiles} Stein${p.tiles === 1 ? '' : 'e'}`),
-    seat: (p) => `<span>${p.tiles ?? 0} Steine</span>`,
+    playerInfo: (p) => (p.tiles === undefined ? '' : I18n.html`${p.tiles} Stein${p.tiles === 1 ? '' : 'e'}`),
+    seat: (p) => I18n.html`<span>${p.tiles ?? 0} Steine</span>`,
     onState(S) { if (S.turnId !== S.you?.id) pending = null; },
     hint(S, myTurn) {
       const g = S.g;
-      if (!myTurn) return `${nameOf(S, S.turnId)} ist dran`;
-      if (g.starter) return `Du fängst an: lege ${g.starter.replace('-', '|')}`;
+      if (!myTurn) return I18n.html`${nameOf(S, S.turnId)} ist dran`;
+      if (g.starter) return I18n.html`Du fängst an: lege ${g.starter.replace('-', '|')}`;
       if (pending) return 'Wähl das Ende der Kette';
       if (g.playable.length) return 'Tipp einen passenden Stein an';
       return g.canDraw ? 'Nichts passt – zieh aus dem Vorrat' : g.canPass ? 'Nichts passt und der Vorrat ist leer – du setzt aus' : '';
     },
     main(S) {
       const g = S.g;
-      const chain = g.chain.length ? g.chain.map(([a, b]) => tile(a, b, { cls: a === b ? 'double' : '' })).join('') : '<p class="hint">Noch kein Stein gelegt</p>';
-      const ends = g.ends ? `<div class="kg-chip">Enden: <b>${g.ends[0]}</b> und <b>${g.ends[1]}</b> · Vorrat ${g.stock}</div>` : `<div class="kg-chip">Vorrat ${g.stock}</div>`;
-      return `<div class="kg-table dn-wrap"><div class="dn-chain" role="group" aria-label="Kette">${chain}</div><div class="kg-chips">${ends}</div></div>`;
+      const chain = g.chain.length ? g.chain.map(([a, b]) => tile(a, b, { cls: a === b ? 'double' : '' })).join('') : I18n.html('<p class="hint">Noch kein Stein gelegt</p>');
+      const ends = g.ends ? I18n.html`<div class="kg-chip">Enden: <b>${g.ends[0]}</b> und <b>${g.ends[1]}</b> · Vorrat ${g.stock}</div>` : I18n.html`<div class="kg-chip">Vorrat ${g.stock}</div>`;
+      return I18n.html`<div class="kg-table dn-wrap"><div class="dn-chain" role="group" aria-label="Kette">${chain}</div><div class="kg-chips">${ends}</div></div>`;
     },
     dock(S, myTurn) {
       const g = S.g;
       const can = new Map(g.playable.map((x) => [x.tile, x.sides]));
       const hand = (g.hand || []).map((t) => { const [a, b] = parts(t); return tile(a, b, { tag: 'button', cls: `${can.has(t) ? 'can' : ''} ${pending === t ? 'sel' : ''}`, attrs: myTurn && can.has(t) ? `data-g="tile" data-t="${t}"` : 'disabled' }); }).join('');
       let acts = '';
-      if (myTurn && pending) acts = `<button class="btn btn-brass" data-g="side" data-s="L">Links anlegen (${g.ends[0]})</button><button class="btn btn-brass" data-g="side" data-s="R">Rechts anlegen (${g.ends[1]})</button><button class="btn btn-ghost" data-g="cancel">Abbrechen</button>`;
-      else if (myTurn && g.canDraw) acts = '<button class="btn btn-brass" data-g="draw">Aus dem Vorrat ziehen</button>';
-      else if (myTurn && g.canPass) acts = '<button class="btn" data-g="pass">Aussetzen</button>';
-      return `<div class="kg-hand dn-hand" role="group" aria-label="Deine Steine">${hand}</div><div class="kg-acts">${acts}</div>`;
+      if (myTurn && pending) acts = I18n.html`<button class="btn btn-brass" data-g="side" data-s="L">Links anlegen (${g.ends[0]})</button><button class="btn btn-brass" data-g="side" data-s="R">Rechts anlegen (${g.ends[1]})</button><button class="btn btn-ghost" data-g="cancel">Abbrechen</button>`;
+      else if (myTurn && g.canDraw) acts = I18n.html('<button class="btn btn-brass" data-g="draw">Aus dem Vorrat ziehen</button>');
+      else if (myTurn && g.canPass) acts = I18n.html('<button class="btn" data-g="pass">Aussetzen</button>');
+      return I18n.html`<div class="kg-hand dn-hand" role="group" aria-label="Deine Steine">${hand}</div><div class="kg-acts">${acts}</div>`;
     },
     onClick(t, S) {
       const g = t.dataset.g;
@@ -63,7 +63,7 @@
       else if (g === 'draw') send('draw');
       else if (g === 'pass') send('pass');
     },
-    rules: `<p>28 Steine (0 bis 6). Jeder bekommt 7, der Rest bleibt als Vorrat liegen.</p>
+    rules: I18n.html`<p>28 Steine (0 bis 6). Jeder bekommt 7, der Rest bleibt als Vorrat liegen.</p>
       <ul>
         <li>Wer den <b>höchsten Pasch</b> hat (sonst den höchsten Stein), legt ihn zuerst.</li>
         <li>Reihum legt man einen Stein mit <b>passender Augenzahl</b> an eines der beiden Enden der Kette.</li>

@@ -3,7 +3,7 @@ const variantMeta = (game, id = 'classic') => account.games.find((g) => g.id ===
 const variantBadgesHTML = (game) => (game.variants || []).filter((v) => v.id !== 'classic').map((v) => `<span class="variant-badge">${esc(v.name)}</span>`).join('');
 const variantControlsHTML = (S) => {
   const variants = account.games.find((g) => g.id === S.game)?.variants || [];
-  return variants.length > 1 ? `<section><h3>Variante</h3><label class="field"><span>Spielvariante</span><select class="input" data-variant ${S.phase === 'playing' || programRunning(S) ? 'disabled' : ''}>${variants.map((v) => `<option value="${v.id}" ${v.id === (S.variant || 'classic') ? 'selected' : ''}>${esc(v.name)} · ${v.minPlayers}–${v.maxPlayers} Spieler</option>`).join('')}</select></label><p class="hint">Beim Wechsel gelten die Standardregeln der neuen Variante und ein neuer Tischstand. Ein vorbereitetes Abendprogramm wird dabei ersetzt.</p></section>` : '';
+  return variants.length > 1 ? I18n.html`<section><h3>Variante</h3><label class="field"><span>Spielvariante</span><select class="input" data-variant ${S.phase === 'playing' || programRunning(S) ? 'disabled' : ''}>${variants.map((v) => I18n.html`<option value="${v.id}" ${v.id === (S.variant || 'classic') ? 'selected' : ''}>${esc(v.name)} · ${v.minPlayers}–${v.maxPlayers} Spieler</option>`).join('')}</select></label><p class="hint">Beim Wechsel gelten die Standardregeln der neuen Variante und ein neuer Tischstand. Ein vorbereitetes Abendprogramm wird dabei ersetzt.</p></section>` : '';
 };
 document.addEventListener('change', (e) => { if (e.target.matches('[data-variant]')) send('setVariant', { variant: e.target.value }); });
 const VARIANT_RULES = {

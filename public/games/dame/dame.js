@@ -23,11 +23,11 @@
       'Wer nicht mehr ziehen kann, verliert. Weiß fängt an.',
     ],
     house: () => [],
-    playerInfo: (p) => (p.color === null || p.color === undefined ? '' : `<span class="dm-dot dm-${p.color}">${colorMark(MARK[p.color])}</span>${COLOR[p.color]} · ${p.pieces} Steine`),
+    playerInfo: (p) => (p.color === null || p.color === undefined ? '' : I18n.html`<span class="dm-dot dm-${p.color}">${colorMark(MARK[p.color])}</span>${COLOR[p.color]} · ${p.pieces} Steine`),
     onState(S) { if (S.turnId !== S.you?.id) sel = null; else if (S.g?.chain != null) sel = S.g.chain; },
     hint(S, myTurn) {
       const g = S.g;
-      if (!myTurn) return `${nameOf(S, S.turnId)} ist dran`;
+      if (!myTurn) return I18n.html`${nameOf(S, S.turnId)} ist dran`;
       if (g.chain !== null) return 'Weiterspringen mit demselben Stein';
       return g.mustJump ? 'Schlagzwang: spring über einen Gegner' : sel === null ? 'Wähl einen Stein' : 'Wähl ein leuchtendes Feld';
     },
@@ -50,7 +50,7 @@
         return act ? `<button type="button" class="dm-cell ${dark ? 'dark' : 'light'} can ${last ? 'last' : ''}" data-g="cell" data-c="${i}" aria-label="${label}">${inner}</button>`
           : `<div class="dm-cell ${dark ? 'dark' : 'light'} ${last ? 'last' : ''}" role="gridcell" aria-label="${label}">${inner}</div>`;
       }).join('');
-      return `<div class="kg-table dm-wrap"><div class="dm-board" role="grid" aria-label="Spielfeld">${cells}</div></div>`;
+      return I18n.html`<div class="kg-table dm-wrap"><div class="dm-board" role="grid" aria-label="Spielfeld">${cells}</div></div>`;
     },
     dock: () => '',
     onClick(t, S) {
@@ -61,7 +61,7 @@
       if (from !== null && from !== undefined && (g.legal[from] || []).includes(i)) { sel = null; send('move', { from, to: i }); return; }
       if (g.legal[i]) { sel = sel === i ? null : i; kit.render(); }
     },
-    rules: `<p>Deutsche Dame auf 8 × 8 Feldern, gezogen wird nur auf den dunklen. Weiß (wer die Partie anfängt) beginnt.</p>
+    rules: I18n.html`<p>Deutsche Dame auf 8 × 8 Feldern, gezogen wird nur auf den dunklen. Weiß (wer die Partie anfängt) beginnt.</p>
       <ul>
         <li>Gewöhnliche Steine ziehen <b>schräg ein Feld vorwärts</b>. Sie <b>schlagen</b> vorwärts <b>und rückwärts</b>, indem sie einen Gegner überspringen.</li>
         <li>Es besteht <b>Schlagzwang</b>. Geht nach einem Sprung ein weiterer Sprung mit demselben Stein, muss er gezogen werden (tipp ihn einzeln an).</li>

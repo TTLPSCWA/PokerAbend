@@ -39,6 +39,8 @@ Ein beauftragter Push startet derzeit Tests und GHCR-Image-Veröffentlichung, ke
 
 ## Schnellstart
 
+**Sprache:** Auf Anmeldung und Startseite sowie unter **Ich → Sprache** am Spieltisch kann jeder Browser zwischen Deutsch und **English (Beta)** wählen. Die Auswahl wird gespeichert und lässt sich während einer Runde ohne Neuladen ändern. Englisch umfasst die Bibliothek, gemeinsame Bedienung und 423 Party-Aufgaben; einzelne Regeln und weitere Inhalte bleiben vorerst deutsch. Umfang und Prüfnachweise: [docs/languages.md](docs/languages.md).
+
 ### Lokal mit Docker (empfohlen)
 
 ```bash

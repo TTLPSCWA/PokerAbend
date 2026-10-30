@@ -37,7 +37,7 @@ function soloGame(def) {
     if (submitted) return;
     submitted = true;
     const r = await send('solo', { payload });
-    if (!r?.ok) { submitted = false; toast(r?.error || 'Das hat nicht geklappt', true); }
+    if (!r?.ok) { submitted = false; toast(r?.error || I18n.t('Das hat nicht geklappt'), true); }
     else sfx?.('chips');
   }
   function refresh(c) {
@@ -77,9 +77,9 @@ function soloGame(def) {
     question: (S) => (def.question ? def.question(ctxOf(S)) : ''),
     board(S) {
       const c = ctxOf(S);
-      if (!c.round) return '<div class="so-wait" role="status">Die Runde wird vorbereitet …</div>';
-      if (c.submitted) return `<div class="so-wait" role="status"><p>${S.g.mine ? `Deine Wertung: <b>${S.g.mine.pts}</b> Punkte` : 'Abgegeben.'}</p><p class="hint">Die Ergebnisse siehst du, sobald alle fertig sind oder die Zeit abläuft.</p></div>`;
-      if (!c.G.canAnswer) return '<div class="so-wait" role="status"><p>Du schaust zu.</p></div>';
+      if (!c.round) return I18n.html('<div class="so-wait" role="status">Die Runde wird vorbereitet …</div>');
+      if (c.submitted) return I18n.html`<div class="so-wait" role="status"><p>${S.g.mine ? I18n.html`Deine Wertung: <b>${S.g.mine.pts}</b> Punkte` : 'Abgegeben.'}</p><p class="hint">Die Ergebnisse siehst du, sobald alle fertig sind oder die Zeit abläuft.</p></div>`;
+      if (!c.G.canAnswer) return I18n.html('<div class="so-wait" role="status"><p>Du schaust zu.</p></div>');
       return `<div id="so-area" class="so-area so-${def.id}" data-sig="${esc(def.sig(c))}">${def.render(c)}</div>`;
     },
     writeForm(S) { const c = ctxOf(S); return def.form && c.round && c.canPlay ? def.form(c) : ''; },
@@ -87,7 +87,7 @@ function soloGame(def) {
     submit(kind, text) { const c = ctxOf(kit.S); const p = def.formPayload?.(text, c); if (p === null || p === undefined) { toast('Das habe ich nicht verstanden', true); return Promise.resolve(null); } return submit(p).then(() => ({ ok: true })); },
     reveal(S) {
       const R = S.g.reveal;
-      const rows = R.results.map((r) => `<li class="${r.pts ? 'win' : ''} ${r.id === S.you?.id ? 'me' : ''}">${pkAvatar(S, r.id)}<span class="nm">${esc(pkName(S, r.id))}${r.id === S.you?.id ? ' <small>(du)</small>' : ''}</span>
+      const rows = R.results.map((r) => `<li class="${r.pts ? 'win' : ''} ${r.id === S.you?.id ? 'me' : ''}">${pkAvatar(S, r.id)}<span class="nm">${esc(pkName(S, r.id))}${r.id === S.you?.id ? I18n.html(' <small>(du)</small>') : ''}</span>
         <span class="val"><small>${esc(r.detail)}</small></span><span class="pts pk-pts">${r.pts ? `+${r.pts}` : '0'}</span></li>`).join('');
       return `${def.solution ? def.solution(R.solution, S) : ''}<ol class="sm-rank so-rank">${rows}</ol>`;
     },

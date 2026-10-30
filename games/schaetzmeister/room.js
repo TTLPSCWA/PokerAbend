@@ -5,8 +5,9 @@
 // Die Fragen liegen in fragen.json (mit Quellenangabe); der Host kann eigene Fragen für den Abend ergänzen.
 import { readFileSync } from 'node:fs';
 import { PartyRoom, partyOptions } from '../party-room.js';
+import { bilingual } from '../party-english.js';
 
-const CATALOG = JSON.parse(readFileSync(new URL('./fragen.json', import.meta.url), 'utf8'));
+const CATALOG = bilingual('schaetzmeister', JSON.parse(readFileSync(new URL('./fragen.json', import.meta.url), 'utf8')));
 export const MAX_ABS = 1e15;
 
 // Zahl aus Text: „1.234,5“, „3,5“, „-12“, „206“ – Punkt als Tausendertrenner, Komma als Dezimalzeichen. Sonst null.
@@ -80,7 +81,7 @@ export class Room extends PartyRoom {
     const guesses = all.map((g) => ({ id: g.id, value: g.value, pts: scored[g.id]?.pts ?? 0, exact: !!scored[g.id]?.exact, spectator: !this.order.includes(g.id) }))
       .sort((x, y) => Math.abs(x.value - a) - Math.abs(y.value - a));
     for (const g of guesses) if (!g.spectator) this.addPoints(g.id, g.pts);
-    this.reveal = { answer: a, unit: this.cur.unit, src: this.cur.src, guesses, missing: this.order.filter((id) => this.answers[id] === undefined) };
+    this.reveal = { answer: a, unit: this.cur.unit, unitEn: this.cur.unitEn, src: this.cur.src, guesses, missing: this.order.filter((id) => this.answers[id] === undefined) };
     const best = guesses.find((g) => !g.spectator && g.pts > 0);
     this.say(`Richtig: ${fmt(a)} ${this.cur.unit}`.trim() + (best ? ` – ${this.name(best.id)} lag am nächsten (${fmt(best.value)})` : ' – niemand hat mitgeschätzt'), 'win');
   }
@@ -97,7 +98,7 @@ export class Room extends PartyRoom {
 
   stageView(viewerId) {
     return {
-      question: this.cur.q, unit: this.cur.unit,
+      question: this.cur.q, unit: this.cur.unit, questionEn: this.cur.en, unitEn: this.cur.unitEn,
       mine: this.answers[viewerId] ?? null,   // nur die eigene Schätzung – fremde erst in der Auflösung
       reveal: this.stage === 'reveal' ? this.reveal : null,
     };

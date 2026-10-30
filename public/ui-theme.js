@@ -9,10 +9,10 @@ window.UITheme = (() => {
     root.dataset.theme = prefs.theme === 'night' ? 'night' : 'classic';
     document.body.classList.toggle('calm', motionOff());
   }
-  const glassPreference = () => `<label class="toggle"><span>Glaseffekt reduzieren<small>Deckende Flächen und weniger Transparenz</small></span><input type="checkbox" role="switch" data-ui-pref="reduceGlass" ${prefs.reduceGlass ? 'checked' : ''}></label>`;
+  const glassPreference = () => I18n.html`<label class="toggle"><span>Glaseffekt reduzieren<small>Deckende Flächen und weniger Transparenz</small></span><input type="checkbox" role="switch" data-ui-pref="reduceGlass" ${prefs.reduceGlass ? 'checked' : ''}></label>`;
   const preferences = () => {
     const toggle = (key, label) => `<label class="toggle"><span>${label}</span><input type="checkbox" role="switch" data-ui-pref="${key}" ${prefs[key] ? 'checked' : ''}></label>`;
-    return `${toggle('sound', 'Töne')}${toggle('calm', 'Animationen aus')}${glassPreference()}
+    return I18n.html`${I18n.selector()}${toggle('sound', I18n.t('Töne'))}${toggle('calm', I18n.t('Animationen aus'))}${glassPreference()}
       ${GameDesign.cardPreference().replace('data-pref=', 'data-ui-pref=')}
       <label class="field"><span>Tisch</span><select data-ui-pref="theme"><option value="classic" ${prefs.theme !== 'night' ? 'selected' : ''}>Klassisch – grüner Filz</option><option value="night" ${prefs.theme === 'night' ? 'selected' : ''}>Nacht – blauer Filz</option></select></label>`;
   };

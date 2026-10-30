@@ -79,7 +79,11 @@ export const ROADMAP = [
     ['Feste Spieler-ID', 'In der Bestenliste eine feste Identität statt nur des Namens verwenden.'],
     ['Paket-Metadaten', 'package.json-Beschreibung und Versionsnummern aktuell halten.'],
   ]) },
-  { id: 'englisch', titel: 'Englisch', satz: 'Sprache pro Spieler wechseln, einschließlich der Party-Inhalte.', stufe: 'spaeter', punkte: [punkt('englische-seite', 'Englische Oberfläche & Inhalte', 'funktion', 'Die ganze Seite übersetzen und englische Party-Inhalte anbieten.')] },
+  { id: 'englisch', titel: 'Deutsch & Englisch', satz: 'Die Sprachwahl ist verfügbar; die vollständige Übersetzung aller Spieltexte wird ergänzt.', stufe: 'spaeter', punkte: [
+    punkt('sprachwahl', 'Persönliche Sprachwahl', 'funktion', 'Deutsch oder Englisch auf Anmeldung, Startseite und in den Spieleinstellungen wählen. Im Browser gespeichert, während laufender Runden ohne Neuladen umschaltbar.', true),
+    punkt('party-fragen-englisch', '423 zweisprachige Party-Aufgaben', 'funktion', 'Alle eingebauten Fragen von Schätzmeister, Schlagfertig und Wer hat das gesagt? sind auf Deutsch und Englisch verfügbar. Eigene Texte bleiben unverändert.', true),
+    punkt('englische-seite', 'Vollständige englische Oberfläche & Inhalte', 'funktion', 'Noch fehlende Spielregeln, Spieltexte, Begriffe, Systemmeldungen und ältere Hub-Bereiche übersetzen. Bis dahin bleibt für fehlende Übersetzungen der deutsche Text sichtbar.'),
+  ] },
   { id: 'echtzeit', titel: 'Päckchen 8 – Echtzeit', satz: 'Alle bewegen sich gleichzeitig im gemeinsamen Spielfeld.', stufe: 'erledigt', datum: '2026-10-29', paeckchen: '8', punkte: [punkt('bauart-c', 'Bauart-C-Baustein', 'funktion', 'Serverberechnete Bewegung, kleine Zustandsbilder, Tastatur, Touch und Echtzeit-Bots.', true), ...spiele(['broeckelboden', 'kronenjagd', 'laser-huepfer'])] },
   { id: 'discord-login', titel: 'Discord-Login, Gastmodus & Spieler-ID', satz: 'Freiwillig anmelden, ohne Konto mitspielen und Statistiken eindeutig zuordnen.', stufe: 'spaeter', punkte: liste('discord', 'discord', [
     ['Optionaler Discord-Login', 'Wer möchte, meldet sich sicher mit Discord an und erhält ein dauerhaftes Spielerprofil.'],

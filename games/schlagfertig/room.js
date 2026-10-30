@@ -5,10 +5,11 @@
 // Letzte Runde (das Finale): eine Aufgabe für alle, jeder verteilt bis zu 3 Stimmen auf verschiedene Antworten (nicht die eigene), 100 je Stimme, kein Bonus.
 // Die Aufgaben liegen in aufgaben.json; der Host kann eigene ergänzen (eine pro Zeile, gelten nur in diesem Raum).
 import { readFileSync } from 'node:fs';
+import { bilingual } from '../party-english.js';
 import { PartyRoom, partyOptions, cleanAnswer, NO_ANSWER, PLACEHOLDERS } from '../party-room.js';
 import { shuffle } from '../../server/random.js';
 
-const CATALOG = JSON.parse(readFileSync(new URL('./aufgaben.json', import.meta.url), 'utf8'));
+const CATALOG = bilingual('schlagfertig', JSON.parse(readFileSync(new URL('./aufgaben.json', import.meta.url), 'utf8')));
 export const PTS_PER_VOTE = 100;
 export const PTS_FULL_HIT = 200;
 export const FINAL_VOTES = 3;
@@ -45,7 +46,7 @@ export class Room extends PartyRoom {
   startQuestion() {
     const n = this.order.length;
     const final = this.cur.kind === 'final';
-    this.tasks = this.cur.tasks.map((t, k) => ({ q: t.q, authors: final ? [...this.order] : [this.order[k % n], this.order[(k + 1) % n]], answers: {} }));
+    this.tasks = this.cur.tasks.map((t, k) => ({ q: t.q, en: t.en, authors: final ? [...this.order] : [this.order[k % n], this.order[(k + 1) % n]], answers: {} }));
     this.steps = []; this.hasVotes = null; this.results = []; this.gains = {};
   }
   get isFinal() { return this.cur?.kind === 'final'; }
@@ -127,7 +128,7 @@ export class Room extends PartyRoom {
       });
       const total = answers.reduce((a, x) => a + x.votes, 0);
       if (!this.isFinal && total >= 2) for (const a of answers) if (a.votes === total) { a.fullHit = true; a.pts += PTS_FULL_HIT; }
-      return { q: t.q, answers };
+      return { q: t.q, en: t.en, answers };
     });
     this.gains = {};
     for (const r of this.results) for (const a of r.answers) { this.gains[a.id] = (this.gains[a.id] || 0) + a.pts; this.addPoints(a.id, a.pts); }
@@ -155,13 +156,13 @@ export class Room extends PartyRoom {
     const base = { final: this.isFinal };
     if (this.stage === 'write') {
       const mine = this.myTasks(viewerId);
-      return { ...base, tasks: mine.map((k) => ({ idx: k, q: this.tasks[k].q, mine: this.tasks[k].answers[viewerId] ?? null })), canWrite: mine.length > 0 };
+      return { ...base, tasks: mine.map((k) => ({ idx: k, q: this.tasks[k].q, en: this.tasks[k].en, mine: this.tasks[k].answers[viewerId] ?? null })), canWrite: mine.length > 0 };
     }
     if (this.stage === 'vote') {
       const s = this.step(), t = this.tasks[s.task];
       const can = this.canVote(viewerId, s);
       return {
-        ...base, prompt: t.q, step: this.sub + 1, steps: this.steps.length, canVote: can, isAuthor: !this.isFinal && t.authors.includes(viewerId) && this.order.includes(viewerId),
+        ...base, prompt: t.q, promptEn: t.en, step: this.sub + 1, steps: this.steps.length, canVote: can, isAuthor: !this.isFinal && t.authors.includes(viewerId) && this.order.includes(viewerId),
         // Nur Texte – keine Autoren, keine Stimmen der anderen (erst in der Auflösung)
         answers: s.display.map((a, i) => ({ i, text: t.answers[a] || NO_ANSWER, empty: !t.answers[a], mine: a === viewerId })),
         maxPicks: can ? this.maxPicks(viewerId, s) : 0,

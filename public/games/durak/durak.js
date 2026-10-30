@@ -26,18 +26,18 @@
       'Wer als Letzter Karten hat, ist der Durak.',
     ],
     house: () => [],
-    playerInfo: (p) => `${p.out ? 'fertig' : `${p.cards} Karte${p.cards === 1 ? '' : 'n'}`}${p.role === 'attack' ? ' · greift an' : p.role === 'defend' ? ' · verteidigt' : ''}`,
-    seat: (p) => `${p.out ? '<span>fertig</span>' : `${fanHTML(p.cards)}<span>${p.cards} Karte${p.cards === 1 ? '' : 'n'}</span>`}${p.role === 'attack' ? '<b class="kg-call">Angriff</b>' : p.role === 'defend' ? '<b class="kg-call">Abwehr</b>' : ''}`,
+    playerInfo: (p) => `${p.out ? 'fertig' : I18n.html`${p.cards} Karte${p.cards === 1 ? '' : 'n'}`}${p.role === 'attack' ? ' · greift an' : p.role === 'defend' ? ' · verteidigt' : ''}`,
+    seat: (p) => `${p.out ? I18n.html('<span>fertig</span>') : I18n.html`${fanHTML(p.cards)}<span>${p.cards} Karte${p.cards === 1 ? '' : 'n'}</span>`}${p.role === 'attack' ? I18n.html('<b class="kg-call">Angriff</b>') : p.role === 'defend' ? I18n.html('<b class="kg-call">Abwehr</b>') : ''}`,
     onState(S) {
       if (S.turnId !== S.you?.id || !(S.g?.hand || []).includes(sel)) sel = null;
     },
     hint(S, myTurn) {
       const g = S.g;
       const me = S.you?.id;
-      if (!myTurn) return `${nameOf(S, S.turnId)} ist dran`;
+      if (!myTurn) return I18n.html`${nameOf(S, S.turnId)} ist dran`;
       if (me === g.defender) return sel ? 'Jetzt die Angriffskarte antippen, die du schlagen willst' : 'Wähl eine Karte zum Schlagen – oder nimm die Karten auf';
       if (!g.table.length) return 'Du greifst an: Karte wählen, „Angreifen“';
-      return g.taking ? `${nameOf(S, g.defender)} nimmt auf – du darfst noch Karten dazulegen` : 'Nachlegen (liegende Werte) oder „Genug“';
+      return g.taking ? I18n.html`${nameOf(S, g.defender)} nimmt auf – du darfst noch Karten dazulegen` : 'Nachlegen (liegende Werte) oder „Genug“';
     },
     main(S) {
       const g = S.g;
@@ -45,23 +45,23 @@
       const myDef = me === g.defender && S.turnId === me && !g.taking;
       const pairs = g.table.map((p, i) => {
         const canHit = myDef && !p.d && sel && beats(g, sel, p.a);
-        return `<div class="du-pair">
+        return I18n.html`<div class="du-pair">
           <button type="button" class="du-atk" ${myDef && !p.d && sel ? `data-g="hit" data-i="${i}"` : 'disabled'} aria-label="Angriffskarte ${i + 1}">${frenchCard(p.a, { cls: canHit ? 'can' : '', attrs: 'tabindex="-1" disabled' })}</button>
           ${p.d ? `<span class="du-def">${frenchCard(p.d, { attrs: 'disabled tabindex="-1"' })}</span>` : ''}</div>`;
       }).join('');
-      const trump = `<div class="du-deck"><span class="du-trump-card">${g.trumpCard ? frenchCard(g.trumpCard, { cls: 'sideways', attrs: 'disabled tabindex="-1"' }) : ''}</span><span class="du-stack">${g.deck ? fanHTML(2) : ''}</span>
+      const trump = I18n.html`<div class="du-deck"><span class="du-trump-card">${g.trumpCard ? frenchCard(g.trumpCard, { cls: 'sideways', attrs: 'disabled tabindex="-1"' }) : ''}</span><span class="du-stack">${g.deck ? fanHTML(2) : ''}</span>
         <small>Trumpf <b class="du-trump">${SIGN[g.trump]} ${SUIT_NAME[g.trump]}</b> · Stapel ${g.deck} · abgelegt ${g.discard}</small></div>`;
-      const roles = `<div class="kg-chips"><div class="kg-chip">${nameOf(S, g.attacker)} greift ${nameOf(S, g.defender)} an${g.taking ? ' – wird aufgenommen' : ''}</div></div>`;
-      return `<div class="kg-table du-wrap">${trump}<div class="du-table" role="group" aria-label="Tisch">${pairs || '<p class="hint">Noch keine Angriffskarte</p>'}</div>${roles}</div>`;
+      const roles = I18n.html`<div class="kg-chips"><div class="kg-chip">${nameOf(S, g.attacker)} greift ${nameOf(S, g.defender)} an${g.taking ? ' – wird aufgenommen' : ''}</div></div>`;
+      return I18n.html`<div class="kg-table du-wrap">${trump}<div class="du-table" role="group" aria-label="Tisch">${pairs || I18n.html('<p class="hint">Noch keine Angriffskarte</p>')}</div>${roles}</div>`;
     },
     dock(S, myTurn) {
       const g = S.g;
       const me = S.you?.id;
       const hand = sortHand(g, g.hand || []).map((c) => frenchCard(c, { cls: `${c === sel ? 'sel' : ''} ${c[1] === g.trump ? 'trump' : ''}`, attrs: myTurn ? `data-g="pick" data-c="${c}"` : 'disabled' })).join('');
       let acts = '';
-      if (myTurn && me === g.defender && !g.taking) acts = '<button class="btn btn-outline-red" data-g="take">Aufnehmen</button>';
-      else if (myTurn) acts = `<button class="btn btn-brass" data-g="attack" ${sel ? '' : 'disabled'}>Angreifen</button>${g.table.length ? '<button class="btn" data-g="pass">Genug</button>' : ''}`;
-      return `<div class="kg-hand" role="group" aria-label="Deine Karten">${hand}</div><div class="kg-acts">${acts}</div>`;
+      if (myTurn && me === g.defender && !g.taking) acts = I18n.html('<button class="btn btn-outline-red" data-g="take">Aufnehmen</button>');
+      else if (myTurn) acts = I18n.html`<button class="btn btn-brass" data-g="attack" ${sel ? '' : 'disabled'}>Angreifen</button>${g.table.length ? I18n.html('<button class="btn" data-g="pass">Genug</button>') : ''}`;
+      return I18n.html`<div class="kg-hand" role="group" aria-label="Deine Karten">${hand}</div><div class="kg-acts">${acts}</div>`;
     },
     onClick(t, S) {
       const g = t.dataset.g;
@@ -78,7 +78,7 @@
       else if (g === 'take') { sel = null; send('take'); }
       else if (g === 'pass') { sel = null; send('pass'); }
     },
-    rules: `<p>36 Karten (6 bis Ass), jeder bekommt 6. Die unterste Karte des Stapels bleibt sichtbar liegen und bestimmt die <b>Trumpffarbe</b>.</p>
+    rules: I18n.html`<p>36 Karten (6 bis Ass), jeder bekommt 6. Die unterste Karte des Stapels bleibt sichtbar liegen und bestimmt die <b>Trumpffarbe</b>.</p>
       <ul>
         <li>Der <b>Angreifer</b> legt eine Karte aus. Der <b>Verteidiger</b> schlägt sie mit einer höheren Karte <b>derselben Farbe</b> oder mit <b>Trumpf</b> (Trumpf nur mit höherem Trumpf).</li>
         <li>Der Angreifer und alle anderen Mitspieler (außer dem Verteidiger) dürfen Karten nachlegen, deren Wert schon auf dem Tisch liegt – höchstens 6 und nicht mehr, als der Verteidiger auf der Hand hat. Wer nichts mehr legen will, sagt „Genug“.</li>

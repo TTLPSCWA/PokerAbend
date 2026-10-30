@@ -25,9 +25,9 @@
     name: 'Mau-Mau',
     // Erste Schritte beim ersten Spiel (3 Schritte, abschaltbar unter „Ich“)
     intro: [
-      ["Ziel", "Werde als Erster alle Karten los. Leg eine Karte mit gleicher <b>Farbe</b> oder gleichem <b>Wert</b> auf die Ablage."],
+      ["Ziel", I18n.html("Werde als Erster alle Karten los. Leg eine Karte mit gleicher <b>Farbe</b> oder gleichem <b>Wert</b> auf die Ablage.")],
       ["Deine Karten", "Karten mit Goldrand passen gerade – antippen legt sie (am Computer auch auf die Ablage ziehen). Passt nichts: „Karte ziehen“."],
-      ["Sonderkarten", "<b>7</b>: der Nächste zieht 2. <b>8</b>: der Nächste setzt aus. <b>Bube</b>: du wünschst dir eine Farbe. Alles Weitere unter „?“."],
+      ["Sonderkarten", I18n.html("<b>7</b>: der Nächste zieht 2. <b>8</b>: der Nächste setzt aus. <b>Bube</b>: du wünschst dir eine Farbe. Alles Weitere unter „?“.")],
     ],
     card,
     translate,
@@ -37,10 +37,10 @@
       const parts = [SUIT_ACC[german() ? 'de' : 'fr'][suit]];
       if (!g.wish) parts.push(rankAcc(g.top[0]));
       if (g.playable.some((c) => c[0] === 'J' && c[1] !== suit && g.top[0] !== 'J')) parts.push(rankAcc('J'));
-      return `Leg ${parts.join(' oder ')}${g.wish ? ' (gewünscht)' : ''}`;
+      return I18n.html`Leg ${parts.join(' oder ')}${g.wish ? ' (gewünscht)' : ''}`;
     },
     pendingHint: () => 'Leg eine 7 drauf',
-    pendingText: (g) => `der Nächste zieht ${g.pending}, außer er legt eine 7`,
+    pendingText: (g) => I18n.html`der Nächste zieht ${g.pending}, außer er legt eine 7`,
     sort: {
       color: (c) => SUITS.indexOf(c[1]) * 10 + RANKS.indexOf(c[0]),
       number: (c) => RANKS.indexOf(c[0]) * 10 + SUITS.indexOf(c[1]),
@@ -55,18 +55,18 @@
     prefs: deckPrefHTML,
     get short() {
       return [
-        'Leg eine Karte mit gleicher <b>Farbe</b> oder gleichem <b>Wert</b>.',
+        I18n.html('Leg eine Karte mit gleicher <b>Farbe</b> oder gleichem <b>Wert</b>.'),
         'Kannst du nicht: eine Karte ziehen – passt sie, darfst du sie gleich legen.',
-        '<b>7</b>: Der Nächste zieht 2 – oder legt selbst eine 7 (dann 4, 6 …).',
-        '<b>8</b>: Der Nächste setzt aus.',
-        translate('<b>Bube</b>: auf alles außer Bube, du wünschst dir eine Farbe.'),
+        I18n.html('<b>7</b>: Der Nächste zieht 2 – oder legt selbst eine 7 (dann 4, 6 …).'),
+        I18n.html('<b>8</b>: Der Nächste setzt aus.'),
+        translate(I18n.html('<b>Bube</b>: auf alles außer Bube, du wünschst dir eine Farbe.')),
         'Wer zuerst keine Karten mehr hat, gewinnt die Runde.',
         'Punkte: die Augen der Restkarten – wenig ist gut.',
       ];
     },
     house: () => ['Ab 6 Spielern mit zwei Kartenspielen'],
     get rules() {
-      return translate(`<p>Leg eine Karte, die in <b>Farbe oder Wert</b> zur obersten Karte passt. Wer zuerst keine Karten mehr hat, gewinnt die Runde.</p>
+      return translate(I18n.html`<p>Leg eine Karte, die in <b>Farbe oder Wert</b> zur obersten Karte passt. Wer zuerst keine Karten mehr hat, gewinnt die Runde.</p>
       <ul>
         <li><b>7</b>: Der Nächste zieht 2 – außer er legt auch eine 7, dann zieht der Übernächste 4 usw.</li>
         <li><b>8</b>: Der Nächste setzt aus.</li>
@@ -75,7 +75,7 @@
         <li>„Mau!“ bei der letzten Karte sagt die Seite für dich – außer mit der Hausregel „Mau sagen“: Dann tippst du bei der vorletzten Karte selbst auf „Mau“.</li>
       </ul>
       <p><b>Wertung über den Abend:</b> Der Gewinner bekommt 0 Punkte, alle anderen die Augen ihrer Karten (7–10 = Wert, Bube 2, Dame 3, König 4, Ass 11). Wenig Punkte sind gut.</p>`)
-        + (german() ? '<p>Deutsches Blatt: Eichel = Kreuz, Grün = Pik, Herz = Herz, Schellen = Karo; Unter = Bube, Ober = Dame.</p>' : '');
+        + (german() ? I18n.html('<p>Deutsches Blatt: Eichel = Kreuz, Grün = Pik, Herz = Herz, Schellen = Karo; Unter = Bube, Ober = Dame.</p>') : '');
     },
   });
 }

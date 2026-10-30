@@ -2,7 +2,7 @@
 'use strict';
 const DRAW_COLORS = ['#172b25', '#df493d', '#e8aa32', '#358856', '#368ad4', '#8954ba', '#ffffff'];
 function drawingHTML(strokes, label = 'Zeichnung') {
-  if (!strokes?.length) return '<p class="draw-empty">Hier entsteht die Zeichnung …</p>';
+  if (!strokes?.length) return I18n.html('<p class="draw-empty">Hier entsteht die Zeichnung …</p>');
   return `<svg class="draw-picture" viewBox="0 0 1000 650" role="img" aria-label="${esc(label)}"><rect width="1000" height="650" fill="#fff"/>${strokes.map((s) => {
     const points = s.points.map(([x, y]) => `${x},${y * .65}`).join(' ');
     return s.points.length === 1 ? `<circle cx="${s.points[0][0]}" cy="${s.points[0][1] * .65}" r="${s.size / 2}" fill="${esc(s.color)}"/>` : `<polyline points="${points}" fill="none" stroke="${esc(s.color)}" stroke-width="${s.size}" stroke-linecap="round" stroke-linejoin="round"/>`;
@@ -42,20 +42,20 @@ function drawingGame({ id, name, short, intro }) {
       else { s.points.slice(1).forEach(([x, y]) => ctx.lineTo(x, y * .65)); ctx.stroke(); }
     }
     const meter = editor.querySelector('.draw-meter');
-    if (meter) meter.textContent = `${strokes.length}/60 Striche · ${strokes.reduce((n, s) => n + s.points.length, 0)}/800 Punkte`;
+    if (meter) meter.textContent = I18n.html`${strokes.length}/60 Striche · ${strokes.reduce((n, s) => n + s.points.length, 0)}/800 Punkte`;
   };
-  const toolsHTML = () => `<div class="draw-tools" role="group" aria-label="Zeichenwerkzeuge">
+  const toolsHTML = () => I18n.html`<div class="draw-tools" role="group" aria-label="Zeichenwerkzeuge">
     ${DRAW_COLORS.map((c, i) => `<button type="button" class="draw-color" data-color="${c}" style="--ink:${c}" aria-label="${['Schwarz', 'Rot', 'Gelb', 'Grün', 'Blau', 'Violett', 'Radierer'][i]}" aria-pressed="${color === c}"></button>`).join('')}
     <label>Stiftstärke<select class="input" data-size aria-label="Stiftstärke">${[3, 8, 18, 36].map((n) => `<option value="${n}" ${size === n ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
     <button type="button" class="btn" data-undo>Rückgängig</button><button type="button" class="btn btn-ghost" data-clear>Leeren</button></div>`;
-  const editorHTML = () => `<section class="draw-editor" aria-label="Dein Zeichenbereich">${toolsHTML()}<canvas width="1000" height="650" aria-label="Zeichenfläche: mit Maus, Stift oder Finger zeichnen"></canvas><small class="draw-meter"></small><small>Mit Finger, Stift oder Maus zeichnen. Der Radierer malt weiß; Rückgängig entfernt den letzten Strich.</small></section>`;
+  const editorHTML = () => I18n.html`<section class="draw-editor" aria-label="Dein Zeichenbereich">${toolsHTML()}<canvas width="1000" height="650" aria-label="Zeichenfläche: mit Maus, Stift oder Finger zeichnen"></canvas><small class="draw-meter"></small><small>Mit Finger, Stift oder Maus zeichnen. Der Radierer malt weiß; Rückgängig entfernt den letzten Strich.</small></section>`;
   function bind(S) {
     sync(S);
     if (S.gamePaused && pointer !== null) { pointer = null; dirty = true; serial++; }
     if (!S.gamePaused && dirty && !timer) timer = setTimeout(() => flush(), 450);
     const progress = document.querySelector('#kg-main .pk-done');
     const players = S.players.filter((p) => p.inRound);
-    if (progress) progress.textContent = `${players.filter((p) => p.ready).length} von ${players.length} fertig`;
+    if (progress) progress.textContent = I18n.html`${players.filter((p) => p.ready).length} von ${players.length} fertig`;
     if (pointer !== null) return;
     editor = document.querySelector('#kg-main .draw-editor');
     if (!editor || editor.dataset.bound) return;
@@ -95,12 +95,12 @@ function drawingGame({ id, name, short, intro }) {
   }
   const reveal = (S) => {
     const G = S.g;
-    if (isChain) return `<div class="draw-chains">${(G.chains || []).map((chain) => `<details open><summary>Kette von ${esc(pkName(S, chain.owner))}</summary><ol>${chain.pages.map((page) => `<li><b>${esc(pkName(S, page.author))}</b>${page.image ? drawingHTML(page.image) : `<p>${esc(page.text || 'Keine Beschreibung abgegeben')}</p>`}</li>`).join('')}</ol></details>`).join('')}</div>`;
-    return `${drawingHTML(G.image)}${isGuess ? `<h2 class="draw-solution">Gesucht: ${esc(G.prompt)}</h2><p>${(G.guessed || []).map((id) => esc(pkName(S, id))).join(', ') || 'Niemand'} hat richtig geraten.</p>` : `<p>Gezeichnet von ${esc(pkName(S, G.artist))}</p><ol class="draw-results">${(G.results || []).map((row) => `<li><b>${esc(row.text)}</b><span>${esc(pkName(S, row.id))} · ${row.votes} Stimmen · ${row.votes * 100} Punkte</span></li>`).join('')}</ol>`}`;
+    if (isChain) return `<div class="draw-chains">${(G.chains || []).map((chain) => I18n.html`<details open><summary>Kette von ${esc(pkName(S, chain.owner))}</summary><ol>${chain.pages.map((page) => `<li><b>${esc(pkName(S, page.author))}</b>${page.image ? drawingHTML(page.image) : `<p>${esc(page.text || 'Keine Beschreibung abgegeben')}</p>`}</li>`).join('')}</ol></details>`).join('')}</div>`;
+    return `${drawingHTML(G.image)}${isGuess ? I18n.html`<h2 class="draw-solution">Gesucht: ${esc(G.prompt)}</h2><p>${(G.guessed || []).map((id) => esc(pkName(S, id))).join(', ') || 'Niemand'} hat richtig geraten.</p>` : I18n.html`<p>Gezeichnet von ${esc(pkName(S, G.artist))}</p><ol class="draw-results">${(G.results || []).map((row) => I18n.html`<li><b>${esc(row.text)}</b><span>${esc(pkName(S, row.id))} · ${row.votes} Stimmen · ${row.votes * 100} Punkte</span></li>`).join('')}</ol>`}`;
   };
   const kit = partyGame({
     id, name, short, intro, noBots: true, rules: `<h3>${esc(name)}</h3><ul>${short.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>`,
-    terms: { unit: 'Runde', write: isGuess ? 'Zeichnen & Raten' : 'Beiträge', waitWrite: 'arbeitet …' },
+    terms: { unit: I18n.t('Runde'), write: isGuess ? 'Zeichnen & Raten' : 'Beiträge', waitWrite: 'arbeitet …' },
     custom: isChain ? null : { help: 'Eigene Zeichenbegriffe, einer pro Zeile. Nur die zeichnende Person sieht den Begriff während der Runde.', example: 'Ein schlafender Drache\nFahrrad', noun: 'Begriff', plural: 'Begriffe' },
     // Den aktiven Zeichenbereich auch bei Updates anderer Spieler stehen lassen:
     // Fokus, Scrollposition und Pointer-Capture gehören zum laufenden Entwurf.
@@ -114,19 +114,19 @@ function drawingGame({ id, name, short, intro }) {
     },
     question(S) {
       const G = S.g;
-      if (G.stage === 'reveal') return `<div class="pk-q"><h2>${isChain ? 'Eure Kritzelpost' : isGuess ? 'Auflösung' : 'Eure Bildunterschriften'}</h2></div>`;
-      return `<div class="pk-q"><h2>${G.prompt ? esc(G.prompt) : G.stage === 'vote' ? 'Welche Bildunterschrift gefällt dir?' : isChain ? `Kritzelpost · Schritt ${G.step || 1} von ${G.steps || 1}` : isGuess ? `${esc(pkName(S, G.artist))} zeichnet` : G.step === 1 ? 'Eine Zeichnung entsteht' : 'Finde eine Bildunterschrift'}</h2>${G.previous?.text ? `<p>${esc(G.previous.text || 'Keine Vorlage')}</p>` : ''}${isGuess && G.mine && !G.ready && G.stage === 'write' ? `<small>„${esc(G.mine)}“ ist noch nicht richtig. Versuch es erneut.</small>` : ''}</div>`;
+      if (G.stage === 'reveal') return `<div class="pk-q"><h2>${isChain ? 'Eure Kritzelpost' : isGuess ? I18n.t('Auflösung') : 'Eure Bildunterschriften'}</h2></div>`;
+      return `<div class="pk-q"><h2>${G.prompt ? esc(G.prompt) : G.stage === 'vote' ? 'Welche Bildunterschrift gefällt dir?' : isChain ? I18n.html`Kritzelpost · Schritt ${G.step || 1} von ${G.steps || 1}` : isGuess ? I18n.html`${esc(pkName(S, G.artist))} zeichnet` : G.step === 1 ? 'Eine Zeichnung entsteht' : 'Finde eine Bildunterschrift'}</h2>${G.previous?.text ? `<p>${esc(G.previous.text || 'Keine Vorlage')}</p>` : ''}${isGuess && G.mine && !G.ready && G.stage === 'write' ? I18n.html`<small>„${esc(G.mine)}“ ist noch nicht richtig. Versuch es erneut.</small>` : ''}</div>`;
     },
     board(S) {
       sync(S); const G = S.g;
       if (G.stage === 'vote') return `${drawingHTML(G.image)}<div class="draw-answers">${G.answers.map((a) => `<button class="btn ${G.myVote === a.i ? 'btn-brass' : ''}" data-g="draw-vote" data-choice="${a.i}" ${!G.canVote || a.mine ? 'disabled' : ''}>${esc(a.text)}${a.mine ? ' (deine)' : G.myVote === a.i ? ' ✓' : ''}</button>`).join('')}</div>`;
       if (G.draw && (!G.ready || isGuess)) return editorHTML();
-      return `${G.previous?.image ? drawingHTML(G.previous.image, 'Vorlage zum Beschreiben') : !isChain ? drawingHTML(G.image) : ''}${G.ready ? '<p class="pk-mine">✓ Beitrag abgegeben</p>' : ''}`;
+      return `${G.previous?.image ? drawingHTML(G.previous.image, 'Vorlage zum Beschreiben') : !isChain ? drawingHTML(G.image) : ''}${G.ready ? I18n.html('<p class="pk-mine">✓ Beitrag abgegeben</p>') : ''}`;
     },
     reveal,
     writeForm(S) {
       const G = S.g;
-      if (G.draw && (!G.ready || isGuess)) return isGuess ? '<span class="waiting">Deine Zeichnung wird automatisch geteilt.</span>' : '<button class="btn btn-brass" data-g="draw-done">Zeichnung abgeben</button>';
+      if (G.draw && (!G.ready || isGuess)) return isGuess ? I18n.html('<span class="waiting">Deine Zeichnung wird automatisch geteilt.</span>') : I18n.html('<button class="btn btn-brass" data-g="draw-done">Zeichnung abgeben</button>');
       if (!G.canWrite || G.ready) return '';
       return pkForm({ kind: 'answer', label: isGuess ? 'Deine Vermutung' : 'Dein Text', placeholder: isGuess ? 'Welcher Begriff ist das?' : 'Dein Begriff oder deine Beschreibung', value: isGuess ? '' : G.mine || '', button: isGuess ? 'Raten' : 'Abgeben', counter: !isGuess });
     },

@@ -113,7 +113,7 @@ app.post('/logout', (req, res) => {
 
 // Alles ab hier nur angemeldet. Offen bleibt nur, was die Login-Seite braucht.
 // Manifest und Icons auch ohne Login – sonst kann das Handy die Seite nicht als App ablegen (sie verraten nichts)
-const OPEN = new Set(['/style.css', '/login.js', '/fonts/bricolage.woff2', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png']);
+const OPEN = new Set(['/style.css', '/login.js', '/i18n.js', '/i18n-en.js', '/fonts/bricolage.woff2', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png']);
 const isPage = (req) => req.method === 'GET' && (req.path === '/' || req.path === '/index.html');
 app.use((req, res, next) => {
   if (MODE === 'open' || OPEN.has(req.path)) return next();

@@ -104,8 +104,8 @@
       'Wer zuerst alle gegnerischen Schiffe versenkt, gewinnt. Läuft die Zeit ab, wird zufällig geschossen.',
     ],
     house: () => [],
-    status: (S) => (S.g?.step === 'place' ? `Runde #${S.roundNo} · Schiffe setzen` : null),
-    playerInfo: (p, S) => (S.g?.step === 'place' ? (p.ready ? '✓ bereit' : 'setzt Schiffe') : p.afloat !== null && p.afloat !== undefined ? `${p.afloat} Schiff${p.afloat === 1 ? '' : 'e'} übrig` : ''),
+    status: (S) => (S.g?.step === 'place' ? I18n.html`Runde #${S.roundNo} · Schiffe setzen` : null),
+    playerInfo: (p, S) => (S.g?.step === 'place' ? (p.ready ? '✓ bereit' : 'setzt Schiffe') : p.afloat !== null && p.afloat !== undefined ? I18n.html`${p.afloat} Schiff${p.afloat === 1 ? '' : 'e'} übrig` : ''),
     onState(S) {
       const g = S.g;
       if (!g) return;
@@ -121,15 +121,15 @@
       const mine = meIn(S);
       if (g.step === 'place') {
         if (!mine) return 'Die beiden setzen gerade ihre Schiffe';
-        if (mine.ready) return `Fertig – warte, bis ${nameOf(S, foeOf(S, S.you.id))} seine Flotte gesetzt hat`;
+        if (mine.ready) return I18n.html`Fertig – warte, bis ${nameOf(S, foeOf(S, S.you.id))} seine Flotte gesetzt hat`;
         if (draft.every(Boolean)) return 'Alles gesetzt – tipp „Fertig“ (oder verschieb noch Schiffe)';
-        if (selShip !== null) return `Tipp aufs Meer: dort beginnt der ${SHIP[g.fleet[selShip]]} (${g.fleet[selShip]} Felder, ${horizontal ? 'nach rechts' : 'nach unten'})`;
+        if (selShip !== null) return I18n.html`Tipp aufs Meer: dort beginnt der ${SHIP[g.fleet[selShip]]} (${g.fleet[selShip]} Felder, ${horizontal ? 'nach rechts' : 'nach unten'})`;
         return 'Wähle unten ein Schiff, dann tipp aufs Meer – oder „Zufällig verteilen“';
       }
-      if (!mine) return `${nameOf(S, S.turnId)} schießt`;
-      if (S.variant === 'salvo') return g.salvoReady?.[S.you.id] ? 'Salve abgegeben – warte auf die andere Flotte' : `Wähle ${g.salvoQuota} verschiedene Ziele. Beide Salven werden gemeinsam aufgelöst.`;
-      if (!myTurn) return `${nameOf(S, S.turnId)} schießt auf dein Meer`;
-      if (aim !== null) return `Ziel <b>${cellName(aim)}</b> – „Feuer“ oder ein anderes Feld wählen`;
+      if (!mine) return I18n.html`${nameOf(S, S.turnId)} schießt`;
+      if (S.variant === 'salvo') return g.salvoReady?.[S.you.id] ? 'Salve abgegeben – warte auf die andere Flotte' : I18n.html`Wähle ${g.salvoQuota} verschiedene Ziele. Beide Salven werden gemeinsam aufgelöst.`;
+      if (!myTurn) return I18n.html`${nameOf(S, S.turnId)} schießt auf dein Meer`;
+      if (aim !== null) return I18n.html`Ziel <b>${cellName(aim)}</b> – „Feuer“ oder ein anderes Feld wählen`;
       return 'Tipp ein Feld im gegnerischen Meer an';
     },
     main(S) {
@@ -140,19 +140,19 @@
       const over = S.phase === 'over';
       // Setzen: nur das eigene Meer, groß
       if (g.step === 'place' && !over) {
-        if (!mine) return `<div class="kg-table sv-wrap"><p class="hint">Die beiden setzen gerade ihre Schiffe – gleich geht es los.</p></div>`;
+        if (!mine) return I18n.html`<div class="kg-table sv-wrap"><p class="hint">Die beiden setzen gerade ihre Schiffe – gleich geht es los.</p></div>`;
         const ships = mine.ready ? shipList(mine.ships) : draftCells(g.fleet);
         return `<div class="kg-table sv-wrap">${board(mine, { ships, place: !mine.ready, title: 'Dein Meer', label: mine.ready ? '✓ bereit' : '' })}</div>`;
       }
       // Zuschauer oder Spielende: beide Meere (nach Spielende mit allen Schiffen)
       if (!mine || over) {
-        return `<div class="kg-table sv-wrap"><div class="sv-two">${ids.map((id) => board(g.seas[id], { ships: shipList(g.seas[id].ships), small: true, title: `Meer von ${nameOf(S, id)}`, label: over ? 'aufgedeckt' : '' })).join('')}</div></div>`;
+        return `<div class="kg-table sv-wrap"><div class="sv-two">${ids.map((id) => board(g.seas[id], { ships: shipList(g.seas[id].ships), small: true, title: I18n.html`Meer von ${nameOf(S, id)}`, label: over ? 'aufgedeckt' : '' })).join('')}</div></div>`;
       }
       const foe = foeOf(S, me);
       const salvo = S.variant === 'salvo';
       const myTurn = salvo ? !g.salvoReady?.[me] : S.turnId === me;
       return `<div class="kg-table sv-wrap"><div class="sv-two">
-        ${board(g.seas[foe], { ships: shipList(g.seas[foe].sunk), target: myTurn, sel: salvo ? volley : aim, title: `Meer von ${nameOf(S, foe)}`, label: myTurn ? 'du schießt' : '' })}
+        ${board(g.seas[foe], { ships: shipList(g.seas[foe].sunk), target: myTurn, sel: salvo ? volley : aim, title: I18n.html`Meer von ${nameOf(S, foe)}`, label: myTurn ? 'du schießt' : '' })}
         ${board(mine, { ships: shipList(mine.ships), small: true, title: 'Dein Meer' })}
       </div></div>`;
     },
@@ -161,18 +161,18 @@
       const mine = meIn(S);
       if (!mine) return '';
       if (g.step === 'place') {
-        if (mine.ready) return '<button class="btn" data-g="unplace">Doch nochmal umstellen</button>';
+        if (mine.ready) return I18n.html('<button class="btn" data-g="unplace">Doch nochmal umstellen</button>');
         const ships = g.fleet.map((size, k) => `<button type="button" class="sv-ship ${selShip === k ? 'sel' : ''} ${draft[k] ? 'set' : ''}" data-g="ship" data-k="${k}" data-drag="ship${k}" aria-pressed="${selShip === k}">
             <span class="sv-hull" aria-hidden="true">${'<i></i>'.repeat(size)}</span><span>${SHIP[size]}${draft[k] ? ' ✓' : ''}</span></button>`).join('');
         const done = draft.every(Boolean);
-        return `<div class="sv-ships" role="group" aria-label="Deine Flotte">${ships}</div>
+        return I18n.html`<div class="sv-ships" role="group" aria-label="Deine Flotte">${ships}</div>
           <div class="kg-acts"><button class="btn" data-g="turn">Drehen (${horizontal ? 'quer' : 'längs'})</button>
             <button class="btn" data-g="random">Zufällig verteilen</button>
             <button class="btn btn-ghost" data-g="clear">Alles neu</button>
             <button class="btn ${done ? 'btn-brass' : ''}" data-g="ready" ${done ? '' : 'disabled title="Erst alle Schiffe setzen"'}>Fertig</button></div>`;
       }
-      if (S.variant === 'salvo') return g.salvoReady?.[S.you.id] ? '<p class="hint">Salve festgelegt</p>' : `<button class="btn btn-brass" data-g="salvo" ${volley.size === g.salvoQuota ? '' : 'disabled'}>Salve abgeben (${volley.size}/${g.salvoQuota})</button>`;
-      if (myTurn && aim !== null) return `<button class="btn btn-brass sv-fire" data-g="fire">Feuer auf ${cellName(aim)}</button><button class="btn btn-ghost" data-g="noaim">Anderes Feld</button>`;
+      if (S.variant === 'salvo') return g.salvoReady?.[S.you.id] ? I18n.html('<p class="hint">Salve festgelegt</p>') : I18n.html`<button class="btn btn-brass" data-g="salvo" ${volley.size === g.salvoQuota ? '' : 'disabled'}>Salve abgeben (${volley.size}/${g.salvoQuota})</button>`;
+      if (myTurn && aim !== null) return I18n.html`<button class="btn btn-brass sv-fire" data-g="fire">Feuer auf ${cellName(aim)}</button><button class="btn btn-ghost" data-g="noaim">Anderes Feld</button>`;
       return '';
     },
     // Ziehen (Maus): Schiff aus der Liste aufs Meer
@@ -211,7 +211,7 @@
       } else if (g === 'fire' && aim !== null) { const i = aim; aim = null; send('shoot', { cell: i }); }
       else if (g === 'noaim') { aim = null; kit.render(); }
     },
-    rules: `<p>Zwei Meere mit 10 × 10 Feldern (Spalten A–J, Zeilen 1–10): deins und das deines Gegners.</p>
+    rules: I18n.html`<p>Zwei Meere mit 10 × 10 Feldern (Spalten A–J, Zeilen 1–10): deins und das deines Gegners.</p>
       <ul>
         <li><b>Flotte</b> (Standard): 1 Flugzeugträger (5), 1 Schlachtschiff (4), 2 Kreuzer (3), 1 Zerstörer (2). Hausregel „Klassisch“: 1× 5, 2× 4, 3× 3, 4× 2.</li>
         <li><b>Setzen:</b> beide gleichzeitig. Schiffe liegen quer oder längs, dürfen sich nicht überlappen und nicht berühren – auch nicht über Eck (Hausregel: Berühren erlaubt).</li>

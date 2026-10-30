@@ -5,6 +5,7 @@ import { mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { runInNewContext } from 'node:vm';
+import { i18nContext } from './i18n-harness.js';
 import { Room as MauMau } from '../games/maumau/room.js';
 import { Room as SkipBo } from '../games/stapelrennen/room.js';
 import { Room as Schocken } from '../games/schocken/room.js';
@@ -166,11 +167,11 @@ test('Schocken: nach dem Pflichtwurf darf man vor dem dritten Wurf aufhören', (
 
 test('Schocken-Oberfläche: Fertig erst nach dem Pflichtwurf, feste Würfel sind nicht umschaltbar', () => {
   let def;
-  runInNewContext(readFileSync(new URL('../public/games/schocken/schocken.js', import.meta.url), 'utf8'), {
+  runInNewContext(readFileSync(new URL('../public/games/schocken/schocken.js', import.meta.url), 'utf8'), i18nContext({
     kitGame: (d) => { def = d; return { render() {} }; },
-    esc: String,
+    esc: String, uiText: String,
     dieHTML: (_d, { attrs = '' }) => `<button ${attrs}></button>`,
-  });
+  }));
   const r = new Schocken('UI', { sixToOne: true }, () => {});
   const [a] = seat(r, 2);
   r.start(a);

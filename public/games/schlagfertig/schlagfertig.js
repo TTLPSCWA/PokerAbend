@@ -5,7 +5,7 @@
   let activeTask = null; // Aufgabe, an der ich gerade schreibe (sonst die erste offene)
   let sel = [];          // Finale: meine gewählten Antworten (Positionen), bis ich abstimme
   let selKey = '';
-  const blank = (q) => esc(q).replace('___', '<span class="sl-blank" role="img" aria-label="Lücke">&nbsp;</span>'); // Lücke der Aufgabe sichtbar machen
+  const blank = (q) => esc(q).replace('___', I18n.html('<span class="sl-blank" role="img" aria-label="Lücke">&nbsp;</span>')); // Lücke der Aufgabe sichtbar machen
   const myTasks = (S) => S.g.tasks || [];
   const current = (S) => myTasks(S).find((t) => t.idx === activeTask) || myTasks(S).find((t) => t.mine === null) || myTasks(S)[0];
   const voteKey = (S) => `${S.roundNo}:${S.g.q}:${S.g.step}`;
@@ -32,27 +32,27 @@
     hint(S) {
       const G = S.g;
       if (G.stage === 'write') {
-        if (!G.canWrite) return 'Du schaust zu – die Spieler schreiben gerade';
-        return myTasks(S).every((t) => t.mine !== null) ? 'Fertig! Warte auf die anderen – oder tipp eine Aufgabe an, um deine Antwort zu ändern' : 'Schreib deine Antwort – je witziger, desto mehr Stimmen';
+        if (!G.canWrite) return I18n.t('Du schaust zu – die Spieler schreiben gerade');
+        return myTasks(S).every((t) => t.mine !== null) ? I18n.t('Fertig! Warte auf die anderen – oder tipp eine Aufgabe an, um deine Antwort zu ändern') : I18n.t('Schreib deine Antwort – je witziger, desto mehr Stimmen');
       }
-      if (G.isAuthor) return 'Das sind die Antworten von dir und einem Mitspieler – du darfst hier nicht abstimmen';
-      if (!G.canVote) return 'Du schaust zu – die anderen stimmen ab';
-      return G.final ? `Wähle bis zu ${G.maxPicks} Antworten, die dir gefallen – eigene geht nicht` : 'Tipp auf die bessere Antwort';
+      if (G.isAuthor) return I18n.t('Das sind die Antworten von dir und einem Mitspieler – du darfst hier nicht abstimmen');
+      if (!G.canVote) return I18n.t('Du schaust zu – die anderen stimmen ab');
+      return G.final ? I18n.html`Wähle bis zu ${G.maxPicks} Antworten, die dir gefallen – eigene geht nicht` : I18n.t('Tipp auf die bessere Antwort');
     },
     question(S) {
       const G = S.g;
-      if (G.stage === 'write') { const t = current(S); return t ? `<div class="pk-q"><h2>${blank(t.q)}</h2></div>` : ''; }
-      if (G.stage === 'vote') return `<div class="pk-q"><h2>${blank(G.prompt)}</h2></div>`;
+      if (G.stage === 'write') { const t = current(S); return t ? `<div class="pk-q"><h2>${blank(I18n.content(t.q, t.en))}</h2></div>` : ''; }
+      if (G.stage === 'vote') return `<div class="pk-q"><h2>${blank(I18n.content(G.prompt, G.promptEn))}</h2></div>`;
       return '';
     },
     board(S) {
       const G = S.g;
       if (G.stage === 'write') {
-        if (!G.canWrite) return '<div class="pk-wait"><p>Du schaust zu. Die Aufgaben und Antworten der Spieler siehst du in der Abstimmung.</p></div>';
+        if (!G.canWrite) return I18n.html('<div class="pk-wait"><p>Du schaust zu. Die Aufgaben und Antworten der Spieler siehst du in der Abstimmung.</p></div>');
         const cur = current(S);
-        return `<div class="sl-tasks" role="group" aria-label="Meine Aufgaben">${myTasks(S).map((t, i) => `<button type="button" class="sl-task" data-g="sl-task" data-idx="${t.idx}" aria-pressed="${t === cur}">
-            <small>${G.final ? 'Deine Aufgabe' : `Aufgabe ${i + 1} von ${myTasks(S).length}`}</small>
-            <span>${t.mine === null ? 'noch offen' : `✓ ${esc(t.mine)}`}</span></button>`).join('')}</div>`;
+        return I18n.html`<div class="sl-tasks" role="group" aria-label="Meine Aufgaben">${myTasks(S).map((t, i) => `<button type="button" class="sl-task" data-g="sl-task" data-idx="${t.idx}" aria-pressed="${t === cur}">
+            <small>${G.final ? I18n.t('Deine Aufgabe') : I18n.html`Aufgabe ${i + 1} von ${myTasks(S).length}`}</small>
+            <span>${t.mine === null ? I18n.t('noch offen') : `✓ ${esc(t.mine)}`}</span></button>`).join('')}</div>`;
       }
       syncSel(S);
       const picked = new Set(G.final ? sel : G.myVote || []);
@@ -61,22 +61,22 @@
         const can = G.canVote && !a.mine;
         return `<button type="button" class="sl-ans${on ? ' on' : ''}${a.mine ? ' mine' : ''}${a.empty ? ' empty' : ''}" data-g="sl-vote" data-i="${a.i}" aria-pressed="${on}" ${can ? '' : 'disabled'}>
           <span class="sl-text">${esc(a.text)}</span>
-          <small>${a.mine ? 'Deine Antwort' : on ? '✓ Deine Stimme' : can ? 'Tippen zum Wählen' : ''}</small></button>`;
+          <small>${a.mine ? I18n.t('Deine Antwort') : on ? I18n.t('✓ Deine Stimme') : can ? I18n.t('Tippen zum Wählen') : ''}</small></button>`;
       }).join('');
-      return `<div class="sl-answers ${G.final ? 'final' : 'duel'}" role="group" aria-label="Antworten">${cards}</div>
-        ${G.final && G.canVote ? `<p class="pk-mine">${sel.length} von ${G.maxPicks} Stimmen vergeben</p>` : ''}`;
+      return I18n.html`<div class="sl-answers ${G.final ? 'final' : 'duel'}" role="group" aria-label="Antworten">${cards}</div>
+        ${G.final && G.canVote ? I18n.html`<p class="pk-mine">${sel.length} von ${G.maxPicks} Stimmen vergeben</p>` : ''}`;
     },
     writeForm(S) {
       const G = S.g;
       const cur = current(S);
       if (!G.canWrite || !cur) return '';
-      return pkForm({ kind: 'answer', label: 'Deine Antwort', placeholder: 'Deine Antwort (höchstens 120 Zeichen)', value: cur.mine || '', max: 120, counter: true, button: cur.mine === null ? 'Senden' : 'Ändern', data: { task: cur.idx } });
+      return pkForm({ kind: 'answer', label: I18n.t('Deine Antwort'), placeholder: I18n.t('Deine Antwort (höchstens 120 Zeichen)'), value: cur.mine || '', max: 120, counter: true, button: cur.mine === null ? I18n.t('Senden') : I18n.t('Ändern'), data: { task: cur.idx } });
     },
     voteDock(S) {
       const G = S.g;
       if (!G.final || !G.canVote) return '';
       syncSel(S);
-      return `<button type="button" class="btn btn-brass pk-send" data-g="sl-confirm" ${sel.length ? '' : 'disabled'}>Abstimmen (${sel.length}/${G.maxPicks})</button>`;
+      return I18n.html`<button type="button" class="btn btn-brass pk-send" data-g="sl-confirm" ${sel.length ? '' : 'disabled'}>Abstimmen (${sel.length}/${G.maxPicks})</button>`;
     },
     dockState(S) {
       const G = S.g || {};
@@ -93,15 +93,15 @@
       const G = S.g;
       const rows = (G.results || []).map((res) => {
         const answers = [...res.answers].sort((a, b) => b.votes - a.votes);
-        return `<section class="sl-result"><h3>${blank(res.q)}</h3><div class="sl-pair ${G.final ? 'final' : ''}">${answers.map((a) => `<article class="sl-card${a.fullHit ? ' hit' : ''}">
-            <p class="sl-text">${a.text ? esc(a.text) : '<i>(keine Antwort)</i>'}</p>
+        return `<section class="sl-result"><h3>${blank(I18n.content(res.q, res.en))}</h3><div class="sl-pair ${G.final ? 'final' : ''}">${answers.map((a) => I18n.html`<article class="sl-card${a.fullHit ? ' hit' : ''}">
+            <p class="sl-text">${a.text ? esc(a.text) : I18n.html('<i>(keine Antwort)</i>')}</p>
             ${person(S, a.id)}
-            <p class="sl-votes"><b>${a.votes} Stimme${a.votes === 1 ? '' : 'n'}</b>${a.voters.length ? `<span class="sl-voters" aria-label="Stimmen von">${a.voters.map((v) => `<span title="${esc(pkName(S, v))}">${avatarHTML(pkPlayer(S, v))}</span>`).join('')}</span>` : ''}</p>
-            <p class="sl-pts">+${a.pts}${a.fullHit ? ' <span class="sl-badge">Volltreffer! +200</span>' : ''}</p></article>`).join('')}</div></section>`;
+            <p class="sl-votes"><b>${a.votes} Stimme${a.votes === 1 ? '' : 'n'}</b>${a.voters.length ? I18n.html`<span class="sl-voters" aria-label="Stimmen von">${a.voters.map((v) => `<span title="${esc(pkName(S, v))}">${avatarHTML(pkPlayer(S, v))}</span>`).join('')}</span>` : ''}</p>
+            <p class="sl-pts">+${a.pts}${a.fullHit ? I18n.html(' <span class="sl-badge">Volltreffer! +200</span>') : ''}</p></article>`).join('')}</div></section>`;
       }).join('');
       const gains = Object.entries(G.gains || {}).sort((a, b) => b[1] - a[1]);
-      return `${rows || '<p class="hint">Diese Runde hat niemand etwas geschrieben.</p>'}
-        ${gains.length ? `<section class="sl-gains"><h3>Punkte dieser Runde</h3><ol>${gains.map(([id, n]) => `<li>${pkAvatar(S, id)}<b>${esc(pkName(S, id))}</b><span class="pk-pts">+${n}</span></li>`).join('')}</ol></section>` : ''}`;
+      return `${rows || I18n.html('<p class="hint">Diese Runde hat niemand etwas geschrieben.</p>')}
+        ${gains.length ? I18n.html`<section class="sl-gains"><h3>Punkte dieser Runde</h3><ol>${gains.map(([id, n]) => `<li>${pkAvatar(S, id)}<b>${esc(pkName(S, id))}</b><span class="pk-pts">+${n}</span></li>`).join('')}</ol></section>` : ''}`;
     },
     onClick(el, S) {
       const g = el.dataset.g;
@@ -112,14 +112,14 @@
         syncSel(S);
         sel = sel.includes(i) ? sel.filter((x) => x !== i) : sel.length < S.g.maxPicks ? [...sel, i] : sel;
         kit.render();
-      } else if (g === 'sl-confirm') { syncSel(S); send('vote', { choice: sel }).then((r) => { if (r?.ok) toast('Stimmen abgegeben'); }); }
+      } else if (g === 'sl-confirm') { syncSel(S); send('vote', { choice: sel }).then((r) => { if (r?.ok) toast(I18n.t('Stimmen abgegeben')); }); }
     },
     custom: {
       title: 'Eigene Aufgaben für diesen Abend', noun: 'Aufgabe', plural: 'Aufgaben',
-      help: 'Eine Aufgabe pro Zeile, mindestens 8 Zeichen. <b>___</b> markiert die Lücke (optional). Bis zu 100 Aufgaben.',
+      help: I18n.html('Eine Aufgabe pro Zeile, mindestens 8 Zeichen. <b>___</b> markiert die Lücke (optional). Bis zu 100 Aufgaben.'),
       example: 'Der beste Name für unser Sofa: ___',
     },
-    rules: `<p>Eine Partie besteht aus mehreren Runden; die letzte ist das Finale. In jeder normalen Runde bekommt jeder zwei Aufgaben, und jede Aufgabe geht an genau zwei Spieler.</p>
+    rules: I18n.html`<p>Eine Partie besteht aus mehreren Runden; die letzte ist das Finale. In jeder normalen Runde bekommt jeder zwei Aufgaben, und jede Aufgabe geht an genau zwei Spieler.</p>
       <ul>
         <li><b>Schreiben:</b> Jeder beantwortet seine Aufgaben. Die Antworten der anderen siehst du erst in der Abstimmung.</li>
         <li><b>Abstimmen:</b> Pro Aufgabe stehen beide Antworten ohne Namen nebeneinander. Alle außer den beiden Autoren stimmen für eine ab. Du kannst deine Wahl ändern, bis alle fertig sind.</li>

@@ -3,7 +3,7 @@
 'use strict';
 
 // Oberfläche des Tisches – jedes Spiel bringt seine eigene mit
-$('#game-root').innerHTML = `<div id="game" class="game" hidden>
+$('#game-root').innerHTML = I18n.html`<div id="game" class="game" hidden>
   <header class="topbar">
     <div class="top-left">
       ${homeButtonHTML()}
@@ -109,12 +109,12 @@ let actionSeq = 0;
 function amt(n) {
   if (prefs.bb && S?.settings?.bigBlind) {
     const v = n / S.settings.bigBlind;
-    return (Number.isInteger(v) ? v : v.toFixed(1)).toLocaleString('de-DE') + ' BB';
+    return (Number.isInteger(v) ? v : v.toFixed(1)).toLocaleString(I18n.locale) + ' BB';
   }
-  return Number(n).toLocaleString('de-DE');
+  return Number(n).toLocaleString(I18n.locale);
 }
 function cardHTML(c, extra = '') {
-  if (!c || c === '??') return `<div class="card back ${extra}" aria-label="verdeckte Karte"></div>`;
+  if (!c || c === '??') return I18n.html`<div class="card back ${extra}" aria-label="verdeckte Karte"></div>`;
   const r = c[0] === 'T' ? '10' : c[0];
   const s = c[1];
   const red = s === 'h' || s === 'd' ? 'red' : '';
@@ -283,12 +283,12 @@ function render() {
   const st = S.settings;
   const b = S.blinds;
   const levels = b.mode !== 'off';
-  $('#meta').innerHTML = `<div class="blinds"><small>Blinds${levels ? ` · Level ${b.level}` : ''}</small>${amt(b.sb)} / ${amt(b.bb)}</div>
-    <div class="meta-sub">${h ? `Hand #${h.no} · ${STREET[h.street]}` : 'Noch keine Hand'}${S.frozen ? ' · <b>Angehalten</b>' : S.paused ? ' · <b>Pause</b>' : ''}${levels ? blindNote(b) : ''}</div>`;
+  $('#meta').innerHTML = I18n.html`<div class="blinds"><small>Blinds${levels ? I18n.html` · Level ${b.level}` : ''}</small>${amt(b.sb)} / ${amt(b.bb)}</div>
+    <div class="meta-sub">${h ? I18n.html`Hand #${h.no} · ${STREET[h.street]}` : 'Noch keine Hand'}${S.frozen ? I18n.html(' · <b>Angehalten</b>') : S.paused ? I18n.html(' · <b>Pause</b>') : ''}${levels ? blindNote(b) : ''}</div>`;
   const fb = $('#freeze-btn');
   fb.hidden = !S.you?.isHost || !S.started;
   fb.classList.toggle('btn-brass', !!S.frozen);
-  fb.innerHTML = S.frozen ? `${ICON.play}<span class="long">Weiterspielen</span>` : `${ICON.pause}<span class="long">Alle anhalten</span>`;
+  fb.innerHTML = S.frozen ? I18n.html`${ICON.play}<span class="long">Weiterspielen</span>` : I18n.html`${ICON.pause}<span class="long">Alle anhalten</span>`;
   fb.title = S.frozen ? 'Weiterspielen' : 'Spiel für alle sofort anhalten';
   fb.setAttribute('aria-label', fb.title);
   document.body.classList.toggle('frozen', !!S.frozen);
@@ -309,16 +309,16 @@ function afterOddsHTML(h) {
   const seats = Object.keys(h.afterOdds[0].odds);
   const streets = h.afterOdds.map((r) => STREET[r.street]).join(' → ');
   const rows = seats.map((s) => `<span>${esc(S.seats[s]?.name ?? '?')} ${h.afterOdds.map((r) => String(r.odds[s]).replace('.', ',')).join(' → ')} %</span>`).join(' · ');
-  return `<div class="sub after-odds"><small>Chancen ${streets}:</small> ${rows}</div>`;
+  return I18n.html`<div class="sub after-odds"><small>Chancen ${streets}:</small> ${rows}</div>`;
 }
 // „Nächstes Level in 4:32 – 100/200“ (die Uhr zählt in tick() weiter)
 function blindNote(b) {
-  if (b.pending) return ` · <b>Ab nächster Hand ${amt(b.pending.sb)}/${amt(b.pending.bb)}</b>`;
+  if (b.pending) return I18n.html` · <b>Ab nächster Hand ${amt(b.pending.sb)}/${amt(b.pending.bb)}</b>`;
   if (!b.next) return ' · höchstes Level';
   const n = b.next;
-  const when = n.handsLeft !== null ? `in ${n.handsLeft} ${n.handsLeft === 1 ? 'Hand' : 'Händen'}`
-    : `in <span data-blindclock>${mmss(n.msLeft)}</span>${b.running ? '' : ' (Uhr steht)'}`;
-  return ` · Nächstes Level ${when} – ${amt(n.sb)}/${amt(n.bb)}`;
+  const when = n.handsLeft !== null ? I18n.html`in ${n.handsLeft} ${n.handsLeft === 1 ? 'Hand' : 'Händen'}`
+    : I18n.html`in <span data-blindclock>${mmss(n.msLeft)}</span>${b.running ? '' : ' (Uhr steht)'}`;
+  return I18n.html` · Nächstes Level ${when} – ${amt(n.sb)}/${amt(n.bb)}`;
 }
 
 function renderTable() {
@@ -340,7 +340,7 @@ function renderTable() {
   const onTable = h && !h.done ? S.seats.reduce((a, x) => a + (x?.bet || 0), 0) : 0;
   const total = pots.reduce((a, p) => a + p, 0) + onTable;
   // Großer Pot in der Mitte; Side Pots (wenn es welche gibt) klein daneben
-  $('#pot').innerHTML = total ? `<div class="pot-box main">${chipStack(total, 5)}<span class="pot-text"><small>Pot${onTable && pots.length ? ' mit Einsätzen' : ''}</small><b>${amt(total)}</b></span></div>`
+  $('#pot').innerHTML = total ? I18n.html`<div class="pot-box main">${chipStack(total, 5)}<span class="pot-text"><small>Pot${onTable && pots.length ? ' mit Einsätzen' : ''}</small><b>${amt(total)}</b></span></div>`
     + (pots.length > 1 ? pots.map((p, i) => `<div class="pot-box side">${chipStack(p, 2)}<span class="pot-text"><small>${i ? 'Side Pot' + (pots.length > 2 ? ' ' + i : '') : 'Main Pot'}</small><b>${amt(p)}</b></span></div>`).join('') : '') : '';
 
   // Board
@@ -349,7 +349,7 @@ function renderTable() {
   let html = '';
   for (let i = 0; i < 5; i++) {
     const c = board[i];
-    if (c) html += cardHTML(c, `${i >= prevBoard.length ? 'deal' : ''} ${h.done && winning.size ? (winning.has(c) ? `win ${justDone ? 'glow' : ''}` : 'dim') : ''}`);
+    if (c) html += cardHTML(c, `${i >= prevBoard.length ? 'deal' : ''} ${h.done && winning.size ? (winning.has(c) ? I18n.html`win ${justDone ? 'glow' : ''}` : 'dim') : ''}`);
     else html += '<div class="slot" aria-hidden="true"></div>';
   }
   $('#board').innerHTML = html;
@@ -357,24 +357,24 @@ function renderTable() {
   // Nachricht auf dem Filz
   let msg = '';
   if (S.frozen) {
-    msg = `<div class="big">${ICON.pause} Angehalten</div><div class="sub">${S.you?.isHost ? 'Mit <b>Weiterspielen</b> oben geht es genau hier weiter.' : 'Der Host hat das Spiel angehalten. Gleich geht es weiter.'}</div>`;
+    msg = I18n.html`<div class="big">${ICON.pause} Angehalten</div><div class="sub">${S.you?.isHost ? I18n.html('Mit <b>Weiterspielen</b> oben geht es genau hier weiter.') : 'Der Host hat das Spiel angehalten. Gleich geht es weiter.'}</div>`;
   } else if (!h || (!S.started && !h)) {
     const seated = S.seats.filter(Boolean).length;
     msg = S.you?.isHost
-      ? `<div class="big">${seated < 2 ? 'Warte auf Mitspieler' : 'Alle da?'}</div><div class="sub">${seated < 2 ? 'Teil den Link oben – sobald 2 sitzen, kannst du starten.' : `<button class="btn btn-brass" data-do="start">Spiel starten</button>`}</div>`
-      : `<div class="big">Gleich geht’s los</div><div class="sub">Der Host startet das Spiel.</div>`;
+      ? `<div class="big">${seated < 2 ? 'Warte auf Mitspieler' : 'Alle da?'}</div><div class="sub">${seated < 2 ? 'Teil den Link oben – sobald 2 sitzen, kannst du starten.' : I18n.html`<button class="btn btn-brass" data-do="start">Spiel starten</button>`}</div>`
+      : I18n.html`<div class="big">Gleich geht’s los</div><div class="sub">Der Host startet das Spiel.</div>`;
   } else if (h.done && h.result) {
-    const lines = h.result.pots.map((p, i) => `<div class="${i ? 'sub' : 'big'}">${esc(p.names.join(' & '))} ${p.winners.length > 1 ? 'teilen sich' : 'gewinnt'} ${amt(p.amount)}${p.hand ? ` mit ${esc(p.hand)}` : ''}</div>`);
+    const lines = h.result.pots.map((p, i) => `<div class="${i ? 'sub' : 'big'}">${esc(p.names.join(' & '))} ${p.winners.length > 1 ? 'teilen sich' : 'gewinnt'} ${amt(p.amount)}${p.hand ? I18n.html` mit ${esc(p.hand)}` : ''}</div>`);
     const next = S.nextAt ? Math.max(0, Math.ceil((S.nextAt - gameNow(S)) / 1000)) : null;
     let sub = '';
     if (S.paused) sub = 'Pause – der Host macht weiter';
-    else if (next !== null) sub = `Nächste Hand in <span data-countdown>${next}</span> s`;
-    else if (S.partyProgram && S.partyProgram.status !== 'stopped') sub = S.partyProgram.status === 'between' && S.you?.isHost ? '<button class="btn btn-brass btn-sm" data-program="next">Nächstes Programm-Spiel</button>' : '<button class="btn btn-sm" data-program="stand">Abendwertung</button>';
-    else if (S.you?.isHost) sub = '<button class="btn btn-brass btn-sm" data-do="nextHand">Nächste Hand</button>';
+    else if (next !== null) sub = I18n.html`Nächste Hand in <span data-countdown>${next}</span> s`;
+    else if (S.partyProgram && S.partyProgram.status !== 'stopped') sub = S.partyProgram.status === 'between' && S.you?.isHost ? I18n.html('<button class="btn btn-brass btn-sm" data-program="next">Nächstes Programm-Spiel</button>') : I18n.html('<button class="btn btn-sm" data-program="stand">Abendwertung</button>');
+    else if (S.you?.isHost) sub = I18n.html('<button class="btn btn-brass btn-sm" data-do="nextHand">Nächste Hand</button>');
     else if (!S.settings.autoNext) sub = 'Der Host startet die nächste Hand';
     msg = lines.join('') + afterOddsHTML(h) + (sub ? `<div class="sub" style="margin-top:6px">${sub}</div>` : '');
   } else if (!h.done && S.paused) {
-    msg = '<div class="sub">Pause nach dieser Hand</div>';
+    msg = I18n.html('<div class="sub">Pause nach dieser Hand</div>');
   }
   $('#felt-msg').innerHTML = msg;
 
@@ -387,9 +387,9 @@ function renderTable() {
   for (const [key, p] of Object.entries(pos)) {
     const i = Number(key);
     const s = S.seats[i];
-    const style = `left:${p.x}%;top:${p.y}%`;
+    const style = I18n.html`left:${p.x}%;top:${p.y}%`;
     if (!s) {
-      seatsHTML += `<div class="empty-seat" style="${style}">${!iAmSeated && seatedCount < S.settings.maxPlayers ? `<button class="sit-btn" data-sit="${i}" aria-label="Hier sitzen" ${S.you?.sitLocked ? 'disabled title="Du setzt noch eine Hand aus"' : ''}><span class="plus" aria-hidden="true">+</span><span class="long">Hier sitzen</span></button>` : '<div class="empty-dot"></div>'}</div>`;
+      seatsHTML += `<div class="empty-seat" style="${style}">${!iAmSeated && seatedCount < S.settings.maxPlayers ? I18n.html`<button class="sit-btn" data-sit="${i}" aria-label="Hier sitzen" ${S.you?.sitLocked ? 'disabled title="Du setzt noch eine Hand aus"' : ''}><span class="plus" aria-hidden="true">+</span><span class="long">Hier sitzen</span></button>` : '<div class="empty-dot"></div>'}</div>`;
       continue;
     }
     const turn = h && !h.done && h.toAct === i;
@@ -407,15 +407,15 @@ function renderTable() {
     }
     // Anstupsen: am Panel dessen, der gerade dran ist
     const nudge = turn && iAmSeated && i !== mySeat && S.settings.nudge && !S.frozen
-      ? `<button class="nudge-btn" data-nudge="${s.id}" title="${esc(s.name)} anstupsen" aria-label="${esc(s.name)} anstupsen">👉</button>` : '';
+      ? I18n.html`<button class="nudge-btn" data-nudge="${s.id}" title="${esc(s.name)} anstupsen" aria-label="${esc(s.name)} anstupsen">👉</button>` : '';
     // Status: immer Symbol bzw. Text, nie nur Farbe
     let status = '';
-    if (won) status = '<span class="plaque status gold">★ Gewinnt</span>';
-    else if (s.allIn) status = `<span class="plaque status red ${fx('allIn')}">All-in</span>`;
-    else if (!s.connected) status = `<span class="plaque status ${fx('connected')}">${ICON.offline}offline</span>`;
-    else if (s.sittingOut) status = `<span class="plaque status blue ${fx('sittingOut')}" title="${h && !h.done && s.inHand && !s.folded ? 'Macht ab der nächsten Hand Pause' : 'Macht Pause'}">${ICON.pause}Pause</span>`;
-    else if (s.folded) status = `<span class="plaque status ${fx('folded')}">Fold</span>`;
-    else if (s.busted) status = '<span class="plaque status">pleite</span>';
+    if (won) status = I18n.html('<span class="plaque status gold">★ Gewinnt</span>');
+    else if (s.allIn) status = I18n.html`<span class="plaque status red ${fx('allIn')}">All-in</span>`;
+    else if (!s.connected) status = I18n.html`<span class="plaque status ${fx('connected')}">${ICON.offline}offline</span>`;
+    else if (s.sittingOut) status = I18n.html`<span class="plaque status blue ${fx('sittingOut')}" title="${h && !h.done && s.inHand && !s.folded ? 'Macht ab der nächsten Hand Pause' : 'Macht Pause'}">${ICON.pause}Pause</span>`;
+    else if (s.folded) status = I18n.html`<span class="plaque status ${fx('folded')}">Fold</span>`;
+    else if (s.busted) status = I18n.html('<span class="plaque status">pleite</span>');
     // Letzte Aktion über dem Panel: Check/Call neutral, Bet/Raise Gold (All-in steht schon als Status da)
     let act = '';
     if (h && !h.done && !s.folded && !s.allIn && ['Check', 'Call', 'Bet', 'Raise'].includes(s.lastAction)) {
@@ -427,9 +427,9 @@ function renderTable() {
       <div class="plate">
         <div class="av-wrap">${ringSVG}<div class="avatar">${avatarHTML(s)}</div></div>
         <div class="p-info">
-          <div class="p-name"><span>${esc(s.name)}</span>${s.isHost ? `${ICON.crown}<span class="sr-only">(Host)</span>` : ''}</div>
+          <div class="p-name"><span>${esc(s.name)}</span>${s.isHost ? I18n.html`${ICON.crown}<span class="sr-only">(Host)</span>` : ''}</div>
           <div class="p-stack"><span class="chip c5" aria-hidden="true"></span>${amt(s.stack)}</div>
-          ${compact && s.bet > 0 ? `<div class="p-bet" aria-label="Einsatz ${amt(s.bet)}">↳ ${amt(s.bet)}</div>` : ''}
+          ${compact && s.bet > 0 ? I18n.html`<div class="p-bet" aria-label="Einsatz ${amt(s.bet)}">↳ ${amt(s.bet)}</div>` : ''}
           ${handName}
         </div>
         ${act}${status}${nudge}
@@ -453,11 +453,11 @@ function renderDock() {
   if (mySeat === null || mySeat === undefined) {
     const you = S.you;
     let right = '<div></div>';
-    let note = 'Du schaust zu. Klick auf <b>Hier sitzen</b>, um mitzuspielen.';
+    let note = I18n.html('Du schaust zu. Klick auf <b>Hier sitzen</b>, um mitzuspielen.');
     if (you?.lastSeat !== null && you?.lastSeat !== undefined) {
       // Nach dem Aufstehen: eine Hand aussetzen, dann wieder rein
       const free = S.seats.filter(Boolean).length < S.settings.maxPlayers;
-      note = you.sitLocked ? 'Du setzt eine Hand aus. Sobald die nächste Hand läuft, kannst du wieder einsteigen.' : 'Du schaust zu.';
+      note = you.sitLocked ? 'Du setzt eine Hand aus. Sobald die nächste Hand läuft, kannst du wieder einsteigen.' : I18n.t('Du schaust zu.');
       if (free) {
         const label = you.sitLocked || (h && !h.done) ? 'Wieder einsteigen ab nächster Hand' : 'Wieder einsteigen';
         right = `<div class="actions"><div class="act-row"><button class="btn btn-brass" data-do="rejoin" ${you.sitLocked ? 'disabled aria-describedby="lock-note"' : ''}>${label}</button></div></div>`;
@@ -473,14 +473,14 @@ function renderDock() {
   if (h?.done) h.result?.pots.forEach((p) => (p.cards || []).forEach((c) => winning.add(c)));
   const fresh = prevS?.hand?.no !== h?.no;
   const cardsHTML = myCards ? myCards.map((c) => cardHTML(c, `${fresh ? 'deal' : ''} ${winning.has(c) ? 'win' : ''} ${foldedMine ? 'dim' : ''}`)).join('')
-    + (foldedMine ? '<span class="folded-tag">gefoldet</span>' : '') : '';
+    + (foldedMine ? I18n.html('<span class="folded-tag">gefoldet</span>') : '') : '';
   let chances = '';
   if (prefs.odds && S.odds && S.strengthCat !== null && h && !h.done && h.street !== 'river') {
     const better = HANDS.filter(([cat]) => cat > S.strengthCat && S.odds[cat] >= 1).sort((a, b) => S.odds[b[0]] - S.odds[a[0]]).slice(0, 2);
-    if (better.length) chances = `<span class="odds-bars" aria-label="Chancen bis zum River">${better.map(([cat, name]) => oddsBar(name, S.odds[cat])).join('')}</span>`;
+    if (better.length) chances = I18n.html`<span class="odds-bars" aria-label="Chancen bis zum River">${better.map(([cat, name]) => oddsBar(name, S.odds[cat])).join('')}</span>`;
   }
   const showName = prefs.strength && S.strength;
-  const strength = myCards && !foldedMine && (showName || chances) ? `<button class="strength" data-panel-open="hands" title="Alle Pokerhände und deine Chancen"><span>${showName ? esc(S.strength) : 'Deine Chancen'}</span><small>${STREET[h.street]}</small>${chances}</button>` : '';
+  const strength = myCards && !foldedMine && (showName || chances) ? I18n.html`<button class="strength" data-panel-open="hands" title="Alle Pokerhände und deine Chancen"><span>${showName ? esc(S.strength) : 'Deine Chancen'}</span><small>${STREET[h.street]}</small>${chances}</button>` : '';
   const myChips = `<span class="me-chips"><span class="chip c5" aria-hidden="true"></span>${amt(me.stack)}</span>`;
   const left = `<div class="mine">${handsBtn()}<div class="cards ${foldedMine ? 'is-folded' : ''}">${cardsHTML}</div><div class="mine-info">${strength}${myChips}</div></div>`;
 
@@ -492,12 +492,12 @@ function renderDock() {
     raiseValue = Math.min(L.maxTo, Math.max(L.minTo, raiseValue));
     const kb = (k) => (prefs.keys ? `<kbd>${k}</kbd>` : '');
     const callInner = L.canCheck
-      ? `<span class="amt">Check</span><small>kostet nichts ${kb('C')}</small>`
+      ? I18n.html`<span class="amt">Check</span><small>kostet nichts ${kb('C')}</small>`
       : `<small>${L.toCall >= me.stack ? 'All-in' : 'Call'} ${kb('C')}</small><span class="amt">${amt(L.toCall)}</span>`;
-    const clock = S.hand.turnTime ? '<div class="my-clock" data-myclock><b>–</b><small>Sek.</small></div>' : '';
-    right = `<div class="turn-banner" role="status">Du bist dran</div>
+    const clock = S.hand.turnTime ? I18n.html('<div class="my-clock" data-myclock><b>–</b><small>Sek.</small></div>') : '';
+    right = I18n.html`<div class="turn-banner" role="status">Du bist dran</div>
     <div class="actions">
-      ${L.canRaise && L.maxTo > L.minTo ? `<div class="raise-box">
+      ${L.canRaise && L.maxTo > L.minTo ? I18n.html`<div class="raise-box">
         <div class="presets">
           <button class="btn btn-sm" data-preset="0.5">½ Pot</button>
           <button class="btn btn-sm" data-preset="0.75">¾ Pot</button>
@@ -518,21 +518,21 @@ function renderDock() {
     </div>`;
   } else {
     const parts = [];
-    if (S.frozen) parts.push(`<span class="waiting"><b>${ICON.pause} Angehalten</b> – warte auf den Host</span>`);
-    else if (me.sittingOut) parts.push(`<span class="waiting break-note">${ICON.pause} Du machst Pause${h && !h.done && me.inHand && !me.folded ? ' ab der nächsten Hand' : ' und bekommst keine Karten'}</span>`);
+    if (S.frozen) parts.push(I18n.html`<span class="waiting"><b>${ICON.pause} Angehalten</b> – warte auf den Host</span>`);
+    else if (me.sittingOut) parts.push(I18n.html`<span class="waiting break-note">${ICON.pause} Du machst Pause${h && !h.done && me.inHand && !me.folded ? ' ab der nächsten Hand' : ' und bekommst keine Karten'}</span>`);
     else if (h && !h.done && h.toAct >= 0) {
       const who = S.seats[h.toAct];
-      parts.push(`<span class="waiting">${me.folded ? 'Du bist raus. ' : ''}<b>${esc(who?.name)}</b> ist dran …</span>`);
+      parts.push(I18n.html`<span class="waiting">${me.folded ? 'Du bist raus. ' : ''}<b>${esc(who?.name)}</b> ist dran …</span>`);
     } else if (h?.done) {
-      parts.push('<span class="waiting">Hand vorbei</span>');
+      parts.push(I18n.html('<span class="waiting">Hand vorbei</span>'));
     }
-    if (S.canShow) parts.push('<button class="btn btn-brass" data-do="show">Karten zeigen</button>');
+    if (S.canShow) parts.push(I18n.html('<button class="btn btn-brass" data-do="show">Karten zeigen</button>'));
     if (me.busted && !(h && !h.done && me.inHand && !me.folded)) {
-      parts.push(S.settings.rebuy === 'off' ? '<span class="waiting">Keine Chips mehr</span>' : `<button class="btn btn-brass" data-do="rebuy">Nachkaufen (${amt(S.settings.startStack)})</button>`);
+      parts.push(S.settings.rebuy === 'off' ? I18n.html('<span class="waiting">Keine Chips mehr</span>') : I18n.html`<button class="btn btn-brass" data-do="rebuy">Nachkaufen (${amt(S.settings.startStack)})</button>`);
     }
-    parts.push(me.sittingOut ? '<button class="btn btn-brass" data-do="back">Bin wieder da</button>' : `<button class="btn" data-do="sitout" title="Du bekommst keine Karten, bis du zurück bist">${ICON.pause}<span><span class="long">Ich mache </span>Pause</span></button>`);
-    if (me.leaving) parts.push('<span class="waiting">Du stehst nach der Hand auf</span>', '<button class="btn btn-ghost" data-do="stand">Doch sitzen bleiben</button>');
-    else parts.push(`<button class="btn btn-ghost" data-do="stand">${h && !h.done && me.inHand ? 'Nach der Hand aufstehen' : 'Aufstehen'}</button>`);
+    parts.push(me.sittingOut ? I18n.html('<button class="btn btn-brass" data-do="back">Bin wieder da</button>') : I18n.html`<button class="btn" data-do="sitout" title="Du bekommst keine Karten, bis du zurück bist">${ICON.pause}<span><span class="long">Ich mache </span>Pause</span></button>`);
+    if (me.leaving) parts.push(I18n.html('<span class="waiting">Du stehst nach der Hand auf</span>'), I18n.html('<button class="btn btn-ghost" data-do="stand">Doch sitzen bleiben</button>'));
+    else parts.push(`<button class="btn btn-ghost" data-do="stand">${h && !h.done && me.inHand ? 'Nach der Hand aufstehen' : I18n.t('Aufstehen')}</button>`);
     right = `<div class="actions">${preActionsHTML(me)}<div class="act-row">${parts.join('')}</div></div>`;
   }
   dock.innerHTML = left + right;
@@ -549,14 +549,14 @@ function preActionsHTML(me) {
     return `<button class="btn btn-sm pre-btn" data-pre="${k}" aria-pressed="${pre === k}" ${off ? 'disabled title="Es wurde gesetzt – Check geht nicht"' : ''}>${l}</button>`;
   }).join('');
   const label = PRE.find(([k]) => k === pre)?.[1];
-  const info = pre ? `<span class="pre-active">Automatisch: <b>${label}</b></span>`
-    : S.you.preNote ? `<span class="pre-note" role="status">${esc(S.you.preNote)}</span>` : '<span class="pre-hint">Vorab für diese Hand:</span>';
-  return `<div class="pre-row ${pre ? 'on' : ''}" role="group" aria-label="Vorab-Aktion für diese Hand">${info}${btns}</div>`;
+  const info = pre ? I18n.html`<span class="pre-active">Automatisch: <b>${label}</b></span>`
+    : S.you.preNote ? `<span class="pre-note" role="status">${esc(S.you.preNote)}</span>` : I18n.html('<span class="pre-hint">Vorab für diese Hand:</span>');
+  return I18n.html`<div class="pre-row ${pre ? 'on' : ''}" role="group" aria-label="Vorab-Aktion für diese Hand">${info}${btns}</div>`;
 }
 function raiseInner(v) {
   const L = S.legal;
   const val = Math.min(L.maxTo, Math.max(L.minTo, v));
-  return `<small>${L.isBet ? 'Bet' : 'Raise auf'}${val === L.maxTo ? (L.potLimit && L.maxTo < L.stackTo ? ' · Pot-Limit' : ' · All-in') : ''} ${prefs.keys ? '<kbd>R</kbd>' : ''}</small><span class="amt">${amt(val)}</span>`;
+  return `<small>${L.isBet ? 'Bet' : 'Raise auf'}${val === L.maxTo ? (L.potLimit && L.maxTo < L.stackTo ? ' · Pot-Limit' : ' · All-in') : ''} ${prefs.keys ? I18n.html('<kbd>R</kbd>') : ''}</small><span class="amt">${amt(val)}</span>`;
 }
 
 // Timer und Countdown laufen ohne komplettes Neuzeichnen
@@ -627,7 +627,7 @@ function blinkTitle(on) {
   document.title = 'Spieleabend';
   if (!on) return;
   let k = 0;
-  blinkTimer = setInterval(() => { document.title = k++ % 2 ? 'Spieleabend' : '● Du bist dran – Spieleabend'; }, 900);
+  blinkTimer = setInterval(() => { document.title = k++ % 2 ? 'Spieleabend' : I18n.t('● Du bist dran – Spieleabend'); }, 900);
 }
 function notifyTurn() {
   if (!prefs.notify || !('Notification' in window) || Notification.permission !== 'granted') return;
@@ -672,16 +672,16 @@ const seenGifts = new Set();
 async function giftDialog(id) {
   const name = playerName(id);
   const amount = await ask({
-    title: `${name} Chips schenken`, text: `Nur Spielgeld. ${name} muss zustimmen, das Angebot gilt 60 Sekunden.`, ok: 'Weiter',
+    title: I18n.html`${name} Chips schenken`, text: I18n.html`Nur Spielgeld. ${name} muss zustimmen, das Angebot gilt 60 Sekunden.`, ok: I18n.t('Weiter'),
     input: { type: 'number', value: Math.min(1000, S.standings.find((p) => p.id === S.you?.id)?.chips || 0), label: 'Wie viele Chips?' },
   });
   if (amount === false) return;
   const message = await ask({
-    title: 'Nachricht dazu?', text: 'Optional, höchstens 100 Zeichen.', ok: 'Senden', cancel: 'Ohne Nachricht', cancelValue: '',
+    title: 'Nachricht dazu?', text: 'Optional, höchstens 100 Zeichen.', ok: I18n.t('Senden'), cancel: 'Ohne Nachricht', cancelValue: '',
     input: { value: '', label: 'Nachricht', maxLength: 100, placeholder: 'z. B. Für die nächste Runde' },
   });
   if (message === false) return;
-  send('gift', { id, amount: Number(amount), message }).then((r) => r?.ok && toast(`Angebot an ${name} geschickt`));
+  send('gift', { id, amount: Number(amount), message }).then((r) => r?.ok && toast(I18n.html`Angebot an ${name} geschickt`));
 }
 // Neues Angebot für mich: einmal als Dialog zeigen (Esc = später, bleibt unter „Stand“ sichtbar)
 async function checkGifts() {
@@ -689,7 +689,7 @@ async function checkGifts() {
   if (!g || $('#dlg').open) return;
   seenGifts.add(g.id);
   const r = await ask({
-    title: `${g.from} möchte dir ${amt(g.amount)} Chips schenken`, text: g.message ? `„${g.message}“` : 'Ohne Nachricht.',
+    title: I18n.html`${g.from} möchte dir ${amt(g.amount)} Chips schenken`, text: g.message ? `„${g.message}“` : 'Ohne Nachricht.',
     ok: 'Annehmen', cancel: 'Ablehnen', cancelValue: 'no',
   });
   if (r === true) send('giftAnswer', { id: g.id, accept: true }).then((x) => x?.ok && toast('Angenommen 🎁'));
@@ -709,7 +709,7 @@ function showNudge({ from, text }) {
   }
   el.innerHTML = '<span class="nudge-hand" aria-hidden="true">👉</span><b></b><small></small>';
   el.querySelector('b').textContent = text;
-  el.querySelector('small').textContent = from ? `${from} stupst dich an` : 'Du bist dran';
+  el.querySelector('small').textContent = from ? I18n.html`${from} stupst dich an` : I18n.t('Du bist dran');
   el.hidden = false;
   el.classList.remove('go'); void el.offsetWidth; el.classList.add('go');
   sounds.nudge();
@@ -736,7 +736,7 @@ function animateChips(a, b) {
   });
   const winners = b.hand.done ? [...new Set(b.hand.result?.pots.flatMap((p) => p.winners) || [])] : [];
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    for (const [f, dx, dy] of flights) { f.style.transform = `translate(${dx}px, ${dy}px) scale(.8)`; f.style.opacity = '0'; }
+    for (const [f, dx, dy] of flights) { f.style.transform = I18n.html`translate(${dx}px, ${dy}px) scale(.8)`; f.style.opacity = '0'; }
     setTimeout(() => { flights.forEach(([f]) => f.remove()); potEl.classList.add('pulse'); setTimeout(() => potEl.classList.remove('pulse'), 400); }, 400);
     if (winners.length) {
       setTimeout(() => {
@@ -747,7 +747,7 @@ function animateChips(a, b) {
           f.innerHTML = `<span class="chip c5" style="width:26px;height:26px;display:block"></span>`;
           f.style.left = tx + 'px'; f.style.top = ty + 'px';
           document.body.appendChild(f);
-          requestAnimationFrame(() => requestAnimationFrame(() => { f.style.transform = `translate(${r.left + r.width / 2 - tx}px, ${r.top - ty}px)`; f.style.opacity = '.2'; }));
+          requestAnimationFrame(() => requestAnimationFrame(() => { f.style.transform = I18n.html`translate(${r.left + r.width / 2 - tx}px, ${r.top - ty}px)`; f.style.opacity = '.2'; }));
           setTimeout(() => f.remove(), 420);
         }
       }, 420);
@@ -776,7 +776,7 @@ const SEB_JOKES = [
   'Wir haben mittlerweile den Winter erreicht.',
 ];
 // Pixel-Art: Farmer wartet vor Sebastians Zimmertür, Uhr dreht, Zzz steigt auf
-const SEB_SCENE = `<svg class="seb-scene" viewBox="0 0 80 46" shape-rendering="crispEdges" aria-hidden="true">
+const SEB_SCENE = I18n.html`<svg class="seb-scene" viewBox="0 0 80 46" shape-rendering="crispEdges" aria-hidden="true">
   <rect width="80" height="34" fill="#5b4030"/>
   <g fill="#4e3627"><rect y="8" width="80" height="1"/><rect y="17" width="80" height="1"/><rect y="26" width="80" height="1"/></g>
   <rect y="31" width="80" height="3" fill="#3b2619"/>
@@ -822,8 +822,8 @@ function sebWho(sebs) {
   const meIn = sebs.some((s) => s.id === S.you?.id);
   const others = sebs.filter((s) => s.id !== S.you?.id).map((s) => esc(s.name));
   const list = others.length > 1 ? others.slice(0, -1).join(', ') + ' und ' + others[others.length - 1] : others[0];
-  if (meIn) return 'Alle warten darauf, dass du wiederkommst.' + (others.length ? ` Und auf ${list}.` : '');
-  return `${list} ${others.length > 1 ? 'machen' : 'macht'} gerade Pause.`;
+  if (meIn) return 'Alle warten darauf, dass du wiederkommst.' + (others.length ? I18n.html` Und auf ${list}.` : '');
+  return I18n.html`${list} ${others.length > 1 ? 'machen' : 'macht'} gerade Pause.`;
 }
 function renderSeb() {
   const el = $('#seb');
@@ -843,7 +843,7 @@ function renderSeb() {
   el.hidden = false;
   el.classList.toggle('small', sebSmall);
   if (fresh) { el.classList.remove('intro'); void el.offsetWidth; el.classList.add('intro'); }
-  el.innerHTML = `<button class="seb-toggle" data-seb-toggle aria-label="${sebSmall ? 'Szene zeigen' : 'Verkleinern'}" title="${sebSmall ? 'Szene zeigen' : 'Verkleinern'}">${sebSmall ? '▴' : '▾'}</button>
+  el.innerHTML = I18n.html`<button class="seb-toggle" data-seb-toggle aria-label="${sebSmall ? 'Szene zeigen' : 'Verkleinern'}" title="${sebSmall ? 'Szene zeigen' : 'Verkleinern'}">${sebSmall ? '▴' : '▾'}</button>
     <div class="seb-title">Waiting for Sebastian...</div>
     ${sebSmall ? '' : SEB_SCENE}
     <div class="seb-who" role="status" aria-live="polite">${sebWho(sebs)}</div>
@@ -858,19 +858,19 @@ function renderSeb() {
 }
 
 // ---------- Pokerhände (klappt unten links nach oben auf) ----------
-const handsBtn = () => `<button class="hands-btn" data-panel-open="hands" aria-expanded="${panel === 'hands'}" title="Welche Pokerhände gibt es?">Hände</button>`;
+const handsBtn = () => I18n.html`<button class="hands-btn" data-panel-open="hands" aria-expanded="${panel === 'hands'}" title="Welche Pokerhände gibt es?">Hände</button>`;
 // Reiter „Hände“: Tabelle der Handwertungen, stärkste zuerst – mit deiner Hand und deinen Chancen, wenn erlaubt
 function renderHands(body) {
   const h = S.hand;
   const odds = prefs.odds && h && !h.done && h.street !== 'river' ? S.odds : null;
   const mine = S.strengthCat;
-  body.innerHTML = `<p class="hint" style="margin:0">Von oben nach unten: die stärkste Hand zuerst. Haben zwei dasselbe, gewinnt die höhere Karte.
+  body.innerHTML = I18n.html`<p class="hint" style="margin:0">Von oben nach unten: die stärkste Hand zuerst. Haben zwei dasselbe, gewinnt die höhere Karte.
       ${odds ? 'Die Balken zeigen, wie wahrscheinlich das am River deine Hand ist.' : ''}</p>
-    <table class="hands-table"><thead><tr><th class="num">#</th><th>Hand</th><th>Beispiel</th>${odds ? '<th>Chance</th>' : ''}</tr></thead><tbody>
+    <table class="hands-table"><thead><tr><th class="num">#</th><th>Hand</th><th>Beispiel</th>${odds ? I18n.html('<th>Chance</th>') : ''}</tr></thead><tbody>
     ${HANDS.map(([cat, name, en, desc, cards, used], k) => {
       const p = odds ? odds[cat] ?? 0 : null;
       return `<tr class="${mine === cat ? 'now' : ''}"><td class="num">${k + 1}</td>
-        <td><b>${name}</b>${en !== name ? ` <small class="hr-en">${en}</small>` : ''}${mine === cat ? ' <span class="hr-now">Hast du</span>' : ''}<small class="hr-desc">${desc}</small></td>
+        <td><b>${name}</b>${en !== name ? ` <small class="hr-en">${en}</small>` : ''}${mine === cat ? I18n.html(' <span class="hr-now">Hast du</span>') : ''}<small class="hr-desc">${desc}</small></td>
         <td><span class="hr-cards">${cards.map((c, i) => cardHTML(c, i >= used ? 'dim' : '')).join('')}</span></td>
         ${odds ? `<td>${p > 0 ? oddsBar('', p) : '<span class="hr-pct none">–</span>'}</td>` : ''}</tr>`;
     }).join('')}</tbody></table>`;
@@ -882,7 +882,7 @@ function openPanel(name) {
   panel = panel === name ? null : name;
   $('#panel').hidden = !panel;
   $$('.nav-btn').forEach((b) => b.setAttribute('aria-current', String(b.dataset.panel === panel)));
-  if (panel) { $('#panel-title').textContent = PANEL_TITLES[panel]; renderPanel(true); }
+  if (panel) { $('#panel-title').textContent = I18n.t(PANEL_TITLES[panel]); renderPanel(true); }
 }
 $$('.nav-btn').forEach((b) => b.addEventListener('click', () => openPanel(b.dataset.panel)));
 $('#panel-close').addEventListener('click', () => openPanel(null));
@@ -898,19 +898,19 @@ function miniCards(text) {
 
 // Host: Blinds erhöhen – Modus, Abstand, Vorlage oder eigene Liste, dazu die Level als Vorschau
 function blindsHost(s) {
-  const unit = s.blindMode === 'hands' ? 'Hände' : 'Minuten';
+  const unit = s.blindMode === 'hands' ? I18n.t('Hände') : I18n.t('Minuten');
   const lv = S.blinds.levels;
   const preview = lv.map((l, i) => `<li class="${s.blindMode !== 'off' && i === S.blinds.level - 1 ? 'now' : ''}"><small>${i + 1}</small> ${amt(l.sb)}/${amt(l.bb)}</li>`).join('');
-  return `<div class="host-grid">
+  return I18n.html`<div class="host-grid">
       <label class="field"><span>Blinds erhöhen</span><select data-blind="blindMode">
         ${[['off', 'aus'], ['minutes', 'alle X Minuten'], ['hands', 'alle X Hände']].map(([v, l]) => `<option value="${v}" ${s.blindMode === v ? 'selected' : ''}>${l}</option>`).join('')}
       </select></label>
       <label class="field"><span>Alle wie viele ${unit}?</span><input type="number" min="1" max="240" data-blind="blindEvery" value="${s.blindEvery}" ${s.blindMode === 'off' ? 'disabled' : ''}></label>
       <label class="field" style="grid-column:1/-1"><span>Vorlage</span><select data-blind="blindPreset">
-        ${[['fast', 'Schnell'], ['normal', 'Normal'], ['long', 'Lang'], ['custom', 'Eigene Liste']].map(([v, l]) => `<option value="${v}" ${s.blindPreset === v ? 'selected' : ''}>${l}</option>`).join('')}
+        ${[['fast', 'Schnell'], ['normal', I18n.t('Normal')], ['long', 'Lang'], ['custom', 'Eigene Liste']].map(([v, l]) => `<option value="${v}" ${s.blindPreset === v ? 'selected' : ''}>${l}</option>`).join('')}
       </select></label>
     </div>
-    ${s.blindPreset === 'custom' ? `<label class="field"><span>Eigene Liste</span>
+    ${s.blindPreset === 'custom' ? I18n.html`<label class="field"><span>Eigene Liste</span>
       <textarea class="input" data-set="blindList" rows="6" placeholder="50/100&#10;100/200&#10;200/400">${esc(s.blindList.join('\n'))}</textarea>
       <small class="hint">Ein Level pro Zeile, Small/Big Blind, z. B. 100/200. Höchstens 40 Level.</small></label>` : ''}
     <p class="hint" style="margin:0">Ein neues Level greift immer erst mit der nächsten Hand. Die Uhr steht vor dem Start, bei „Sofort anhalten“ und in der Pause.</p>
@@ -959,7 +959,7 @@ function logGroups() {
 function renderLog(force = false) {
   const body = $('#panel-body');
   if (force || !$('#log-groups', body)) {
-    body.innerHTML = `<div class="reacts">${REACTIONS.map((r) => `<button class="btn btn-sm" data-react="${esc(r)}">${esc(r)}</button>`).join('')}</div>
+    body.innerHTML = I18n.html`<div class="reacts">${REACTIONS.map((r) => `<button class="btn btn-sm" data-react="${esc(r)}">${esc(r)}</button>`).join('')}</div>
       <div class="log-tools">
         <div class="log-filters" role="group" aria-label="Verlauf filtern">${LOG_FILTERS.map(([k, l]) => `<button class="chip-btn" data-logcat="${k}" aria-pressed="${hist.cats.has(k)}">${l}</button>`).join('')}</div>
         <input type="search" id="log-search" class="input" placeholder="Spieler suchen" aria-label="Im Verlauf nach Spielername suchen" value="${esc(hist.q)}">
@@ -984,7 +984,7 @@ function renderLog(force = false) {
     const open = hist.q ? true : hist.toggled.has(h) ? hist.toggled.get(h) : h === newest;
     const win = list.find((e) => e.cat === 'win' && / (gewinnt|teilen sich) /.test(e.text));
     html += `<details class="lg" data-hand="${h}" ${open ? 'open' : ''}>
-      <summary><b>${h ? `Hand #${h}` : 'Vor der ersten Hand'}</b>${win ? `<small>${miniCards(esc(win.text))}</small>` : ''}<span class="lg-n">${shown.length}</span></summary>
+      <summary><b>${h ? I18n.html`Hand #${h}` : 'Vor der ersten Hand'}</b>${win ? `<small>${miniCards(esc(win.text))}</small>` : ''}<span class="lg-n">${shown.length}</span></summary>
       <ul class="log">${open ? logItems(list) : ''}</ul>
     </details>`;
   }
@@ -1005,63 +1005,63 @@ function renderPanel(force = false) {
   } else if (panel === 'stand') {
     const st = S.stats;
     const canGift = S.settings.gifts;
-    const giftIn = (S.you?.giftsIn || []).map((g) => `<div class="notice gift" role="note">
+    const giftIn = (S.you?.giftsIn || []).map((g) => I18n.html`<div class="notice gift" role="note">
         <b>${esc(g.from)}</b> möchte dir ${amt(g.amount)} Chips schenken${g.message ? ` – „${esc(g.message)}“` : ''}
         <div class="gift-acts"><button class="btn btn-sm" data-gift-answer="${g.id}" data-accept="0">Ablehnen</button><button class="btn btn-sm btn-brass" data-gift-answer="${g.id}" data-accept="1">Annehmen</button></div>
       </div>`).join('');
     const go = S.you?.giftOut;
-    const giftOut = go ? `<div class="notice" role="note">Dein Geschenk an <b>${esc(go.to)}</b> (${amt(go.amount)} Chips) wartet auf eine Antwort.</div>` : '';
-    body.innerHTML = programStandHTML(S) + giftIn + giftOut + `<table class="standings"><tbody>${S.standings.map((p, k) => `<tr>
+    const giftOut = go ? I18n.html`<div class="notice" role="note">Dein Geschenk an <b>${esc(go.to)}</b> (${amt(go.amount)} Chips) wartet auf eine Antwort.</div>` : '';
+    body.innerHTML = programStandHTML(S) + giftIn + giftOut + I18n.html`<table class="standings"><tbody>${S.standings.map((p, k) => I18n.html`<tr>
         <td><span class="rank ${k < 3 ? 'r' + (k + 1) : ''}" aria-label="Platz ${k + 1}">${k + 1}</span></td>
-        <td><span class="mini-av">${avatarHTML(p)}</span> ${esc(p.name)}${p.connected ? '' : ` <small style="color:var(--text-2)">${ICON.offline} offline</small>`}${p.rebuys ? `<br><small style="color:var(--text-2)">${p.rebuys}× nachgekauft</small>` : ''}</td>
+        <td><span class="mini-av">${avatarHTML(p)}</span> ${esc(p.name)}${p.connected ? '' : I18n.html` <small style="color:var(--text-2)">${ICON.offline} offline</small>`}${p.rebuys ? I18n.html`<br><small style="color:var(--text-2)">${p.rebuys}× nachgekauft</small>` : ''}</td>
         <td class="num">${amt(p.chips)}</td>
         <td class="num ${p.net > 0 ? 'pos' : p.net < 0 ? 'neg' : ''}">${p.net > 0 ? '+' : p.net < 0 ? '−' : '±'}${amt(Math.abs(p.net))}</td>
-        <td class="gift-cell">${canGift && p.id !== S.you?.id ? `<button class="icon-btn" data-gift="${p.id}" title="${esc(p.name)} Chips schenken" aria-label="${esc(p.name)} Chips schenken">🎁</button>` : ''}</td></tr>`).join('')}</tbody></table>
-      ${canGift ? '<p class="hint">🎁 = Chips verschenken. Geht nur zwischen zwei Händen, der andere muss zustimmen. Am Plus/Minus ändert das nichts.</p>' : ''}
+        <td class="gift-cell">${canGift && p.id !== S.you?.id ? I18n.html`<button class="icon-btn" data-gift="${p.id}" title="${esc(p.name)} Chips schenken" aria-label="${esc(p.name)} Chips schenken">🎁</button>` : ''}</td></tr>`).join('')}</tbody></table>
+      ${canGift ? I18n.html('<p class="hint">🎁 = Chips verschenken. Geht nur zwischen zwei Händen, der andere muss zustimmen. Am Plus/Minus ändert das nichts.</p>') : ''}
       <div class="facts">
         <div class="fact"><small>Gespielte Hände</small>${st.hands}</div>
-        ${st.biggestPot ? `<div class="fact"><small>Größter Pot</small>${amt(st.biggestPot.amount)} – ${esc(st.biggestPot.name)}${st.biggestPot.hand ? ` mit ${esc(st.biggestPot.hand)}` : ''}</div>` : ''}
-        ${st.bestHand ? `<div class="fact"><small>Beste Hand des Abends</small>${esc(st.bestHand.hand)} – ${esc(st.bestHand.name)}</div>` : ''}
+        ${st.biggestPot ? I18n.html`<div class="fact"><small>Größter Pot</small>${amt(st.biggestPot.amount)} – ${esc(st.biggestPot.name)}${st.biggestPot.hand ? I18n.html` mit ${esc(st.biggestPot.hand)}` : ''}</div>` : ''}
+        ${st.bestHand ? I18n.html`<div class="fact"><small>Beste Hand des Abends</small>${esc(st.bestHand.hand)} – ${esc(st.bestHand.name)}</div>` : ''}
       </div>
       <button class="btn btn-sm btn-ghost" data-leaderboard="poker">Bestenliste aller Abende</button>`;
   } else if (panel === 'me') {
     const t = (k, label, sub = '') => `<label class="toggle"><span>${label}${sub ? `<small>${sub}</small>` : ''}</span><input type="checkbox" role="switch" data-pref="${k}" ${prefs[k] ? 'checked' : ''}></label>`;
-    body.innerHTML = `<div>
+    body.innerHTML = I18n.html`<div>
       ${t('fourColor', 'Vier-Farben-Deck', 'Karo blau, Kreuz grün')}
       ${t('strength', 'Meine Hand anzeigen', S.settings.handStrength ? 'z. B. „Zwei Paare“ neben deinen Karten' : 'Der Host hat das an diesem Tisch ausgeschaltet')}
       ${t('odds', 'Gewinnchancen anzeigen', { off: 'Der Host hat die Chancen an diesem Tisch ausgeschaltet', own: 'Wie wahrscheinlich deine Hand bis zum River besser wird', after: 'An diesem Tisch erst nach dem Showdown, für alle gezeigten Hände' }[S.settings.oddsMode])}
       ${t('bb', 'Beträge in Big Blinds')}
-      ${t('sound', 'Töne', 'Mischen, Karten, Chips und ein Signal, wenn du dran bist')}
+      ${t('sound', I18n.t('Töne'), 'Mischen, Karten, Chips und ein Signal, wenn du dran bist')}
       ${GameDesign.soundPreference()}
-      ${t('intros', 'Erste Schritte zeigen', 'Kurze Einführung beim ersten Spiel jeder Art. Einschalten zeigt sie wieder.')}
+      ${t('intros', I18n.t('Erste Schritte zeigen'), I18n.t('Kurze Einführung beim ersten Spiel jeder Art. Einschalten zeigt sie wieder.'))}
       ${t('keys', 'Tastenkürzel', 'F = Fold, C = Check/Call, R = Raise')}
-      ${t('calm', 'Animationen aus')}
-      ${UITheme.glassPreference()}
+      ${t('calm', I18n.t('Animationen aus'))}
+      ${I18n.selector()}${UITheme.glassPreference()}
       ${t('notify', 'Benachrichtigung, wenn ich dran bin', 'Nur wenn der Tab im Hintergrund ist. Der Browser fragt einmal nach Erlaubnis.')}
       ${t('foldJokes', 'Freche Sprüche beim Folden', 'Wenn du foldest, obwohl du checken könntest')}
       ${t('seatCards', 'Eigene Karten auch am eigenen Platz', 'Zusätzlich zur Aktionsleiste. Am Handy wird der eigene Platz nicht gezeigt.')}
       </div>
       ${GameDesign.cardPreference()}
-      ${padOn ? `<div class="notice" role="note"><b>Controller erkannt</b><br>A = Check/Call · B = Fold · X = Raise · LB/RB = Betrag − / + · Start = dieses Menü. Im Dialog: A = OK, B = Abbrechen.</div>` : ''}
+      ${padOn ? I18n.html`<div class="notice" role="note"><b>Controller erkannt</b><br>A = Check/Call · B = Fold · X = Raise · LB/RB = Betrag − / + · Start = dieses Menü. Im Dialog: A = OK, B = Abbrechen.</div>` : ''}
       <label class="field"><span>Tisch</span>
         <select data-pref="theme"><option value="classic" ${prefs.theme === 'classic' ? 'selected' : ''}>Klassisch – grüner Filz</option><option value="night" ${prefs.theme === 'night' ? 'selected' : ''}>Nacht – blauer Filz</option></select>
       </label>
-      ${account.mode === 'password' ? '<form method="post" action="/logout" class="logout-form"><button class="btn btn-ghost" type="submit">Von dieser Seite abmelden</button></form>' : ''}`;
+      ${account.mode === 'password' ? I18n.html('<form method="post" action="/logout" class="logout-form"><button class="btn btn-ghost" type="submit">Von dieser Seite abmelden</button></form>') : ''}`;
   } else if (panel === 'host') {
     if (!S.you?.isHost) { openPanel(null); return; }
     const s = S.settings;
     const num = (k, label, min, step = 1) => `<label class="field"><span>${label}</span><input type="number" data-set="${k}" min="${min}" step="${step}" value="${s[k]}"></label>`;
     const sw = (k, label, sub = '') => `<label class="toggle"><span>${label}${sub ? `<small>${sub}</small>` : ''}</span><input type="checkbox" role="switch" data-set="${k}" ${s[k] ? 'checked' : ''}></label>`;
     const group = (id, title, inner) => `<details class="group" data-group="${id}" ${openGroups.has(id) ? 'open' : ''}><summary>${title}</summary><div class="group-body">${inner}</div></details>`;
-    const tabs = [['spiel', 'Spiel'], ['regeln', 'Regeln'], ['spieler', 'Spieler'], ['sprueche', 'Sprüche']]
+    const tabs = [['spiel', I18n.t('Spiel')], ['regeln', I18n.t('Regeln')], ['spieler', I18n.t('Spieler')], ['sprueche', 'Sprüche']]
       .map(([id, l]) => `<button role="tab" aria-selected="${hostTab === id}" data-host-tab="${id}">${l}</button>`).join('');
     let inner = '';
     if (hostTab === 'spiel') {
-      inner = `<div class="big-actions">
-        ${!S.started || !S.hand ? `<button class="btn btn-brass" data-do="start">${ICON.play} Spiel starten</button>` : `
-          <button class="btn ${S.frozen ? 'btn-brass' : ''}" data-do="freeze">${S.frozen ? `${ICON.play} Weiterspielen` : `${ICON.pause} Sofort für alle anhalten`}</button>
-          <button class="btn" data-do="pause">${S.paused ? `${ICON.play} Weiterspielen` : 'Pause nach dieser Hand'}</button>`}
-        ${S.hand?.done && (!S.partyProgram || S.partyProgram.status === 'stopped') ? '<button class="btn" data-do="nextHand">Nächste Hand</button>' : ''}
+      inner = I18n.html`<div class="big-actions">
+        ${!S.started || !S.hand ? I18n.html`<button class="btn btn-brass" data-do="start">${ICON.play} Spiel starten</button>` : `
+          <button class="btn ${S.frozen ? 'btn-brass' : ''}" data-do="freeze">${S.frozen ? I18n.html`${ICON.play} Weiterspielen` : I18n.html`${ICON.pause} Sofort für alle anhalten`}</button>
+          <button class="btn" data-do="pause">${S.paused ? I18n.html`${ICON.play} Weiterspielen` : 'Pause nach dieser Hand'}</button>`}
+        ${S.hand?.done && (!S.partyProgram || S.partyProgram.status === 'stopped') ? I18n.html('<button class="btn" data-do="nextHand">Nächste Hand</button>') : ''}
       </div>
       <div class="danger-zone">
         <button class="btn btn-outline-red" data-new-game ${S.hand && !S.hand.done ? 'disabled title="Geht nur zwischen zwei Händen"' : ''}>Neues Spiel starten</button>
@@ -1074,8 +1074,8 @@ function renderPanel(force = false) {
       ${switchGameHTML('poker', !!(S.hand && !S.hand.done))}
       ${endGameHTML(!!(S.hand && !S.hand.done))}`;
     } else if (hostTab === 'regeln') {
-      inner = `<div class="notice" role="note">Änderungen gelten ab der nächsten Hand.</div>
-        ${group('blinds', 'Blinds &amp; Chips', `<div class="host-grid">
+      inner = I18n.html`<div class="notice" role="note">Änderungen gelten ab der nächsten Hand.</div>
+        ${group('blinds', 'Blinds &amp; Chips', I18n.html`<div class="host-grid">
           ${num('smallBlind', 'Small Blind', 1)}
           ${num('bigBlind', 'Big Blind', 2)}
           ${num('startStack', 'Startchips / Nachkauf', 100, 100)}
@@ -1083,7 +1083,7 @@ function renderPanel(force = false) {
           <label class="field" style="grid-column:1/-1"><span>Nachkaufen</span><select data-set="rebuy">
             ${[['unlimited', 'unbegrenzt'], ['off', 'aus'], ['1', 'max. 1×'], ['2', 'max. 2×'], ['3', 'max. 3×'], ['5', 'max. 5×']].map(([v, l]) => `<option value="${v}" ${String(s.rebuy) === v ? 'selected' : ''}>${l}</option>`).join('')}
           </select></label></div>`)}
-        ${group('zeit', 'Zeit', `<div class="host-grid">
+        ${group('zeit', 'Zeit', I18n.html`<div class="host-grid">
           <label class="field"><span>Zeit pro Zug</span><select data-set="turnTime">
             ${[[0, 'aus'], [15, '15 s'], [30, '30 s'], [45, '45 s'], [60, '60 s'], [90, '90 s']].map(([v, l]) => `<option value="${v}" ${s.turnTime === v ? 'selected' : ''}>${l}</option>`).join('')}
           </select></label>
@@ -1091,7 +1091,7 @@ function renderPanel(force = false) {
           ${sw('autoNext', 'Nächste Hand automatisch starten')}`)}
         ${group('levels', 'Blinds erhöhen', blindsHost(s))}
         ${group('komfort', 'Komfort', sw('handStrength', 'Handanzeige erlauben', 'Spieler sehen, was sie gerade haben')
-          + `<label class="field"><span>Gewinnchancen</span><select data-set="oddsMode">
+          + I18n.html`<label class="field"><span>Gewinnchancen</span><select data-set="oddsMode">
               ${[['own', 'nur eigene, während der Hand'], ['after', 'nach der Hand, für gezeigte Hände'], ['off', 'aus']].map(([v, l]) => `<option value="${v}" ${s.oddsMode === v ? 'selected' : ''}>${l}</option>`).join('')}
             </select></label>`
           + sw('gifts', 'Chips verschenken erlauben', 'Nur zwischen zwei Händen, der andere muss zustimmen')
@@ -1099,23 +1099,23 @@ function renderPanel(force = false) {
     } else if (hostTab === 'sprueche') {
       const area = (k, label, sub) => `<label class="field"><span>${label}</span>
         <textarea class="input" data-set="${k}" rows="7" spellcheck="true">${esc(s[k].join('\n'))}</textarea><small class="hint">${sub}</small></label>`;
-      inner = `<p class="hint" style="margin:0">Ein Spruch pro Zeile, höchstens 30 Sprüche mit je 80 Zeichen. Leer lassen = Standardsprüche. Gespeichert wird beim Verlassen des Feldes.</p>
-        ${area('nudgeLines', 'Anstupsen', 'Zufällig einer, wenn jemand trödelt.')}
+      inner = I18n.html`<p class="hint" style="margin:0">Ein Spruch pro Zeile, höchstens 30 Sprüche mit je 80 Zeichen. Leer lassen = Standardsprüche. Gespeichert wird beim Verlassen des Feldes.</p>
+        ${area('nudgeLines', I18n.t('Anstupsen'), 'Zufällig einer, wenn jemand trödelt.')}
         ${area('foldLines', 'Fold statt Check', 'Zufällig einer im Dialog „Trotzdem folden / Doch checken“.')}`;
     } else {
       const others = S.standings.filter((p) => p.id !== S.you.id);
-      inner = `<div class="plist">${others.map((p) => `<div class="prow">
+      inner = `<div class="plist">${others.map((p) => I18n.html`<div class="prow">
           <span class="mini-av">${avatarHTML(p)}</span>
           <div class="who"><b>${esc(p.name)}</b><small>${p.seated ? amt(p.chips) + ' Chips' : 'steht'}${p.connected ? '' : ' · offline'}</small></div>
           <button class="icon-btn" data-menu="${p.id}" aria-haspopup="menu" aria-expanded="${openMenu === p.id}" aria-label="Aktionen für ${esc(p.name)}">${ICON.more}</button>
-          ${openMenu === p.id ? `<div class="menu" role="menu">
+          ${openMenu === p.id ? I18n.html`<div class="menu" role="menu">
             <button role="menuitem" data-adjust-open="${p.id}">Chips korrigieren</button>
-            ${(S.bots || []).some((bot) => bot.id === p.id) ? '' : `<button role="menuitem" data-host-open="${p.id}">${ICON.crown} Host weitergeben</button>`}
+            ${(S.bots || []).some((bot) => bot.id === p.id) ? '' : I18n.html`<button role="menuitem" data-host-open="${p.id}">${ICON.crown} Host weitergeben</button>`}
             <button role="menuitem" class="danger" data-kick-open="${p.id}">Vom Tisch entfernen</button>
           </div>` : ''}
-        </div>`).join('') || '<p class="hint" style="margin:0">Noch niemand sonst da.</p>'}</div>`;
+        </div>`).join('') || I18n.html('<p class="hint" style="margin:0">Noch niemand sonst da.</p>')}</div>`;
     }
-    body.innerHTML = `<div class="seg" role="tablist" aria-label="Host-Menü">${tabs}</div>${inner}`;
+    body.innerHTML = I18n.html`<div class="seg" role="tablist" aria-label="Host-Menü">${tabs}</div>${inner}`;
   }
 }
 
@@ -1123,7 +1123,7 @@ function renderPanel(force = false) {
 function pokerHelp() {
   const s = S?.settings || {};
   const b = S?.blinds || { sb: s.smallBlind, bb: s.bigBlind, mode: 'off' };
-  const rebuy = s.rebuy === 'unlimited' ? 'unbegrenzt' : s.rebuy === 'off' ? 'aus' : `höchstens ${s.rebuy}×`;
+  const rebuy = s.rebuy === 'unlimited' ? 'unbegrenzt' : s.rebuy === 'off' ? 'aus' : I18n.html`höchstens ${s.rebuy}×`;
   const onOff = (v) => (v ? 'an' : 'aus');
   showHelp({
     title: s.variant === 'omaha' ? 'Omaha – kurz erklärt' : "Texas Hold'em – kurz erklärt",
@@ -1142,12 +1142,12 @@ function pokerHelp() {
       'Steigen alle anderen aus, gewinnt der Letzte ohne Aufdecken.',
     ],
     house: [
-      `Blinds: <b>${amt(b.sb)} / ${amt(b.bb)}</b>${b.mode !== 'off' ? ` – steigen alle ${s.blindEvery} ${b.mode === 'hands' ? 'Hände' : 'Minuten'}` : ''}`,
+      I18n.html`Blinds: <b>${amt(b.sb)} / ${amt(b.bb)}</b>${b.mode !== 'off' ? I18n.html` – steigen alle ${s.blindEvery} ${b.mode === 'hands' ? I18n.t('Hände') : I18n.t('Minuten')}` : ''}`,
       'Pro Setzrunde höchstens ein Einsatz und 3 Erhöhungen',
-      `Nachkaufen: <b>${rebuy}</b> (${amt(s.startStack)} Chips)`,
-      `Zeit pro Zug: <b>${s.turnTime ? s.turnTime + ' s' : 'unbegrenzt'}</b>`,
-      `Gewinnchancen: <b>${{ off: 'aus', own: 'nur eigene', after: 'nach der Hand' }[s.oddsMode] || 'nur eigene'}</b>`,
-      `Chips verschenken: <b>${onOff(s.gifts)}</b> · Anstupsen: <b>${onOff(s.nudge)}</b>`,
+      I18n.html`Nachkaufen: <b>${rebuy}</b> (${amt(s.startStack)} Chips)`,
+      I18n.html`Zeit pro Zug: <b>${s.turnTime ? s.turnTime + ' s' : 'unbegrenzt'}</b>`,
+      I18n.html`Gewinnchancen: <b>${{ off: 'aus', own: 'nur eigene', after: 'nach der Hand' }[s.oddsMode] || 'nur eigene'}</b>`,
+      I18n.html`Chips verschenken: <b>${onOff(s.gifts)}</b> · Anstupsen: <b>${onOff(s.nudge)}</b>`,
     ],
   });
 }
@@ -1176,9 +1176,9 @@ function closeMenu() {
   if (!openMenu) return;
   const id = openMenu; openMenu = null;
   renderPanel(true);
-  $(`[data-menu="${id}"]`)?.focus();
+  $(I18n.html`[data-menu="${id}"]`)?.focus();
 }
-const playerName = (id) => S.standings.find((x) => x.id === id)?.name || 'Spieler';
+const playerName = (id) => S.standings.find((x) => x.id === id)?.name || I18n.t('Spieler');
 
 document.addEventListener('click', async (e) => {
   // Klick außerhalb schließt das ⋯-Menü
@@ -1194,11 +1194,11 @@ document.addEventListener('click', async (e) => {
     t.setAttribute('aria-pressed', String(hist.cats.has(k)));
     renderLog();
   }
-  else if (t.dataset.nudge) send('nudge', { id: t.dataset.nudge }).then((r) => r?.ok && toast('Angestupst 👉'));
+  else if (t.dataset.nudge) send('nudge', { id: t.dataset.nudge }).then((r) => r?.ok && toast(I18n.t('Angestupst 👉')));
   else if (t.dataset.gift) giftDialog(t.dataset.gift);
   else if (t.dataset.giftAnswer) { seenGifts.add(t.dataset.giftAnswer); send('giftAnswer', { id: t.dataset.giftAnswer, accept: t.dataset.accept === '1' }); }
   else if (t.dataset.newGame !== undefined) {
-    if (await ask({ title: 'Neues Spiel starten?', text: 'Alle bekommen wieder die Startchips, die Blinds gehen auf Level 1 und Nachkäufe auf 0. Der jetzige Abendstand wird im Verlauf gespeichert.', ok: 'Neues Spiel', danger: true })) {
+    if (await ask({ title: I18n.t('Neues Spiel starten?'), text: 'Alle bekommen wieder die Startchips, die Blinds gehen auf Level 1 und Nachkäufe auf 0. Der jetzige Abendstand wird im Verlauf gespeichert.', ok: I18n.t('Neues Spiel'), danger: true })) {
       send('newGame').then((r) => r?.ok && toast('Neues Spiel – viel Glück!'));
     }
   }
@@ -1215,24 +1215,24 @@ document.addEventListener('click', async (e) => {
   } else if (t.dataset.react) socket.emit('react', { text: t.dataset.react });
   else if (t.dataset.panelOpen) { openPanel(t.dataset.panelOpen); $('#panel-body tr.now')?.scrollIntoView({ block: 'center' }); }
   else if (t.dataset.sebToggle !== undefined) { sebSmall = !sebSmall; renderSeb(); }
-  else if (t.dataset.hostTab) { hostTab = t.dataset.hostTab; openMenu = null; renderPanel(true); $(`[data-host-tab="${hostTab}"]`)?.focus(); }
+  else if (t.dataset.hostTab) { hostTab = t.dataset.hostTab; openMenu = null; renderPanel(true); $(I18n.html`[data-host-tab="${hostTab}"]`)?.focus(); }
   else if (t.dataset.menu) {
     openMenu = openMenu === t.dataset.menu ? null : t.dataset.menu;
     renderPanel(true);
-    if (openMenu) $('.menu button')?.focus(); else $(`[data-menu="${t.dataset.menu}"]`)?.focus();
+    if (openMenu) $('.menu button')?.focus(); else $(I18n.html`[data-menu="${t.dataset.menu}"]`)?.focus();
   } else if (t.dataset.kickOpen) {
     const id = t.dataset.kickOpen; openMenu = null; renderPanel(true);
     const name = playerName(id);
-    if (await ask({ title: `${name} entfernen?`, text: `${name} verliert Platz und Chips an diesem Tisch. Läuft gerade eine Hand, foldet ${name} zuerst.`, ok: 'Entfernen', danger: true })) send('kick', { id });
+    if (await ask({ title: I18n.html`${name} entfernen?`, text: I18n.html`${name} verliert Platz und Chips an diesem Tisch. Läuft gerade eine Hand, foldet ${name} zuerst.`, ok: I18n.t('Entfernen'), danger: true })) send('kick', { id });
   } else if (t.dataset.adjustOpen) {
     const id = t.dataset.adjustOpen; openMenu = null; renderPanel(true);
     const p = S.standings.find((x) => x.id === id);
-    const v = await ask({ title: 'Chips korrigieren', text: `Neuer Chipstand für ${p?.name || 'Spieler'}. Die Korrektur steht im Verlauf.`, ok: 'Speichern', input: { type: 'number', value: p?.chips ?? 0, label: 'Neuer Chipstand' } });
+    const v = await ask({ title: 'Chips korrigieren', text: I18n.html`Neuer Chipstand für ${p?.name || I18n.t('Spieler')}. Die Korrektur steht im Verlauf.`, ok: I18n.t('Speichern'), input: { type: 'number', value: p?.chips ?? 0, label: 'Neuer Chipstand' } });
     if (v !== false) send('adjust', { id, amount: v }).then((r) => r?.ok && toast('Chips korrigiert'));
   } else if (t.dataset.hostOpen) {
     const id = t.dataset.hostOpen; openMenu = null; renderPanel(true);
     const name = playerName(id);
-    if (await ask({ title: 'Host weitergeben?', text: `${name} wird Host und kann das Spiel steuern. Du bist danach normaler Spieler.`, ok: 'Weitergeben' })) send('makeHost', { id });
+    if (await ask({ title: I18n.t('Host weitergeben?'), text: I18n.html`${name} wird Host und kann das Spiel steuern. Du bist danach normaler Spieler.`, ok: 'Weitergeben' })) send('makeHost', { id });
   } else if (t.dataset.do) {
     const map = { start: 'start', nextHand: 'nextHand', pause: 'pause', freeze: 'freeze', show: 'show', rebuy: 'rebuy', stand: 'stand' };
     if (t.dataset.do === 'sitout') send('sitOut', { value: true });
@@ -1362,9 +1362,9 @@ function padPress(i) {
 window.addEventListener('resize', () => render());
 
 $('#copy-link').addEventListener('click', async () => {
-  const link = `${location.origin}/?t=${S?.code || ''}`;
-  try { await navigator.clipboard.writeText(link); toast('Link kopiert – schick ihn in eure Gruppe'); }
-  catch { ask({ title: 'Einladungslink', text: 'Kopieren hat nicht geklappt. Markier den Link und kopier ihn selbst.', ok: 'Fertig', input: { value: link, readOnly: true, noCancel: true, label: 'Einladungslink' } }); }
+  const link = I18n.html`${location.origin}/?t=${S?.code || ''}`;
+  try { await navigator.clipboard.writeText(link); toast(I18n.t('Link kopiert – schick ihn in eure Gruppe')); }
+  catch { ask({ title: I18n.t('Einladungslink'), text: I18n.t('Kopieren hat nicht geklappt. Markier den Link und kopier ihn selbst.'), ok: I18n.t('Fertig'), input: { value: link, readOnly: true, noCancel: true, label: I18n.t('Einladungslink') } }); }
 });
 
 // ---------- Anmelden bei core.js ----------
@@ -1373,14 +1373,14 @@ registerGame('poker', {
     $('#game').hidden = false; render();
     // Erste Schritte beim ersten Poker-Abend in diesem Browser
     setTimeout(() => { if (!$('#dlg').open) showIntro('poker', S?.game === 'omaha' ? 'Omaha' : "Texas Hold'em", [
-      ['Am Tisch', 'Tipp auf einen freien Platz, um dich hinzusetzen. Der Host startet die Hand.'],
-      ['Am Zug', 'Unten stehen deine Karten und was du tun kannst: Fold, Check oder Call, Raise. Die Uhr zeigt, wie lange du noch hast.'],
-      ['Hilfe', '„Hände“ unten links zeigt alle Pokerhände von Royal Flush bis High Card, „?“ die Kurzregeln. Deine Einstellungen findest du unter „Ich“.'],
+      [I18n.t('Am Tisch'), 'Tipp auf einen freien Platz, um dich hinzusetzen. Der Host startet die Hand.'],
+      [I18n.t('Am Zug'), 'Unten stehen deine Karten und was du tun kannst: Fold, Check oder Call, Raise. Die Uhr zeigt, wie lange du noch hast.'],
+      [I18n.t('Hilfe'), '„Hände“ unten links zeigt alle Pokerhände von Royal Flush bis High Card, „?“ die Kurzregeln. Deine Einstellungen findest du unter „Ich“.'],
     ]); }, 400);
   },
   onState(st) {
     prevS = S; S = st;
     animateChips(prevS, S); syncHistory(); render(); cues(prevS, S);
   },
-  onPrefs() { applyPrefs(); render(); },
+  onPrefs() { applyPrefs(); render(); if (panel) { $('#panel-title').textContent = I18n.t(PANEL_TITLES[panel]); renderPanel(true); } },
 });

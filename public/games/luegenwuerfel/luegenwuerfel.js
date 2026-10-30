@@ -23,8 +23,8 @@
       'Wer „Lüge!“ ruft, deckt auf: stimmt das Gebot, verliert der Zweifler einen Würfel, sonst der Bieter.',
       'Wer keine Würfel mehr hat, scheidet aus. Der Letzte gewinnt.',
     ],
-    house: (S) => (S.settings.wild ? ['Einsen zählen als Joker'] : []),
-    playerInfo: (p) => (p.dice === undefined ? '' : `${p.dice} Würfel`),
+    house: (S) => (S.settings.wild ? [I18n.t('Einsen zählen als Joker')] : []),
+    playerInfo: (p) => (p.dice === undefined ? '' : I18n.html`${p.dice} Würfel`),
     seat: (p) => `<span>${'●'.repeat(p.dice || 0)}</span>`,
     sounds(S, prev) { return S.g && prev.g && S.g.deal !== prev.g.deal ? 'dice' : null; },
     onState(S) {
@@ -33,23 +33,23 @@
     },
     hint(S, myTurn) {
       const g = S.g;
-      if (!myTurn) return `${nameOf(S, S.turnId)} ist dran${g.bid ? ` – Gebot: ${g.bid.n} × ${g.bid.face}` : ''}`;
-      return g.bid ? `Biete höher als ${g.bid.n} × ${g.bid.face} – oder ruf „Lüge!“` : 'Du fängst an: gib ein Gebot ab';
+      if (!myTurn) return I18n.html`${nameOf(S, S.turnId)} ist dran${g.bid ? I18n.html` – Gebot: ${g.bid.n} × ${g.bid.face}` : ''}`;
+      return g.bid ? I18n.html`Biete höher als ${g.bid.n} × ${g.bid.face} – oder ruf „Lüge!“` : 'Du fängst an: gib ein Gebot ab';
     },
     main(S) {
       const g = S.g;
       const myTurn = S.turnId === S.you?.id && S.phase === 'playing';
-      const bid = g.bid ? `<div class="lw-bid" role="status"><small>${nameOf(S, g.bid.by)} bietet</small><b>mindestens ${g.bid.n} ×</b>${dieHTML(g.bid.face, { cls: 'big' })}<small>von ${g.total} Würfeln am Tisch</small></div>`
-        : `<div class="lw-bid"><small>Noch kein Gebot – ${g.total} Würfel am Tisch</small></div>`;
+      const bid = g.bid ? I18n.html`<div class="lw-bid" role="status"><small>${nameOf(S, g.bid.by)} bietet</small><b>mindestens ${g.bid.n} ×</b>${dieHTML(g.bid.face, { cls: 'big' })}<small>von ${g.total} Würfeln am Tisch</small></div>`
+        : I18n.html`<div class="lw-bid"><small>Noch kein Gebot – ${g.total} Würfel am Tisch</small></div>`;
       let reveal = '';
       if (g.reveal) {
         const R = g.reveal;
         const wildOn = g.wild && R.bid.face !== 1;
-        const rows = Object.entries(R.cups).map(([id, cup]) => `<li><b>${nameOf(S, id)}</b><span class="lw-cup">${cup.map((d) => dieHTML(d, { cls: `small ${d === R.bid.face || (wildOn && d === 1) ? 'kept' : 'old'}` })).join('')}</span></li>`).join('');
-        reveal = `<div class="lw-reveal ${R.truth ? 'true' : 'lie'}" role="status"><b>${nameOf(S, R.doubter)} rief „Lüge!“ – gezählt: ${R.count} × ${R.bid.face}, geboten waren ${R.bid.n}</b>
+        const rows = Object.entries(R.cups).map(([id, cup]) => `<li><b>${nameOf(S, id)}</b><span class="lw-cup">${cup.map((d) => dieHTML(d, { cls: I18n.html`small ${d === R.bid.face || (wildOn && d === 1) ? 'kept' : 'old'}` })).join('')}</span></li>`).join('');
+        reveal = I18n.html`<div class="lw-reveal ${R.truth ? 'true' : 'lie'}" role="status"><b>${nameOf(S, R.doubter)} rief „Lüge!“ – gezählt: ${R.count} × ${R.bid.face}, geboten waren ${R.bid.n}</b>
           <ul>${rows}</ul><span>${nameOf(S, R.loser)} verliert einen Würfel</span></div>`;
       }
-      const mine = g.cup ? `<div class="lw-mine" aria-label="Deine Würfel"><small>Deine Würfel</small><div class="lw-cup">${g.cup.map((d) => dieHTML(d, { cls: 'big' })).join('')}</div></div>` : '';
+      const mine = g.cup ? I18n.html`<div class="lw-mine" aria-label="Deine Würfel"><small>Deine Würfel</small><div class="lw-cup">${g.cup.map((d) => dieHTML(d, { cls: 'big' })).join('')}</div></div>` : '';
       return `<div class="kg-table lw-wrap">${bid}${mine}${reveal}</div>`;
     },
     dock(S, myTurn) {
@@ -57,9 +57,9 @@
       if (!myTurn) return '';
       const ok = higher(g, n, face) && n >= 1 && n <= g.total;
       const faces = [1, 2, 3, 4, 5, 6].map((f) => dieHTML(f, { tag: 'button', cls: face === f ? 'kept' : '', attrs: `type="button" data-g="face" data-f="${f}" aria-pressed="${face === f}"` })).join('');
-      return `<div class="lw-controls"><div class="lw-n"><button class="btn btn-sm" data-g="minus" aria-label="Weniger Würfel">−</button><b>${n} ×</b><button class="btn btn-sm" data-g="plus" aria-label="Mehr Würfel">+</button></div>
+      return I18n.html`<div class="lw-controls"><div class="lw-n"><button class="btn btn-sm" data-g="minus" aria-label="Weniger Würfel">−</button><b>${n} ×</b><button class="btn btn-sm" data-g="plus" aria-label="Mehr Würfel">+</button></div>
         <div class="lw-faces" role="group" aria-label="Augenzahl">${faces}</div></div>
-        <div class="kg-acts"><button class="btn btn-brass" data-g="bid" ${ok ? '' : 'disabled'}>${ok ? `Bieten: ${n} × ${face}` : 'Gebot muss höher sein'}</button>${g.bid ? '<button class="btn btn-danger" data-g="doubt">Lüge!</button>' : ''}</div>`;
+        <div class="kg-acts"><button class="btn btn-brass" data-g="bid" ${ok ? '' : 'disabled'}>${ok ? I18n.html`Bieten: ${n} × ${face}` : 'Gebot muss höher sein'}</button>${g.bid ? I18n.html('<button class="btn btn-danger" data-g="doubt">Lüge!</button>') : ''}</div>`;
     },
     onClick(t, S) {
       const g = t.dataset.g;
@@ -70,7 +70,7 @@
       else if (g === 'doubt') { send('doubt'); return; }
       kit.render();
     },
-    rules: `<p>Jeder hat Würfel unter einem Becher und kennt nur seine eigenen.</p>
+    rules: I18n.html`<p>Jeder hat Würfel unter einem Becher und kennt nur seine eigenen.</p>
       <ul>
         <li>Reihum gibt man ein <b>Gebot</b> ab: „Mindestens N Würfel zeigen die Augenzahl F“ – gemeint sind <b>alle Würfel am Tisch</b>.</li>
         <li>Ein neues Gebot muss höher sein: <b>mehr Würfel</b>, oder dieselbe Anzahl mit <b>höherer Augenzahl</b>.</li>

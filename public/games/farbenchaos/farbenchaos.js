@@ -24,7 +24,7 @@
     name: 'UNO',
     // Erste Schritte beim ersten Spiel (3 Schritte, abschaltbar unter „Ich“)
     intro: [
-      ["Ziel", "Werde als Erster alle Karten los: gleiche <b>Farbe</b> oder gleiche <b>Zahl bzw. gleiches Symbol</b>."],
+      ["Ziel", I18n.html("Werde als Erster alle Karten los: gleiche <b>Farbe</b> oder gleiche <b>Zahl bzw. gleiches Symbol</b>.")],
       ["Bedienung", "Karten mit Goldrand passen – antippen legt sie. Bei der Farbwahl tippst du einen der vier Farbkreise an."],
       ["Sonderkarten", "Aussetzen, Richtungswechsel, +2, Farbwahl und +4. Der Gewinner kassiert die Punkte der Restkarten. Welche Hausregeln gelten, steht unter „?“."],
     ],
@@ -32,13 +32,13 @@
     // „Leg eine rote Karte oder eine 7“ – was gerade passt
     playHint(g) {
       const color = g.top[1] === 'w' ? g.wish : g.top[1];
-      const parts = color ? [`eine ${ADJ[color]} Karte`] : [];
-      if (g.top[1] !== 'w') parts.push(VALUE_ACC[g.top[0]] || `eine ${g.top[0]}`);
+      const parts = color ? [I18n.html`eine ${ADJ[color]} Karte`] : [];
+      if (g.top[1] !== 'w') parts.push(VALUE_ACC[g.top[0]] || I18n.html`eine ${g.top[0]}`);
       if (g.playable.some((c) => c[1] === 'w')) parts.push('eine schwarze');
-      return parts.length ? `Leg ${parts.join(' oder ')}` : 'Leg eine beliebige Karte';
+      return parts.length ? I18n.html`Leg ${parts.join(' oder ')}` : 'Leg eine beliebige Karte';
     },
     pendingHint: () => 'Leg eine Plus-Karte drauf',
-    pendingText: (g) => `+${g.pending}: der Nächste zieht ${g.pending}, außer er legt eine Plus-Karte drauf`,
+    pendingText: (g) => I18n.html`+${g.pending}: der Nächste zieht ${g.pending}, außer er legt eine Plus-Karte drauf`,
     sort: {
       color: (c) => COLORS.indexOf(c[1]) * 100 + VALS.indexOf(c[0]),
       number: (c) => VALS.indexOf(c[0]) * 10 + COLORS.indexOf(c[1]),
@@ -46,27 +46,27 @@
     needsWish: (c, S) => S.variant !== 'all-wild' && c[1] === 'w' && c[0] !== 'Q',
     needsTarget: (c, S) => (S.variant === 'no-mercy' || S.settings.sevenZero) && c[0] === '7' || S.variant === 'all-wild' && ['T', 'X'].includes(c[0]),
     // Farbwahl: vier große Farbkreise (mit Name und Form – nicht nur Farbe)
-    wishes: (S) => (S.g.colors || ['r', 'y', 'g', 'b']).map((k) => [k, `<span class="wc-dot">${colorMark(k)}</span><span>${COLOR[k]}</span>`, `wish-circle fc-${k}`]),
-    seat: (p, S) => p.eliminated ? '<span>Ausgeschieden (25 Karten)</span>' : S.g.inactiveHands?.[p.id] ? `<div class="uno-backs">${S.g.inactiveHands[p.id].map((c) => card(c, { attrs: 'disabled', cls: 'inactive' })).join('')}</div><small>Inaktive Seite · ${p.cards} Karten</small>` : null,
-    extraMain: (S) => `${S.variant === 'flip' ? `<p class="hint">${S.g.side ? 'Dunkle' : 'Helle'} Seite · Gegner zeigen die inaktive Seite</p>${S.g.drawBack ? `<div class="uno-drawback">${card(S.g.drawBack, { attrs: 'disabled' })}<small>Rückseite des Nachziehstapels</small></div>` : ''}<div class="uno-backs">${S.players.filter((p) => p.inRound && p.id !== S.you?.id).map((p) => `<div><small>${esc(p.name)} · inaktive Seite</small><div>${(S.g.inactiveHands?.[p.id] || []).map((c) => card(c, { attrs: 'disabled' })).join('')}</div></div>`).join('')}</div>` : ''}${S.g.revealed?.length ? `<details><summary>Aufgedeckte Roulette-Karten (${S.g.revealed.length})</summary><div class="uno-backs">${S.g.revealed.map((c) => card(c, { attrs: 'disabled' })).join('')}</div></details>` : ''}${S.g.challengeHand ? `<details open><summary>Bei der Anfechtung vorgezeigte Hand</summary><div class="uno-backs">${S.g.challengeHand.map((c) => card(c, { attrs: 'disabled' })).join('')}</div></details>` : ''}`,
+    wishes: (S) => (S.g.colors || ['r', 'y', 'g', 'b']).map((k) => [k, `<span class="wc-dot">${colorMark(k)}</span><span>${COLOR[k]}</span>`, I18n.html`wish-circle fc-${k}`]),
+    seat: (p, S) => p.eliminated ? I18n.html('<span>Ausgeschieden (25 Karten)</span>') : S.g.inactiveHands?.[p.id] ? I18n.html`<div class="uno-backs">${S.g.inactiveHands[p.id].map((c) => card(c, { attrs: 'disabled', cls: 'inactive' })).join('')}</div><small>Inaktive Seite · ${p.cards} Karten</small>` : null,
+    extraMain: (S) => `${S.variant === 'flip' ? I18n.html`<p class="hint">${S.g.side ? 'Dunkle' : 'Helle'} Seite · Gegner zeigen die inaktive Seite</p>${S.g.drawBack ? I18n.html`<div class="uno-drawback">${card(S.g.drawBack, { attrs: 'disabled' })}<small>Rückseite des Nachziehstapels</small></div>` : ''}<div class="uno-backs">${S.players.filter((p) => p.inRound && p.id !== S.you?.id).map((p) => I18n.html`<div><small>${esc(p.name)} · inaktive Seite</small><div>${(S.g.inactiveHands?.[p.id] || []).map((c) => card(c, { attrs: 'disabled' })).join('')}</div></div>`).join('')}</div>` : ''}${S.g.revealed?.length ? I18n.html`<details><summary>Aufgedeckte Roulette-Karten (${S.g.revealed.length})</summary><div class="uno-backs">${S.g.revealed.map((c) => card(c, { attrs: 'disabled' })).join('')}</div></details>` : ''}${S.g.challengeHand ? I18n.html`<details open><summary>Bei der Anfechtung vorgezeigte Hand</summary><div class="uno-backs">${S.g.challengeHand.map((c) => card(c, { attrs: 'disabled' })).join('')}</div></details>` : ''}`,
     specialHint: (S, mine) => mine && S.g.colorChoice ? 'Wähle eine Farbe für die offene Entscheidung' : mine && S.g.challenge ? 'Ziehstrafe annehmen oder die letzte Plus-Karte anfechten' : S.variant === 'all-wild' && mine ? 'Jede Karte passt – Aktionskarten wirken sofort' : null,
-    specialDock: (S, mine) => !mine ? null : S.g.colorChoice ? `<div class="kg-wishes">${S.g.colors.map((c) => `<button class="btn wish-circle fc-${c}" data-g="chooseColor" data-color="${c}">${COLOR[c]}</button>`).join('')}</div>` : S.g.challenge ? '<button class="btn" data-g="acceptDraw">Strafe ziehen</button><button class="btn" data-g="challengeDraw">Anfechten (+2 bei Irrtum)</button>' : null,
+    specialDock: (S, mine) => !mine ? null : S.g.colorChoice ? `<div class="kg-wishes">${S.g.colors.map((c) => `<button class="btn wish-circle fc-${c}" data-g="chooseColor" data-color="${c}">${COLOR[c]}</button>`).join('')}</div>` : S.g.challenge ? I18n.html('<button class="btn" data-g="acceptDraw">Strafe ziehen</button><button class="btn" data-g="challengeDraw">Anfechten (+2 bei Irrtum)</button>') : null,
     onClick: (t) => { const g = t.dataset.g; if (g === 'chooseColor') { send('chooseColor', { color: t.dataset.color }); return true; } if (['acceptDraw', 'challengeDraw'].includes(g)) { send('challenge', { challenge: g === 'challengeDraw' }); return true; } return false; },
     // Gewählte Farbe: leuchtender Ring um die Ablage (dazu steht „Gewünscht: Rot“ darunter)
-    pileClass: (g) => (g.wish && g.top?.[1] === 'w' ? `wish-ring ring-${g.wish}` : ''),
+    pileClass: (g) => (g.wish && g.top?.[1] === 'w' ? I18n.html`wish-ring ring-${g.wish}` : ''),
     wishName: (w) => COLOR[w],
     wishLabel: 'Welche Farbe soll gelten?',
     lastWord: 'UNO!',
     short: [
-      "Leg gleiche <b>Farbe</b> oder gleiche <b>Zahl bzw. gleiches Symbol</b>.",
-      "⊘ Aussetzen, ⇄ Richtungswechsel, <b>+2</b>: der Nächste zieht 2 und setzt aus.",
-      "Farbwahl (vierfarbiger Kreis) passt immer; <b>+4</b>: dazu zieht der Nächste 4 und setzt aus.",
+      I18n.html("Leg gleiche <b>Farbe</b> oder gleiche <b>Zahl bzw. gleiches Symbol</b>."),
+      I18n.html("⊘ Aussetzen, ⇄ Richtungswechsel, <b>+2</b>: der Nächste zieht 2 und setzt aus."),
+      I18n.html("Farbwahl (vierfarbiger Kreis) passt immer; <b>+4</b>: dazu zieht der Nächste 4 und setzt aus."),
       "Kannst du nicht: eine Karte ziehen – passt sie, darfst du sie gleich legen.",
       "Wer zuerst keine Karten mehr hat, gewinnt die Runde.",
       "Punkte: Der Gewinner kassiert die Restkarten der anderen (Zahl = Wert, Aktion 20, Farbwahl 50).",
     ],
     house: () => ['Kein Ende bei 500 Punkten – gezählt wird über den Abend'],
-    rules: `<p>Leg eine Karte mit <b>gleicher Farbe oder gleichem Wert/Symbol</b>. Wer zuerst keine Karten mehr hat, gewinnt die Runde.</p>
+    rules: I18n.html`<p>Leg eine Karte mit <b>gleicher Farbe oder gleichem Wert/Symbol</b>. Wer zuerst keine Karten mehr hat, gewinnt die Runde.</p>
       <ul>
         <li><b>⊘ Aussetzen</b>: Der Nächste setzt aus.</li>
         <li><b>⇄ Richtungswechsel</b>: Es geht andersherum weiter (zu zweit wie Aussetzen).</li>

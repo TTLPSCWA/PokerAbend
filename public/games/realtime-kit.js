@@ -31,11 +31,11 @@ function realtimeGame(def) {
   function updateLabels() {
     if (!frame) return;
     const state = $('#rt-state');
-    if (state) state.textContent = frame.elapsed < 0 ? `Start in ${Math.ceil(-frame.elapsed / 1000)} …` : kit.S.phase !== 'playing' ? 'Runde beendet' : frame.kind === 'laser' && frame.hazards.some((h) => h.warning) ? 'Laser angekündigt – Sprung vorbereiten' : !me()?.alive ? 'Du schaust zu' : 'Die Arena ist frei';
-    const clock = $('#rt-time'); if (clock) clock.textContent = `${Math.max(0, Math.ceil((frame.duration - Math.max(0, frame.elapsed)) / 1000))} s`;
+    if (state) state.textContent = frame.elapsed < 0 ? I18n.html`Start in ${Math.ceil(-frame.elapsed / 1000)} …` : kit.S.phase !== 'playing' ? 'Runde beendet' : frame.kind === 'laser' && frame.hazards.some((h) => h.warning) ? 'Laser angekündigt – Sprung vorbereiten' : !me()?.alive ? I18n.t('Du schaust zu') : 'Die Arena ist frei';
+    const clock = $('#rt-time'); if (clock) clock.textContent = I18n.html`${Math.max(0, Math.ceil((frame.duration - Math.max(0, frame.elapsed)) / 1000))} s`;
     for (const p of frame.bodies) {
-      const row = document.querySelector(`[data-rt-player="${p.id}"]`);
-      if (row) { row.textContent = `${p.alive ? frame.kind === 'laser' ? '♥'.repeat(p.lives) : '●' : 'aus'} · ${p.points} Pkt.${frame.crown?.holder === p.id ? ' · ♛' : ''}`; row.classList.toggle('rt-out', !p.alive); }
+      const row = document.querySelector(I18n.html`[data-rt-player="${p.id}"]`);
+      if (row) { row.textContent = I18n.html`${p.alive ? frame.kind === 'laser' ? '♥'.repeat(p.lives) : '●' : 'aus'} · ${p.points} Pkt.${frame.crown?.holder === p.id ? ' · ♛' : ''}`; row.classList.toggle('rt-out', !p.alive); }
     }
     const button = document.querySelector('[data-rt-jump]');
     if (button) { button.disabled = !me()?.alive || frame.elapsed < 0; button.textContent = (me()?.jumpReady || 0) > frame.elapsed ? 'Lädt …' : 'Springen'; }
@@ -44,7 +44,7 @@ function realtimeGame(def) {
       const p = kit.S.players.filter((p) => p.seated)[i];
       const body = frame.bodies.find((b) => b.id === p?.id);
       const small = row.querySelector('.kp-txt small');
-      if (body && small) small.textContent = `${body.points} Pkt.${body.alive ? '' : ' · ausgeschieden'}`;
+      if (body && small) small.textContent = I18n.html`${body.points} Pkt.${body.alive ? '' : ' · ausgeschieden'}`;
     });
   }
   function vector() {
@@ -136,7 +136,7 @@ function realtimeGame(def) {
     const style = getComputedStyle(main), gap = parseFloat(getComputedStyle(wrap).rowGap) || 0;
     const banner = main.querySelector('.program-banner');
     const height = main.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom) - wrap.querySelector('.rt-head').offsetHeight - wrap.querySelector('.rt-scores').offsetHeight - gap * 2 - (banner ? banner.offsetHeight + (parseFloat(style.rowGap) || 0) : 0);
-    canvas.style.width = `${Math.floor(Math.min(wrap.clientWidth, Math.max(90, height) * 1.5))}px`;
+    canvas.style.width = I18n.html`${Math.floor(Math.min(wrap.clientWidth, Math.max(90, height) * 1.5))}px`;
   }
   function bind() {
     canvas = $('#rt-canvas');
@@ -156,18 +156,18 @@ function realtimeGame(def) {
     if (stop && !stop.dataset.bound) { stop.dataset.bound = 'true'; stop.addEventListener('click', release); }
     updateLabels();
   }
-  const controls = (S) => `<div class="rt-controls"><div class="rt-pad" role="group" aria-label="Bewegungssteuerung">${[['up', '↑', 'oben'], ['left', '←', 'links'], ['down', '↓', 'unten'], ['right', '→', 'rechts']].map(([dir, icon, label]) => `<button class="btn rt-dir rt-${dir}" type="button" data-rt-dir="${dir}" aria-label="Nach ${label} bewegen">${icon}</button>`).join('')}<button class="btn rt-stop" type="button" data-rt-stop aria-label="Bewegung stoppen">●</button></div>${S.g?.jumping ? '<button class="btn btn-brass rt-jump" type="button" data-rt-jump>Springen</button>' : '<p class="rt-keyhint">Pfeiltasten / WASD<br>Richtung halten zum Bewegen</p>'}</div>`;
+  const controls = (S) => I18n.html`<div class="rt-controls"><div class="rt-pad" role="group" aria-label="Bewegungssteuerung">${[['up', '↑', 'oben'], ['left', '←', 'links'], ['down', '↓', 'unten'], ['right', '→', 'rechts']].map(([dir, icon, label]) => I18n.html`<button class="btn rt-dir rt-${dir}" type="button" data-rt-dir="${dir}" aria-label="Nach ${label} bewegen">${icon}</button>`).join('')}<button class="btn rt-stop" type="button" data-rt-stop aria-label="Bewegung stoppen">●</button></div>${S.g?.jumping ? I18n.html('<button class="btn btn-brass rt-jump" type="button" data-rt-jump>Springen</button>') : I18n.html('<p class="rt-keyhint">Pfeiltasten / WASD<br>Richtung halten zum Bewegen</p>')}</div>`;
   const kit = kitGame({
-    id: def.id, name: def.name, ring: false, direction: false, roundWord: 'Runde', short: def.short, intro: def.intro,
-    rules: `<h3>${esc(def.name)}</h3><ul>${def.short.map((r) => `<li>${esc(r)}</li>`).join('')}</ul><p>Pfeiltasten oder WASD zum Bewegen; Richtungsknöpfe am Handy halten. Leertaste oder Sprungknopf zum Springen. Bei Tabwechsel oder fehlenden Eingaben bleibt die Figur stehen; die Runde läuft weiter.</p>`,
+    id: def.id, name: def.name, ring: false, direction: false, roundWord: I18n.t('Runde'), short: def.short, intro: def.intro,
+    rules: I18n.html`<h3>${uiText(def.name)}</h3><ul>${def.short.map((r) => `<li>${esc(r)}</li>`).join('')}</ul><p>Pfeiltasten oder WASD zum Bewegen; Richtungsknöpfe am Handy halten. Leertaste oder Sprungknopf zum Springen. Bei Tabwechsel oder fehlenden Eingaben bleibt die Figur stehen; die Runde läuft weiter.</p>`,
     onState(S) { seq = Math.max(seq, S.g?.inputSeq || 0); if (S.g) accept(S.g); if (S.gamePaused || S.phase !== 'playing') release(); },
     status: () => 'Alle spielen gleichzeitig',
-    playerInfo: (p) => `${p.pts || 0} Pkt.${p.eliminated ? ' · ausgeschieden' : ''}`,
+    playerInfo: (p) => I18n.html`${p.pts || 0} Pkt.${p.eliminated ? ' · ausgeschieden' : ''}`,
     hint: (S) => S.you?.inRound ? def.hint : 'Du schaust zu – beim nächsten Start kannst du mitspielen.',
     keepMain: (S) => !!$('#rt-canvas') && $('#rt-canvas').dataset.run === S.g?.runId && S.phase === 'playing',
     main(S) {
       const G = S.g;
-      return `<section class="rt-wrap" aria-label="${esc(def.name)} Arena"><div class="rt-head"><span class="rt-label">${esc(def.tag)}</span><b id="rt-state">Arena bereit</b><span id="rt-time"></span></div><canvas id="rt-canvas" width="900" height="600" data-run="${esc(G.runId)}" role="img" aria-label="Gemeinsames Spielfeld. Deine Figur hat einen weißen Rand. Status und Punkte stehen unter dem Feld."></canvas><ul class="rt-scores">${G.bodies.map((p, i) => `<li style="--player:${palette[i % palette.length]}"><b>${esc(S.players.find((person) => person.id === p.id)?.name || '?')}${p.id === S.you?.id ? ' (du)' : ''}</b><span data-rt-player="${p.id}"></span></li>`).join('')}</ul></section>`;
+      return I18n.html`<section class="rt-wrap" aria-label="${uiText(def.name)} Arena"><div class="rt-head"><span class="rt-label">${esc(def.tag)}</span><b id="rt-state">Arena bereit</b><span id="rt-time"></span></div><canvas id="rt-canvas" width="900" height="600" data-run="${esc(G.runId)}" role="img" aria-label="Gemeinsames Spielfeld. Deine Figur hat einen weißen Rand. Status und Punkte stehen unter dem Feld."></canvas><ul class="rt-scores">${G.bodies.map((p, i) => `<li style="--player:${palette[i % palette.length]}"><b>${esc(S.players.find((person) => person.id === p.id)?.name || '?')}${p.id === S.you?.id ? ' (du)' : ''}</b><span data-rt-player="${p.id}"></span></li>`).join('')}</ul></section>`;
     },
     dock: controls,
     dockKey: (S) => `${S.phase}:${S.g?.runId}:${S.you?.inRound}:${S.you?.playing}:${S.you?.isHost}:${S.players.filter((p) => p.seated).length}`,

@@ -3,12 +3,12 @@
 const GameDesign = (() => {
   const families = {
     cards: { label: 'Kartenrunde', light: '#285944', dark: '#102d25', tone: 440, accents: ['#E8C481', '#92CFBE', '#E8A990'] },
-    dice: { label: 'Würfelrunde', light: '#665035', dark: '#29211c', tone: 330, accents: ['#E6B978', '#C3AFE6', '#C7D69C'] },
-    board: { label: 'Zug um Zug', light: '#35534b', dark: '#182925', tone: 290, accents: ['#B5D3B4', '#9DC7E4', '#E6C28A'] },
-    party: { label: 'Gemeinsam am Tisch', light: '#4c3c61', dark: '#221c31', tone: 523, accents: ['#D7B3EF', '#E9BB91', '#A4D9D2'] },
-    solo: { label: 'Eine Aufgabe für alle', light: '#334d70', dark: '#152337', tone: 587, accents: ['#9FC9F0', '#DFBE8B', '#B4DEAE'] },
-    drawing: { label: 'Eure Ideen in Bildern', light: '#3c5a60', dark: '#172b30', tone: 659, accents: ['#B1DECF', '#ECC58A', '#C0BDF1'] },
-    arena: { label: 'Zusammen in der Arena', light: '#3c4266', dark: '#1c2335', tone: 392, accents: ['#C2D598', '#EAC77F', '#A8D3EB'] },
+    dice: { label: I18n.t('Würfelrunde'), light: '#665035', dark: '#29211c', tone: 330, accents: ['#E6B978', '#C3AFE6', '#C7D69C'] },
+    board: { label: I18n.t('Zug um Zug'), light: '#35534b', dark: '#182925', tone: 290, accents: ['#B5D3B4', '#9DC7E4', '#E6C28A'] },
+    party: { label: I18n.t('Gemeinsam am Tisch'), light: '#4c3c61', dark: '#221c31', tone: 523, accents: ['#D7B3EF', '#E9BB91', '#A4D9D2'] },
+    solo: { label: I18n.t('Eine Aufgabe für alle'), light: '#334d70', dark: '#152337', tone: 587, accents: ['#9FC9F0', '#DFBE8B', '#B4DEAE'] },
+    drawing: { label: I18n.t('Eure Ideen in Bildern'), light: '#3c5a60', dark: '#172b30', tone: 659, accents: ['#B1DECF', '#ECC58A', '#C0BDF1'] },
+    arena: { label: I18n.t('Zusammen in der Arena'), light: '#3c4266', dark: '#1c2335', tone: 392, accents: ['#C2D598', '#EAC77F', '#A8D3EB'] },
   };
   const groups = {
     cards: 'poker omaha maumau farbenchaos zehnetappen stapelrennen schwimmen blackjack mogeln praesident durak sechs-nimmt monopoly-deal',
@@ -45,8 +45,8 @@ const GameDesign = (() => {
   const art = (id) => account.games.find((g) => g.id === id)?.art || '';
   const backdrop = (id) => `<div class="scene-backdrop" aria-hidden="true">${art(id)}</div>`;
   const hero = (id) => `<div class="scene-hero" aria-hidden="true">${art(id)}<span>${scene(id).label}</span></div>`;
-  const cardPreference = () => `<label class="field scene-preference"><span>Kartengröße</span><select class="input" data-pref="cardSize" aria-label="Kartengröße">${[['normal', 'Normal'], ['large', 'Groß'], ['xl', 'Sehr groß']].map(([v, label]) => `<option value="${v}" ${prefs.cardSize === v ? 'selected' : ''}>${label}</option>`).join('')}</select><small>Vergrößert deine Handkarten. Die Einstellung wird in diesem Browser für alle Kartenspiele gespeichert.</small></label>`;
-  const soundPreference = () => `<button type="button" class="btn btn-ghost" data-scene-sound ${prefs.sound ? '' : 'disabled'}>Ton ausprobieren</button>`;
+  const cardPreference = () => I18n.html`<label class="field scene-preference"><span>Kartengröße</span><select class="input" data-pref="cardSize" aria-label="Kartengröße">${[['normal', I18n.t('Normal')], ['large', I18n.t('Groß')], ['xl', I18n.t('Sehr groß')]].map(([v, label]) => `<option value="${v}" ${prefs.cardSize === v ? 'selected' : ''}>${label}</option>`).join('')}</select><small>Vergrößert deine Handkarten. Die Einstellung wird in diesem Browser für alle Kartenspiele gespeichert.</small></label>`;
+  const soundPreference = () => I18n.html`<button type="button" class="btn btn-ghost" data-scene-sound ${prefs.sound ? '' : 'disabled'}>Ton ausprobieren</button>`;
   function scaleCards(root) {
     const factor = sizes[prefs.cardSize] || 1;
     root.querySelectorAll('.kg-hand .kc').forEach((card) => {
@@ -54,7 +54,7 @@ const GameDesign = (() => {
       const original = originals.get(card);
       if (original) card.style.setProperty('--w', original); else card.style.removeProperty('--w');
       const base = getComputedStyle(card).getPropertyValue('--w').trim();
-      if (base && factor !== 1) card.style.setProperty('--w', `calc(${base} * ${factor})`);
+      if (base && factor !== 1) card.style.setProperty('--w', I18n.html`calc(${base} * ${factor})`);
     });
   }
   function fit(root) {
@@ -106,7 +106,7 @@ const GameDesign = (() => {
     const area = root.querySelector('.kg-main,.table-wrap');
     if (!area?.animate) return false;
     effect?.cancel();
-    effect = area.animate([{ boxShadow: 'inset 0 0 0 1px transparent' }, { boxShadow: `inset 0 0 0 3px ${scene(root.dataset.scene).accent}` }, { boxShadow: 'inset 0 0 0 1px transparent' }], { duration: event === 'win' ? 450 : 220 });
+    effect = area.animate([{ boxShadow: 'inset 0 0 0 1px transparent' }, { boxShadow: I18n.html`inset 0 0 0 3px ${scene(root.dataset.scene).accent}` }, { boxShadow: 'inset 0 0 0 1px transparent' }], { duration: event === 'win' ? 450 : 220 });
     return true;
   }
   document.addEventListener('click', (e) => {

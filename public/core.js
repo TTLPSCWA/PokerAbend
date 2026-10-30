@@ -6,6 +6,8 @@
 const $ = (sel, el = document) => el.querySelector(sel);
 const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+// Use only for system labels. Player-supplied text must continue to use esc().
+const uiText = (source) => esc(I18n.t(source));
 
 const AVATARS = ['🦊', '🐻', '🐼', '🐸', '🦉', '🐯', '🐙', '🦄', '🐺', '🐧', '🦁', '🐢'];
 const store = {
@@ -20,6 +22,31 @@ function usePrefs(defaults) { for (const [k, v] of Object.entries(defaults)) if 
 usePrefs({ sound: true, calm: false, cardSize: 'normal' });
 function savePrefs() { store.set('poker:prefs', prefs); if (session) current?.onPrefs?.(); window.UITheme?.apply(); }
 
+window.addEventListener('languagechange', () => {
+  // Repaint existing state only: do not reconnect, reset a round or reload local games.
+  const active = document.activeElement;
+  const drafts = [...document.querySelectorAll('input[id]:not([type=checkbox]):not([type=radio]):not([data-language]), textarea[id], select[id]:not([data-language])')]
+    .map((el) => ({ id: el.id, value: el.value, focus: el === active, start: el.selectionStart, end: el.selectionEnd }));
+  if (typeof hubVisible === 'function' && hubVisible()) renderHub();
+  if (session) current?.onPrefs?.();
+  if (typeof renderProfileChip === 'function') renderProfileChip();
+  if (typeof syncSideToggle === 'function') syncSideToggle();
+  if ($('#profile-dlg')?.open) {
+    $('#profile-title').textContent = I18n.t($('#profile-dlg').dataset.first ? 'Wie heißt du?' : 'Ich');
+    $('#p-preferences').innerHTML = UITheme.preferences();
+  }
+  I18n.staticText(document);
+  for (const draft of drafts) {
+    const el = document.getElementById(draft.id);
+    if (!el) continue;
+    el.value = draft.value;
+    if (draft.focus) {
+      el.focus({ preventScroll: true });
+      if (draft.start !== null && typeof el.setSelectionRange === 'function') el.setSelectionRange(draft.start, draft.end);
+    }
+  }
+});
+
 // ---------- Zustand ----------
 let session = null;                       // { code, token, game }
 let account = { mode: 'open', games: [] }; // aus /me: Passwort oder offen, und welche Spiele es gibt
@@ -32,7 +59,7 @@ function gameNow(st) {
   if (!receivedGameTimes.has(st)) receivedGameTimes.set(st, Date.now());
   return (st.now ?? Date.now()) + (st.gamePaused ? 0 : Date.now() - receivedGameTimes.get(st));
 }
-const gamePauseButtonHTML = (st) => st?.you?.isHost ? `<button type="button" class="btn btn-sm ${st.gamePaused ? 'btn-brass' : ''}" data-game-pause="${!st.gamePaused}" ${!st.gamePaused && st.phase !== 'playing' && !st.started ? 'disabled' : ''} aria-label="${st.gamePaused ? 'Spiel fortsetzen' : 'Spiel für alle pausieren'}" title="${st.gamePaused ? 'Spiel fortsetzen' : 'Spiel für alle pausieren'}">${st.gamePaused ? ICON.play : ICON.pause}<span class="game-pause-label">${st.gamePaused ? 'Fortsetzen' : 'Pause'}</span></button>` : '';
+const gamePauseButtonHTML = (st) => st?.you?.isHost ? `<button type="button" class="btn btn-sm ${st.gamePaused ? 'btn-brass' : ''}" data-game-pause="${!st.gamePaused}" ${!st.gamePaused && st.phase !== 'playing' && !st.started ? 'disabled' : ''} aria-label="${st.gamePaused ? I18n.t('Spiel fortsetzen') : I18n.t('Spiel für alle pausieren')}" title="${st.gamePaused ? I18n.t('Spiel fortsetzen') : I18n.t('Spiel für alle pausieren')}">${st.gamePaused ? ICON.play : ICON.pause}<span class="game-pause-label">${st.gamePaused ? I18n.t('Fortsetzen') : I18n.t('Pause')}</span></button>` : '';
 let observedGameHeader = null;
 const gameHeaderObserver = new ResizeObserver(() => {
   if (observedGameHeader?.isConnected) document.documentElement.style.setProperty('--topbar', observedGameHeader.offsetHeight + 'px');
@@ -47,12 +74,12 @@ function renderGamePause(st) {
   let banner = $('#game-pause-banner');
   if (st.gamePaused && !banner) {
     banner = document.createElement('section'); banner.id = 'game-pause-banner';
-    banner.className = 'game-pause-banner'; banner.setAttribute('aria-label', 'Gemeinsame Spielpause');
+    banner.className = 'game-pause-banner'; banner.setAttribute('aria-label', I18n.t('Gemeinsame Spielpause'));
     root.append(banner);
   }
   if (banner) {
     banner.hidden = !st.gamePaused;
-    const content = `<div role="status"><b>${ICON.pause} Spiel pausiert</b><span>Für alle angehalten. ${st.you?.isHost ? 'Du kannst das Spiel fortsetzen.' : 'Der Host setzt das Spiel fort.'}</span></div>${gamePauseButtonHTML(st)}`;
+    const content = I18n.html`<div role="status"><b>${ICON.pause} Spiel pausiert</b><span>Für alle angehalten. ${st.you?.isHost ? I18n.t('Du kannst das Spiel fortsetzen.') : I18n.t('Der Host setzt das Spiel fort.')}</span></div>${gamePauseButtonHTML(st)}`;
     if (banner.innerHTML !== content) banner.innerHTML = content;
   }
 }
@@ -72,7 +99,7 @@ function toast(text, bad = false) {
   clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
 }
 function send(event, data = {}) {
-  return new Promise((res) => socket.emit(event, data, (r) => { if (!r?.ok) toast(r?.error || 'Das hat nicht geklappt', true); res(r); }));
+  return new Promise((res) => socket.emit(event, data, (r) => { if (!r?.ok) toast(r?.error || I18n.t('Das hat nicht geklappt'), true); res(r); }));
 }
 
 // Kleine Symbole als Inline-SVG – nur wo sie Bedeutung tragen
@@ -88,7 +115,7 @@ const ICON = {
 // Eigener Bestätigungsdialog (statt confirm/prompt): Titel, ein Satz, Abbrechen links, Aktion rechts.
 // <dialog> hält den Fokus im Dialog, Esc schließt. Ergebnis: false, true oder der eingegebene Wert.
 // cancel/cancelValue: eigener Text für den linken Knopf; wer ihn drückt, bekommt cancelValue (Esc bleibt „nichts tun“).
-function ask({ title, text = '', ok = 'OK', danger = false, input = null, cancel = 'Abbrechen', cancelValue }) {
+function ask({ title, text = '', ok = 'OK', danger = false, input = null, cancel = I18n.t('Abbrechen'), cancelValue }) {
   const d = $('#dlg');
   if (d.open) d.close();
   $('#dlg-title').textContent = title;
@@ -140,10 +167,10 @@ function showHelp({ title, short, house = [], more = null }) {
     // Klick neben den Dialog oder auf „Alles klar“ schließt
     d.addEventListener('click', (e) => { if (e.target === d || e.target.closest('[data-help-close]')) d.close(); });
   }
-  d.innerHTML = `<div class="help-body"><h2 id="help-title">${esc(title)}</h2>
-    <ul class="help-list">${short.map((l) => `<li>${l}</li>`).join('')}</ul>
-    ${house.length ? `<h3>Hausregeln an diesem Tisch</h3><ul class="help-list house">${house.map((l) => `<li>${l}</li>`).join('')}</ul>` : ''}
-    <div class="dlg-actions">${more ? '<button class="btn btn-ghost" data-help-more>Alle Regeln</button>' : '<span></span>'}<button class="btn btn-brass" data-help-close>Alles klar</button></div></div>`;
+  d.innerHTML = I18n.html`<div class="help-body"><h2 id="help-title">${esc(title)}</h2>
+    <ul class="help-list">${short.map((l) => `<li>${I18n.html(l)}</li>`).join('')}</ul>
+    ${house.length ? I18n.html`<h3>Hausregeln an diesem Tisch</h3><ul class="help-list house">${house.map((l) => `<li>${l}</li>`).join('')}</ul>` : ''}
+    <div class="dlg-actions">${more ? I18n.html('<button class="btn btn-ghost" data-help-more>Alle Regeln</button>') : '<span></span>'}<button class="btn btn-brass" data-help-close>Alles klar</button></div></div>`;
   d.querySelector('[data-help-more]')?.addEventListener('click', () => { d.close(); more(); });
   d.showModal();
   d.querySelector('[data-help-close]').focus();
@@ -214,12 +241,12 @@ function showIntro(gameId, title, steps, force = false) {
   let k = 0;
   const draw = () => {
     const [head, text] = steps[k];
-    d.innerHTML = `<div class="help-body"><small class="intro-step">Erste Schritte · ${esc(title)} · Schritt ${k + 1} von ${steps.length}</small>
-      <h2 id="intro-title">${esc(head)}</h2><p class="intro-text">${text}</p>
+    d.innerHTML = I18n.html`<div class="help-body"><small class="intro-step">Erste Schritte · ${esc(title)} · Schritt ${k + 1} von ${steps.length}</small>
+      <h2 id="intro-title">${uiText(head)}</h2><p class="intro-text">${I18n.html(text)}</p>
       <div class="intro-dots" aria-hidden="true">${steps.map((_, i) => `<i class="${i === k ? 'on' : ''}"></i>`).join('')}</div>
       <label class="toggle intro-off"><span>Keine Einführungen mehr zeigen<small>Wieder einschalten unter „Ich“</small></span><input type="checkbox" role="switch" data-intro-off ${prefs.intros ? '' : 'checked'}></label>
-      <div class="dlg-actions"><button class="btn btn-ghost" data-intro="skip">${k ? 'Zurück' : 'Überspringen'}</button>
-        <button class="btn btn-brass" data-intro="next">${k === steps.length - 1 ? 'Los geht’s' : 'Weiter'}</button></div></div>`;
+      <div class="dlg-actions"><button class="btn btn-ghost" data-intro="skip">${k ? I18n.t('Zurück') : I18n.t('Überspringen')}</button>
+        <button class="btn btn-brass" data-intro="next">${k === steps.length - 1 ? I18n.t('Los geht’s') : I18n.t('Weiter')}</button></div></div>`;
     d.querySelector('[data-intro="next"]').focus();
   };
   d.onclick = (e) => {
@@ -251,7 +278,7 @@ async function loadGame(id) {
   // gemeinsamen Bausteine (kitGame/partyGame/soloGame) laden, dann das Spielskript.
   if (document.readyState === 'loading') await new Promise((resolve) => document.addEventListener('DOMContentLoaded', resolve, { once: true }));
   if (GAME_MODULES[id]) return Promise.resolve(GAME_MODULES[id]);
-  if (!/^[a-z0-9-]{1,30}$/.test(id)) return Promise.reject(new Error('Dieses Spiel gibt es nicht'));
+  if (!/^[a-z0-9-]{1,30}$/.test(id)) return Promise.reject(new Error(I18n.t('Dieses Spiel gibt es nicht')));
   if (GAME_FILES[id]) return loadGame(GAME_FILES[id]).then((m) => (GAME_MODULES[id] = m));
   gameLoads[id] ||= new Promise((res, rej) => {
     const css = document.createElement('link');
@@ -261,11 +288,11 @@ async function loadGame(id) {
     let ready = 0;
     const done = () => {
       if (++ready < 2) return;
-      if (GAME_MODULES[id]) res(GAME_MODULES[id]); else { delete gameLoads[id]; rej(new Error('Das Spiel konnte nicht geladen werden')); }
+      if (GAME_MODULES[id]) res(GAME_MODULES[id]); else { delete gameLoads[id]; rej(new Error(I18n.t('Das Spiel konnte nicht geladen werden'))); }
     };
     css.addEventListener('load', done); css.addEventListener('error', done); // ohne Stylesheet geht es zur Not auch
     js.addEventListener('load', done);
-    js.addEventListener('error', () => { delete gameLoads[id]; rej(new Error('Das Spiel konnte nicht geladen werden')); });
+    js.addEventListener('error', () => { delete gameLoads[id]; rej(new Error(I18n.t('Das Spiel konnte nicht geladen werden'))); });
     document.head.append(css);
     document.body.append(js);
   });
@@ -305,8 +332,8 @@ async function enterGame(r) {
   if (lastState) current.onState(lastState);
 }
 // Gemeinsamer Teil des Host-Menüs „Spiel beenden“: zwei Knöpfe mit eigenen Bestätigungsdialogen
-function endGameHTML(running, noun = 'Runde') {
-  return `<h3>Spiel beenden</h3>
+function endGameHTML(running, noun = I18n.t('Runde')) {
+  return I18n.html`<h3>Spiel beenden</h3>
     <div class="danger-zone">
       <button class="btn btn-outline-red" data-end="abort" ${running ? '' : 'disabled title="Gerade läuft keine ' + noun + '"'}>Aktive ${noun} abbrechen</button>
       <p class="hint" style="margin:0">Die ${noun} endet sofort ohne Wertung. Karten, Einsätze und Chips gehen zurück auf den Stand davor.</p>
@@ -314,13 +341,13 @@ function endGameHTML(running, noun = 'Runde') {
       <p class="hint" style="margin:0">Alle landen auf der Startseite, der Tisch und sein Code sind danach weg. Schon eingetragene Ergebnisse bleiben in der Bestenliste.</p>
     </div>`;
 }
-async function endGameClick(kind, noun = 'Runde') {
+async function endGameClick(kind, noun = I18n.t('Runde')) {
   if (kind === 'abort') {
-    if (await ask({ title: `Aktive ${noun} abbrechen?`, text: `Die ${noun} endet sofort ohne Wertung. Einsätze und Chips gehen zurück, danach wartet der Tisch auf den Start.`, ok: `${noun} abbrechen`, danger: true })) {
-      socket.emit('abortRound', {}, (r) => { if (r && !r.ok) toast(r.error, true); else toast(`${noun} abgebrochen`); });
+    if (await ask({ title: I18n.html`Aktive ${noun} abbrechen?`, text: I18n.html`Die ${noun} endet sofort ohne Wertung. Einsätze und Chips gehen zurück, danach wartet der Tisch auf den Start.`, ok: I18n.html`${noun} abbrechen`, danger: true })) {
+      socket.emit('abortRound', {}, (r) => { if (r && !r.ok) toast(r.error, true); else toast(I18n.html`${noun} abgebrochen`); });
     }
   } else if (kind === 'close') {
-    if (await ask({ title: 'Tisch schließen?', text: 'Alle gehen zur Startseite, der Tisch wird gelöscht und der Code wird frei. Ergebnisse bleiben in der Bestenliste.', ok: 'Tisch schließen', danger: true })) {
+    if (await ask({ title: I18n.t('Tisch schließen?'), text: I18n.t('Alle gehen zur Startseite, der Tisch wird gelöscht und der Code wird frei. Ergebnisse bleiben in der Bestenliste.'), ok: I18n.t('Tisch schließen'), danger: true })) {
       socket.emit('closeTable', {}, (r) => { if (r && !r.ok) toast(r.error, true); });
     }
   }
@@ -333,7 +360,7 @@ socket.on('closed', (c) => {
   if (store.get('poker:last', null) === code) store.set('poker:last', null);
   leaveGame();
   showHub();
-  toast(c?.text || 'Der Tisch wurde geschlossen', true);
+  toast(c?.text || I18n.t('Der Tisch wurde geschlossen'), true);
 });
 function leaveGame() {
   session = null; lastState = null; parked = false;
@@ -342,7 +369,7 @@ function leaveGame() {
 // ---------- „Ansehen“: gemeinsame Ansicht für offene Informationen (Stapel, Züge, Blätter) ----------
 // Zeigt nur, was alle am Tisch ohnehin sehen dürfen. Am Handy als Blatt von unten, am großen Bildschirm mittig.
 // Schließen: Knopf, Klick daneben oder Esc. sections: [{ title, note?, html }] (HTML aus dem Spielcode, Texte von Spielern vorher mit esc())
-function openLook({ title = 'Ansehen', sections = [] }) {
+function openLook({ title = I18n.t('Ansehen'), sections = [] }) {
   let d = $('#look-dlg');
   if (!d) {
     d = document.createElement('dialog');
@@ -350,28 +377,28 @@ function openLook({ title = 'Ansehen', sections = [] }) {
     d.addEventListener('click', (e) => { if (e.target === d || e.target.closest('[data-look-close]')) d.close(); });
     document.body.append(d);
   }
-  d.innerHTML = `<div class="look-grip" aria-hidden="true"></div>
+  d.innerHTML = I18n.html`<div class="look-grip" aria-hidden="true"></div>
     <div class="look-head"><h2 id="look-title">${esc(title)}</h2>
       <button type="button" class="icon-btn" data-look-close aria-label="Schließen">${svg('<path d="M6 6l12 12M18 6L6 18"/>')}</button></div>
-    <div class="look-body">${sections.map((s) => `<section class="look-sec"><h3>${esc(s.title)}</h3>${s.note ? `<p class="hint">${esc(s.note)}</p>` : ''}${s.html}</section>`).join('') || '<p class="hint">Noch nichts zu sehen.</p>'}</div>`;
+    <div class="look-body">${sections.map((s) => `<section class="look-sec"><h3>${esc(s.title)}</h3>${s.note ? `<p class="hint">${esc(s.note)}</p>` : ''}${s.html}</section>`).join('') || I18n.html('<p class="hint">Noch nichts zu sehen.</p>')}</div>`;
   if (!d.open) d.showModal();
   d.querySelector('[data-look-close]').focus();
 }
 // Fächer: Karten von unten nach oben, die oberste ist hervorgehoben und beschriftet
 function lookFan(cardsHTML, { topLabel = 'oben' } = {}) {
-  if (!cardsHTML.length) return '<p class="hint">leer</p>';
+  if (!cardsHTML.length) return I18n.html('<p class="hint">leer</p>');
   return `<div class="look-fan" role="list">${cardsHTML.map((c, i) => `<div class="look-card${i === cardsHTML.length - 1 ? ' top' : ''}" role="listitem">${c}${i === cardsHTML.length - 1 ? `<small>${esc(topLabel)}</small>` : ''}</div>`).join('')}</div>`;
 }
 // Liste der Züge dieser Runde (neuester oben): die letzten n offen, der Rest ausklappbar. detail(m) darf HTML liefern.
 function lookMoves(moves, { filter = null, n = 10, detail = null } = {}) {
   const list = (moves || []).filter((m) => (filter ? filter(m) : true)).slice().reverse();
-  if (!list.length) return '<p class="hint">Noch keine Züge in dieser Runde.</p>';
+  if (!list.length) return I18n.html('<p class="hint">Noch keine Züge in dieser Runde.</p>');
   const row = (m) => `<li><b>${esc(m.n)}</b> ${esc(m.t)}${detail ? ' ' + (detail(m) || '') : ''}</li>`;
-  return `<ol class="look-moves">${list.slice(0, n).map(row).join('')}</ol>${list.length > n ? `<details><summary>Alle ${list.length} Züge</summary><ol class="look-moves">${list.slice(n).map(row).join('')}</ol></details>` : ''}`;
+  return `<ol class="look-moves">${list.slice(0, n).map(row).join('')}</ol>${list.length > n ? I18n.html`<details><summary>Alle ${list.length} Züge</summary><ol class="look-moves">${list.slice(n).map(row).join('')}</ol></details>` : ''}`;
 }
 
 // Home-Knopf oben links in jedem Spiel: Startseite mit Platz behalten, oder den Tisch ganz verlassen
-const homeButtonHTML = () => `<button class="home-btn" data-home="open" title="Zur Startseite" aria-label="Zur Startseite">${svg('<path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/><path d="M10 20v-6h4v6"/>')}<span>Start</span></button>`;
+const homeButtonHTML = () => I18n.html`<button class="home-btn" data-home="open" title="Zur Startseite" aria-label="Zur Startseite">${svg('<path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/><path d="M10 20v-6h4v6"/>')}<span>Start</span></button>`;
 // Platz behalten: der Server behandelt uns wie bei einem Verbindungsabbruch (Zug-Timer, Pause), der Tisch steht unter „Weiterspielen“
 function parkRoom() {
   if (!session || parked) return;
@@ -469,8 +496,8 @@ socket.on('connect_error', async () => {
     if (r.status === 401) location.href = '/login?next=' + encodeURIComponent(location.pathname + location.search);
   } catch { /* Server nicht erreichbar – Socket.IO versucht es weiter */ }
 });
-socket.on('replaced', () => { session = null; document.body.innerHTML = '<main class="lobby"><div class="lobby-felt"><h1 class="wordmark">Spieleabend</h1><p class="lobby-sub">Du spielst gerade in einem anderen Tab weiter. Diesen Tab kannst du schließen.</p></div></main>'; });
-socket.on('kicked', () => { if (session) store.set('poker:session:' + session.code, null); leaveGame(); toast('Der Host hat dich vom Tisch genommen', true); showLobby(); });
+socket.on('replaced', () => { session = null; document.body.innerHTML = I18n.html('<main class="lobby"><div class="lobby-felt"><h1 class="wordmark">Spieleabend</h1><p class="lobby-sub">Du spielst gerade in einem anderen Tab weiter. Diesen Tab kannst du schließen.</p></div></main>'); });
+socket.on('kicked', () => { if (session) store.set('poker:session:' + session.code, null); leaveGame(); toast(I18n.t('Der Host hat dich vom Tisch genommen'), true); showLobby(); });
 socket.on('state', (st) => {
   receivedGameTimes.set(st, Date.now());
   lastState = st;
@@ -490,25 +517,25 @@ async function fetchLeaderboard(game, period = 'all') {
   try {
     const res = await fetch(`/api/leaderboard?game=${encodeURIComponent(game || '')}&period=${encodeURIComponent(period)}`, { credentials: 'same-origin' });
     return await res.json();
-  } catch { toast('Die Bestenliste ist gerade nicht erreichbar', true); return null; }
+  } catch { toast(I18n.t('Die Bestenliste ist gerade nicht erreichbar'), true); return null; }
 }
 function leaderboardInner(r, pre = 'lb') {
   const info = r.games.find((g) => g.id === r.game);
   const isPoker = r.game === 'poker' || r.game === 'omaha';
-  const monthName = (m) => new Date(m + '-15T12:00:00').toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+  const monthName = (m) => new Date(m + '-15T12:00:00').toLocaleDateString(I18n.locale, { month: 'long', year: 'numeric' });
   const months = r.months.includes(r.current) ? r.months : [r.current, ...r.months];
-  const fmtPoints = (n) => (isPoker ? `${n > 0 ? '+' : n < 0 ? '−' : '±'}${Math.abs(n).toLocaleString('de-DE')}` : n.toLocaleString('de-DE'));
-  const rows = r.rows.map((x, k) => `<tr><td><span class="rank ${k < 3 ? 'r' + (k + 1) : ''}" aria-label="Platz ${k + 1}">${k + 1}</span></td>
+  const fmtPoints = (n) => (isPoker ? `${n > 0 ? '+' : n < 0 ? '−' : '±'}${Math.abs(n).toLocaleString(I18n.locale)}` : n.toLocaleString(I18n.locale));
+  const rows = r.rows.map((x, k) => I18n.html`<tr><td><span class="rank ${k < 3 ? 'r' + (k + 1) : ''}" aria-label="Platz ${k + 1}">${k + 1}</span></td>
     <td>${esc(x.name)}</td><td class="num">${x.played}</td>
     <td class="num">${x.wins} <small>(${Math.round((100 * x.wins) / x.played)} %)</small></td>
     <td class="num ${isPoker ? (x.points > 0 ? 'pos' : x.points < 0 ? 'neg' : '') : ''}">${fmtPoints(x.points)}</td></tr>`).join('');
-  return `<div class="lb-filters">
+  return I18n.html`<div class="lb-filters">
       <label class="field"><span>Spiel</span><select id="${pre}-game" class="input" data-${pre}>${r.games.map((g) => `<option value="${esc(g.id)}" ${g.id === r.game ? 'selected' : ''}>${esc(g.name)}</option>`).join('')}</select></label>
       <label class="field"><span>Zeitraum</span><select id="${pre}-period" class="input" data-${pre}><option value="all">Alle Abende</option>${months.map((m) => `<option value="${m}" ${m === r.period ? 'selected' : ''}>${monthName(m)}</option>`).join('')}</select></label>
     </div>
-    ${rows ? `<div class="lb-scroll"><table class="standings lb-table"><thead><tr><th></th><th>Name</th><th class="num">${isPoker ? 'Hände' : 'Partien'}</th><th class="num">Siege</th><th class="num">${esc(info?.scoreLabel || 'Punkte')}</th></tr></thead><tbody>${rows}</tbody></table></div>`
-      : '<p class="hint">In diesem Zeitraum wurde das noch nicht gespielt.</p>'}
-    <p class="hint" style="margin:0">Sortiert nach Siegen. ${isPoker ? 'Eine Partie ist eine Hand, gezählt werden gewonnene und verlorene Chips.' : `Eine Partie ist eine Runde. ${info?.lowWins ? 'Punkte: wenig ist gut.' : ''}`} Wiedererkannt wird man am Namen.</p>`;
+    ${rows ? I18n.html`<div class="lb-scroll"><table class="standings lb-table"><thead><tr><th></th><th>Name</th><th class="num">${isPoker ? I18n.t('Hände') : 'Partien'}</th><th class="num">Siege</th><th class="num">${esc(info?.scoreLabel || I18n.t('Punkte'))}</th></tr></thead><tbody>${rows}</tbody></table></div>`
+      : I18n.html('<p class="hint">In diesem Zeitraum wurde das noch nicht gespielt.</p>')}
+    <p class="hint" style="margin:0">Sortiert nach Siegen. ${isPoker ? I18n.t('Eine Partie ist eine Hand, gezählt werden gewonnene und verlorene Chips.') : I18n.html`Eine Partie ist eine Runde. ${info?.lowWins ? I18n.t('Punkte: wenig ist gut.') : ''}`} Wiedererkannt wird man am Namen.</p>`;
 }
 async function showLeaderboard(game, period = 'all') {
   let d = $('#lb-dlg');
@@ -522,7 +549,7 @@ async function showLeaderboard(game, period = 'all') {
   }
   const r = await fetchLeaderboard(game, period);
   if (!r) return;
-  d.innerHTML = `<div class="help-body"><h2 id="lb-title">Bestenliste aller Abende</h2>${leaderboardInner(r, 'lb')}
+  d.innerHTML = I18n.html`<div class="help-body"><h2 id="lb-title">Bestenliste aller Abende</h2>${leaderboardInner(r, 'lb')}
     <div class="dlg-actions"><span></span><button class="btn btn-brass" data-lb-close>Schließen</button></div></div>`;
   if (!d.open) d.showModal();
 }
@@ -536,10 +563,10 @@ function botControlsHTML(state, busy) {
   const bots = state.bots || [];
   const occupied = state.players ? state.players.filter((p) => p.seated).length : state.seats.filter(Boolean).length;
   const full = occupied >= (state.maxPlayers || state.settings.maxPlayers);
-  return `<section class="bot-controls" aria-label="Computer-Mitspieler"><h3>Mit Bots spielen (optional)</h3>
-    <p class="hint">${bots.length ? `${bots.length} Computer-Mitspieler am Tisch.` : 'Ohne Bots. Füge bei Bedarf einen Computer-Mitspieler hinzu.'} ${busy ? 'Änderungen gehen nach dieser Runde.' : 'Du startest die Runde wie gewohnt.'}</p>
+  return I18n.html`<section class="bot-controls" aria-label="Computer-Mitspieler"><h3>Mit Bots spielen (optional)</h3>
+    <p class="hint">${bots.length ? I18n.html`${bots.length} Computer-Mitspieler am Tisch.` : I18n.t('Ohne Bots. Füge bei Bedarf einen Computer-Mitspieler hinzu.')} ${busy ? I18n.t('Änderungen gehen nach dieser Runde.') : I18n.t('Du startest die Runde wie gewohnt.')}</p>
     <button type="button" class="btn" data-add-bot ${busy || full ? 'disabled' : ''}>Bot hinzufügen${full ? ' – Tisch voll' : ''}</button>
-    ${bots.map((p) => `<div class="bot-row"><span>${esc(p.name)} · Computer</span><button type="button" class="btn btn-outline-red" data-remove-bot="${esc(p.id)}" aria-label="${esc(p.name)} entfernen" ${busy ? 'disabled' : ''}>Entfernen</button></div>`).join('')}</section>`;
+    ${bots.map((p) => I18n.html`<div class="bot-row"><span>${esc(p.name)} · Computer</span><button type="button" class="btn btn-outline-red" data-remove-bot="${esc(p.id)}" aria-label="${esc(p.name)} entfernen" ${busy ? 'disabled' : ''}>Entfernen</button></div>`).join('')}</section>`;
 }
 document.addEventListener('click', (e) => {
   if (e.target.closest('[data-add-bot]:not(:disabled)')) send('addBot');
@@ -549,19 +576,19 @@ document.addEventListener('click', (e) => {
 
 // Host-Schalter: Tisch nicht in der Liste der offenen Tische zeigen (privat, nur per Code/Link). Für Poker und alle Rundenspiele gleich.
 function unlistedSwitchHTML(state) {
-  return `<label class="toggle"><span>Tisch nicht in der Liste zeigen<small>Privat: nur per Code oder Link erreichbar</small></span>
+  return I18n.html`<label class="toggle"><span>Tisch nicht in der Liste zeigen<small>Privat: nur per Code oder Link erreichbar</small></span>
     <input type="checkbox" role="switch" data-unlisted ${state.unlisted ? 'checked' : ''}></label>`;
 }
 document.addEventListener('change', (e) => {
   const t = e.target.closest?.('[data-unlisted]');
-  if (t) send('unlisted', { value: t.checked }).then((r) => { if (r?.ok) toast(t.checked ? 'Tisch ist jetzt privat – nur per Code oder Link' : 'Tisch steht wieder in der Liste'); else t.checked = !t.checked; });
+  if (t) send('unlisted', { value: t.checked }).then((r) => { if (r?.ok) toast(t.checked ? I18n.t('Tisch ist jetzt privat – nur per Code oder Link') : I18n.t('Tisch steht wieder in der Liste')); else t.checked = !t.checked; });
 });
 
 // Host-Menü: in ein anderes Spiel wechseln (gleicher Raum, alle bleiben drin)
 function switchGameHTML(currentId, busy) {
   busy ||= ['running', 'between'].includes(lastState?.partyProgram?.status);
   const others = account.games.filter((g) => g.id !== currentId);
-  return `<h3>Spiel wechseln</h3>
+  return I18n.html`<h3>Spiel wechseln</h3>
     <div class="switch-game"><select class="input" id="switch-game" aria-label="Neues Spiel">${others.map((g) => `<option value="${esc(g.id)}">${esc(g.name)}</option>`).join('')}</select>
       <button class="btn" data-switch-game ${busy ? 'disabled title="Geht erst, wenn die Runde vorbei ist"' : ''}>Wechseln</button></div>
     <p class="hint" style="margin:0">Gleicher Raum und Code, alle bleiben drin. Wer gerade mitspielt, sitzt im neuen Spiel wieder. Der bisherige Stand kommt in den Verlauf.</p>`;
@@ -570,7 +597,7 @@ async function askSwitchGame() {
   const id = $('#switch-game')?.value;
   const g = account.games.find((x) => x.id === id);
   if (!g) return;
-  if (await ask({ title: `Zu ${g.name} wechseln?`, text: 'Die laufende Wertung dieses Spiels endet – sie steht danach im Verlauf. Alle bleiben im Raum.', ok: 'Wechseln' })) send('switchGame', { game: id });
+  if (await ask({ title: I18n.html`Zu ${g.name} wechseln?`, text: I18n.t('Die laufende Wertung dieses Spiels endet – sie steht danach im Verlauf. Alle bleiben im Raum.'), ok: I18n.t('Wechseln') })) send('switchGame', { game: id });
 }
 document.addEventListener('click', (e) => { if (e.target.closest('[data-switch-game]:not(:disabled)')) askSwitchGame(); });
 
@@ -579,7 +606,7 @@ document.addEventListener('submit', async (e) => {
   const form = e.target;
   if (!form.matches('form[action="/logout"]') || form.dataset.confirmed) return;
   e.preventDefault();
-  if (await ask({ title: 'Abmelden?', text: 'Du musst danach das Gruppenpasswort neu eingeben. Am Tisch bleibt dein Platz 5 Minuten frei.', ok: 'Abmelden', danger: true })) {
+  if (await ask({ title: 'Abmelden?', text: I18n.t('Du musst danach das Gruppenpasswort neu eingeben. Am Tisch bleibt dein Platz 5 Minuten frei.'), ok: 'Abmelden', danger: true })) {
     form.dataset.confirmed = '1';
     form.submit();
   }
@@ -589,7 +616,7 @@ async function boot() {
   try {
     const r = await fetch('/me', { credentials: 'same-origin' });
     if (r.status === 401) { location.href = '/login?next=' + encodeURIComponent(location.pathname + location.search); return; }
-    if (r.ok) account = { games: [], ...(await r.json()) };
+    if (r.ok) { account = { games: [], ...(await r.json()) }; I18n.configureGames(account.games); }
   } catch { /* offline – Socket.IO versucht es weiter */ }
   // Der Hub und seine Seiten stehen erst nach den gemeinsamen Skripten bereit.
   if (document.readyState === 'loading') await new Promise((resolve) => document.addEventListener('DOMContentLoaded', resolve, { once: true }));

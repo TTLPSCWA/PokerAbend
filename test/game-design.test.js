@@ -3,10 +3,11 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { GAMES } from '../games/index.js';
+import { i18nContext } from './i18n-harness.js';
 
 function design() {
   const calls = [];
-  const context = vm.createContext({ document: { addEventListener() {} }, prefs: { sound: true },
+  const context = i18nContext({ prefs: { sound: true },
     setTimeout: (fn) => fn(), beep: (...args) => calls.push(args), sfx: (name) => calls.push(name) });
   vm.runInContext(readFileSync(new URL('../public/game-design.js', import.meta.url), 'utf8') + '\nglobalThis.design = GameDesign;', context);
   return { api: context.design, prefs: context.prefs, calls };

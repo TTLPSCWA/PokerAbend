@@ -14,18 +14,21 @@
   <main class="lobby">
     <div class="lobby-felt">
       <h1 class="wordmark">Spieleabend</h1>
-      <p class="lobby-sub">Privater Tisch. Gib das Passwort ein, das ihr in der Gruppe ausgemacht habt. Dein Browser merkt es sich danach.</p>
+      <div id="login-language"></div>
+      <p class="lobby-sub" data-i18n>Privater Tisch. Gib das Passwort ein, das ihr in der Gruppe ausgemacht habt. Dein Browser merkt es sich danach.</p>
       <form class="lobby-form" method="post" action="/login">
         <input type="hidden" name="next" value="{{NEXT}}">
         <label class="field">
-          <span>Passwort</span>
+          <span data-i18n>Passwort</span>
           <input type="password" name="password" required autofocus autocomplete="current-password">
         </label>
-        <button class="btn btn-brass btn-big" type="submit">Reinkommen</button>
-        <p class="error" role="alert">{{ERROR}}</p>
+        <button class="btn btn-brass btn-big" type="submit" data-i18n>Reinkommen</button>
+        <p class="error" role="alert" data-i18n>{{ERROR}}</p>
       </form>
     </div>
   </main>
+  <script src="/i18n-en.js"></script>
+  <script src="/i18n.js"></script>
   <script src="/login.js"></script>
 </body>
 </html>

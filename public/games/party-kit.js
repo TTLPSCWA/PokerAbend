@@ -9,14 +9,14 @@
 // Läuft nach /core.js und /games/kit.js.
 'use strict';
 
-const pkFmt = (n) => Number(n).toLocaleString('de-DE', { maximumFractionDigits: 3 });
+const pkFmt = (n) => Number(n).toLocaleString(I18n.locale, { maximumFractionDigits: 3 });
 const pkPlayer = (S, id) => S.players.find((p) => p.id === id);
 const pkName = (S, id) => pkPlayer(S, id)?.name ?? '?';
 const pkAvatar = (S, id) => `<span class="pk-av" aria-hidden="true">${avatarHTML(pkPlayer(S, id))}</span>`;
 
 // Eingabezeile für die Aktionsleiste: ein Textfeld und „Senden“. max = Zeichen (Server kürzt ebenfalls auf 120).
-function pkForm({ kind, label, placeholder = '', value = '', max = 120, inputmode = 'text', button = 'Senden', note = '', counter = false, data = {} }) {
-  const attrs = Object.entries(data).map(([k, v]) => ` data-${esc(k)}="${esc(v)}"`).join(''); // z. B. data-task für die Aufgabe, zu der die Antwort gehört
+function pkForm({ kind, label, placeholder = '', value = '', max = 120, inputmode = 'text', button = I18n.t('Senden'), note = '', counter = false, data = {} }) {
+  const attrs = Object.entries(data).map(([k, v]) => I18n.html` data-${esc(k)}="${esc(v)}"`).join(''); // z. B. data-task für die Aufgabe, zu der die Antwort gehört
   return `<form class="pk-form" data-pk="${esc(kind)}"${attrs} autocomplete="off">
     <label class="sr-only" for="pk-in">${esc(label)}</label>
     <input id="pk-in" class="pk-input" type="text" inputmode="${esc(inputmode)}" enterkeyhint="send" maxlength="${max}" placeholder="${esc(placeholder)}" value="${esc(value)}" autocomplete="off" autocorrect="off" spellcheck="false">
@@ -40,7 +40,7 @@ socket.on('nudge', ({ from, text }) => {
   }
   el.innerHTML = '<span class="pk-nudge-hand" aria-hidden="true">👉</span><b></b><small></small>';
   el.querySelector('b').textContent = text; // immer als Text, nie als HTML
-  el.querySelector('small').textContent = from ? `${from} stupst dich an` : 'Die Zeit läuft gleich ab';
+  el.querySelector('small').textContent = from ? I18n.html`${from} stupst dich an` : I18n.t('Die Zeit läuft gleich ab');
   el.hidden = false;
   el.classList.remove('go'); void el.offsetWidth; el.classList.add('go');
   if (prefs.sound) [880, 660, 880].forEach((f, i) => setTimeout(() => beep(f, 110, 0.07, 'square'), i * 150));
@@ -58,8 +58,8 @@ socket.on('nudge', ({ from, text }) => {
   const typing = () => document.activeElement?.matches?.('.pk-input, .pk-text');
   const fit = () => {
     const open = !!typing() && innerHeight - vv.height > 120;
-    root.style.setProperty('--vvh', `${vv.height}px`);
-    root.style.setProperty('--vvt', `${vv.offsetTop}px`);
+    root.style.setProperty('--vvh', I18n.html`${vv.height}px`);
+    root.style.setProperty('--vvt', I18n.html`${vv.offsetTop}px`);
     document.body.classList.toggle('pk-kb', open);
     if (open && scrollY) scrollTo(0, 0);
   };
@@ -86,11 +86,11 @@ function partyGame(def) {
     const players = S.players.filter((p) => p.inRound);
     const done = players.filter((p) => p.ready).length;
     const counting = G.stage !== 'reveal';
-    return `<div class="pk-progress" role="status">
-      <b>${esc(T.unit)} ${G.q} von ${G.of}</b>
-      <span class="pk-stage">${esc(STAGE[G.stage])}</span>
-      ${G.stage === 'vote' && G.steps > 1 ? `<span class="pk-step">${esc(T.step)} ${G.step} von ${G.steps}</span>` : ''}
-      ${counting ? `<span class="pk-done">${done} von ${players.length} fertig</span>` : ''}
+    return I18n.html`<div class="pk-progress" role="status">
+      <b>${uiText(T.unit)} ${G.q} von ${G.of}</b>
+      <span class="pk-stage">${uiText(STAGE[G.stage])}</span>
+      ${G.stage === 'vote' && G.steps > 1 ? I18n.html`<span class="pk-step">${uiText(T.step)} ${G.step} von ${G.steps}</span>` : ''}
+      ${counting ? I18n.html`<span class="pk-done">${done} von ${players.length} fertig</span>` : ''}
       <div class="pk-bar" role="progressbar" aria-label="Fortschritt" aria-valuemin="1" aria-valuemax="${G.of}" aria-valuenow="${G.q}"><i style="width:${Math.round((G.q / G.of) * 100)}%"></i></div>
     </div>`;
   };
@@ -102,23 +102,23 @@ function partyGame(def) {
     if (!me?.inRound || !me.ready) return '';
     const slow = S.players.filter((p) => p.inRound && !p.ready && p.id !== me.id);
     if (!slow.length) return '';
-    return `<div class="pk-nudges" role="group" aria-label="Trödler anstupsen"><span>Noch nicht fertig:</span>${slow.map((p) => `<button type="button" class="pk-nudge-btn" data-g="pk-nudge" data-id="${esc(p.id)}" aria-label="${esc(p.name)} anstupsen"><span aria-hidden="true">👉</span> ${esc(p.name)}</button>`).join('')}</div>`;
+    return I18n.html`<div class="pk-nudges" role="group" aria-label="Trödler anstupsen"><span>Noch nicht fertig:</span>${slow.map((p) => I18n.html`<button type="button" class="pk-nudge-btn" data-g="pk-nudge" data-id="${esc(p.id)}" aria-label="${esc(p.name)} anstupsen"><span aria-hidden="true">👉</span> ${esc(p.name)}</button>`).join('')}</div>`;
   };
 
   // Ende der Partie: Rangliste mit den Punkten dieser Partie
   const finalHTML = (S) => {
     const list = S.players.filter((p) => p.inRound || p.pts).sort((a, b) => (b.pts || 0) - (a.pts || 0));
-    return `<div class="kg-table pk-table"><div class="pk-final"><h2>Partie vorbei</h2>
-      <ol>${list.map((p, i) => `<li><span class="rank ${i < 3 ? 'r' + (i + 1) : ''}" aria-label="Platz ${i + 1}">${i + 1}</span>${pkAvatar(S, p.id)}<b>${esc(p.name)}${p.id === S.you?.id ? ' <small>(du)</small>' : ''}</b><span class="pk-pts">${p.pts || 0} Punkte</span></li>`).join('')}</ol></div></div>`;
+    return I18n.html`<div class="kg-table pk-table"><div class="pk-final"><h2>Partie vorbei</h2>
+      <ol>${list.map((p, i) => I18n.html`<li><span class="rank ${i < 3 ? 'r' + (i + 1) : ''}" aria-label="Platz ${i + 1}">${i + 1}</span>${pkAvatar(S, p.id)}<b>${esc(p.name)}${p.id === S.you?.id ? I18n.html(' <small>(du)</small>') : ''}</b><span class="pk-pts">${p.pts || 0} Punkte</span></li>`).join('')}</ol></div></div>`;
   };
 
   // Aktionsleiste: Eingabe (Schreiben/Abstimmen) bzw. „Weiter“ (Auflösung)
   const stageDock = (S) => {
     const G = S.g;
     const host = S.you?.isHost;
-    if (G.stage === 'reveal') return `<div class="kg-acts pk-acts">${host ? '<button class="btn btn-brass" data-g="pk-next">Weiter</button>' : '<span class="waiting">Gleich geht es weiter …</span>'}</div>`;
+    if (G.stage === 'reveal') return `<div class="kg-acts pk-acts">${host ? I18n.html('<button class="btn btn-brass" data-g="pk-next">Weiter</button>') : I18n.html('<span class="waiting">Gleich geht es weiter …</span>')}</div>`;
     const form = (G.stage === 'write' ? def.writeForm?.(S) : def.voteDock?.(S)) || '';
-    const skip = host ? '<button class="btn btn-ghost pk-skip" data-g="pk-next" title="Diese Stufe jetzt beenden – wer noch nicht fertig ist, bekommt keine Antwort">Alle fertig – weiter</button>' : '';
+    const skip = host ? I18n.html('<button class="btn btn-ghost pk-skip" data-g="pk-next" title="Diese Stufe jetzt beenden – wer noch nicht fertig ist, bekommt keine Antwort">Alle fertig – weiter</button>') : '';
     return `<div class="kg-acts pk-acts">${form}${skip}</div>`;
   };
 
@@ -126,18 +126,18 @@ function partyGame(def) {
     id: def.id, name: def.name, rules: def.rules, short: def.short, intro: def.intro,
     keepMain: def.keepMain, noBots: def.noBots,
     roundWord: 'Partie', direction: false, ring: false,
-    look: (S) => (S.g?.past || []).length ? [{ title: 'Frühere Runden', note: 'Die Auflösungen der Fragen davor.', html: (S.g.past || []).slice().reverse().map((p) => `<details><summary>Frage ${p.q}</summary>${def.reveal({ ...S, g: { ...S.g, ...p, stage: 'reveal' } })}</details>`).join('') }] : [],
+    look: (S) => (S.g?.past || []).length ? [{ title: I18n.t('Frühere Runden'), note: I18n.t('Die Auflösungen der Fragen davor.'), html: (S.g.past || []).slice().reverse().map((p) => I18n.html`<details><summary>Frage ${p.q}</summary>${def.reveal({ ...S, g: { ...S.g, ...p, stage: 'reveal' } })}</details>`).join('') }] : [],
     house: () => [],
     playerInfo(p, S) {
       if (!inGame(S) || p.inRound === undefined) return '';
-      const state = S.g.stage === 'reveal' || !p.inRound ? '' : p.ready ? '✓ fertig' : S.g.stage === 'write' ? T.waitWrite : T.waitVote;
-      return [`${p.pts || 0} Pkt.`, state].filter(Boolean).join(' · ');
+      const state = S.g.stage === 'reveal' || !p.inRound ? '' : p.ready ? I18n.t('✓ fertig') : S.g.stage === 'write' ? T.waitWrite : T.waitVote;
+      return [I18n.html`${p.pts || 0} Pkt.`, I18n.t(state)].filter(Boolean).join(' · ');
     },
-    status(S) { return inGame(S) ? `${esc(T.unit)} ${S.g.q} von ${S.g.of} · ${esc(STAGE[S.g.stage])}` : null; },
+    status(S) { return inGame(S) ? I18n.html`${uiText(T.unit)} ${S.g.q} von ${S.g.of} · ${uiText(STAGE[S.g.stage])}` : null; },
     hint(S) {
       if (!inGame(S)) return '';
-      if (S.g.stage === 'reveal') return S.you?.isHost ? 'Tipp auf „Weiter“, wenn ihr bereit seid – sonst geht es von selbst weiter' : 'Auflösung – gleich geht es weiter';
-      if (!S.you?.inRound && !S.g.canAnswer) return 'Du schaust zu – in der nächsten Partie kannst du mitspielen';
+      if (S.g.stage === 'reveal') return S.you?.isHost ? I18n.t('Tipp auf „Weiter“, wenn ihr bereit seid – sonst geht es von selbst weiter') : I18n.t('Auflösung – gleich geht es weiter');
+      if (!S.you?.inRound && !S.g.canAnswer) return I18n.t('Du schaust zu – in der nächsten Partie kannst du mitspielen');
       return def.hint(S);
     },
     main(S) {
@@ -170,12 +170,12 @@ function partyGame(def) {
       if (!def.custom) return '';
       const off = S.phase === 'playing';
       const saved = S.custom || [];
-      return `<section class="pk-custom" aria-label="Eigene ${esc(PLURAL)}"><h3>${esc(def.custom.title || 'Eigene Fragen für diesen Abend')}</h3>
+      return I18n.html`<section class="pk-custom" aria-label="Eigene ${esc(PLURAL)}"><h3>${esc(def.custom.title || I18n.t('Eigene Fragen für diesen Abend'))}</h3>
         <p class="hint" style="margin:0">${def.custom.help}</p>
         <label class="field"><span class="sr-only">Eigene ${esc(PLURAL)}, eine pro Zeile</span>
           <textarea id="pk-custom" class="pk-text" rows="6" maxlength="20000" placeholder="${esc(def.custom.example)}" ${off ? 'disabled' : ''}>${esc(customDraft ?? saved.join('\n'))}</textarea></label>
         <button type="button" class="btn" data-g="pk-save" ${off ? 'disabled' : ''}>${esc(PLURAL)} speichern</button>
-        <p class="hint" style="margin:0">${saved.length ? `${saved.length} ${saved.length === 1 ? `eigene ${NOUN}` : `eigene ${PLURAL}`} gespeichert` : `Noch keine eigenen ${PLURAL}`} – sie gelten nur in diesem Raum${off ? ' und lassen sich zwischen den Partien ändern' : ''}.</p></section>`;
+        <p class="hint" style="margin:0">${saved.length ? I18n.html`${saved.length} ${saved.length === 1 ? I18n.html`eigene ${NOUN}` : I18n.html`eigene ${PLURAL}`} gespeichert` : I18n.html`Noch keine eigenen ${PLURAL}`} – sie gelten nur in diesem Raum${off ? ' und lassen sich zwischen den Partien ändern' : ''}.</p></section>`;
     },
     async onClick(el, S, e) {
       const g = el.dataset.g;
@@ -183,8 +183,8 @@ function partyGame(def) {
       else if (g === 'pk-save') {
         const text = $('#pk-custom')?.value ?? '';
         const r = await send('custom', { text });
-        if (r?.ok) { customDraft = null; toast(r.count ? `${r.count} ${r.count === 1 ? NOUN : PLURAL} gespeichert${r.skipped ? ` – ${r.skipped} Zeile${r.skipped === 1 ? '' : 'n'} nicht lesbar` : ''}` : `Eigene ${PLURAL} entfernt`); kit.render(); }
-      } else if (g === 'pk-nudge') send('nudge', { id: el.dataset.id }).then((r) => r?.ok && toast('Angestupst 👉'));
+        if (r?.ok) { customDraft = null; toast(r.count ? I18n.html`${r.count} ${r.count === 1 ? NOUN : PLURAL} gespeichert${r.skipped ? I18n.html` – ${r.skipped} Zeile${r.skipped === 1 ? '' : 'n'} nicht lesbar` : ''}` : I18n.html`Eigene ${PLURAL} entfernt`); kit.render(); }
+      } else if (g === 'pk-nudge') send('nudge', { id: el.dataset.id }).then((r) => r?.ok && toast(I18n.t('Angestupst 👉')));
       else def.onClick?.(el, S, e);
     },
   });
@@ -196,7 +196,7 @@ function partyGame(def) {
     e.preventDefault();
     const input = f.querySelector('.pk-input');
     const text = input?.value.trim() ?? '';
-    if (!text) { toast('Schreib erst etwas hin', true); input?.focus(); return; }
+    if (!text) { toast(I18n.t('Schreib erst etwas hin'), true); input?.focus(); return; }
     const r = await def.submit(f.dataset.pk, text, f);
     if (r?.ok) { sfx('chips'); if (f.dataset.pk !== 'keep') input.blur?.(); }
   });

@@ -20,27 +20,27 @@
       'Ob das Wort zur Kategorie passt, prüft die Gruppe – der Server prüft nur Buchstabe und Wiederholung.',
     ],
     house: (S) => (S.settings.visibleFuse ? ['Sichtbarer Countdown'] : []),
-    playerInfo: (p) => `${p.minus ?? 0} Minus${p.holder ? ' · <b>hat das Paket</b>' : ''}`,
-    seat: (p) => `<span>${p.minus ?? 0} Minuspunkt${p.minus === 1 ? '' : 'e'}</span>${p.holder ? '<b class="kg-call">Paket</b>' : ''}`,
+    playerInfo: (p) => I18n.html`${p.minus ?? 0} Minus${p.holder ? I18n.html(' · <b>hat das Paket</b>') : ''}`,
+    seat: (p) => I18n.html`<span>${p.minus ?? 0} Minuspunkt${p.minus === 1 ? '' : 'e'}</span>${p.holder ? I18n.html('<b class="kg-call">Paket</b>') : ''}`,
     sounds(S, prev) { return S.g?.exploded?.bomb !== prev.g?.exploded?.bomb && S.g?.exploded ? 'drum' : null; },
     hint(S, myTurn) {
       const g = S.g;
-      if (!myTurn) return `${nameOf(S, S.turnId)} hat das Paket`;
-      return g.prompt ? `Schnell: ${g.prompt.cat} mit ${g.prompt.letter}!` : '';
+      if (!myTurn) return I18n.html`${nameOf(S, S.turnId)} hat das Paket`;
+      return g.prompt ? I18n.html`Schnell: ${g.prompt.cat} mit ${g.prompt.letter}!` : '';
     },
     main(S) {
       const g = S.g;
       const myTurn = S.turnId === S.you?.id && S.phase === 'playing';
-      const boom = g.exploded && g.exploded.bomb === g.bomb - 1 ? `<div class="tp-boom" role="status">💥 Geplatzt bei ${nameOf(S, g.exploded.id)}!</div>` : '';
-      const fuse = g.visibleFuse && g.fuseLeft !== null ? `<div class="tp-fuse" data-fuse="${S.now + g.fuseLeft}" role="timer" aria-label="Zünder">⏱ ${Math.ceil(g.fuseLeft / 1000)} s</div>` : '';
-      const prompt = g.prompt ? `<div class="tp-prompt ${myTurn ? 'mine' : ''}"><small>${nameOf(S, S.turnId)} muss nennen:</small><b>${esc(g.prompt.cat)}</b><span class="tp-letter" aria-label="mit dem Buchstaben ${esc(g.prompt.letter)}">${esc(g.prompt.letter)}</span></div>` : '';
-      const used = g.used.length ? `<div class="tp-used" aria-label="Schon genannt"><small>Schon genannt:</small> ${g.used.map((w) => `<i>${esc(w)}</i>`).join('')}</div>` : '';
-      return `<div class="kg-table tp-wrap"><div class="tp-pkg" aria-hidden="true"><span class="tp-box ${myTurn ? 'hot' : ''}">📦</span></div>
+      const boom = g.exploded && g.exploded.bomb === g.bomb - 1 ? I18n.html`<div class="tp-boom" role="status">💥 Geplatzt bei ${nameOf(S, g.exploded.id)}!</div>` : '';
+      const fuse = g.visibleFuse && g.fuseLeft !== null ? I18n.html`<div class="tp-fuse" data-fuse="${S.now + g.fuseLeft}" role="timer" aria-label="Zünder">⏱ ${Math.ceil(g.fuseLeft / 1000)} s</div>` : '';
+      const prompt = g.prompt ? I18n.html`<div class="tp-prompt ${myTurn ? 'mine' : ''}"><small>${nameOf(S, S.turnId)} muss nennen:</small><b>${esc(g.prompt.cat)}</b><span class="tp-letter" aria-label="mit dem Buchstaben ${esc(g.prompt.letter)}">${esc(g.prompt.letter)}</span></div>` : '';
+      const used = g.used.length ? I18n.html`<div class="tp-used" aria-label="Schon genannt"><small>Schon genannt:</small> ${g.used.map((w) => `<i>${esc(w)}</i>`).join('')}</div>` : '';
+      return I18n.html`<div class="kg-table tp-wrap"><div class="tp-pkg" aria-hidden="true"><span class="tp-box ${myTurn ? 'hot' : ''}">📦</span></div>
         <div class="kg-chip">Paket ${g.bomb} von ${g.rounds}</div>${boom}${fuse}${prompt}${used}</div>`;
     },
     dock(S, myTurn) {
       if (!myTurn) return '';
-      return `<form class="pk-form tp-form" data-tp autocomplete="off"><label class="sr-only" for="tp-in">Dein Wort</label>
+      return I18n.html`<form class="pk-form tp-form" data-tp autocomplete="off"><label class="sr-only" for="tp-in">Dein Wort</label>
         <input id="tp-in" class="pk-input" type="text" maxlength="30" enterkeyhint="send" placeholder="Dein Wort mit ${esc(S.g.prompt?.letter ?? '')} …" autocomplete="off" autocorrect="off" spellcheck="false">
         <button class="btn btn-brass pk-send" type="submit">Weitergeben</button></form>`;
     },
@@ -49,7 +49,7 @@
       if (S.turnId === S.you?.id && matchMedia('(pointer: fine)').matches) $('#tp-in')?.focus({ preventScroll: true });
     },
     onClick() {},
-    rules: `<p>Ein Paket tickt mit einer Zeit, die niemand kennt, und wandert von Hand zu Hand.</p>
+    rules: I18n.html`<p>Ein Paket tickt mit einer Zeit, die niemand kennt, und wandert von Hand zu Hand.</p>
       <ul>
         <li>Wer das Paket hat, bekommt eine <b>Kurzfrage</b> („Tier mit K“) und tippt ein passendes Wort ein, das mit dem Buchstaben beginnt. Dann geht das Paket an den Nächsten.</li>
         <li>Jedes Wort darf in einem Paket nur <b>einmal</b> vorkommen. Ob es wirklich zur Kategorie passt, entscheidet die Gruppe – ein Wörterbuch gibt es nicht.</li>
@@ -70,7 +70,7 @@
   });
   // Sichtbarer Zünder: Sekunden herunterzählen
   setInterval(() => {
-    document.querySelectorAll('[data-fuse]').forEach((el) => { el.textContent = `⏱ ${Math.max(0, Math.ceil((Number(el.dataset.fuse) - gameNow(kit.S)) / 1000))} s`; });
+    document.querySelectorAll('[data-fuse]').forEach((el) => { el.textContent = I18n.html`⏱ ${Math.max(0, Math.ceil((Number(el.dataset.fuse) - gameNow(kit.S)) / 1000))} s`; });
   }, 250);
   void kit; void cd;
 }

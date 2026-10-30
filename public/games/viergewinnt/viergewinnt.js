@@ -27,9 +27,9 @@
     house: () => [],
     playerInfo: (p) => (p.color === null || p.color === undefined ? '' : `<span class="vg-dot vg-${p.color}">${colorMark(MARK[p.color])}</span>${COLOR[p.color]}`),
     hint(S, myTurn) {
-      if (!myTurn) return `${nameOf(S, S.turnId)} ist dran`;
+      if (!myTurn) return I18n.html`${nameOf(S, S.turnId)} ist dran`;
       const c = S.g.colors[S.you.id];
-      return `Tipp eine Spalte an – dein ${c === 0 ? 'roter' : 'gelber'} Stein fällt nach unten`;
+      return I18n.html`Tipp eine Spalte an – dein ${c === 0 ? 'roter' : 'gelber'} Stein fällt nach unten`;
     },
     main(S) {
       const g = S.g;
@@ -51,17 +51,17 @@
         }).join('');
         const can = myTurn && land >= 0;
         return can
-          ? `<button type="button" class="vg-col" data-g="col" data-c="${c}" aria-label="Spalte ${c + 1}">${cells}</button>`
+          ? I18n.html`<button type="button" class="vg-col" data-g="col" data-c="${c}" aria-label="Spalte ${c + 1}">${cells}</button>`
           : `<div class="vg-col" role="presentation">${cells}</div>`;
       }).join('');
       if (fresh) seenLast = g.last;
       const filled = g.board.filter((x) => x !== null).length;
-      return `<div class="kg-table vg-wrap"><div class="vg-board" style="grid-template-columns:repeat(${g.cols},minmax(0,1fr))" role="grid" aria-label="Spielfeld, ${filled} von ${g.cols * g.rows} Feldern belegt">${cols}</div>
-        ${g.win ? `<p class="vg-banner" role="status">${g.need || 4} in einer Reihe: ${nameOf(S, g.board[g.win[0]])}!</p>` : ''}</div>`;
+      return I18n.html`<div class="kg-table vg-wrap"><div class="vg-board" style="grid-template-columns:repeat(${g.cols},minmax(0,1fr))" role="grid" aria-label="Spielfeld, ${filled} von ${g.cols * g.rows} Feldern belegt">${cols}</div>
+        ${g.win ? I18n.html`<p class="vg-banner" role="status">${g.need || 4} in einer Reihe: ${nameOf(S, g.board[g.win[0]])}!</p>` : ''}</div>`;
     },
-    dock: (S) => (S.g.canPop || []).map((c) => `<button class="btn" data-g="pop" data-c="${c}">Spalte ${c + 1} unten herausziehen</button>`).join(''),
+    dock: (S) => (S.g.canPop || []).map((c) => I18n.html`<button class="btn" data-g="pop" data-c="${c}">Spalte ${c + 1} unten herausziehen</button>`).join(''),
     onClick(t) { if (t.dataset.g === 'col') send('drop', { col: Number(t.dataset.c) }); if (t.dataset.g === 'pop') send('pop', { col: Number(t.dataset.c) }); },
-    rules: `<p>7 Spalten, 6 Reihen. Die Steine fallen immer ganz nach unten.</p>
+    rules: I18n.html`<p>7 Spalten, 6 Reihen. Die Steine fallen immer ganz nach unten.</p>
       <ul>
         <li>Abwechselnd wirft jeder einen Stein in eine Spalte, die noch nicht voll ist.</li>
         <li>Wer zuerst <b>vier eigene Steine in einer Reihe</b> hat – waagerecht, senkrecht oder diagonal –, gewinnt.</li>

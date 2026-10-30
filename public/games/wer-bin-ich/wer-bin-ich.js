@@ -9,18 +9,18 @@
   const ANS = { ja: 'Ja', nein: 'Nein', weiss: 'Weiß nicht', unklar: 'Unklar' };
   const pl = (S, id) => S.players.find((p) => p.id === id);
   const nm = (S, id) => esc(pl(S, id)?.name ?? '?');
-  const noteKey = (S) => `wb-note:${S.code}`;
+  const noteKey = (S) => I18n.html`wb-note:${S.code}`;
   const inGame = (S) => !!S.you?.inRound;
 
   function noteBox(S) {
     if (noteDraft === null) { try { noteDraft = localStorage.getItem(noteKey(S)) || ''; } catch { noteDraft = ''; } }
     const mine = (S.g.hist || []).filter((h) => h.by === S.you?.id);
     const rows = mine.map((h) => (h.t === 'q'
-      ? `<li class="${h.res}"><b>${{ ja: 'Ja', nein: 'Nein', unklar: '?' }[h.res]}</b> ${h.text ? esc(h.text) : '<i>(per Voice)</i>'}</li>`
-      : `<li class="${h.ok ? 'ja' : 'nein'}"><b>${h.ok ? '✓' : '✗'}</b> Geraten: ${esc(h.text)}</li>`)).join('');
-    const hints = (S.g.hints || []).filter((h) => h.for === S.you?.id).map((h) => `<li class="hint"><b>Tipp</b> ${esc(h.text)}</li>`).join('');
-    return `<details class="wb-notes" open><summary>Was ich schon weiß</summary>
-      <ol class="wb-known">${hints}${rows || '<li class="none">Noch nichts – stell deine erste Frage.</li>'}</ol>
+      ? `<li class="${h.res}"><b>${{ ja: I18n.t('Ja'), nein: I18n.t('Nein'), unklar: '?' }[h.res]}</b> ${h.text ? esc(h.text) : I18n.html('<i>(per Voice)</i>')}</li>`
+      : I18n.html`<li class="${h.ok ? 'ja' : 'nein'}"><b>${h.ok ? '✓' : '✗'}</b> Geraten: ${esc(h.text)}</li>`)).join('');
+    const hints = (S.g.hints || []).filter((h) => h.for === S.you?.id).map((h) => I18n.html`<li class="hint"><b>Tipp</b> ${esc(h.text)}</li>`).join('');
+    return I18n.html`<details class="wb-notes" open><summary>Was ich schon weiß</summary>
+      <ol class="wb-known">${hints}${rows || I18n.html('<li class="none">Noch nichts – stell deine erste Frage.</li>')}</ol>
       <label class="sr-only" for="wb-note">Eigene Notiz</label>
       <textarea id="wb-note" class="pk-text" rows="2" maxlength="300" placeholder="Eigene Notizen (nur für dich, bleiben in diesem Browser)">${esc(noteDraft)}</textarea></details>`;
   }
@@ -28,7 +28,7 @@
   function cards(S) {
     const g = S.g;
     const list = S.players.filter((p) => p.inRound);
-    return `<ul class="wb-table" aria-label="Stirn-Zettel">${list.map((p, i) => {
+    return I18n.html`<ul class="wb-table" aria-label="Stirn-Zettel">${list.map((p, i) => {
       const me = p.id === S.you?.id;
       const w = g.words?.[p.id];
       const solved = g.solved.includes(p.id);
@@ -37,31 +37,31 @@
       const rot = (((i * 37) % 7) - 3) * 0.9;
       const text = w ? esc(w) : (g.stage === 'words' ? '…' : '?');
       let status = '';
-      if (solved) status = `Platz ${place} · ${g.qs[p.id] ?? 0} Fragen`;
+      if (solved) status = I18n.html`Platz ${place} · ${g.qs[p.id] ?? 0} Fragen`;
       else if (g.gaveUp.includes(p.id)) status = 'ausgeschieden';
       else if (p.skipped) status = 'setzt aus';
       else if (turn) status = 'ist dran';
-      else status = `${g.qs[p.id] ?? 0} Fragen`;
+      else status = I18n.html`${g.qs[p.id] ?? 0} Fragen`;
       const ans = p.answered || p.writing ? ' ✓' : '';
       return `<li class="wb-card ${me ? 'me' : ''} ${solved ? 'solved' : ''} ${turn ? 'turn' : ''} ${fresh.has(p.id) ? 'fly' : ''}">
-        <span class="wb-who"><span class="wb-av" aria-hidden="true">${avatarHTML(p)}</span><b>${esc(p.name)}${me ? ' <small>(du)</small>' : ''}</b></span>
-        <span class="wb-note ${w ? '' : 'blank'} ${w && w.length > 14 ? 'long' : ''}" style="--rot:${rot}deg" aria-label="${w ? `Zettel: ${esc(w)}` : 'Zettel: unbekannt'}">${text}</span>
+        <span class="wb-who"><span class="wb-av" aria-hidden="true">${avatarHTML(p)}</span><b>${esc(p.name)}${me ? I18n.html(' <small>(du)</small>') : ''}</b></span>
+        <span class="wb-note ${w ? '' : 'blank'} ${w && w.length > 14 ? 'long' : ''}" style="--rot:${rot}deg" aria-label="${w ? I18n.html`Zettel: ${esc(w)}` : 'Zettel: unbekannt'}">${text}</span>
         <small class="wb-status">${status}${ans}</small></li>`;
     }).join('')}</ul>`;
   }
 
   function centre(S) {
     const g = S.g;
-    if (g.stage === 'words') return `<div class="wb-centre"><b>Begriffe werden geschrieben …</b><span>${S.players.filter((p) => p.inRound && p.writing).length} von ${S.players.filter((p) => p.inRound).length} fertig</span></div>`;
+    if (g.stage === 'words') return I18n.html`<div class="wb-centre"><b>Begriffe werden geschrieben …</b><span>${S.players.filter((p) => p.inRound && p.writing).length} von ${S.players.filter((p) => p.inRound).length} fertig</span></div>`;
     const asker = nm(S, S.turnId);
     if (g.sub === 'vote' && g.q) {
       const n = S.players.filter((p) => p.inRound).length - 1;
-      return `<div class="wb-centre big"><small>${asker} fragt</small><b class="wb-q">${g.q.text ? esc(g.q.text) : 'Frage per Voice'}</b><span>${g.q.answered.length} von ${n} haben geantwortet</span></div>`;
+      return I18n.html`<div class="wb-centre big"><small>${asker} fragt</small><b class="wb-q">${g.q.text ? esc(g.q.text) : 'Frage per Voice'}</b><span>${g.q.answered.length} von ${n} haben geantwortet</span></div>`;
     }
-    if (g.sub === 'gvote' && g.gv) return `<div class="wb-centre big"><small>${nm(S, g.gv.by)} rät</small><b class="wb-q">„${esc(g.gv.text)}“</b><span>Zählt das? ${g.gv.answered.length} Stimmen</span></div>`;
+    if (g.sub === 'gvote' && g.gv) return I18n.html`<div class="wb-centre big"><small>${nm(S, g.gv.by)} rät</small><b class="wb-q">„${esc(g.gv.text)}“</b><span>Zählt das? ${g.gv.answered.length} Stimmen</span></div>`;
     const L = g.lastQ;
-    const last = L ? `<div class="wb-result ${L.res}" role="status"><b>${ANS[L.res].toUpperCase()}</b><span>${nm(S, L.by)}${L.text ? `: ${esc(L.text)}` : ''} · ${L.counts.ja}:${L.counts.nein}${L.counts.weiss ? ` · ${L.counts.weiss}× weiß nicht` : ''}</span></div>` : '';
-    return `<div class="wb-centre">${last}<span>${asker} ist dran${g.turnQ ? ` (${g.turnQ}. Frage in diesem Zug)` : ''}</span></div>`;
+    const last = L ? `<div class="wb-result ${L.res}" role="status"><b>${ANS[L.res].toUpperCase()}</b><span>${nm(S, L.by)}${L.text ? `: ${esc(L.text)}` : ''} · ${L.counts.ja}:${L.counts.nein}${L.counts.weiss ? I18n.html` · ${L.counts.weiss}× weiß nicht` : ''}</span></div>` : '';
+    return I18n.html`<div class="wb-centre">${last}<span>${asker} ist dran${g.turnQ ? I18n.html` (${g.turnQ}. Frage in diesem Zug)` : ''}</span></div>`;
   }
 
   const kit = kitGame({
@@ -83,29 +83,29 @@
       'Punkte: wer früher rät, bekommt mehr, dazu Bonus für wenige Fragen.',
     ],
     house: (S) => [
-      S.settings.fixedQ ? `Feste Anzahl Fragen pro Zug: ${S.settings.fixedQ}` : S.settings.follow ? 'Bei „Ja“ weiterfragen' : 'Nach jeder Frage ist der Nächste dran',
-      ...(S.settings.maxQ ? [`Höchstens ${S.settings.maxQ} Fragen pro Spieler`] : []),
-      ...(S.settings.hints ? ['Hinweis-Hilfe nach 15 Fragen'] : []),
-      ...(S.settings.penalty ? ['Falsch geraten: eine Runde aussetzen'] : []),
+      S.settings.fixedQ ? I18n.html`Feste Anzahl Fragen pro Zug: ${S.settings.fixedQ}` : S.settings.follow ? I18n.t('Bei „Ja“ weiterfragen') : 'Nach jeder Frage ist der Nächste dran',
+      ...(S.settings.maxQ ? [I18n.html`Höchstens ${S.settings.maxQ} Fragen pro Spieler`] : []),
+      ...(S.settings.hints ? [I18n.t('Hinweis-Hilfe nach 15 Fragen')] : []),
+      ...(S.settings.penalty ? [I18n.t('Falsch geraten: eine Runde aussetzen')] : []),
     ],
     playerInfo(p, S) {
       if (S.phase !== 'playing') return '';
-      return p.place ? `Platz ${p.place}` : p.gaveUp ? 'ausgeschieden' : `${p.qs ?? 0} Fragen`;
+      return p.place ? I18n.html`Platz ${p.place}` : p.gaveUp ? 'ausgeschieden' : I18n.html`${p.qs ?? 0} Fragen`;
     },
     status(S) {
       if (S.phase !== 'playing' || !S.g) return null;
-      return S.g.stage === 'words' ? 'Begriffe schreiben' : { ask: 'Fragen', vote: 'Antworten', gvote: 'Abstimmung' }[S.g.sub] || null;
+      return S.g.stage === 'words' ? 'Begriffe schreiben' : { ask: I18n.t('Fragen'), vote: I18n.t('Antworten'), gvote: 'Abstimmung' }[S.g.sub] || null;
     },
     hint(S, myTurn) {
       const g = S.g;
       if (!g || S.phase !== 'playing') return '';
       if (!inGame(S)) return 'Du schaust zu – du siehst alle Zettel';
-      if (g.stage === 'words') return g.myTarget ? `Schreib einen Begriff für ${pl(S, g.myTarget)?.name ?? '?'} – wer ihn bekommt, weiß nicht, von wem er kommt` : 'Begriffe werden geschrieben';
-      if (g.hintReq?.by === S.you.id) return `Schreib einen kurzen Tipp für ${pl(S, g.hintReq.for)?.name ?? '?'}`;
+      if (g.stage === 'words') return g.myTarget ? I18n.html`Schreib einen Begriff für ${pl(S, g.myTarget)?.name ?? '?'} – wer ihn bekommt, weiß nicht, von wem er kommt` : 'Begriffe werden geschrieben';
+      if (g.hintReq?.by === S.you.id) return I18n.html`Schreib einen kurzen Tipp für ${pl(S, g.hintReq.for)?.name ?? '?'}`;
       if (g.sub === 'vote') return g.q?.by === S.you.id ? 'Die anderen antworten gerade' : 'Antworte: Ja, Nein oder Weiß nicht';
       if (g.sub === 'gvote') return g.gv?.by === S.you.id ? 'Die anderen stimmen ab' : 'Zählt der Tipp?';
       if (g.solved.includes(S.you.id)) return 'Du hast es geschafft – jetzt antwortest du nur noch';
-      return myTurn ? 'Du bist dran: stell deine Frage (per Voice) und tipp „Frage gestellt“ – oder rate' : `${nm(S, S.turnId)} ist dran`;
+      return myTurn ? 'Du bist dran: stell deine Frage (per Voice) und tipp „Frage gestellt“ – oder rate' : I18n.html`${nm(S, S.turnId)} ist dran`;
     },
     sounds(S, prev) {
       const a = S.g, b = prev.g;
@@ -123,32 +123,32 @@
       const g = S.g;
       if (!g || !g.stage) return '';
       const notes = inGame(S) && g.stage === 'play' ? noteBox(S) : '';
-      const hint = g.hints?.length ? `<div class="wb-hints"><small>Tipps:</small> ${g.hints.map((h) => `<i>${nm(S, h.for)}: ${esc(h.text)}</i>`).join('')}</div>` : '';
+      const hint = g.hints?.length ? I18n.html`<div class="wb-hints"><small>Tipps:</small> ${g.hints.map((h) => `<i>${nm(S, h.for)}: ${esc(h.text)}</i>`).join('')}</div>` : '';
       return `<div class="kg-table wb-wrap">${centre(S)}${hint}${cards(S)}${notes}</div>`;
     },
     dock(S, myTurn) {
       const g = S.g;
       if (!g || !inGame(S) || S.phase !== 'playing') return '';
       const me = S.you.id;
-      const host = S.you.isHost ? '<button class="btn btn-ghost" data-g="wb-skip" title="Diesen Schritt jetzt beenden">Weiter</button>' : '';
+      const host = S.you.isHost ? I18n.html('<button class="btn btn-ghost" data-g="wb-skip" title="Diesen Schritt jetzt beenden">Weiter</button>') : '';
       if (g.stage === 'words') {
-        return `<form class="pk-form wb-form" data-wb="word"><label class="sr-only" for="wb-in">Begriff</label><input id="wb-in" class="pk-input" type="text" maxlength="40" value="${esc(g.myDraft ?? '')}" placeholder="Begriff für ${esc(pl(S, g.myTarget)?.name ?? '?')}" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="send"><button class="btn btn-brass pk-send" type="submit">${g.myDraft ? 'Ändern' : 'Fertig'}</button></form><div class="kg-acts">${host}</div>`;
+        return I18n.html`<form class="pk-form wb-form" data-wb="word"><label class="sr-only" for="wb-in">Begriff</label><input id="wb-in" class="pk-input" type="text" maxlength="40" value="${esc(g.myDraft ?? '')}" placeholder="Begriff für ${esc(pl(S, g.myTarget)?.name ?? '?')}" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="send"><button class="btn btn-brass pk-send" type="submit">${g.myDraft ? I18n.t('Ändern') : I18n.t('Fertig')}</button></form><div class="kg-acts">${host}</div>`;
       }
-      if (g.hintReq?.by === me) return `<form class="pk-form wb-form" data-wb="hint"><label class="sr-only" for="wb-in">Tipp</label><input id="wb-in" class="pk-input" type="text" maxlength="80" placeholder="Kurzer Tipp für ${esc(pl(S, g.hintReq.for)?.name ?? '?')} (ohne den Begriff zu verraten)" autocomplete="off" spellcheck="false"><button class="btn btn-brass pk-send" type="submit">Tipp senden</button></form>`;
+      if (g.hintReq?.by === me) return I18n.html`<form class="pk-form wb-form" data-wb="hint"><label class="sr-only" for="wb-in">Tipp</label><input id="wb-in" class="pk-input" type="text" maxlength="80" placeholder="Kurzer Tipp für ${esc(pl(S, g.hintReq.for)?.name ?? '?')} (ohne den Begriff zu verraten)" autocomplete="off" spellcheck="false"><button class="btn btn-brass pk-send" type="submit">Tipp senden</button></form>`;
       if (g.sub === 'vote' && g.q && g.q.by !== me) {
-        return `<div class="wb-answers" role="group" aria-label="Antwort">${['ja', 'nein', 'weiss'].map((a) => `<button type="button" class="wb-ans wb-${a} ${g.q.mine === a ? 'on' : ''}" data-g="wb-answer" data-a="${a}" aria-pressed="${g.q.mine === a}">${ANS[a]}</button>`).join('')}</div><div class="kg-acts">${host}</div>`;
+        return I18n.html`<div class="wb-answers" role="group" aria-label="Antwort">${['ja', 'nein', 'weiss'].map((a) => `<button type="button" class="wb-ans wb-${a} ${g.q.mine === a ? 'on' : ''}" data-g="wb-answer" data-a="${a}" aria-pressed="${g.q.mine === a}">${ANS[a]}</button>`).join('')}</div><div class="kg-acts">${host}</div>`;
       }
       if (g.sub === 'gvote' && g.gv && g.gv.by !== me) {
-        return `<div class="wb-answers" role="group" aria-label="Zählt der Tipp?"><button type="button" class="wb-ans wb-ja ${g.gv.mine === true ? 'on' : ''}" data-g="wb-vote" data-ok="1" aria-pressed="${g.gv.mine === true}">Zählt</button><button type="button" class="wb-ans wb-nein ${g.gv.mine === false ? 'on' : ''}" data-g="wb-vote" data-ok="0" aria-pressed="${g.gv.mine === false}">Zählt nicht</button></div><div class="kg-acts">${host}</div>`;
+        return I18n.html`<div class="wb-answers" role="group" aria-label="Zählt der Tipp?"><button type="button" class="wb-ans wb-ja ${g.gv.mine === true ? 'on' : ''}" data-g="wb-vote" data-ok="1" aria-pressed="${g.gv.mine === true}">Zählt</button><button type="button" class="wb-ans wb-nein ${g.gv.mine === false ? 'on' : ''}" data-g="wb-vote" data-ok="0" aria-pressed="${g.gv.mine === false}">Zählt nicht</button></div><div class="kg-acts">${host}</div>`;
       }
       if (g.sub === 'ask' && myTurn && !g.solved.includes(me)) {
-        const tip = g.canHint ? '<button class="btn btn-sm" data-g="wb-hint">Um einen Tipp bitten</button>' : '';
-        if (guessMode) return `<form class="pk-form wb-form" data-wb="guess"><label class="sr-only" for="wb-in">Dein Begriff</label><input id="wb-in" class="pk-input" type="text" maxlength="40" placeholder="Ich bin …" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="send"><button class="btn btn-brass pk-send" type="submit">Raten</button><button type="button" class="btn btn-ghost" data-g="wb-noguess">Zurück</button></form>`;
-        return `<form class="pk-form wb-form" data-wb="ask"><label class="sr-only" for="wb-in">Frage (optional als Text)</label><input id="wb-in" class="pk-input" type="text" maxlength="120" placeholder="Deine Ja/Nein-Frage (per Voice – Text ist optional)" autocomplete="off" spellcheck="false" enterkeyhint="send"><button class="btn btn-brass pk-send" type="submit">Frage gestellt</button></form>
+        const tip = g.canHint ? I18n.html('<button class="btn btn-sm" data-g="wb-hint">Um einen Tipp bitten</button>') : '';
+        if (guessMode) return I18n.html`<form class="pk-form wb-form" data-wb="guess"><label class="sr-only" for="wb-in">Dein Begriff</label><input id="wb-in" class="pk-input" type="text" maxlength="40" placeholder="Ich bin …" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="send"><button class="btn btn-brass pk-send" type="submit">Raten</button><button type="button" class="btn btn-ghost" data-g="wb-noguess">Zurück</button></form>`;
+        return I18n.html`<form class="pk-form wb-form" data-wb="ask"><label class="sr-only" for="wb-in">Frage (optional als Text)</label><input id="wb-in" class="pk-input" type="text" maxlength="120" placeholder="Deine Ja/Nein-Frage (per Voice – Text ist optional)" autocomplete="off" spellcheck="false" enterkeyhint="send"><button class="btn btn-brass pk-send" type="submit">Frage gestellt</button></form>
           <div class="kg-acts"><button class="btn" data-g="wb-guess">Ich rate</button>${tip}${host}</div>`;
       }
       // Warten: den, auf den alle warten, anstupsen
-      const wait = g.sub === 'ask' && S.settings.nudge && S.turnId !== me ? `<button class="btn btn-sm" data-g="wb-nudge" data-id="${esc(S.turnId)}">${nm(S, S.turnId)} anstupsen 👉</button>` : '';
+      const wait = g.sub === 'ask' && S.settings.nudge && S.turnId !== me ? I18n.html`<button class="btn btn-sm" data-g="wb-nudge" data-id="${esc(S.turnId)}">${nm(S, S.turnId)} anstupsen 👉</button>` : '';
       return `<div class="kg-acts">${wait}${host}</div>`;
     },
     dockKey: (S) => `${S.phase}|${S.roundNo}|${S.you?.playing}|${S.players.filter((p) => p.seated).length}|${S.you?.inRound}|${S.you?.isHost}|${S.g?.stage}|${S.g?.sub}|${S.turnId}|${S.g?.q?.by}|${S.g?.q?.mine}|${S.g?.gv?.by}|${S.g?.gv?.mine}|${S.g?.hintReq?.by}|${S.g?.canHint}|${guessMode}|${S.g?.myDraft ?? ''}|${S.g?.solved?.includes(S.you?.id)}`,
@@ -157,19 +157,19 @@
       const off = S.phase === 'playing';
       const cats = Object.entries(S.categories || {}).map(([k, n]) => `<label class="toggle"><span>${esc(n)}</span><input type="checkbox" data-wb-cat="${esc(k)}" ${S.settings.cats?.includes(k) ? 'checked' : ''} ${off ? 'disabled' : ''}></label>`).join('');
       const modes = [['mutual', 'Gegenseitig: jeder schreibt für einen zugelosten Mitspieler'], ['category', 'Aus Kategorie: Begriffe aus einer Liste'], ['custom', 'Eigene Liste des Hosts']];
-      return `<section class="wb-host" aria-label="Begriffe"><h3>Woher kommen die Begriffe?</h3>
+      return I18n.html`<section class="wb-host" aria-label="Begriffe"><h3>Woher kommen die Begriffe?</h3>
         <div class="wb-modes" role="radiogroup">${modes.map(([v, l]) => `<label class="toggle"><span>${esc(l)}</span><input type="radio" name="wb-mode" data-wb-mode="${v}" ${S.settings.mode === v ? 'checked' : ''} ${off ? 'disabled' : ''}></label>`).join('')}</div>
-        ${S.settings.mode === 'category' ? `<h3>Kategorien</h3><div class="kg-switches">${cats}</div>` : ''}
-        ${S.settings.mode === 'custom' ? `<label class="field"><span>Eigene Begriffe, einer pro Zeile (keine Mitspieler oder Privatpersonen)</span><textarea id="wb-custom" class="pk-text" rows="6" maxlength="8000" ${off ? 'disabled' : ''}>${esc((S.custom || []).join('\n'))}</textarea></label>
+        ${S.settings.mode === 'category' ? I18n.html`<h3>Kategorien</h3><div class="kg-switches">${cats}</div>` : ''}
+        ${S.settings.mode === 'custom' ? I18n.html`<label class="field"><span>Eigene Begriffe, einer pro Zeile (keine Mitspieler oder Privatpersonen)</span><textarea id="wb-custom" class="pk-text" rows="6" maxlength="8000" ${off ? 'disabled' : ''}>${esc((S.custom || []).join('\n'))}</textarea></label>
           <button type="button" class="btn" data-g="wb-save" ${off ? 'disabled' : ''}>Begriffe speichern</button><p class="hint" style="margin:0">${(S.custom || []).length} gespeichert – du brauchst mindestens so viele wie Mitspieler.</p>` : ''}</section>`;
     },
     resultExtra(S) {
       const R = S.g?.reveal;
       if (!R) return '';
       const ids = S.players.filter((p) => R.words[p.id] !== undefined);
-      return `<table class="standings wb-reveal"><thead><tr><th>Name</th><th>Begriff</th><th class="num">Fragen</th></tr></thead><tbody>${ids.map((p) => {
+      return I18n.html`<table class="standings wb-reveal"><thead><tr><th>Name</th><th>Begriff</th><th class="num">Fragen</th></tr></thead><tbody>${ids.map((p) => {
         const place = R.solved.indexOf(p.id) + 1;
-        return `<tr><td>${esc(p.name)}${place ? ` <small>(Platz ${place})</small>` : ' <small>(nicht erraten)</small>'}</td><td><span class="wb-note mini">${esc(R.words[p.id])}</span></td><td class="num">${R.qs[p.id] ?? 0}</td></tr>`;
+        return `<tr><td>${esc(p.name)}${place ? I18n.html` <small>(Platz ${place})</small>` : I18n.html(' <small>(nicht erraten)</small>')}</td><td><span class="wb-note mini">${esc(R.words[p.id])}</span></td><td class="num">${R.qs[p.id] ?? 0}</td></tr>`;
       }).join('')}</tbody></table>`;
     },
     onClick(el, S) {
@@ -180,11 +180,11 @@
       else if (g === 'wb-noguess') { guessMode = false; kit.render(); }
       else if (g === 'wb-hint') send('wbHintAsk').then((r) => r?.ok && toast('Ein Mitspieler schreibt dir gleich einen Tipp'));
       else if (g === 'wb-skip') send('next');
-      else if (g === 'wb-nudge') send('nudge', { id: el.dataset.id }).then((r) => r?.ok && toast('Angestupst 👉'));
-      else if (g === 'wb-save') send('custom', { text: $('#wb-custom')?.value ?? '' }).then((r) => r?.ok && toast(`${r.count} Begriffe gespeichert`));
+      else if (g === 'wb-nudge') send('nudge', { id: el.dataset.id }).then((r) => r?.ok && toast(I18n.t('Angestupst 👉')));
+      else if (g === 'wb-save') send('custom', { text: $('#wb-custom')?.value ?? '' }).then((r) => r?.ok && toast(I18n.html`${r.count} Begriffe gespeichert`));
       void S;
     },
-    rules: `<p>Jeder bekommt einen geheimen Begriff „auf die Stirn“ (Person, Figur, Tier, Gegenstand …). Alle anderen sehen ihn, nur du selbst nicht.</p>
+    rules: I18n.html`<p>Jeder bekommt einen geheimen Begriff „auf die Stirn“ (Person, Figur, Tier, Gegenstand …). Alle anderen sehen ihn, nur du selbst nicht.</p>
       <ul>
         <li><b>Fragen:</b> Reihum stellst du eine Ja/Nein-Frage – gesprochen, zum Beispiel über Discord; als Text eintippen ist optional. Alle anderen antworten per Knopf: <b>Ja</b>, <b>Nein</b> oder <b>Weiß nicht</b>. Die Mehrheit gilt (bei Gleichstand „Unklar“).</li>
         <li>Bei „Ja“ darfst du weiterfragen, bei „Nein“ oder „Unklar“ ist der Nächste dran (Hausregeln: feste Anzahl Fragen pro Zug, Höchstzahl Fragen).</li>
@@ -203,7 +203,7 @@
     const input = f.querySelector('input');
     const text = input.value.trim();
     const kind = f.dataset.wb;
-    if (!text && kind !== 'ask') { toast('Schreib erst etwas hin', true); return; }
+    if (!text && kind !== 'ask') { toast(I18n.t('Schreib erst etwas hin'), true); return; }
     const ev = { word: 'wbWord', ask: 'wbAsk', guess: 'wbGuess', hint: 'wbHintWrite' }[kind];
     const r = await send(ev, { text });
     if (r?.ok) { input.value = ''; sfx?.('card'); if (kind === 'guess') guessMode = false; } else if (r?.error) toast(r.error, true);

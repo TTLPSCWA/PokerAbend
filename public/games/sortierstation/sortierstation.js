@@ -21,7 +21,7 @@
       'Oben steht die Regel (Farbe oder Form): Tipp das vorderste Ding in die passende Kiste.',
       'Richtig +10, falsch −5, verpasst 0. Das Band wird schneller.',
     ],
-    rules: `<p>Ein Förderband bringt Dinge mit Farbe und Form heran. Alle sehen dieselbe Reihenfolge.</p>
+    rules: I18n.html`<p>Ein Förderband bringt Dinge mit Farbe und Form heran. Alle sehen dieselbe Reihenfolge.</p>
       <ul>
         <li>Die <b>Regel</b> steht oben: Sortiere nach <b>Farbe</b> oder nach <b>Form</b>. Tipp die passende Kiste (am Computer die Tasten 1, 2, 3).</li>
         <li>Es zählt immer das <b>vorderste</b> Ding. Wartest du zu lange, fährt es vorbei und zählt als verpasst.</li>
@@ -44,11 +44,11 @@
       const boxes = [...Array(c.round.boxes).keys()].map((b) => {
         const label = rule === 0 ? c.L.COLORS[b].name : c.L.SHAPES[b].name;
         const icon = rule === 0 ? `<span class="ss-sw" style="background:${c.L.COLORS[b].css}"></span>` : shape(b, '#E8E2D0');
-        return `<button type="button" class="ss-box" data-g="ss-box" data-b="${b}" aria-label="${label}, Taste ${b + 1}">${icon}<small>${label} <kbd>${b + 1}</kbd></small></button>`;
+        return I18n.html`<button type="button" class="ss-box" data-g="ss-box" data-b="${b}" aria-label="${label}, Taste ${b + 1}">${icon}<small>${label} <kbd>${b + 1}</kbd></small></button>`;
       }).join('');
       const item = it ? `<div class="ss-item" aria-label="${c.L.COLORS[it.color].name}, ${c.L.SHAPES[it.shape].name}">${shape(it.shape, c.L.COLORS[it.color].css)}</div>
         <div class="so-bar"><i style="width:${Math.max(0, 100 - ((c.t - it.t) / it.life) * 100)}%"></i></div>` : '<div class="ss-item empty">…</div>';
-      return `<div class="ss-wrap"><div class="ss-top"><b class="ss-rule">Sortiere nach ${c.L.ruleName(rule)}</b><b class="so-score">${ev.pts} Punkte</b><span>${left} s</span></div>
+      return I18n.html`<div class="ss-wrap"><div class="ss-top"><b class="ss-rule">Sortiere nach ${c.L.ruleName(rule)}</b><b class="so-score">${ev.pts} Punkte</b><span>${left} s</span></div>
         <div class="ss-belt" role="status">${item}</div><div class="ss-boxes so-btns">${boxes}</div></div>`;
     },
     hint: () => 'Tipp das vorderste Ding in die richtige Kiste',
@@ -61,6 +61,6 @@
     onClick(el, c) { if (el.dataset.g === 'ss-box') this.choose(c, Number(el.dataset.b)); },
     onKey(e, c) { const b = { 1: 0, 2: 1, 3: 2 }[e.key]; if (b !== undefined) { e.preventDefault(); this.choose(c, b); } },
     payload: (c) => ({ decisions: c.local.decisions || [] }),
-    solution: (sol) => `<div class="sm-answer" role="status"><small>Die Runde begann mit der Regel</small><b>${esc(sol.rule)}</b></div>`,
+    solution: (sol) => I18n.html`<div class="sm-answer" role="status"><small>Die Runde begann mit der Regel</small><b>${esc(sol.rule)}</b></div>`,
   });
 }
