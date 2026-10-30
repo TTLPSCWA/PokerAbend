@@ -5,10 +5,18 @@
 
 /* ---------- Design-Tokens ---------- */
 :root {
-  --bg: #0B1513;
-  --panel: #14211D;
-  --panel-2: #1A2A25;
-  --line: #22332E;
+  --bg: #101815;
+  --panel: #1A2521;
+  --panel-2: #24332D;
+  --line: #FFFFFF1C;
+  --glass: #18231FEC;
+  --glass-soft: #FFFFFF05;
+  --glass-blur: 12px;
+  --glass-edge: #FFFFFF24;
+  --accent: #32765B;
+  --accent-hover: #3D896A;
+  --accent-soft: #4CA67D24;
+  --heading: Georgia, 'Times New Roman', serif;
   --felt: #174B3C;
   --felt-light: #235D49;
   --rail: #513322;
@@ -17,7 +25,7 @@
   --gold-text: #E0BC74;
   --gold-line: rgba(201, 154, 69, .25);
   --text: #F2F0E9;
-  --text-2: #9EA9A3;
+  --text-2: #B3BDB5;
   --danger: #B8433F;
   --danger-text: #F0948F;
   --ok: #7FD39A;
@@ -48,8 +56,11 @@ html, body { margin: 0; height: 100%; }
 body {
   font-family: var(--font); font-size: var(--fs-text); line-height: 1.4; color: var(--text);
   background:
-    radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0,0,0,.55) 100%),
-    radial-gradient(90% 70% at 50% 35%, #12221E, var(--bg) 75%);
+    radial-gradient(ellipse at 88% 8%, #8B683126, transparent 42%),
+    radial-gradient(ellipse at 8% 55%, #2B614439, transparent 54%),
+    radial-gradient(ellipse at 60% 100%, #6B49321F, transparent 55%),
+    var(--bg);
+  background-attachment: fixed;
   background-color: var(--bg);
   -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums;
 }
@@ -64,18 +75,18 @@ button { cursor: pointer; }
 /* ---------- Buttons ---------- */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: var(--s-2);
-  min-height: 40px; padding: 8px 16px; border-radius: var(--r-m);
-  border: 1px solid #2C4A40; background: #1C3A31; color: var(--text);
-  font-weight: 600; box-shadow: var(--shadow-1);
+  min-height: 44px; padding: 9px 17px; border-radius: var(--r-m);
+  border: 1px solid var(--line); background: var(--panel-2); color: var(--text);
+  font-weight: 600; box-shadow: inset 0 1px 0 #FFFFFF06;
   transition: background .15s, border-color .15s, color .15s;
 }
 .btn:hover:not(:disabled) { background: #22463B; border-color: #3A6052; }
 .btn:active:not(:disabled) { background: #183229; }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
-/* Primär: Gold gefüllt */
-.btn-brass { background: var(--gold); border-color: var(--gold); color: #1B1306; }
-.btn-brass:hover:not(:disabled) { background: #D6A956; border-color: #D6A956; }
-.btn-brass:active:not(:disabled) { background: #B88A3B; }
+/* Bestehender Klassenvertrag, neue gemeinsame Primärfarbe. */
+.btn-brass { background: var(--accent); border-color: #75B39442; color: #FFF; }
+.btn-brass:hover:not(:disabled) { background: var(--accent-hover); border-color: #8ED3AF70; }
+.btn-brass:active:not(:disabled) { background: #285E49; }
 /* Gefahr */
 .btn-red, .btn-danger { background: var(--danger); border-color: var(--danger); color: #fff; }
 .btn-red:hover:not(:disabled), .btn-danger:hover:not(:disabled) { background: #C9504B; border-color: #C9504B; }
@@ -129,12 +140,15 @@ button { cursor: pointer; }
 /* ---------- Lobby und Login ---------- */
 .lobby { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--s-5) var(--s-4); gap: var(--s-4); }
 .lobby-felt {
-  width: min(460px, 100%); padding: var(--s-6) 28px var(--s-5); border-radius: 28px;
-  background:
-    radial-gradient(90% 60% at 50% 0%, rgba(255,240,200,.06), transparent 70%),
-    radial-gradient(130% 100% at 50% 0%, var(--felt-light), var(--felt));
-  box-shadow: 0 0 0 1px var(--gold-line) inset, 0 0 0 10px var(--rail), 0 0 0 11px var(--rail-dark), var(--shadow-2);
+  width: min(460px, 100%); padding: 44px 32px 32px; border-radius: 28px;
+  background: var(--panel); border: 1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 0 #FFFFFF0C, 0 24px 80px #0005;
 }
+.lobby-felt .wordmark { font: 400 clamp(38px, 10vw, 52px)/1.1 var(--heading); letter-spacing: -.04em; }
+@supports (backdrop-filter: blur(1px)) {
+  .lobby-felt { background: var(--glass); backdrop-filter: blur(var(--glass-blur)); }
+}
+@media (prefers-reduced-transparency: reduce) { .lobby-felt { background: var(--panel); backdrop-filter: none; } }
 .wordmark { margin: 0; font-size: clamp(44px, 10vw, 60px); line-height: .95; font-weight: 800; letter-spacing: -.035em; color: var(--text); }
 .lobby-sub { margin: 10px 0 22px; color: #D3E1DA; max-width: 36ch; }
 .lobby-form { display: grid; gap: 14px; }

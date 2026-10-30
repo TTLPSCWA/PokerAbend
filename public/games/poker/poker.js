@@ -1036,6 +1036,7 @@ function renderPanel(force = false) {
       ${t('intros', 'Erste Schritte zeigen', 'Kurze Einführung beim ersten Spiel jeder Art. Einschalten zeigt sie wieder.')}
       ${t('keys', 'Tastenkürzel', 'F = Fold, C = Check/Call, R = Raise')}
       ${t('calm', 'Animationen aus')}
+      ${UITheme.glassPreference()}
       ${t('notify', 'Benachrichtigung, wenn ich dran bin', 'Nur wenn der Tab im Hintergrund ist. Der Browser fragt einmal nach Erlaubnis.')}
       ${t('foldJokes', 'Freche Sprüche beim Folden', 'Wenn du foldest, obwohl du checken könntest')}
       ${t('seatCards', 'Eigene Karten auch am eigenen Platz', 'Zusätzlich zur Aktionsleiste. Am Handy wird der eigene Platz nicht gezeigt.')}

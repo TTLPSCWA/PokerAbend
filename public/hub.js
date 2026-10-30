@@ -34,6 +34,7 @@ function openProfile(first = false) {
   $('#p-cancel').hidden = first;
   $('#p-achievements').hidden = first;
   $('#p-presence-hidden').checked = !!store.get('poker:presenceHidden', false);
+  $('#p-preferences').innerHTML = UITheme.preferences();
   d.dataset.first = first ? '1' : '';
   $('#p-avatars').innerHTML = AVATARS.map((a) => `<button type="button" class="avatar-opt" data-a="${a}" aria-pressed="${a === profileChoice}" aria-label="Avatar ${a}">${a}</button>`).join('');
   d.showModal();
@@ -122,12 +123,12 @@ const openTableCount = () => hubTables.length;
 
 function navHTML() {
   const cur = hashOf(route.page, route.sub);
-  const item = (href, key, label, extra = '') => `<a class="nav-item" href="${href}" ${cur === href || ['tickets', 'rueckblick', 'planung'].includes(key) && route.page === key ? 'aria-current="page"' : ''}>${ico(ICONS[key])}<span class="side-label">${label}</span>${extra}</a>`;
+  const item = (href, key, label, extra = '') => `<a class="nav-item" href="${href}" aria-label="${label}" title="${label}" ${cur === href || ['tickets', 'rueckblick', 'planung'].includes(key) && route.page === key ? 'aria-current="page"' : ''}>${ico(ICONS[key])}<span class="side-label">${label}</span>${extra}</a>`;
   const n = openTableCount();
   const badge = n ? `<span class="badge" aria-label="${n} offene${n === 1 ? 'r' : ''} Tisch${n === 1 ? '' : 'e'}">${n}</span>` : '';
   const games = account.games || [];
-  return `${item('#start', 'start', 'Start')}${item('#tische', 'tische', 'Offene Tische', badge)}${item('#favoriten', 'favoriten', 'Favoriten')}${item('#planung', 'planung', 'Abend planen')}${item('#bestenliste', 'bestenliste', 'Bestenliste')}${item('#erfolge', 'erfolge', 'Erfolge & Abzeichen')}${item('#rueckblick', 'rueckblick', 'Rückblick')}${item('#roadmap', 'roadmap', 'Roadmap')}${item('#tickets', 'tickets', 'Tickets')}
-    <h2 class="side-title side-label">Spiele</h2>
+  return `${item('#start', 'start', 'Start')}${item('#spiele', 'spiele', 'Spielebibliothek')}${item('#tische', 'tische', 'Offene Tische', badge)}${item('#favoriten', 'favoriten', 'Favoriten')}${item('#planung', 'planung', 'Abend planen')}${item('#bestenliste', 'bestenliste', 'Bestenliste')}${item('#erfolge', 'erfolge', 'Erfolge & Abzeichen')}${item('#rueckblick', 'rueckblick', 'Rückblick')}${item('#roadmap', 'roadmap', 'Roadmap')}${item('#tickets', 'tickets', 'Tickets')}
+    <h2 class="side-title side-label">Spielarten</h2>
     ${GAME_CATEGORIES.map(([id, title]) => item(`#spiele/${id}`, id, title, `<span class="count side-label" aria-label="${games.filter((g) => (g.category || 'karten') === id).length} Spiele">${games.filter((g) => (g.category || 'karten') === id).length}</span>`)).join('')}`;
 }
 function tabbarHTML() {
@@ -144,6 +145,7 @@ function renderHub(focus = false) {
   route = parseRoute();
   $('#side-nav').innerHTML = navHTML();
   $('#hub-tabbar').innerHTML = tabbarHTML();
+  $('#hub-menu-nav').innerHTML = navHTML();
   const page = { start: pageStart, spiele: pageGames, favoriten: pageGames, tische: pageTables, bestenliste: pageBoard, roadmap: pageRoadmap, tickets: pageTickets, rueckblick: EveningReviews.page, planung: EveningPlans.page, erfolge: Achievements.page }[route.page];
   const main = $('#hub-main');
   const scroll = main.scrollTop;
@@ -154,6 +156,8 @@ function renderHub(focus = false) {
   afterPage?.();
 }
 let afterPage = null;
+$('#hub-more').addEventListener('click', () => $('#hub-menu').showModal());
+$('#hub-menu-nav').addEventListener('click', (e) => { if (e.target.closest('a')) $('#hub-menu').close(); });
 window.addEventListener('hashchange', () => { if (hubVisible() && !roomCodeFromUrl()) renderHub(true); }); // in einem Raum (?t=) rührt die Startseite die Adresse nie an
 
 // Startseite zeigen. keepUrl: die Adresse stimmt schon („Zurück“ aus dem Raum); sonst wird ein übrig gebliebenes ?t=CODE entfernt.
@@ -206,7 +210,7 @@ function openHost(id) {
       if (option?.max !== undefined) input.max = option.max;
     });
   });
-  d.showModal();
+  if (!d.open) d.showModal();
   d.querySelector('input, button.btn-brass')?.focus();
 }
 $('#host-dlg').addEventListener('click', (e) => { if (e.target === $('#host-dlg') || e.target.closest('[data-host-close]')) $('#host-dlg').close(); });
@@ -222,14 +226,35 @@ $('#host-dlg').addEventListener('submit', (e) => {
 });
 
 // ---------- Seiten (werden in den nächsten Teilen gefüllt) ----------
+// Die Auswahl verwendet ausschließlich den registrierten Katalog und öffnet den normalen Host-Dialog.
+function openGamePicker() {
+  if (!profile.name) { openProfile(true); return; }
+  const d = $('#host-dlg');
+  d.dataset.game = '';
+  d.innerHTML = `<div class="game-picker"><button type="button" class="host-close" data-host-close aria-label="Schließen">✕</button><span class="eyebrow">Ein neuer Abend beginnt</span><h2 id="host-title">Was möchtet ihr spielen?</h2><p>Wähle ein Spiel. Danach legst du euren Tisch an und teilst den Code.</p><label class="field"><span>Spiel auswählen</span><input type="search" id="picker-search" placeholder="Name oder Beschreibung" autocomplete="off"></label><ul id="picker-games" class="compact-games"></ul></div>`;
+  const render = (query = '') => {
+    const q = query.trim().toLocaleLowerCase('de');
+    const games = sortGames(account.games || []).filter((g) => `${g.name} ${g.description}`.toLocaleLowerCase('de').includes(q));
+    $('#picker-games').innerHTML = games.map((g) => `<li><button type="button" data-host="${esc(g.id)}"><span class="mini-art" aria-hidden="true">${g.art}</span><span><b>${esc(g.name)}</b><small>${esc(playersText(g))} · ${g.duration} Min.</small></span><span aria-hidden="true">→</span></button></li>`).join('') || '<li class="hint" role="status">Kein Spiel gefunden. Versuche einen anderen Namen.</li>';
+  };
+  render();
+  $('#picker-search').addEventListener('input', (e) => render(e.target.value));
+  if (!d.open) d.showModal();
+  $('#picker-search').focus();
+}
 function pageStart() {
   loadResume();
-  return `<section class="hub-head"><h1>Hallo ${esc(profile.name)} <span aria-hidden="true">${esc(profile.avatar)}</span></h1><p>Setz dich an einen offenen Tisch oder mach selbst einen auf.</p></section>
-    <section class="hub-block"><div class="hub-block-head"><h2>Offene Tische</h2></div><div data-tables="4">${tablesBlockHTML(4)}</div></section>
-    <section class="hub-block" id="presence-slot">${presenceHTML()}</section>
-    ${gamesPreviewHTML()}
-    ${codeBoxHTML()}
-    <section class="hub-block"><h2>Eure Spieleabende</h2><p>Den nächsten Abend gemeinsam planen oder vergangene Ergebnisse ansehen.</p><div class="plan-actions"><a class="btn btn-brass" href="#planung">Nächsten Abend planen</a><a class="btn" href="#rueckblick">Abend-Rückblicke öffnen</a></div></section>
+  return `<section class="hub-head welcome"><div><span class="eyebrow">Willkommen im Spieleabend</span><h1>Schön, dass du da bist,<br>${esc(profile.name)}.</h1><p>Ein gutes Spiel. Eure Runde. Ein gemeinsamer Abend.</p></div><button type="button" class="btn btn-brass" data-create-table>+ Tisch erstellen</button></section>
+    <div class="home-layout"><div class="home-primary">
+      <section class="hub-block home-panel"><div class="hub-block-head"><h2>Am Tisch zusammenkommen</h2><a href="#tische">Alle Tische →</a></div><div data-tables="2">${tablesBlockHTML(2)}</div></section>
+      ${gamesPreviewHTML()}
+      <section class="hub-block home-panel evening-links"><div><span class="eyebrow">Eure Spieleabende</span><h2>Vorfreude & Erinnerungen</h2><p>Plant euren nächsten Abend oder schaut auf die letzten Runden zurück.</p></div><div class="plan-actions"><a class="btn" href="#planung">Abend planen</a><a class="btn btn-ghost" href="#rueckblick">Rückblicke</a></div></section>
+    </div><aside class="home-secondary" aria-label="Deine Runde">
+      ${localGamesHTML('favorites')}
+      <section class="hub-block home-panel" id="presence-slot">${presenceHTML()}</section>
+      ${codeBoxHTML()}
+      ${localGamesHTML('recent')}
+    </aside></div>
     <p class="hub-foot">Ohne Benutzerkonto. Nur Spielgeld, kein Echtgeld.</p>`;
 }
 // ---------- Spieleliste ----------
@@ -240,7 +265,7 @@ function markPlayed(id) { const r = recent(); r[id] = Date.now(); store.set('pok
 function toggleFav(id) { const f = favs(); f.has(id) ? f.delete(id) : f.add(id); store.set('poker:favs', [...f]); }
 let gamesFilter = 'all';   // all | fav | p2 | p34 | p56 | p7 | short
 let gamesQuery = '';
-let gamesView = store.get('poker:view', 'list') === 'tiles' ? 'tiles' : 'list';
+let gamesView = store.get('poker:view', 'tiles') === 'list' ? 'list' : 'tiles';
 const CHIPS = [['all', 'Alle'], ['fav', '★ Favoriten'], ['p2', '2 Spieler'], ['p34', '3–4 Spieler'], ['p56', '5–6 Spieler'], ['p7', '7+ Spieler'], ['short', 'Kurz (< 15 Min.)']];
 const RANGES = { p2: [2, 2], p34: [3, 4], p56: [5, 6], p7: [7, 99] };
 const SEARCH_FROM = 20; // Suche ab so vielen Spielen
@@ -276,7 +301,7 @@ function gameHTML(g, tiles) {
   const action = g.planned ? `<span class="soon">${g.status === 'next' ? 'Bald' : 'Geplant'}</span>` : `<button type="button" class="btn btn-brass" data-host="${esc(g.id)}" aria-label="${esc(g.name)} hosten">Hosten</button>`;
   return `<li class="game-${tiles ? 'tile' : 'row'} cat-${esc(g.category)}${g.planned ? ' planned' : ''}" data-id="${esc(g.id)}" ${g.planned ? 'aria-disabled="true"' : ''}>
       <div class="ga">${g.art}</div>
-      <div class="gr-main"><b>${esc(g.name)}${fav ? ' <span class="fav-mark" aria-label="Favorit">★</span>' : ''}</b><small>${esc(meta)}</small><span>${variantBadgesHTML(g)}</span><span class="gr-desc">${esc(g.description)}</span></div>
+      <div class="gr-main">${g.planned ? `<b>${esc(g.name)}</b>` : `<button type="button" class="game-title" data-game-open="${esc(g.id)}" aria-label="${esc(g.name)} auswählen"><b>${esc(g.name)}</b></button>`}<small>${esc(meta)}</small><span>${variantBadgesHTML(g)}</span><span class="gr-desc">${esc(g.description)}</span></div>
       <div class="gr-actions">${g.planned ? detail : star}${action}</div></li>`;
 }
 function gamesToolbarHTML() {
@@ -291,10 +316,11 @@ function gamesBodyHTML() {
   return `<ul class="games ${gamesView === 'tiles' ? 'tiles' : 'rows'}">${list.map((g) => gameHTML(g, gamesView === 'tiles')).join('')}</ul>`;
 }
 function pageGames() {
-  const title = route.page === 'favoriten' ? 'Favoriten' : route.sub ? catTitle(route.sub) : 'Alle Spiele';
+  const title = route.page === 'favoriten' ? 'Deine Favoriten' : route.sub ? catTitle(route.sub) : 'Spielebibliothek';
   const search = allGames().length >= SEARCH_FROM ? `<label class="search"><span class="sr-only">Spiel suchen</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="games-search" type="search" placeholder="Spiel suchen" value="${esc(gamesQuery)}" autocomplete="off"></label>` : '';
-  return `<section class="hub-head"><h1>${esc(title)}</h1><p>Such dir ein Spiel aus und mach einen Tisch auf – die anderen kommen per Link oder Code dazu.</p></section>
-    <div class="games-tools"><div id="games-toolbar" class="toolbar">${gamesToolbarHTML()}</div>${search}</div>
+  const categories = `<nav class="category-tabs" aria-label="Spielkategorien"><a href="#spiele" ${!route.sub && route.page === 'spiele' ? 'aria-current="page"' : ''}>${ico(ICONS.spiele)}Alle Spiele<span>${(account.games || []).length}</span></a>${GAME_CATEGORIES.map(([id, label]) => `<a href="#spiele/${id}" ${route.sub === id ? 'aria-current="page"' : ''}>${ico(ICONS[id])}${label}</a>`).join('')}</nav>`;
+  return `<section class="hub-head library-head"><div><span class="eyebrow">Zeit für eine neue Runde</span><h1>${esc(title)}</h1><p>${route.page === 'favoriten' ? 'Deine Auswahl, nur in diesem Browser gespeichert.' : 'Finde euer Spiel. Lade deine Runde per Link oder Tisch-Code ein.'}</p></div><button type="button" class="btn btn-brass" data-create-table>+ Tisch erstellen</button></section>
+    ${categories}<div class="games-tools">${search}<div id="games-toolbar" class="toolbar">${gamesToolbarHTML()}</div></div>
     <div id="games-body">${gamesBodyHTML()}</div>`;
 }
 function refreshGames() { $('#games-toolbar').innerHTML = gamesToolbarHTML(); $('#games-body').innerHTML = gamesBodyHTML(); }
@@ -319,8 +345,13 @@ function openPlan(id) {
 }
 // Start: die ersten Spiele (Favoriten, zuletzt gespielt) als Kacheln
 function gamesPreviewHTML() {
-  const list = sortGames(allGames().filter((g) => !g.planned)).slice(0, 6);
-  return `<section class="hub-block"><div class="hub-block-head"><h2>Deine Spiele</h2></div><ul class="games tiles">${list.map((g) => gameHTML(g, true)).join('')}</ul><p class="more"><a href="#spiele">Alle Spiele ansehen</a></p></section>`;
+  const list = sortGames((account.games || [])).slice(0, 4);
+  return `<section class="hub-block"><div class="hub-block-head"><h2>Spiele entdecken</h2><a href="#spiele">Alle Spiele →</a></div><ul class="games tiles home-games">${list.map((g) => gameHTML(g, true)).join('')}</ul></section>`;
+}
+function localGamesHTML(kind) {
+  const favorite = kind === 'favorites', f = favs(), r = recent();
+  const list = sortGames(account.games || []).filter((g) => favorite ? f.has(g.id) : r[g.id]).slice(0, 3);
+  return `<section class="hub-block home-panel"><div class="hub-block-head"><h2>${favorite ? 'Deine Favoriten' : 'Zuletzt ausgewählt'}</h2>${favorite ? '<a href="#favoriten">Alle →</a>' : ''}</div><p class="local-note">${favorite ? 'Mit einem Stern für später merken.' : 'In diesem Browser · keine laufenden Tische'}</p>${list.length ? `<ul class="compact-games">${list.map((g) => `<li><button type="button" data-game-open="${esc(g.id)}"><span class="mini-art" aria-hidden="true">${g.art}</span><span><b>${esc(g.name)}</b><small>${esc(playersText(g))} · ${g.duration} Min.</small></span><span aria-hidden="true">→</span></button></li>`).join('')}</ul>` : `<p class="hint">${favorite ? 'Noch kein Lieblingsspiel? Vergib in der Bibliothek einen Stern.' : 'Hier erscheinen Spiele, die du an einem Tisch geöffnet hast.'}</p>`}</section>`;
 }
 function pageTables() {
   loadResume();
@@ -352,7 +383,7 @@ document.addEventListener('change', (e) => {
 
 // Code von außen eintippen
 function codeBoxHTML() {
-  return `<section class="hub-block code-box"><h2>Du hast einen Code?</h2>
+  return `<section class="hub-block home-panel code-box"><h2>Ein Platz ist für dich frei?</h2><p class="local-note">Mit eurem Tisch-Code direkt zur Runde.</p>
     <form id="code-form" class="code-form" autocomplete="off"><label class="sr-only" for="code-in">Tisch-Code</label>
       <input id="code-in" class="code-input" maxlength="5" placeholder="ABCDE" autocapitalize="characters" spellcheck="false">
       <button class="btn btn-brass" type="submit">Beitreten</button></form></section>`;
@@ -368,6 +399,9 @@ document.addEventListener('submit', (e) => {
 });
 document.addEventListener('click', (e) => {
   if (!hubVisible()) return;
+  if (e.target.closest('[data-create-table]')) { openGamePicker(); return; }
+  const selected = e.target.closest('[data-game-open]');
+  if (selected) { openHost(selected.dataset.gameOpen); return; }
   const host = e.target.closest('[data-host]');
   if (host) { openHost(host.dataset.host); return; }
   const plan = e.target.closest('[data-plan]');
@@ -411,9 +445,10 @@ function tableCardHTML(t, mine = false) {
 function tablesBlockHTML(limit) {
   const mine = new Set(hubResume.map((t) => t.code));
   const list = hubTables.filter((t) => !mine.has(t.code));
-  const cards = [...hubResume.map((t) => tableCardHTML(t, true)), ...(limit ? list.slice(0, limit) : list).map((t) => tableCardHTML(t))];
-  if (!cards.length) return `<div class="empty-tables"><p><b>Gerade spielt niemand.</b> Mach doch einen Tisch auf!</p><a class="btn btn-brass" href="#spiele">Tisch aufmachen</a></div>`;
-  const more = limit && list.length > limit ? `<p class="more"><a href="#tische">Alle ${list.length} offenen Tische ansehen</a></p>` : '';
+  const tables = [...hubResume.map((t) => [t, true]), ...list.map((t) => [t, false])];
+  const cards = (limit ? tables.slice(0, limit) : tables).map(([t, mine]) => tableCardHTML(t, mine));
+  if (!cards.length) return `<div class="empty-tables"><p><b>Gerade spielt niemand.</b> Mach doch einen Tisch auf!</p><button type="button" class="btn btn-brass" data-create-table>Tisch aufmachen</button></div>`;
+  const more = limit && tables.length > limit ? `<p class="more"><a href="#tische">Alle ${tables.length} Tische ansehen</a></p>` : '';
   return `<div class="table-grid">${cards.join('')}<a class="table-card table-new" href="#spiele"><span class="plus" aria-hidden="true">+</span><b>Neuen Tisch aufmachen</b></a></div>${more}`;
 }
 // Nur die Tisch-Bereiche und Zähler neu zeichnen, damit Eingaben (Code) und Fokus erhalten bleiben
@@ -424,7 +459,7 @@ function refreshTables() {
   const focused = document.activeElement?.closest?.('[data-tables]') ? document.activeElement.dataset.join + '|' + (document.activeElement.dataset.mode || '') : '';
   slots.forEach((el) => { el.innerHTML = tablesBlockHTML(Number(el.dataset.tables)); });
   if (focused) $$('[data-join]').find((b) => b.dataset.join + '|' + (b.dataset.mode || '') === focused)?.focus({ preventScroll: true });
-  if (hubTables.length !== shownCount) { shownCount = hubTables.length; $('#side-nav').innerHTML = navHTML(); $('#hub-tabbar').innerHTML = tabbarHTML(); }
+  if (hubTables.length !== shownCount) { shownCount = hubTables.length; $('#side-nav').innerHTML = navHTML(); $('#hub-tabbar').innerHTML = tabbarHTML(); $('#hub-menu-nav').innerHTML = navHTML(); }
 }
 // „Weiterspielen“: Tische, für die dieser Browser ein Token hat und die es noch gibt (private eingeschlossen)
 async function loadResume() {

@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="/games/party-kit.css">
   <link rel="stylesheet" href="/games/solo/solo-kit.css">
   <link rel="stylesheet" href="/game-design.css">
+  <link rel="stylesheet" href="/ui-theme.css">
 </head>
 <body>
   <!-- Startseite (Hub): Seitenleiste bzw. untere Leiste, Seiten per URL-Hash (#start, #spiele/karten, #tische, #bestenliste) – hub.js zeichnet alles -->
@@ -36,7 +37,12 @@
     </aside>
     <header class="hub-top">
       <a class="hub-brand" href="#start"><span class="wordmark">Spieleabend</span></a>
-      <button type="button" class="profile-avatar" id="profile-avatar" aria-label="Profil ändern"></button>
+      <p class="club-note">Ein Platz für euren Abend.</p>
+      <div class="hub-top-actions">
+        <button type="button" class="btn btn-ghost hub-create" data-create-table>+ Tisch erstellen</button>
+        <button type="button" class="icon-btn hub-more" id="hub-more" aria-label="Weitere Bereiche" aria-haspopup="dialog">☰</button>
+        <button type="button" class="profile-avatar" id="profile-avatar" aria-label="Profil ändern"></button>
+      </div>
     </header>
     <main class="hub-main" id="hub-main" tabindex="-1"></main>
     <nav class="hub-tabbar" id="hub-tabbar" aria-label="Hauptnavigation"></nav>
@@ -44,6 +50,9 @@
 
   <!-- Hosten: Seitenpanel (Desktop) bzw. Leiste von unten (Handy) -->
   <dialog class="host-dlg" id="host-dlg" aria-labelledby="host-title"></dialog>
+  <dialog class="dlg hub-menu" id="hub-menu" aria-labelledby="hub-menu-title">
+    <form method="dialog"><div class="hub-block-head"><h2 id="hub-menu-title">Euer Spieleabend</h2><button class="icon-btn" aria-label="Menü schließen">✕</button></div><nav id="hub-menu-nav" aria-label="Weitere Bereiche"></nav></form>
+  </dialog>
 
   <!-- Hier zeichnet das gewählte Spiel seine Oberfläche hinein (z. B. /games/poker/poker.js) -->
   <div id="game-root" hidden></div>
@@ -56,6 +65,7 @@
       <label class="field"><span>Dein Name</span><input id="p-name" maxlength="16" required placeholder="z. B. Tobi"></label>
       <fieldset class="field"><legend>Avatar</legend><div id="p-avatars" class="avatars"></div></fieldset>
       <label class="toggle"><span>Mich nicht als online zeigen<small>Du siehst andere weiterhin. Dein Name erscheint weder online noch unter „Zuletzt online“.</small></span><input type="checkbox" role="switch" id="p-presence-hidden"></label>
+      <details class="profile-preferences"><summary>Darstellung & Töne</summary><div id="p-preferences"></div><p class="hint">Gilt nur in diesem Browser. Änderungen werden sofort gespeichert.</p></details>
       <p id="p-error" class="error" role="alert"></p>
       <button type="button" class="btn" id="p-achievements" data-achievements-open>Meine Erfolge & Abzeichen</button>
       <div class="dlg-actions"><button type="button" class="btn btn-ghost" id="p-cancel">Abbrechen</button><button class="btn btn-brass" type="submit">Speichern</button></div>
@@ -93,6 +103,7 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="/core.js"></script>
   <script src="/game-design.js"></script>
+  <script src="/ui-theme.js"></script>
   <script src="/variants.js"></script>
   <script src="/party-program.js"></script>
   <script src="/tickets.js"></script>

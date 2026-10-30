@@ -441,6 +441,7 @@ function kitGame(def) {
         ${GameDesign.soundPreference()}
         ${GameDesign.scene(def.id).family === 'cards' ? GameDesign.cardPreference() : ''}
         ${t('calm', 'Animationen aus', 'Karten, Würfel und Figuren springen ohne Bewegung an ihren Platz. Ist am Gerät „Bewegung reduzieren“ an, gilt das sowieso.')}
+        ${UITheme.glassPreference()}
         ${t('intros', 'Erste Schritte zeigen', 'Kurze Einführung beim ersten Spiel jeder Art. Einschalten zeigt sie wieder.')}
         ${def.prefs ? def.prefs() : ''}
         ${def.meExtra?.(S) || ''}
