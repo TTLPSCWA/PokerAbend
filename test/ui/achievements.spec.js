@@ -54,7 +54,12 @@ test('Erfolge: Abbruch und Bots zählen nicht; Profil-Einstieg, unbekannte Namen
   await page.locator(page.viewportSize().width < 641 ? '#profile-avatar' : '#profile-chip').click();
   await page.getByRole('button', { name: 'Meine Erfolge & Abzeichen', exact: true }).click();
   await expect(page.locator('.achievement-summary strong')).toHaveText('1 von 17 Abzeichen erreicht');
-  await page.getByLabel('Spielername', { exact: true }).fill('<img src=x>'); await page.getByRole('button', { name: 'Erfolge ansehen', exact: true }).click();
+  // Die verzögerte Namenssuche abschließen, bevor der temporäre Testserver beendet werden kann.
+  await Promise.all([
+    page.waitForResponse((response) => { const url = new URL(response.url()); return url.pathname === '/api/achievements/players' && url.searchParams.get('q') === '<img src=x>'; }),
+    page.getByLabel('Spielername', { exact: true }).fill('<img src=x>'),
+  ]);
+  await page.getByRole('button', { name: 'Erfolge ansehen', exact: true }).click();
   await expect(page.locator('.achievement-summary h2')).toHaveText('<img src=x>'); await expect(page.locator('.achievement-summary img')).toHaveCount(0);
   await expect(page.locator('.achievement-summary strong')).toHaveText('0 von 17 Abzeichen erreicht');
   await page.getByLabel('Abzeichen-Fortschritt', { exact: true }).selectOption('unlocked'); await expect(page.locator('.achievement-card')).toHaveCount(0);

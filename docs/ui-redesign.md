@@ -3,7 +3,7 @@
 ## Ausgangspunkt und Auftrag
 
 - Ausgangs-Commit: `9b60e30`, 46 registrierte Spiele; das gelieferte Paket beschreibt den älteren Stand `55abf04` mit 45 Spielen.
-- Feature-Branch: `feat/liquid-glass-game-library`. Keine Veröffentlichung auf main, GHCR oder dem Produktivserver.
+- Umsetzung auf `feat/liquid-glass-game-library`; anschließend auf ausdrücklichen Wunsch lokal in `main` übernommen (siehe Merge-Nachtrag). Kein Push, keine Veröffentlichung nach GHCR oder auf dem Produktivserver.
 - `PROMPT.md` vollständig aus dem gelieferten ZIP übernommen. `design/referenz-game-library.png` dient ausschließlich dem visuellen Vergleich und wird nicht in der Oberfläche verwendet.
 - Architektur: Express/Socket.IO, Vanilla JavaScript, bestehende Shared Kits. Regeln, RNG, Zugrechte, Authentifizierung, Speicher und Deployment bleiben erhalten.
 
@@ -123,11 +123,27 @@ Zusätzlich: Login und Ticket-Details auf Desktop/Mobil; responsive Ansichten un
 
 Es sind keine bekannten funktionalen Fehler aus dieser Abnahme offen. Optional fehlt weiterhin ein separat lizenziertes Spielezimmerfoto; der freigegebene CSS-Fallback ist fertig und braucht kein Bild. Die Referenzdatei wird ausschließlich als Dokumentation geführt und vom Frontend nicht geladen.
 
-Die Geräteprüfung erfolgte mit Chrome und emulierten Viewports/Touch-Kontexten, nicht auf physischer iOS-/Android-Hardware. Die Kontrast-Stichprobe ersetzt kein vollständiges Accessibility-Audit. PNGs und Logs sind lokale, bewusst nicht versionierte Prüfartefakte; Skript, neue Tests und dieses Protokoll sind im Feature-Branch enthalten. Keine Änderungen an `.env`, Produktionsdaten, Manifest oder Service-Worker-Caching. Keine Veröffentlichung nach main, GHCR oder auf den Server.
+Die Geräteprüfung erfolgte mit Chrome und emulierten Viewports/Touch-Kontexten, nicht auf physischer iOS-/Android-Hardware. Die Kontrast-Stichprobe ersetzt kein vollständiges Accessibility-Audit. PNGs und Logs sind lokale, bewusst nicht versionierte Prüfartefakte; Skript, neue Tests und dieses Protokoll wurden mit dem Redesign übernommen. Keine Änderungen an `.env`, Produktionsdaten, Manifest oder Service-Worker-Caching. Kein Push, keine Veröffentlichung nach GHCR oder auf den Server.
+
+## Nachtrag: Übernahme in main
+
+Auf ausdrücklichen Wunsch wurde nach einem erfolgreichen `git fetch origin main` der lokale `main` von `9b60e30` per `git merge --ff-only feat/liquid-glass-game-library` auf `fd4dd93` vorgezogen. `main` und `origin/main` hatten vor der Übernahme denselben Stand; es gab keine konkurrierenden Änderungen und keine Merge-Konflikte. Alle vier Feature-Commits sind enthalten. Der Feature-Branch bleibt erhalten.
+
+Prüfung nach der Übernahme:
+
+- `npm.cmd test`: **731/731 bestanden**, Exitcode 0 (65,2 Sekunden). Log: `artifacts/merge-main-unit.log`.
+- `npm.cmd run test:ui`: **254 bestanden, 1 fehlgeschlagen, 1 planmäßig übersprungen**, 18,6 Minuten. Alle 46 Spielstarts, Panels, Regeln und Tischende wurden auf Desktop/Mobil geprüft. Der zuvor korrigierte P10-Variantentest bestand diesmal in beiden Projekten innerhalb des Gesamtlaufs. Log: `artifacts/merge-main-ui.log`.
+- Einziger neuer Befund: Im Erfolgstest waren alle fachlichen Prüfungen bereits bestanden, während beim Testende die verzögerte Namenssuche noch ausstand. Der temporäre Server wurde beendet, bevor `/api/achievements/players` antworten konnte; die Console-Prüfung meldete `ERR_CONNECTION_REFUSED`. Der Test in `test/ui/achievements.spec.js` wartet nun gezielt auf diese tatsächliche Antwort. Keine Anwendungskorrektur, kein Unterdrücken von Browserfehlern und keine Änderung an Spielregeln oder APIs. Der ursprüngliche Trace ist unter `artifacts/merge-main-achievements-initial/` gesichert.
+- Nachprüfung: `node node_modules/@playwright/test/cli.js test test/ui/achievements.spec.js --grep "Erfolge: Abbruch" --repeat-each=3 --output=artifacts/merge-main-achievements-recheck`: **6/6 bestanden**, Exitcode 0 (29,9 Sekunden), je drei Durchläufe Desktop/Mobil. Das separate Ausgabeverzeichnis vermeidet Überschneidungen mit dem noch laufenden Gesamttest. Der korrigierte mobile Fall bestand auch im Gesamtlauf. Log: `artifacts/merge-main-achievements-recheck.log`.
+- Damit sind alle 255 tatsächlich ausgeführten unterschiedlichen Browser-Prüffälle über Gesamtlauf und Nachprüfung erfolgreich validiert; die doppelte Größenmatrix bleibt wie beschrieben übersprungen. Der vollständige Lauf wurde nach der reinen Test-Wartekorrektur nicht erneut wiederholt. `git diff --check` ohne Fehler.
+
+Es sind keine offenen Merge-Konflikte oder bekannten funktionalen Integrationsprobleme vorhanden. Die Testkorrektur und dieser Nachtrag werden als zusätzlicher lokaler Commit auf `main` gesichert. Es wurde nichts gepusht und kein Docker-/Produktiv-Workflow ausgelöst.
+
+Als nächster Release-Schritt stehen reale Handyprüfungen und anschließend ein ausdrücklich freigegebener Push mit bestehender CI-/GHCR-Pipeline an. Der nächste fachliche Roadmap-Punkt ist **Benachrichtigungen / Push-Mitteilungen** (`games/roadmap.js`, Status `jetzt`): „Du bist dran“ und „Tisch wartet“. Bisher gibt es die gewöhnliche Browser-Benachrichtigung im Poker-/Omaha-Modul; der Service Worker hat noch keine Push-Verarbeitung. Das neue Funktionspaket ist hier nur als nächster Schritt benannt, nicht implementiert.
 
 ## Veröffentlichung: ausschließlich spätere Anleitung
 
-In dieser Arbeit wird nichts gepusht, kein Workflow ausgelöst und kein Produktivserver kontaktiert. Nach eigener Prüfung/Freigabe kann der Branch regulär nach `main` übernommen werden. Der bestehende Workflow `.github/workflows/docker.yml` prüft dann die Node-Tests und veröffentlicht `ghcr.io/ttlpscwa/pokerabend:latest`. Erst nach einem grünen Build auf dem Server ausführen:
+Die lokale Übernahme in `main` ist im Nachtrag dokumentiert. Es wurde nichts gepusht, kein Workflow ausgelöst und kein Produktivserver kontaktiert. Bei einem später freigegebenen Push von `main` prüft der bestehende Workflow `.github/workflows/docker.yml` die Node-Tests und veröffentlicht `ghcr.io/ttlpscwa/pokerabend:latest`. Erst nach einem grünen Build auf dem Server ausführen:
 
 ```sh
 cd /opt/poker
