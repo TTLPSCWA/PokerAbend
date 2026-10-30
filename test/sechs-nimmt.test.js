@@ -19,15 +19,18 @@ test('6 nimmt!: 104 eindeutige Karten und alle Hornochsen-Sonderwerte', () => {
 });
 test('6 nimmt!: gleichzeitige Wahl bleibt bis zur letzten Bindung im gesamten Mitspieler-JSON verborgen', () => {
   const { room: r, ids: [a, b, c] } = table();
+  // Karten sind Zahlen. Die Zeichenfolge kann dagegen in Namen, IDs und Zeiten vorkommen.
+  const numbers = (value) => typeof value === 'number' ? [value] : value && typeof value === 'object' ? Object.values(value).flatMap(numbers) : [];
+  r.players.get(b).name = 'Spieler 92';
   r.hands = { [a]: [91, 92], [b]: [81, 82], [c]: [71, 72] }; r.rows = [[1], [2], [3], [4]];
   r.choose(a, 91);
-  const json = JSON.stringify(r.view(b));
-  assert.ok(!/\b9[12]\b/.test(json), json); assert.equal(r.view(b).players.find((p) => p.id === a).ready, true);
+  const view = JSON.parse(JSON.stringify(r.view(b)));
+  assert.ok(!numbers(view).some((n) => n === 91 || n === 92)); assert.equal(view.players.find((p) => p.id === a).ready, true);
   assert.equal(r.hands[a].length, 2); assert.throws(() => r.choose(a, 92), /schon/);
   assert.throws(() => r.choose(b, 91), /nicht/);
   r.choose(b, 81); assert.equal(r.gameView(c).queue.length, 0);
   r.choose(c, 71); assert.deepEqual(r.gameView(b).queue.map((p) => p.card), [71, 81, 91]);
-  assert.ok(!JSON.stringify(r.view(b)).includes('92')); r.dispose();
+  assert.ok(!numbers(JSON.parse(JSON.stringify(r.view(b)))).includes(92)); r.dispose();
 });
 test('6 nimmt!: nächstkleineres Ende, sechste Karte und kleinste Karte mit verbindlicher Reihenwahl', () => {
   const { room: r, ids: [a, b] } = table(2);
