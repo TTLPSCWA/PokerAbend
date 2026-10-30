@@ -46,6 +46,12 @@ Geänderte Dateien: `AGENTS.md`, `CLAUDE.md`, `PROMPT.md`, `README.md`; `docs/ro
 
 Vor Commit/Push wurde origin/main erneut geprüft; der Änderungsstand wurde direkt als `6c25412` nach main übertragen. GitHub Actions [41080052021](https://github.com/TTLPSCWA/PokerAbend/actions/runs/41080052021) war erfolgreich: Node-Tests, Docker-Build und GHCR-Veröffentlichung. Kein Produktivdeployment.
 
+### Bestehender zufallsabhängiger Testfehler
+
+Der anschließende reine Dokumentationscommit `8eb945f` scheiterte in [CI-Lauf 41080844348](https://github.com/TTLPSCWA/PokerAbend/actions/runs/41080844348): 737/738 Node-Tests bestanden. Betroffen ist der unveränderte Zahlungstest in `test/monopoly-deal.test.js:33`. Er setzt eine feste 10-M-Karte in die Bank, wählt aber die erste zufällig ausgeteilte Handkarte als vermeintlich unzulässige Zahlung. Ist dies dieselbe Karten-ID, akzeptiert die Bankprüfung sie korrekt und die erwartete Exception bleibt aus. Die Testvorbereitung erzeugt dann eine doppelte Kartenposition; das ist kein Nachweis eines Fehlers der Spiellogik. Der erneute lokale Lauf dieses unveränderten Testmoduls bestand mit 8/8 Tests.
+
+Eine deterministische, überschneidungsfreie Testvorbereitung bleibt als gesonderte Testwartung offen. Weder Spielmodul noch Spieltest wurden unter diesem auf Roadmap und Konsolidierung begrenzten Auftrag verändert. Der fehlgeschlagene Lauf wird ausdrücklich dokumentiert; ein erneuter CI-Lauf beseitigt die Ursache nicht. Der Push dieses Nachtrags startet die vorhandenen Prüfungen erneut. Deren abschließendes Ergebnis wird im Abschlussbericht verlinkt.
+
 ## Verifizierter Bereinigungsstand
 
 Nach dem gesicherten Push und grüner CI wurden die Quell-SHAs nochmals mit den unveränderten Remote-Branches verglichen. Zusätzlich wurden alle 18 ursprünglichen Sicherheitsanforderungslisten, Abhängigkeiten, Prioritäten und Akzeptanzkriterien mit der konsolidierten Planung verglichen (nur die belegte Spielanzahl wurde aktualisiert); das Quellarchiv stimmt im Git-Inhalt mit seinem Ursprung überein.
