@@ -17,7 +17,8 @@ test('Tempowürfel: individueller Start nach Los, Gefängnis nur mit weißen Wü
   r.jail(a); r.step = 'jail'; let rolls = 0; r.roll = () => { rolls++; return 2; }; r.throwDice(a); assert.equal(rolls, 2); assert.equal(r.speedDie, null); r.dispose();
 });
 for (const n of [1, 2, 3]) test(`Tempowürfel Zahl ${n} wird mit beiden weißen Würfeln addiert`, () => {
-  const { r, ids: [a] } = setup('speed'); r.people[a].speedActive = true; r.people[a].position = 10; dice(r, 1, 4, n); r.throwDice(a); assert.equal(r.people[a].position, 15 + n); assert.equal(r.again, false); r.dispose();
+  // Alle drei Ziele sind Grundstücke: Eine zufällige Gemeinschaftskarte soll diese Würfelprüfung nicht verändern.
+  const { r, ids: [a] } = setup('speed'); r.people[a].speedActive = true; r.people[a].position = 8; dice(r, 1, 4, n); r.throwDice(a); assert.equal(r.people[a].position, 13 + n); assert.equal(r.again, false); r.dispose();
 });
 for (const n of [4, 5]) test(`Tempowürfel Glücksseite ${n} wartet auf Kauf und zieht dann weiter`, () => {
   const { r, ids: [a] } = setup('speed'); r.people[a].speedActive = true; dice(r, 1, 2, n); r.throwDice(a);
