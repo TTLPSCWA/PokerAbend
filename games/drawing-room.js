@@ -132,8 +132,8 @@ export class GuessRoom extends DrawingRoom {
     if (id === this.artist || this.guessed.includes(id)) throw new Error('Du zeichnest oder hast den Begriff schon erraten');
     const clean = cleanAnswer(text);
     if (!clean) throw new Error('Schreib erst eine Vermutung');
-    if (Date.now() - (this.lastGuess[id] || 0) < 700) throw new Error('Warte kurz vor der nächsten Vermutung');
-    this.lastGuess[id] = Date.now(); this.attempts[id] = clean;
+    if (this.clock.now() - (this.lastGuess[id] || 0) < 700) throw new Error('Warte kurz vor der nächsten Vermutung');
+    this.lastGuess[id] = this.clock.now(); this.attempts[id] = clean;
     if (wordKey(clean) === wordKey(this.cur.q)) {
       this.addPoints(id, Math.max(100, 300 - this.guessed.length * 25)); this.addPoints(this.artist, 100);
       this.guessed.push(id); this.act(id, '✓ erraten'); this.checkDone();

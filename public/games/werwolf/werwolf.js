@@ -124,7 +124,6 @@
   });
   // Restzeit herunterzählen
   setInterval(() => {
-    const off = (kit.S?.now ?? Date.now()) - Date.now();
-    document.querySelectorAll('[data-dl]').forEach((el) => { const s = Math.max(0, Math.ceil((Number(el.dataset.dl) - (Date.now() + off)) / 1000)); el.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; });
+    document.querySelectorAll('[data-dl]').forEach((el) => { const s = Math.max(0, Math.ceil((Number(el.dataset.dl) - gameNow(kit.S)) / 1000)); el.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; });
   }, 500);
 }

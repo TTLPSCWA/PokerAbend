@@ -21,7 +21,7 @@ function drawingGame({ id, name, short, intro }) {
     clearTimeout(timer); timer = null; pointer = null; dirty = false;
     draftKey = key; strokes = clone(S.g?.image || []); editor = null; serial++;
   };
-  const valid = () => session?.game === id && lastState?.phase === 'playing' && currentKey(lastState) === draftKey;
+  const valid = () => session?.game === id && !lastState?.gamePaused && lastState?.phase === 'playing' && currentKey(lastState) === draftKey;
   async function flush(done = false) {
     clearTimeout(timer); timer = null;
     if (!valid() || (!dirty && !done)) return;
@@ -51,6 +51,8 @@ function drawingGame({ id, name, short, intro }) {
   const editorHTML = () => `<section class="draw-editor" aria-label="Dein Zeichenbereich">${toolsHTML()}<canvas width="1000" height="650" aria-label="Zeichenfläche: mit Maus, Stift oder Finger zeichnen"></canvas><small class="draw-meter"></small><small>Mit Finger, Stift oder Maus zeichnen. Der Radierer malt weiß; Rückgängig entfernt den letzten Strich.</small></section>`;
   function bind(S) {
     sync(S);
+    if (S.gamePaused && pointer !== null) { pointer = null; dirty = true; serial++; }
+    if (!S.gamePaused && dirty && !timer) timer = setTimeout(() => flush(), 450);
     const progress = document.querySelector('#kg-main .pk-done');
     const players = S.players.filter((p) => p.inRound);
     if (progress) progress.textContent = `${players.filter((p) => p.ready).length} von ${players.length} fertig`;
@@ -80,7 +82,7 @@ function drawingGame({ id, name, short, intro }) {
       strokes.push({ color, size, points: [point(e)] }); paint(); e.preventDefault();
     });
     canvas.addEventListener('pointermove', (e) => {
-      if (e.pointerId !== pointer) return;
+      if (e.pointerId !== pointer || !valid()) return;
       const s = strokes.at(-1), p = point(e), prev = s.points.at(-1);
       if (s.points.length >= 100 || strokes.reduce((n, stroke) => n + stroke.points.length, 0) >= 800 || Math.hypot(p[0] - prev[0], p[1] - prev[1]) < 7) return;
       s.points.push(p); paint();

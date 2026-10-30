@@ -114,7 +114,7 @@ export class Room extends BaseRoom {
   lobbyInfo() {
     const seats = this.table.seats.filter(Boolean).map((s) => { const p = this.players.get(s.id); return { name: s.name, avatar: p?.avatar, bot: !!p?.bot }; });
     const watchers = [...this.players.values()].filter((p) => !p.kicked && p.seat === null && !p.bot).length;
-    const status = this.handRunning ? `Hand #${this.table.handNo}` : this.table.handNo ? `Pause nach Hand #${this.table.handNo}` : 'wartet auf Start';
+    const status = this.gamePaused ? 'Spiel pausiert' : this.handRunning ? `Hand #${this.table.handNo}` : this.table.handNo ? `Pause nach Hand #${this.table.handNo}` : 'wartet auf Start';
     return { seats, max: this.settings.maxPlayers, watchers, status };
   }
   playerFields() {
@@ -130,8 +130,9 @@ export class Room extends BaseRoom {
     return false;
   }
   dispose() {
-    clearTimeout(this.turnTimer); clearTimeout(this.nextTimer); clearTimeout(this.nudgeTimer);
-    for (const g of this.gifts.values()) clearTimeout(g.timer);
+    super.dispose();
+    this.clock.clearTimeout(this.turnTimer); this.clock.clearTimeout(this.nextTimer); this.clock.clearTimeout(this.nudgeTimer);
+    for (const g of this.gifts.values()) this.clock.clearTimeout(g.timer);
   }
 
   // ---------- Spieler ----------
@@ -247,7 +248,7 @@ export class Room extends BaseRoom {
     return this.settings.blindMode === 'minutes' && this.started && !this.frozen && !(this.paused && !this.handRunning);
   }
   // Nach jeder Zustandsänderung aufrufen: rechnet die gelaufene Zeit an und startet bzw. stoppt die Uhr
-  blindTick(now = Date.now()) {
+  blindTick(now = this.clock.now()) {
     const b = this.blind;
     if (b.since !== null) b.elapsed += now - b.since;
     b.since = this.blindRunning() ? now : null;
@@ -255,7 +256,7 @@ export class Room extends BaseRoom {
   blindInfo() {
     const s = this.settings;
     const levels = blindLevels(s);
-    const elapsedMs = this.blind.elapsed + (this.blind.since !== null ? Date.now() - this.blind.since : 0);
+    const elapsedMs = this.blind.elapsed + (this.blind.since !== null ? this.clock.now() - this.blind.since : 0);
     return { levels, args: { mode: s.blindMode, every: s.blindEvery, elapsedMs, hands: this.blind.hands, count: levels.length } };
   }
   resetBlinds() {
@@ -270,8 +271,8 @@ export class Room extends BaseRoom {
     const list = this.standingsList(null)
       .map((p) => `${p.name} ${p.net > 0 ? '+' : p.net < 0 ? '−' : '±'}${fmt(Math.abs(p.net))}${p.rebuys ? ` (${p.rebuys}× nachgekauft)` : ''}`);
     this.say(`Abendstand vor dem neuen Spiel nach ${this.stats.hands} Händen: ${list.join(', ') || 'niemand da'}`, 'summary');
-    clearTimeout(this.nextTimer); this.nextTimer = null; this.nextAt = null;
-    clearTimeout(this.turnTimer); this.turnTimer = null; this.deadline = null;
+    this.clock.clearTimeout(this.nextTimer); this.nextTimer = null; this.nextAt = null;
+    this.clock.clearTimeout(this.turnTimer); this.turnTimer = null; this.deadline = null;
     for (const g of [...this.gifts.values()]) this.dropGift(g);
     const start = this.settings.startStack;
     for (const p of this.players.values()) {
@@ -300,8 +301,8 @@ export class Room extends BaseRoom {
     if (!Number.isFinite(n) || n < 1) throw new Error('Bitte einen Betrag über 0 eingeben');
     if (n > this.chipsOf(from)) throw new Error('So viele Chips hast du nicht');
     if ([...this.gifts.values()].some((g) => g.from === from.id)) throw new Error('Du hast schon ein offenes Angebot – warte auf die Antwort');
-    const g = { id: randomBytes(6).toString('hex'), from: from.id, to: to.id, amount: n, message: cleanText(message, 100), expires: Date.now() + this.giftTtl };
-    g.timer = setTimeout(() => {
+    const g = { id: randomBytes(6).toString('hex'), from: from.id, to: to.id, amount: n, message: cleanText(message, 100), expires: this.clock.now() + this.giftTtl };
+    g.timer = this.clock.setTimeout(() => {
       if (this.gifts.get(g.id) !== g) return;
       this.dropGift(g);
       this.say(`Das Geschenk von ${from.name} an ${to.name} ist abgelaufen`, 'react');
@@ -315,7 +316,7 @@ export class Room extends BaseRoom {
 
   answerGift(toId, giftId, accept) {
     const g = this.gifts.get(String(giftId));
-    if (!g || g.to !== toId || Date.now() > g.expires) throw new Error('Dieses Angebot gibt es nicht mehr');
+    if (!g || g.to !== toId || this.clock.now() > g.expires) throw new Error('Dieses Angebot gibt es nicht mehr');
     const from = this.players.get(g.from);
     const to = this.players.get(g.to);
     if (!accept) {
@@ -336,7 +337,7 @@ export class Room extends BaseRoom {
     return true;
   }
 
-  dropGift(g) { clearTimeout(g.timer); this.gifts.delete(g.id); }
+  dropGift(g) { this.clock.clearTimeout(g.timer); this.gifts.delete(g.id); }
 
   adjustStack(id, targetId, amount) {
     this.requireHost(id);
@@ -356,9 +357,9 @@ export class Room extends BaseRoom {
     if (!this.handRunning) throw new Error('Gerade läuft keine Hand');
     this.table.abort();
     this.flushEvents();
-    clearTimeout(this.turnTimer); this.turnTimer = null; this.turnKey = null; this.deadline = null;
-    clearTimeout(this.nudgeTimer); this.nudgeTimer = null; this.nudgeKey = null;
-    clearTimeout(this.nextTimer); this.nextTimer = null; this.nextAt = null;
+    this.clock.clearTimeout(this.turnTimer); this.turnTimer = null; this.turnKey = null; this.deadline = null;
+    this.clock.clearTimeout(this.nudgeTimer); this.nudgeTimer = null; this.nudgeKey = null;
+    this.clock.clearTimeout(this.nextTimer); this.nextTimer = null; this.nextAt = null;
     for (const p of this.players.values()) { p.pre = null; p.preNote = null; }
     this.started = false; this.frozen = null;
     this.say('Runde vom Host abgebrochen', 'warn');
@@ -382,35 +383,15 @@ export class Room extends BaseRoom {
   }
 
   // Sofort-Pause für alle: Timer bleiben stehen, niemand kann handeln, bis der Host weitermacht
-  toggleFreeze(id) {
-    this.requireHost(id);
-    if (this.frozen) {
-      const { turnLeft, turnKey, nextLeft } = this.frozen;
-      this.frozen = null;
-      const h = this.table.hand;
-      // Restzeit nur, wenn noch derselbe Zug läuft – sonst bekommt der Nächste die volle Zeit
-      if (turnLeft !== null && turnKey === this.turnKey && h && !h.done && `${h.no}:${this.seq}:${h.toAct}` === turnKey) {
-        const seat = h.toAct; const key = turnKey;
-        this.deadline = Date.now() + turnLeft;
-        this.turnTimer = setTimeout(() => this.timeout(seat, key), turnLeft);
-      }
-      if (nextLeft !== null) this.scheduleNext(nextLeft);
-      this.blindTick();
-      this.say('Weiter geht’s', 'warn');
-      this.afterChange();
-      return;
-    }
-    const now = Date.now();
-    this.frozen = {
-      turnLeft: this.deadline ? Math.max(0, this.deadline - now) : null,
+  toggleFreeze(id) { this.setGamePaused(id, !this.gamePaused); }
+
+  onGamePause(paused) {
+    this.frozen = paused ? {
+      turnLeft: this.deadline ? Math.max(0, this.deadline - this.clock.now()) : null,
       turnKey: this.turnKey,
-      nextLeft: this.nextAt ? Math.max(0, this.nextAt - now) : null,
-    };
-    clearTimeout(this.turnTimer); this.turnTimer = null; this.deadline = null;
-    clearTimeout(this.nextTimer); this.nextTimer = null; this.nextAt = null;
-    clearTimeout(this.nudgeTimer); this.nudgeTimer = null; this.nudgeKey = null;
+      nextLeft: this.nextAt ? Math.max(0, this.nextAt - this.clock.now()) : null,
+    } : null;
     this.blindTick();
-    this.say('Der Host hat das Spiel angehalten', 'warn');
   }
 
   nextHand(id) {
@@ -428,7 +409,7 @@ export class Room extends BaseRoom {
   }
 
   startNext(force = false) {
-    clearTimeout(this.nextTimer); this.nextTimer = null; this.nextAt = null;
+    this.clock.clearTimeout(this.nextTimer); this.nextTimer = null; this.nextAt = null;
     if (this.handRunning || (!this.started && !force) || (this.paused && !force)) return false;
     if (force) this.started = true;
     this.cleanupAfterHand();
@@ -523,7 +504,7 @@ export class Room extends BaseRoom {
     if (from.seat === null) throw new Error('Nur wer am Tisch sitzt, kann anstupsen');
     if (!target || target.id === from.id) throw new Error('Das geht nicht');
     if (!this.handRunning || this.frozen || this.table.hand.toAct !== target.seat) throw new Error(`${target.name} ist gerade nicht dran`);
-    const now = Date.now();
+    const now = this.clock.now();
     if (now - (from.nudgeSentAt || 0) < NUDGE_GAP) throw new Error('Nicht so schnell – höchstens alle 10 Sekunden');
     if (!this.sendNudge(target, from.name)) throw new Error(`${target.name} wurde gerade erst angestupst`);
     from.nudgeSentAt = now;
@@ -531,7 +512,7 @@ export class Room extends BaseRoom {
   }
 
   sendNudge(target, fromName) {
-    const now = Date.now();
+    const now = this.clock.now();
     if (now - (target.nudgedAt || 0) < NUDGE_GAP) return false;
     target.nudgedAt = now;
     const lines = this.settings.nudgeLines;
@@ -542,10 +523,10 @@ export class Room extends BaseRoom {
   // Einmal pro Zug: wer nach 10 Sekunden noch nichts gemacht hat, wird automatisch angestupst
   scheduleNudge() {
     if (!this.turnKey || this.turnKey === this.nudgeKey) return;
-    clearTimeout(this.nudgeTimer);
+    this.clock.clearTimeout(this.nudgeTimer);
     const key = this.nudgeKey = this.turnKey;
     const seat = this.table.hand.toAct;
-    this.nudgeTimer = setTimeout(() => {
+    this.nudgeTimer = this.clock.setTimeout(() => {
       this.nudgeTimer = null;
       const p = this.playerAt(seat);
       if (this.turnKey !== key || this.frozen || !this.handRunning || !this.settings.nudge || !p?.connected) return;
@@ -556,12 +537,13 @@ export class Room extends BaseRoom {
 
   // Wird nach jeder Änderung am Spielzustand aufgerufen
   afterChange() {
+    if (this.gamePaused) return;
     this.runPreActions();
     this.blindTick();
     const h = this.table.hand;
     if (h && h.done) {
-      clearTimeout(this.turnTimer); this.turnTimer = null; this.turnKey = null; this.deadline = null;
-      clearTimeout(this.nudgeTimer); this.nudgeTimer = null; this.nudgeKey = null;
+      this.clock.clearTimeout(this.turnTimer); this.turnTimer = null; this.turnKey = null; this.deadline = null;
+      this.clock.clearTimeout(this.nudgeTimer); this.nudgeTimer = null; this.nudgeKey = null;
       if (!h.counted) {
         h.counted = true;
         this.blind.hands++;
@@ -577,8 +559,8 @@ export class Room extends BaseRoom {
   }
 
   scheduleNext(ms) {
-    this.nextAt = Date.now() + ms;
-    this.nextTimer = setTimeout(() => { this.nextTimer = null; this.nextAt = null; this.startNext(); this.onChange('state'); }, ms);
+    this.nextAt = this.clock.now() + ms;
+    this.nextTimer = this.clock.setTimeout(() => { this.nextTimer = null; this.nextAt = null; this.startNext(); this.onChange('state'); }, ms);
   }
 
   scheduleTurn() {
@@ -591,14 +573,14 @@ export class Room extends BaseRoom {
     if (offline) secs = secs ? Math.min(secs, OFFLINE_TURN) : OFFLINE_TURN;
     if (key === this.turnKey) {
       // Gleicher Zug: nur verkürzen, wenn der Spieler gerade offline gegangen ist
-      if (!offline || (this.deadline && this.deadline - Date.now() <= secs * 1000)) return;
+      if (!offline || (this.deadline && this.deadline - this.clock.now() <= secs * 1000)) return;
     }
-    clearTimeout(this.turnTimer);
+    this.clock.clearTimeout(this.turnTimer);
     this.turnKey = key;
     if (!secs) { this.deadline = null; return; }
-    this.deadline = Date.now() + secs * 1000;
+    this.deadline = this.clock.now() + secs * 1000;
     const seat = h.toAct;
-    this.turnTimer = setTimeout(() => this.timeout(seat, key), secs * 1000);
+    this.turnTimer = this.clock.setTimeout(() => this.timeout(seat, key), secs * 1000);
   }
 
   timeout(seat, key) {
@@ -770,7 +752,7 @@ export class Room extends BaseRoom {
     const bi = this.blindInfo();
     const nx = untilNext(bi.args);
     const due = levelIndex(bi.args);
-    const now = Date.now();
+    const now = this.clock.now();
     const gifts = [...this.gifts.values()].filter((g) => g.expires > now);
     const nameOf = (id) => this.players.get(id)?.name ?? '?';
 
@@ -792,7 +774,7 @@ export class Room extends BaseRoom {
       },
       hostId: this.hostId,
       settings: this.settings,
-      started: this.started, paused: this.paused, frozen: !!this.frozen, nextAt: this.nextAt, now: Date.now(),
+      started: this.started, paused: this.paused, frozen: !!this.frozen, nextAt: this.nextAt, ...this.pauseView(),
       seats, hand, legal, strength, strengthCat, odds, canShow,
       log: this.log.slice(-40), logSeq: this.logSeq,
       // Easter Egg: wer gerade als „Sebastian“ Pause macht (per ID, nur dieser Raum)

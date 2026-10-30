@@ -285,7 +285,7 @@ export class Room extends TurnRoom {
     else if (this.stage === 'hunter') this.finishHunter(null);
     this.advanceIfDone();
   }
-  afterChange() { this.advanceIfDone(); this.syncTimer(); }
+  afterChange() { if (!this.gamePaused) { this.advanceIfDone(); this.syncTimer(); } }
   syncTimer() {
     const key = this.phase === 'playing' && this.stage && this.stage !== 'over' ? `${this.roundNo}:${this.day}:${this.stage}:${this.step}:${this.hunter}` : null;
     if (key === this.stageKey) return;
@@ -294,8 +294,8 @@ export class Room extends TurnRoom {
     if (!key) return;
     const secs = this.stageSecs();
     if (!(secs > 0)) return;
-    this.deadline = Date.now() + secs * 1000;
-    this.stageTimer = setTimeout(() => {
+    this.deadline = this.clock.now() + secs * 1000;
+    this.stageTimer = this.clock.setTimeout(() => {
       this.stageTimer = null;
       if (this.stageKey !== key) return;
       try { this.expire(); } catch { /* nichts zu tun */ }
@@ -304,8 +304,8 @@ export class Room extends TurnRoom {
     }, secs * 1000);
     this.stageTimer.unref?.();
   }
-  clearTimer() { clearTimeout(this.stageTimer); this.stageTimer = null; this.deadline = null; this.stageKey = null; }
-  dispose() { this.clearTimer(); }
+  clearTimer() { this.clock.clearTimeout(this.stageTimer); this.stageTimer = null; this.deadline = null; this.stageKey = null; }
+  dispose() { this.clearTimer(); super.dispose(); }
   onAbort() { this.clearTimer(); this.reset(); }
 
   // Wer aussteigt, stirbt (ohne Rolle zu verraten, der Jäger schießt nicht mehr)

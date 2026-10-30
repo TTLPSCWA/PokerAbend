@@ -40,9 +40,9 @@ export class Room extends TurnRoom {
     this.auction = null; this.auctionQueue = []; this.trade = null; this.payments = []; this.debt = null; this.deferred = null;
     this.decks = { event: shuffle(EVENTS.map((_, i) => i)), chest: shuffle(CHEST.map((_, i) => i)) }; this.card = null; this.lastMove = null; this.dice = [1, 1]; this.rollNo = 0; this.turnNo = 0; this.traded = {};
     if (this.settings.quick) { const cards = shuffle([...PROPERTIES]); for (const id of this.order) for (let k = 0; k < 2; k++) this.owned[cards.pop()].owner = id; }
-    this.endsAt = this.settings.timeLimit ? Date.now() + this.settings.timeLimit * 60000 : null;
-    clearTimeout(this.endTimer);
-    if (this.endsAt) { this.endTimer = setTimeout(() => { if (this.phase === 'playing') this.finishWealth(); this.onChange('state'); }, this.settings.timeLimit * 60000); this.endTimer.unref?.(); }
+    this.endsAt = this.settings.timeLimit ? this.clock.now() + this.settings.timeLimit * 60000 : null;
+    this.clock.clearTimeout(this.endTimer);
+    if (this.endsAt) { this.endTimer = this.clock.setTimeout(() => { if (this.phase === 'playing') this.finishWealth(); this.onChange('state'); }, this.settings.timeLimit * 60000); this.endTimer.unref?.(); }
   }
   chooseToken(id, token) {
     if (!this.players.has(id) || !TOKENS[token]) throw new Error('Unbekannte Spielfigur');
@@ -270,7 +270,7 @@ export class Room extends TurnRoom {
   finishWealth() { const max = Math.max(...this.order.map((id) => this.wealth(id))), winners = this.order.filter((id) => this.wealth(id) === max); this.finish(winners, `Zeitlimit: ${winners.map((id) => this.name(id)).join(', ')} gewinnt mit ${max} Vermögen`); }
   checkEnd() { if (this.phase === 'playing' && this.order.length <= 1 && !this.debt && !this.auction) this.finish([...this.order], this.order.length ? `${this.name(this.order[0])} bleibt als Letzter übrig` : 'Alle sind ausgeschieden'); }
   finish(winners, text) { this.dispose(); this.trade = null; this.auction = null; this.debt = null; this.finishRound(winners, text, Object.fromEntries(winners.map((id) => [id, 1]))); }
-  dispose() { super.dispose(); clearTimeout(this.endTimer); this.endTimer = null; }
+  dispose() { super.dispose(); this.clock.clearTimeout(this.endTimer); this.endTimer = null; }
   onAbort() { this.dispose(); this.trade = null; this.auction = null; this.debt = null; }
   dropOut(p, message) {
     if (!this.order.includes(p.id)) return;
@@ -288,10 +288,10 @@ export class Room extends TurnRoom {
     const seconds = this.auction ? this.settings.auctionTime : this.settings.turnTime;
     const key = this.phase === 'playing' ? `${this.roundNo}:${this.currentId}:${this.moveNo}` : null;
     if (key === this.timerKey) return;
-    clearTimeout(this.turnTimer); this.turnTimer = null; this.timerKey = key; this.deadline = null;
+    this.clock.clearTimeout(this.turnTimer); this.turnTimer = null; this.timerKey = key; this.deadline = null;
     if (!key) return;
-    this.deadline = Date.now() + seconds * 1000;
-    this.turnTimer = setTimeout(() => { if (this.timerKey !== key) return; this.onTimeout(this.currentId); this.syncTimer(); this.onChange('state'); }, seconds * 1000); this.turnTimer.unref?.();
+    this.deadline = this.clock.now() + seconds * 1000;
+    this.turnTimer = this.clock.setTimeout(() => { if (this.timerKey !== key) return; this.onTimeout(this.currentId); this.syncTimer(); this.onChange('state'); }, seconds * 1000); this.turnTimer.unref?.();
   }
   onTimeout(id) {
     if (this.debt) {

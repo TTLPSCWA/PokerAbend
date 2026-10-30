@@ -135,6 +135,7 @@ function kitGame(def) {
         </div>
         <div class="meta" id="kg-meta" aria-live="polite"></div>
         <div class="top-right">
+          <span id="kg-pause-control"></span>
           <nav class="topnav" aria-label="Seitenleisten">
             <button class="nav-btn" data-kit-panel="log">${svg('<path d="M4 6h16M4 12h16M4 18h10"/>')}<span>Verlauf</span></button>
             <button class="nav-btn" data-kit="look" id="kg-nav-look" hidden aria-label="Ansehen">${svg('<circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/>')}<span>Ansehen</span></button>
@@ -241,11 +242,10 @@ function kitGame(def) {
   }
 
   // Restzeit des Zug-Timers anzeigen (Serverzeit, an die eigene Uhr angeglichen)
-  let clockOffset = 0;
   function tickClock() {
     const el = $('#kg-clock');
     if (!el || !S?.deadline) return;
-    const left = Math.max(0, Math.ceil((S.deadline - (Date.now() + clockOffset)) / 1000));
+    const left = Math.max(0, Math.ceil((S.deadline - gameNow(S)) / 1000));
     el.textContent = `noch ${left} s`;
     el.classList.toggle('urgent', left <= 10);
   }
@@ -259,6 +259,7 @@ function kitGame(def) {
     document.body.classList.toggle('marks', !!prefs.marks);
     $('#kg-code').textContent = S.code;
     $('#kg-nav-host').hidden = !S.you?.isHost;
+    $('#kg-pause-control').innerHTML = gamePauseButtonHTML(S);
     $('#kg-nav-look').hidden = S.phase === 'lobby';
     const myTurn = S.turnId && S.turnId === S.you?.id;
     // status(S) darf das Spiel selbst liefern (z. B. „Schiffe setzen“, wenn niemand dran ist)
@@ -291,6 +292,7 @@ function kitGame(def) {
     document.documentElement.style.setProperty('--dock-h', $('#kg-dock').offsetHeight + 'px');
     if (panel) renderPanel();
     def.afterRender?.(S);
+    renderGamePause(S);
     GameDesign.fit($('#kg'));
     GameDesign.watch($('#kg'), () => {
       setupHand();
@@ -458,6 +460,7 @@ function kitGame(def) {
         <input type="checkbox" role="switch" data-kit-set="${o.key}" ${S.settings[o.key] ? 'checked' : ''} ${off}></label>`).join('');
       const fields = opts.length ? `${selects}${nums ? `<div class="host-grid">${nums}</div>` : ''}<div class="kg-switches">${bools}</div>` : '';
       body.innerHTML = `<div class="big-actions">
+          ${gamePauseButtonHTML(S)}
           ${S.phase !== 'playing' ? `<button class="btn btn-brass" data-kit="start">${ICON.play} ${S.phase === 'over' ? 'Nochmal' : S.roundNo ? `Nächste ${RW}` : `${RW} starten`}</button>` : ''}
           <button class="btn btn-outline-red" data-kit="newGame" ${S.phase === 'playing' ? 'disabled title="Geht nur zwischen zwei Runden"' : ''}>Neues Spiel (Punkte auf null)</button>
         </div>
@@ -603,7 +606,6 @@ function kitGame(def) {
       else if (prev && prev.roundNo === st.roundNo) cue = def.sounds?.(st, prev) || actSound(st.acts, prev.acts);
       if (cue) GameDesign.sound(def.id, cue);
       sortHand(st);
-      clockOffset = (st.now || Date.now()) - Date.now();
       def.onState?.(st, prev);
       render();
       if (cue) GameDesign.pulse($('#kg'), cue);

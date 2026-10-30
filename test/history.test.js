@@ -14,7 +14,7 @@ function room(names = ['Anna', 'Ben']) {
   return { r, ids };
 }
 const turn = (r) => r.playerAt(r.table.hand.toAct);
-const stop = (r) => { clearTimeout(r.turnTimer); clearTimeout(r.nextTimer); clearTimeout(r.nudgeTimer); };
+const stop = (r) => { r.clock.clearTimeout(r.turnTimer); r.clock.clearTimeout(r.nextTimer); r.clock.clearTimeout(r.nudgeTimer); };
 
 test('Einträge haben Kategorie und Hand', () => {
   const { r, ids } = room();

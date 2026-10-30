@@ -158,7 +158,7 @@ export class PartyRoom extends TurnRoom {
 
   finishGame(reason = '') {
     this.stage = null; this.cur = null;
-    clearTimeout(this.turnTimer); this.turnTimer = null; this.deadline = null; this.timerKey = null;
+    this.clock.clearTimeout(this.turnTimer); this.turnTimer = null; this.deadline = null; this.timerKey = null;
     const ids = this.roundPlayers || this.order;
     const best = Math.max(0, ...ids.map((id) => this.gamePts[id] || 0));
     const winners = best > 0 ? ids.filter((id) => (this.gamePts[id] || 0) === best && this.players.has(id)) : [];
@@ -179,22 +179,22 @@ export class PartyRoom extends TurnRoom {
 
   // ---------- Uhr pro Stufe ----------
   timerActive() { return true; }
-  afterChange() { this.checkDone(); this.syncTimer(); }
+  afterChange() { if (!this.gamePaused) { this.checkDone(); this.syncTimer(); } }
   syncTimer() {
     const key = this.phase === 'playing' && this.stage ? `${this.roundNo}:${this.q}:${this.stage}:${this.sub}` : null;
     if (key === this.timerKey) return;
-    clearTimeout(this.turnTimer); clearTimeout(this.nudgeTimer);
+    this.clock.clearTimeout(this.turnTimer); this.clock.clearTimeout(this.nudgeTimer);
     this.turnTimer = null; this.nudgeTimer = null; this.deadline = null; this.timerKey = key;
     if (!key) return;
     const secs = this.stageSecs(this.stage);
     if (!(secs > 0)) return;
-    this.deadline = Date.now() + secs * 1000;
-    clearTimeout(this.nudgeTimer); this.nudgeTimer = null;
+    this.deadline = this.clock.now() + secs * 1000;
+    this.clock.clearTimeout(this.nudgeTimer); this.nudgeTimer = null;
     if (this.settings.nudge && this.stage !== 'reveal' && secs * 1000 > AUTO_NUDGE_BEFORE + 5000) {
-      this.nudgeTimer = setTimeout(() => { if (this.timerKey === key) this.autoNudge(); }, secs * 1000 - AUTO_NUDGE_BEFORE);
+      this.nudgeTimer = this.clock.setTimeout(() => { if (this.timerKey === key) this.autoNudge(); }, secs * 1000 - AUTO_NUDGE_BEFORE);
       this.nudgeTimer.unref?.();
     }
-    this.turnTimer = setTimeout(() => {
+    this.turnTimer = this.clock.setTimeout(() => {
       this.turnTimer = null;
       if (this.timerKey !== key) return;
       try { this.advance(); this.checkDone(); } catch { /* nichts zu tun */ }
@@ -213,7 +213,7 @@ export class PartyRoom extends TurnRoom {
     if (!from || !target || fromId === targetId) throw new Error('Das geht nicht');
     if (!this.order.includes(fromId) || !this.order.includes(targetId)) throw new Error('Nur Mitspieler können anstupsen');
     if (!this.isReady(fromId)) throw new Error('Erst selbst fertig werden, dann anstupsen');
-    const now = Date.now();
+    const now = this.clock.now();
     if (now - (from.nudgeSentAt || 0) < NUDGE_GAP) throw new Error('Nicht so schnell – höchstens alle 10 Sekunden');
     if (!this.waiting(this.stage).includes(targetId)) return; // wer nichts mehr zu tun hat (z. B. Autor in der Abstimmung): nichts senden, nichts verraten
     if (!this.sendNudge(target, from.name)) throw new Error(`${target.name} wurde gerade erst angestupst`);
@@ -221,7 +221,7 @@ export class PartyRoom extends TurnRoom {
     this.say(`${from.name} stupst ${target.name} an`, 'react');
   }
   sendNudge(target, fromName) {
-    const now = Date.now();
+    const now = this.clock.now();
     if (now - (target.nudgedAt || 0) < NUDGE_GAP) return false;
     target.nudgedAt = now;
     this.onChange('nudge', { to: target.id, from: fromName, text: NUDGE_LINES[Math.floor(Math.random() * NUDGE_LINES.length)] });
@@ -285,8 +285,8 @@ export class PartyRoom extends TurnRoom {
     return v;
   }
 
-  onAbort() { this.past = []; this.stage = null; this.cur = null; this.gamePts = {}; clearTimeout(this.turnTimer); clearTimeout(this.nudgeTimer); this.turnTimer = null; this.nudgeTimer = null; this.deadline = null; this.timerKey = null; }
-  dispose() { super.dispose(); clearTimeout(this.nudgeTimer); this.nudgeTimer = null; }
+  onAbort() { this.past = []; this.stage = null; this.cur = null; this.gamePts = {}; this.clock.clearTimeout(this.turnTimer); this.clock.clearTimeout(this.nudgeTimer); this.turnTimer = null; this.nudgeTimer = null; this.deadline = null; this.timerKey = null; }
+  dispose() { super.dispose(); this.clock.clearTimeout(this.nudgeTimer); this.nudgeTimer = null; }
 }
 
 // Ereignisse, die alle Partyspiele zusätzlich verstehen

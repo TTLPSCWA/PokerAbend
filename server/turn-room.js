@@ -52,7 +52,7 @@ export class TurnRoom extends BaseRoom {
   lobbyInfo() {
     const seated = this.seats.map((id) => this.players.get(id)).filter((p) => p && !p.kicked);
     const watchers = [...this.players.values()].filter((p) => !p.kicked && !this.seats.includes(p.id) && !p.bot).length;
-    return { seats: seated.map((p) => ({ name: p.name, avatar: p.avatar, bot: !!p.bot })), max: this.opts.maxPlayers, watchers, status: this.lobbyStatus() };
+    return { seats: seated.map((p) => ({ name: p.name, avatar: p.avatar, bot: !!p.bot })), max: this.opts.maxPlayers, watchers, status: this.gamePaused ? 'Spiel pausiert' : this.lobbyStatus() };
   }
   lobbyStatus() { return this.phase === 'playing' ? `Runde #${this.roundNo} läuft` : this.phase === 'over' ? `Runde #${this.roundNo} vorbei` : 'wartet auf Start'; }
   get busy() { return this.phase === 'playing'; }
@@ -71,16 +71,16 @@ export class TurnRoom extends BaseRoom {
   timerActive() { return true; }   // Haken: läuft die Uhr gerade? (z. B. nicht beim Schiffe-Setzen)
   onTimeout() {}                   // Haken: Zeit abgelaufen – das Spiel entscheidet für den, der dran ist
   // Nach jedem Ereignis (Plattform ruft afterChange): Uhr starten, neu starten oder stoppen
-  afterChange() { this.syncTimer(); }
+  afterChange() { if (!this.gamePaused) this.syncTimer(); }
   syncTimer() {
     const secs = Number(this.settings.turnTime) || 0;
     const key = this.phase === 'playing' && secs > 0 && this.currentId && this.timerActive() ? `${this.roundNo}:${this.currentId}:${this.moveNo}` : null;
     if (key === this.timerKey) return;
-    clearTimeout(this.turnTimer);
+    this.clock.clearTimeout(this.turnTimer);
     this.turnTimer = null; this.deadline = null; this.timerKey = key;
     if (!key) return;
-    this.deadline = Date.now() + secs * 1000;
-    this.turnTimer = setTimeout(() => {
+    this.deadline = this.clock.now() + secs * 1000;
+    this.turnTimer = this.clock.setTimeout(() => {
       this.turnTimer = null;
       if (this.timerKey !== key) return;
       try { this.onTimeout(this.currentId); } catch { /* nichts zu entscheiden */ }
@@ -89,7 +89,7 @@ export class TurnRoom extends BaseRoom {
     }, secs * 1000);
     this.turnTimer.unref?.();
   }
-  dispose() { clearTimeout(this.turnTimer); this.turnTimer = null; }
+  dispose() { this.clock.clearTimeout(this.turnTimer); this.turnTimer = null; super.dispose(); }
 
 
   sit(id) {
@@ -170,6 +170,7 @@ export class TurnRoom extends BaseRoom {
   }
 
   requireTurn(id) {
+    if (this.gamePaused) throw new Error('Das Spiel ist angehalten');
     if (this.phase !== 'playing') throw new Error('Gerade läuft keine Runde');
     if (this.currentId !== id) throw new Error('Du bist nicht dran');
   }
@@ -230,7 +231,7 @@ export class TurnRoom extends BaseRoom {
     // Mitspieler in Sitzreihenfolge zuerst, dann Zuschauer
     people.sort((a, b) => (this.seats.indexOf(a.id) + 1 || 99) - (this.seats.indexOf(b.id) + 1 || 99));
     return {
-      code: this.code, game: this.game, now: Date.now(),
+      code: this.code, game: this.game, ...this.pauseView(),
       variant: this.variant, variantName: this.variantLabel || this.variant,
       you: me ? { id: me.id, name: me.name, isHost: me.id === this.hostId, playing: this.seats.includes(me.id), inRound: this.order.includes(me.id) } : null,
       hostId: this.hostId, settings: this.settings, phase: this.phase, roundNo: this.roundNo, turnId: this.currentId, deadline: this.deadline, dir: this.dir, acts: this.phase === 'lobby' ? {} : this.acts, moves: this.phase === 'lobby' ? [] : this.moves.slice(-40),

@@ -2,6 +2,7 @@
 // Jedes Spiel erweitert diese Klasse (siehe games/poker/room.js) und füllt die Haken unten.
 import { randomBytes } from 'node:crypto';
 import { cleanName } from './security.js';
+import { RoomClock } from './room-clock.js';
 
 export const AVATARS = ['🦊', '🐻', '🐼', '🐸', '🦉', '🐯', '🐙', '🦄', '🐺', '🐧', '🦁', '🐢'];
 export const MAX_PEOPLE = 30;         // Spieler und Zuschauer pro Raum
@@ -14,6 +15,7 @@ const CAT_OF_KIND = { hand: 'hand', bet: 'action', street: 'cards', win: 'win', 
 export class BaseRoom {
   constructor(code, onChange) {
     this.code = code;
+    this.clock = new RoomClock();
     this.players = new Map(); // id → Spieler
     this.hostId = null;
     this.log = [];            // ganzer Verlauf: { n, text, kind, cat, hand, at }
@@ -31,12 +33,26 @@ export class BaseRoom {
   get busy() { return false; }       // läuft gerade eine Runde? Dann wird nicht gespeichert
   playerFields() { return {}; }      // spielspezifische Felder für neue Spieler
   leaveGame() { return false; }      // beim Entfernen: true = erst nach der laufenden Runde verschwinden
-  dispose() {}                       // Timer stoppen, wenn der Raum gelöscht wird
+  dispose() { this.clock.dispose(); } // Timer stoppen, wenn der Raum gelöscht wird
   afterChange() {}                   // nach jedem Ereignis: Timer nachziehen, automatische Züge …
   view() { return {}; }              // was ein Spieler sehen darf (nur das!)
   // Für die Liste der offenen Tische – NUR Unbedenkliches: { seats: [{ name, avatar, bot }], max, watchers, status }. null = nicht listen.
   lobbyInfo() { return null; }
   snapshot() { return {}; }          // Spielstand zum Speichern
+
+  // Gemeinsame Sofort-Pause: nur der Host; ein expliziter Wert macht Wiederholungen sicher.
+  get gamePaused() { return this.clock.paused; }
+  pauseView() { return { gamePaused: this.gamePaused, now: this.clock.now() }; }
+  setGamePaused(id, value) {
+    this.requireHost(id);
+    if (typeof value !== 'boolean') throw new Error('Bitte Pause oder Weiterspielen wählen');
+    if (value === this.gamePaused) return;
+    if (value && !this.busy && !this.started) throw new Error('Gerade läuft kein Spiel');
+    this.clock.setPaused(value);
+    this.onGamePause(value);
+    this.say(value ? 'Der Host hat das Spiel für alle angehalten' : 'Der Host setzt das Spiel fort', 'warn');
+  }
+  onGamePause() {} // Haken: zusätzliche Spielanzeigen auf die Pause abstimmen
 
   // ---------- Spieler ----------
   // Name und Emoji-Avatar kommen aus der Lobby

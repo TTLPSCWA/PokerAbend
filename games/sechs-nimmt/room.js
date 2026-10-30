@@ -88,11 +88,11 @@ export class Room extends TurnRoom {
   syncTimer() {
     const key = this.phase === 'playing' ? `${this.roundNo}:${this.deal}:${this.trick}:${this.stage}:${this.index}` : null;
     if (key === this.timerKey) return;
-    clearTimeout(this.turnTimer); this.turnTimer = null; this.timerKey = key; this.deadline = null;
+    this.clock.clearTimeout(this.turnTimer); this.turnTimer = null; this.timerKey = key; this.deadline = null;
     if (!key) return;
     const ms = this.stage === 'reveal' ? 650 : this.settings.turnTime * 1000;
-    this.deadline = Date.now() + ms;
-    this.turnTimer = setTimeout(() => { if (this.timerKey !== key) return; this.onTimeout(); this.syncTimer(); this.onChange('state'); }, ms);
+    this.deadline = this.clock.now() + ms;
+    this.turnTimer = this.clock.setTimeout(() => { if (this.timerKey !== key) return; this.onTimeout(); this.syncTimer(); this.onChange('state'); }, ms);
     this.turnTimer.unref?.();
   }
   onTimeout() {

@@ -12,7 +12,7 @@ function room(names = ['Anna', 'Ben', 'Carla'], settings = {}) {
 }
 const turn = (r) => r.playerAt(r.table.hand.toAct);
 function finishHand(r) { while (r.handRunning) r.act(turn(r).id, { type: 'fold' }); }
-const stop = (r) => { clearTimeout(r.turnTimer); clearTimeout(r.nextTimer); clearTimeout(r.nudgeTimer); for (const g of r.gifts.values()) clearTimeout(g.timer); };
+const stop = (r) => { r.clock.clearTimeout(r.turnTimer); r.clock.clearTimeout(r.nextTimer); r.clock.clearTimeout(r.nudgeTimer); for (const g of r.gifts.values()) r.clock.clearTimeout(g.timer); };
 const total = (r) => [...r.players.values()].reduce((a, p) => a + r.chipsOf(p), 0);
 
 // ---------- Steigende Blinds: Rechnung ----------

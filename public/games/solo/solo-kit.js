@@ -10,8 +10,7 @@
 'use strict';
 
 function soloGame(def) {
-  let L = null, loading = false, offset = 0, key = '', local = {}, round = null, submitted = false, raf = 0;
-  const serverNow = () => Date.now() + offset;
+  let L = null, loading = false, key = '', local = {}, round = null, submitted = false, raf = 0;
   const ensureLogic = () => {
     if (L || loading) return;
     loading = true;
@@ -25,8 +24,8 @@ function soloGame(def) {
     ensureLogic();
     if (!round && L && G?.seed) round = L.makeRound(G.seed, G.level, { ...G.options, playMs: G.playMs });
     const c = {
-      S, G, L, round, local, t: G ? serverNow() - G.t0 : 0,
-      canPlay: !!(G && G.stage === 'write' && G.canAnswer && G.mine === null && !submitted),
+      S, G, L, round, local, t: G ? gameNow(S) - G.t0 : 0,
+      canPlay: !!(!S.gamePaused && G && G.stage === 'write' && G.canAnswer && G.mine === null && !submitted),
       submitted: submitted || (G?.mine ?? null) !== null,
       submit,
       refresh: () => refresh(c),
@@ -34,6 +33,7 @@ function soloGame(def) {
     return c;
   }
   async function submit(payload) {
+    if (kit.S?.gamePaused) return;
     if (submitted) return;
     submitted = true;
     const r = await send('solo', { payload });
@@ -49,7 +49,7 @@ function soloGame(def) {
   function loop() {
     raf = 0;
     const S = kit?.S;
-    if (!S || session?.game !== def.id || S.g?.stage !== 'write' || document.hidden) return;
+    if (!S || S.gamePaused || session?.game !== def.id || S.g?.stage !== 'write' || document.hidden) return;
     const c = ctxOf(S);
     if (c.round && c.canPlay) {
       def.tick?.(c);
@@ -61,7 +61,7 @@ function soloGame(def) {
   document.addEventListener('visibilitychange', () => { if (!document.hidden && !raf) raf = requestAnimationFrame(loop); });
   document.addEventListener('keydown', (e) => {
     const S = kit?.S;
-    if (!S || session?.game !== def.id || !def.onKey || e.target.closest?.('input, textarea, select')) return;
+    if (!S || S.gamePaused || session?.game !== def.id || !def.onKey || e.target.closest?.('input, textarea, select')) return;
     const c = ctxOf(S);
     if (c.round && c.canPlay) def.onKey(e, c);
   });
@@ -79,7 +79,7 @@ function soloGame(def) {
       const c = ctxOf(S);
       if (!c.round) return '<div class="so-wait" role="status">Die Runde wird vorbereitet …</div>';
       if (c.submitted) return `<div class="so-wait" role="status"><p>${S.g.mine ? `Deine Wertung: <b>${S.g.mine.pts}</b> Punkte` : 'Abgegeben.'}</p><p class="hint">Die Ergebnisse siehst du, sobald alle fertig sind oder die Zeit abläuft.</p></div>`;
-      if (!c.canPlay) return '<div class="so-wait" role="status"><p>Du schaust zu.</p></div>';
+      if (!c.G.canAnswer) return '<div class="so-wait" role="status"><p>Du schaust zu.</p></div>';
       return `<div id="so-area" class="so-area so-${def.id}" data-sig="${esc(def.sig(c))}">${def.render(c)}</div>`;
     },
     writeForm(S) { const c = ctxOf(S); return def.form && c.round && c.canPlay ? def.form(c) : ''; },
@@ -93,8 +93,7 @@ function soloGame(def) {
     },
     onClick(el, S, e) { const c = ctxOf(S); if (c.round) def.onClick?.(el, c, e); },
     afterRender(S) {
-      offset = S.now - Date.now();
-      if (S.g?.stage === 'write' && !raf) raf = requestAnimationFrame(loop);
+      if (!S.gamePaused && S.g?.stage === 'write' && !raf) raf = requestAnimationFrame(loop);
     },
   });
   return Object.assign(kit, { ctx: () => ctxOf(kit.S) });

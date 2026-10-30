@@ -20,7 +20,7 @@ const play = (r, p, action) => { r.act(p.id, action); };
 const checkOrCall = (r) => { const L = r.table.legal(h(r).toAct); play(r, turn(r), { type: L.canCheck ? 'check' : 'call' }); };
 // Hat X in dieser Hand schon so gehandelt? (lastAction wird pro Straße geleert, der Verlauf nicht)
 const did = (r, x, verb) => r.log.some((l) => l.text === `${x.name} ${verb}`);
-const stop = (r) => { clearTimeout(r.turnTimer); clearTimeout(r.nextTimer); clearTimeout(r.nudgeTimer); };
+const stop = (r) => { r.clock.clearTimeout(r.turnTimer); r.clock.clearTimeout(r.nextTimer); r.clock.clearTimeout(r.nudgeTimer); };
 // Bis zum Flop alle mitgehen lassen
 function toFlop(r) { while (h(r).street === 'preflop') checkOrCall(r); }
 
@@ -178,7 +178,7 @@ test('Anstupsen: Host-Schalter und Zuschauer', () => {
 test('Automatisch angestupst, wenn jemand trödelt – einmal pro Zug, nicht wenn angehalten', async () => {
   const { r, ids, events } = room();
   r.nudgeAfter = 40;
-  clearTimeout(r.nudgeTimer); r.nudgeKey = null; r.afterChange(); // mit kurzer Frist neu planen
+  r.clock.clearTimeout(r.nudgeTimer); r.nudgeKey = null; r.afterChange(); // mit kurzer Frist neu planen
   const target = turn(r);
   await wait(90);
   const auto = events.filter((e) => e.kind === 'nudge');

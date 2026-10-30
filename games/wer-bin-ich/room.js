@@ -115,11 +115,11 @@ export class Room extends TurnRoom {
   }
   beginPlay() {
     this.stage = 'play'; this.sub = 'ask'; this.turnQ = 0;
-    this.startedAt = Date.now();
-    clearTimeout(this.limitTimer);
+    this.startedAt = this.clock.now();
+    this.clock.clearTimeout(this.limitTimer);
     const lim = Number(this.settings.limitMin) || 0;
     if (lim > 0) {
-      this.limitTimer = setTimeout(() => { this.limitTimer = null; if (this.phase === 'playing') { this.finish('Das Zeitlimit des Abends ist um'); this.onChange('state'); } }, lim * 60000);
+      this.limitTimer = this.clock.setTimeout(() => { this.limitTimer = null; if (this.phase === 'playing') { this.finish('Das Zeitlimit des Abends ist um'); this.onChange('state'); } }, lim * 60000);
       this.limitTimer.unref?.();
     }
     this.say('Alle Zettel hängen. Wer fängt an? – ' + this.name(this.order[this.turn]), 'cards');
@@ -308,7 +308,7 @@ export class Room extends TurnRoom {
         : this.sub === 'vote' ? targetId !== this.q.by && !this.q.answers[targetId]
           : this.sub === 'gvote' ? targetId !== this.gv.by && !(targetId in this.gv.votes) : false;
     if (!waiting) return;
-    const now = Date.now();
+    const now = this.clock.now();
     if (now - (this.nudgeAt[fromId] || 0) < NUDGE_GAP) throw new Error('Nicht so schnell – höchstens alle 10 Sekunden');
     if (now - (target.nudgedAt || 0) < NUDGE_GAP) throw new Error(`${target.name} wurde gerade erst angestupst`);
     this.nudgeAt[fromId] = now; target.nudgedAt = now;
@@ -345,16 +345,16 @@ export class Room extends TurnRoom {
     if (this.phase !== 'playing') throw new Error('Gerade läuft keine Runde');
     this.expire();
   }
-  afterChange() { this.syncTimer(); }
+  afterChange() { if (!this.gamePaused) this.syncTimer(); }
   syncTimer() {
     const key = this.phase === 'playing' && this.stage && this.stage !== 'over' ? `${this.roundNo}:${this.stage}:${this.sub}:${this.moveNo}` : null;
     if (key === this.stageKey) return;
-    clearTimeout(this.stageTimer); this.stageTimer = null; this.deadline = null; this.stageKey = key;
+    this.clock.clearTimeout(this.stageTimer); this.stageTimer = null; this.deadline = null; this.stageKey = key;
     if (!key) return;
     const secs = this.stageSecs();
     if (!(secs > 0)) return;
-    this.deadline = Date.now() + secs * 1000;
-    this.stageTimer = setTimeout(() => {
+    this.deadline = this.clock.now() + secs * 1000;
+    this.stageTimer = this.clock.setTimeout(() => {
       this.stageTimer = null;
       if (this.stageKey !== key) return;
       try { this.expire(); } catch { /* nichts zu tun */ }
@@ -363,8 +363,8 @@ export class Room extends TurnRoom {
     }, secs * 1000);
     this.stageTimer.unref?.();
   }
-  clearTimers() { clearTimeout(this.stageTimer); clearTimeout(this.limitTimer); this.stageTimer = null; this.limitTimer = null; this.deadline = null; this.stageKey = null; }
-  dispose() { this.clearTimers(); }
+  clearTimers() { this.clock.clearTimeout(this.stageTimer); this.clock.clearTimeout(this.limitTimer); this.stageTimer = null; this.limitTimer = null; this.deadline = null; this.stageKey = null; }
+  dispose() { this.clearTimers(); super.dispose(); }
   onAbort() { this.clearTimers(); this.reset(); }
 
   // ---------- Aussteigen ----------

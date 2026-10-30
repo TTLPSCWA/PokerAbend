@@ -494,6 +494,8 @@ io.on('connection', (socket) => {
           player = room?.players.get(socket.data.playerId);
           if (!room || !player) throw new Error('Du bist an keinem Tisch');
         }
+        // Auch direkte Socket-Aufrufe dürfen die gemeinsame Pause nicht umgehen.
+        if (room?.gamePaused && !['gamePause', 'freeze', 'park', 'leave', 'closeTable', 'abortRound', 'makeHost', 'unlisted'].includes(event)) throw new Error('Das Spiel ist angehalten – der Host setzt es fort');
         const res = fn(payload || {}, room, player);
         const r = res?.closed ? null : (res?.room || room);
         if (r) { r.afterChange(); if (!res?.frameOnly) broadcast(r); if (!r.busy) save(); }
@@ -564,6 +566,8 @@ io.on('connection', (socket) => {
   // Host: Tisch privat machen (nicht in der Liste der offenen Tische)
   on('unlisted', ({ value }, room, p) => { room.requireHost(p.id); room.unlisted = !!value; archiveReview(room); save(); });
 
+  on('gamePause', ({ paused }, room, p) => { room.setGamePaused(p.id, paused); });
+
   // Ereignisse der Spiele: jedes Spiel bekommt nur seine eigenen
   for (const event of gameEvents()) {
     on(event, (d, room, p) => {
@@ -627,7 +631,7 @@ io.on('connection', (socket) => {
   });
 
   // Host: laufende Runde ohne Wertung abbrechen (Einsätze zurück)
-  on('abortRound', (_d, room, p) => { room.abortRound(p.id); });
+  on('abortRound', (_d, room, p) => { room.abortRound(p.id); if (room.gamePaused) room.setGamePaused(p.id, false); });
 
   // Host: Tisch schließen. Alle landen auf der Startseite, der Raum ist weg und der Code frei. Ergebnisse stehen schon in der Bestenliste.
   on('closeTable', (_d, room, p) => {
@@ -682,7 +686,7 @@ io.on('connection', (socket) => {
 setInterval(() => {
   let changed = false;
   for (const [code, r] of rooms) {
-    if (r.dropAway(AWAY_MIN * 60000)) { r.afterChange(); broadcast(r); changed = true; }
+    if (!r.gamePaused && r.dropAway(AWAY_MIN * 60000)) { r.afterChange(); broadcast(r); changed = true; }
     const anyone = [...r.players.values()].some((p) => p.connected && !p.bot);
     if (!anyone && (r.abandoned || Date.now() - r.lastActivity > ROOM_TTL_MIN * 60000)) {
       closeRoom(r); changed = true;

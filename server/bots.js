@@ -31,6 +31,7 @@ export function removeBot(room, hostId, id) {
 
 // Auch gleichzeitige Vorbereitungen erledigen: Flotte setzen, Einsatz und Versicherung.
 export function nextBot(room) {
+  if (room.gamePaused) return null;
   const isBot = (id) => room.players.get(id)?.bot && !room.players.get(id)?.kicked;
   if (room.table) {
     const h = room.table.hand;
@@ -47,6 +48,7 @@ export function nextBot(room) {
 
 // Poker: ein Bot ohne Chips kauft zwischen zwei Händen nach, solange der Tisch das erlaubt (sonst bleibt er pleite sitzen)
 export function brokeBot(room) {
+  if (room.gamePaused) return null;
   if (!room.table || (room.table.hand && !room.table.hand.done)) return null;
   const r = room.settings.rebuy;
   if (r === 'off') return null;

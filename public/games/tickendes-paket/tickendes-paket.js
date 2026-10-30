@@ -32,7 +32,7 @@
       const g = S.g;
       const myTurn = S.turnId === S.you?.id && S.phase === 'playing';
       const boom = g.exploded && g.exploded.bomb === g.bomb - 1 ? `<div class="tp-boom" role="status">💥 Geplatzt bei ${nameOf(S, g.exploded.id)}!</div>` : '';
-      const fuse = g.visibleFuse && g.fuseLeft !== null ? `<div class="tp-fuse" data-fuse="${Date.now() + g.fuseLeft}" role="timer" aria-label="Zünder">⏱ ${Math.ceil(g.fuseLeft / 1000)} s</div>` : '';
+      const fuse = g.visibleFuse && g.fuseLeft !== null ? `<div class="tp-fuse" data-fuse="${S.now + g.fuseLeft}" role="timer" aria-label="Zünder">⏱ ${Math.ceil(g.fuseLeft / 1000)} s</div>` : '';
       const prompt = g.prompt ? `<div class="tp-prompt ${myTurn ? 'mine' : ''}"><small>${nameOf(S, S.turnId)} muss nennen:</small><b>${esc(g.prompt.cat)}</b><span class="tp-letter" aria-label="mit dem Buchstaben ${esc(g.prompt.letter)}">${esc(g.prompt.letter)}</span></div>` : '';
       const used = g.used.length ? `<div class="tp-used" aria-label="Schon genannt"><small>Schon genannt:</small> ${g.used.map((w) => `<i>${esc(w)}</i>`).join('')}</div>` : '';
       return `<div class="kg-table tp-wrap"><div class="tp-pkg" aria-hidden="true"><span class="tp-box ${myTurn ? 'hot' : ''}">📦</span></div>
@@ -70,7 +70,7 @@
   });
   // Sichtbarer Zünder: Sekunden herunterzählen
   setInterval(() => {
-    document.querySelectorAll('[data-fuse]').forEach((el) => { el.textContent = `⏱ ${Math.max(0, Math.ceil((Number(el.dataset.fuse) - Date.now()) / 1000))} s`; });
+    document.querySelectorAll('[data-fuse]').forEach((el) => { el.textContent = `⏱ ${Math.max(0, Math.ceil((Number(el.dataset.fuse) - gameNow(kit.S)) / 1000))} s`; });
   }, 250);
   void kit; void cd;
 }

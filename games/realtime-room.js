@@ -40,7 +40,7 @@ export class RealtimeRoom extends TurnRoom {
     }
     this.crown = { x: 450, y: 300, holder: null, lockedUntil: 0 };
     this.wave = 0; this.waveAt = 0; this.hazards = [];
-    this.deadline = Date.now() + COUNTDOWN_MS + this.settings.playSecs * 1000;
+    this.deadline = this.clock.now() + COUNTDOWN_MS + this.settings.playSecs * 1000;
   }
   canJump() { return this.kind === 'laser' || this.kind === 'floor' && this.settings.jump; }
   input(id, { runId, round, seq, x, y, jump = false } = {}) {
@@ -204,12 +204,13 @@ export class RealtimeRoom extends TurnRoom {
   gameView(id) { return { ...this.frame(), inputSeq: this.inputs.get(id)?.seq || 0 }; }
   publicPlayer(p) { return { pts: this.points?.[p.id] || 0, eliminated: this.bodies.find((b) => b.id === p.id)?.alive === false }; }
   afterChange() {
+    if (this.gamePaused) return;
     if (this.phase !== 'playing') return this.stopLoop();
     if (this.loop) return;
-    this.loop = setInterval(() => { this.step(); if (this.phase === 'playing' && this.tickNo % 2 === 0) this.onChange('frame'); }, STEP_MS);
+    this.loop = this.clock.setInterval(() => { this.step(); if (this.phase === 'playing' && this.tickNo % 2 === 0) this.onChange('frame'); }, STEP_MS);
     this.loop.unref?.();
   }
-  stopLoop() { clearInterval(this.loop); this.loop = null; }
+  stopLoop() { this.clock.clearInterval(this.loop); this.loop = null; }
   onAbort() { this.stopLoop(); this.inputs.clear(); this.deadline = null; this.bodies = []; this.runId = null; }
   dispose() { this.stopLoop(); super.dispose(); }
   static restore(data, onChange) { return TurnRoom.restoreInto(new this(data.code, data.settings, onChange), data); }

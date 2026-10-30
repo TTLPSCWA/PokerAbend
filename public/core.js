@@ -25,6 +25,42 @@ let session = null;                       // { code, token, game }
 let account = { mode: 'open', games: [] }; // aus /me: Passwort oder offen, und welche Spiele es gibt
 const socket = io({ transports: ['websocket', 'polling'] });
 
+// Die Server-Spielzeit steht während einer gemeinsamen Pause; die Browseruhr läuft weiter.
+const receivedGameTimes = new WeakMap();
+function gameNow(st) {
+  if (!st) return Date.now();
+  if (!receivedGameTimes.has(st)) receivedGameTimes.set(st, Date.now());
+  return (st.now ?? Date.now()) + (st.gamePaused ? 0 : Date.now() - receivedGameTimes.get(st));
+}
+const gamePauseButtonHTML = (st) => st?.you?.isHost ? `<button type="button" class="btn btn-sm ${st.gamePaused ? 'btn-brass' : ''}" data-game-pause="${!st.gamePaused}" ${!st.gamePaused && st.phase !== 'playing' && !st.started ? 'disabled' : ''} aria-label="${st.gamePaused ? 'Spiel fortsetzen' : 'Spiel für alle pausieren'}" title="${st.gamePaused ? 'Spiel fortsetzen' : 'Spiel für alle pausieren'}">${st.gamePaused ? ICON.play : ICON.pause}<span class="game-pause-label">${st.gamePaused ? 'Fortsetzen' : 'Pause'}</span></button>` : '';
+let observedGameHeader = null;
+const gameHeaderObserver = new ResizeObserver(() => {
+  if (observedGameHeader?.isConnected) document.documentElement.style.setProperty('--topbar', observedGameHeader.offsetHeight + 'px');
+});
+function renderGamePause(st) {
+  const root = $('#game-root');
+  if (!root || !st) return;
+  const header = root.querySelector('.topbar');
+  if (header && header !== observedGameHeader) { gameHeaderObserver.disconnect(); observedGameHeader = header; gameHeaderObserver.observe(header); }
+  root.classList.toggle('game-paused', !!st.gamePaused);
+  root.querySelectorAll('#kg-main, #kg-dock, .table-wrap, #dock').forEach((el) => { el.inert = !!st.gamePaused; });
+  let banner = $('#game-pause-banner');
+  if (st.gamePaused && !banner) {
+    banner = document.createElement('section'); banner.id = 'game-pause-banner';
+    banner.className = 'game-pause-banner'; banner.setAttribute('aria-label', 'Gemeinsame Spielpause');
+    root.append(banner);
+  }
+  if (banner) {
+    banner.hidden = !st.gamePaused;
+    const content = `<div role="status"><b>${ICON.pause} Spiel pausiert</b><span>Für alle angehalten. ${st.you?.isHost ? 'Du kannst das Spiel fortsetzen.' : 'Der Host setzt das Spiel fort.'}</span></div>${gamePauseButtonHTML(st)}`;
+    if (banner.innerHTML !== content) banner.innerHTML = content;
+  }
+}
+document.addEventListener('click', (e) => {
+  const button = e.target.closest('[data-game-pause]');
+  if (button) send('gamePause', { paused: button.dataset.gamePause === 'true' });
+});
+
 // ---------- Hilfen ----------
 const avatarHTML = (p) => esc(p?.avatar || '🙂');
 const motionOff = () => prefs.calm || matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -436,6 +472,7 @@ socket.on('connect_error', async () => {
 socket.on('replaced', () => { session = null; document.body.innerHTML = '<main class="lobby"><div class="lobby-felt"><h1 class="wordmark">Spieleabend</h1><p class="lobby-sub">Du spielst gerade in einem anderen Tab weiter. Diesen Tab kannst du schließen.</p></div></main>'; });
 socket.on('kicked', () => { if (session) store.set('poker:session:' + session.code, null); leaveGame(); toast('Der Host hat dich vom Tisch genommen', true); showLobby(); });
 socket.on('state', (st) => {
+  receivedGameTimes.set(st, Date.now());
   lastState = st;
   // Der Host hat das Spiel gewechselt: neu laden, das neue Spiel kommt automatisch (gleicher Raum, gleiches Token)
   if (session && st.game && st.game !== session.game) {

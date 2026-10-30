@@ -184,10 +184,10 @@ export class Room extends TurnRoom {
     const secs = this.pending ? this.settings.responseTime : this.settings.turnTime;
     const key = this.phase === 'playing' && secs > 0 ? `${this.roundNo}:${this.currentId}:${this.moveNo}` : null;
     if (key === this.timerKey) return;
-    clearTimeout(this.turnTimer); this.timerKey = key; this.turnTimer = null; this.deadline = null;
+    this.clock.clearTimeout(this.turnTimer); this.timerKey = key; this.turnTimer = null; this.deadline = null;
     if (!key) return;
-    this.deadline = Date.now() + secs * 1000;
-    this.turnTimer = setTimeout(() => { if (this.timerKey !== key) return; this.onTimeout(this.currentId); this.syncTimer(); this.onChange('state'); }, secs * 1000); this.turnTimer.unref?.();
+    this.deadline = this.clock.now() + secs * 1000;
+    this.turnTimer = this.clock.setTimeout(() => { if (this.timerKey !== key) return; this.onTimeout(this.currentId); this.syncTimer(); this.onChange('state'); }, secs * 1000); this.turnTimer.unref?.();
   }
   onTimeout(id) {
     if (this.pending?.stage === 'react') return this.respond(id, false);

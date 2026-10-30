@@ -14,7 +14,7 @@ const toAct = (r) => r.playerAt(r.table.hand.toAct).id;
 function finishHand(r) {
   while (r.handRunning) { r.act(toAct(r), { type: 'fold' }); r.afterChange(); }
 }
-const stop = (r) => { clearTimeout(r.turnTimer); clearTimeout(r.nextTimer); };
+const stop = (r) => { r.clock.clearTimeout(r.turnTimer); r.clock.clearTimeout(r.nextTimer); };
 
 test('Aufstehen mitten in der Hand: spielt zu Ende, steht erst danach auf', () => {
   const { r, ids } = room();

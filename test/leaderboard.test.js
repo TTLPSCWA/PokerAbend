@@ -64,5 +64,5 @@ test('Spiele melden ihre Ergebnisse: Rundenspiel nach jeder Runde, Poker nach je
   assert.equal(pr.reduce((s, e) => s + e.points, 0), 0, 'Chips wandern nur, Summe bleibt 0');
   assert.equal(pr.find((e) => e.name === actor.name).win, false);
   assert.ok(pr.find((e) => e.win).points > 0);
-  clearTimeout(p.turnTimer); clearTimeout(p.nextTimer); clearTimeout(p.nudgeTimer);
+  p.clock.clearTimeout(p.turnTimer); p.clock.clearTimeout(p.nextTimer); p.clock.clearTimeout(p.nudgeTimer);
 });

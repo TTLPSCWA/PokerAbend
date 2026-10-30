@@ -43,6 +43,22 @@ async function stroke(page, touch = false) {
 }
 async function text(page, value) { await page.locator('#pk-in').fill(value); await page.locator('.pk-send').click(); }
 
+test('Malen & Raten: gemeinsame Pause erhält den Zeichenentwurf und teilt ihn nach Fortsetzen', async ({ page, app, browser }, info) => {
+  const groupOf = await group(page, app, browser, info, 'malen-raten');
+  const [, ben] = groupOf.pages;
+  try {
+    await stroke(page, info.project.name === 'mobil');
+    await page.getByRole('button', { name: 'Spiel für alle pausieren', exact: true }).click();
+    await expect(ben.locator('#game-pause-banner')).toBeVisible();
+    const strokes = await ben.evaluate(() => lastState.g.image.length);
+    await page.waitForTimeout(700);
+    expect(await ben.evaluate(() => lastState.g.image.length)).toBe(strokes);
+    await expect(page.locator('.draw-meter')).toContainText('1/60 Striche');
+    await page.locator('#game-pause-banner').getByRole('button', { name: 'Spiel fortsetzen', exact: true }).click();
+    await expect.poll(() => ben.evaluate(() => lastState.g.image.length)).toBe(1);
+  } finally { await groupOf.close(); }
+});
+
 test('Malen & Raten: Werkzeuge, Finger/Maus, geteilte Zeichnung, Neuladen, geheimes Raten und Auflösung', async ({ page, app, browser }, info) => {
   const groupOf = await group(page, app, browser, info, 'malen-raten');
   const [, ben, clara] = groupOf.pages;

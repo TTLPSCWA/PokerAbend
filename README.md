@@ -131,6 +131,12 @@ Technik: `server/tickets.js` kapselt Daten, Rechte und Markdown; `server/ticket-
 
 ## Spiele
 
+### Gemeinsame Spielpause
+
+In allen 46 Spielen und ihren Varianten kann ausschließlich der **Host** über **Pause** die gesamte Partie sofort anhalten. **Fortsetzen** startet sie an derselben Stelle mit der übrigen Zeit. Mitspieler und Zuschauer sehen einen gemeinsamen Pausenhinweis; Spielaktionen, Bots, Zug-/Rundentimer, Zünder und Echtzeitbewegungen warten. Auch lokal laufende Minispiele halten ihre Spielzeit und Eingaben an. Bei Poker bleibt zusätzlich „Pause nach dieser Hand“ erhalten.
+
+Die Pause bleibt beim Wiederverbinden bestehen. Nach einem Hostwechsel kann der neue Host fortsetzen. Zur Startseite gehen, den Tisch verlassen, eine Runde gezielt abbrechen oder den Tisch schließen bleibt möglich. Eine Pause ist kein neuer dauerhafter Spielstand: Für Server-Neustarts gelten weiterhin die bestehenden Speicherregeln. Technische Details und Prüfungen: [Gemeinsame Spielpause](docs/game-pause.md).
+
 ### Päckchen 10: Varianten und Spiel des Lebens
 
 Die **Spielvariante** wird beim Hosten und zwischen Partien unter **Host → Variante** gewählt. Ein Wechsel setzt den lokalen Tischstand und ein vorbereitetes Abendprogramm zurück. Die Auswahl bleibt bei einem Server-Neustart erhalten. Varianten sind auch pro Station im Abend-Modus wählbar. Hub-Plaketten zeigen die verfügbaren Varianten; der Verlauf nennt die aktive Variante. Die Bestenliste führt beispielsweise **UNO Flip** getrennt von UNO. Erfolge und Abzeichen zählen beide unter dem Hauptspiel zusammen.

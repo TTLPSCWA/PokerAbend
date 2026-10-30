@@ -5,7 +5,7 @@ function realtimeGame(def) {
   const keys = new Set(), held = new Map();
   let frame = null, previous = null, received = 0, raf = 0, seq = 0, sentAt = 0, lastVector = '', jump = false, canvas = null, resize = null, observed = null;
   const mine = () => session?.game === def.id && kit.S?.phase === 'playing';
-  const active = () => mine() && !document.hidden && $('#kg-panel')?.hidden !== false && !document.querySelector('dialog[open]');
+  const active = () => mine() && !kit.S.gamePaused && !document.hidden && $('#kg-panel')?.hidden !== false && !document.querySelector('dialog[open]');
   const me = () => frame?.bodies.find((p) => p.id === kit.S?.you?.id);
   function accept(next) {
     if (!next || next.game !== def.id || next.runId !== kit.S?.g?.runId) return;
@@ -52,7 +52,7 @@ function realtimeGame(def) {
     return { x: Number(all.has('right')) - Number(all.has('left')), y: Number(all.has('down')) - Number(all.has('up')) };
   }
   function pump(force = false) {
-    if (!mine() || !frame || !me()?.alive || !kit.S.you?.inRound) return;
+    if (!mine() || kit.S.gamePaused || !frame || !me()?.alive || !kit.S.you?.inRound) return;
     const now = performance.now(), v = active() ? vector() : { x: 0, y: 0 }, signature = `${v.x}:${v.y}`;
     if (!force && (now - sentAt < 160 || signature === lastVector && !jump && now - sentAt < 220)) return;
     seq = Math.max(seq, kit.S.g?.inputSeq || 0) + 1;
@@ -76,7 +76,7 @@ function realtimeGame(def) {
   function draw(now) {
     if (!canvas?.isConnected || !frame) return;
     const ctx = canvas.getContext('2d'), a = frame.arena;
-    const alpha = Math.min(1, Math.max(0, (now - received) / 100));
+    const alpha = kit.S?.gamePaused ? 1 : Math.min(1, Math.max(0, (now - received) / 100));
     ctx.clearRect(0, 0, a.width, a.height);
     ctx.fillStyle = frame.kind === 'floor' ? '#291d22' : frame.kind === 'crown' ? '#231c3d' : '#0e2430'; ctx.fillRect(0, 0, a.width, a.height);
     if (frame.kind === 'floor') {
@@ -160,7 +160,7 @@ function realtimeGame(def) {
   const kit = kitGame({
     id: def.id, name: def.name, ring: false, direction: false, roundWord: 'Runde', short: def.short, intro: def.intro,
     rules: `<h3>${esc(def.name)}</h3><ul>${def.short.map((r) => `<li>${esc(r)}</li>`).join('')}</ul><p>Pfeiltasten oder WASD zum Bewegen; Richtungsknöpfe am Handy halten. Leertaste oder Sprungknopf zum Springen. Bei Tabwechsel oder fehlenden Eingaben bleibt die Figur stehen; die Runde läuft weiter.</p>`,
-    onState(S) { seq = Math.max(seq, S.g?.inputSeq || 0); if (S.g) accept(S.g); if (S.phase !== 'playing') release(); },
+    onState(S) { seq = Math.max(seq, S.g?.inputSeq || 0); if (S.g) accept(S.g); if (S.gamePaused || S.phase !== 'playing') release(); },
     status: () => 'Alle spielen gleichzeitig',
     playerInfo: (p) => `${p.pts || 0} Pkt.${p.eliminated ? ' · ausgeschieden' : ''}`,
     hint: (S) => S.you?.inRound ? def.hint : 'Du schaust zu – beim nächsten Start kannst du mitspielen.',

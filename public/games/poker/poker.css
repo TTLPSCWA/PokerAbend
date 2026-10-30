@@ -409,8 +409,8 @@ input[type='range']::-moz-range-thumb { width: 18px; height: 18px; border-radius
   .act-main .btn { min-height: 56px; min-width: 0; }
   .act-row .waiting { flex-basis: 100%; text-align: center; }
   .act-row .long, .freeze-btn .long { display: none; }
-  /* „Alle anhalten“ steht auch im Host-Menü – oben bleibt so Platz für die Blinds */
-  .freeze-btn { display: none; }
+  /* Sofort-Pause bleibt auch am Handy direkt erreichbar; der Text steht im zugänglichen Label. */
+  .freeze-btn { display: inline-flex; padding: 8px; }
   .p-bet { font-size: 11px; font-weight: 700; color: var(--gold-text); line-height: 1.1; }
   .raise-box { width: 100%; }
   /* Seitenleisten als Schublade von unten */

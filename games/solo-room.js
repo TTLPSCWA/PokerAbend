@@ -32,7 +32,7 @@ export class SoloRoom extends PartyRoom {
   startQuestion() {
     this.subs = {}; this.reveal = null;
     this.rd = this.logic.makeRound(this.cur.seed, this.cur.level, { ...this.roundOptions(), playMs: this.playMs });
-    this.t0 = Date.now();
+    this.t0 = this.clock.now();
   }
   stageSecs(stage) {
     if (stage === 'reveal') return this.revealTime();
@@ -48,7 +48,7 @@ export class SoloRoom extends PartyRoom {
     if (this.phase !== 'playing' || this.stage !== 'write') throw new Error('Gerade läuft keine Runde');
     if (!this.canAnswer(id)) throw new Error('Du spielst in dieser Partie nicht mit');
     if (this.subs[id]) throw new Error('Du hast schon abgegeben');
-    const res = this.logic.score(this.rd, payload && typeof payload === 'object' ? payload : {}, { elapsedMs: Date.now() - this.t0, settings: this.settings });
+    const res = this.logic.score(this.rd, payload && typeof payload === 'object' ? payload : {}, { elapsedMs: this.clock.now() - this.t0, settings: this.settings });
     this.subs[id] = { pts: Math.max(0, Math.floor(res.pts) || 0), ok: !!res.ok, detail: String(res.detail ?? '').slice(0, 80) };
     if (this.order.includes(id)) this.act(id, '✓ fertig');
     this.checkDone();

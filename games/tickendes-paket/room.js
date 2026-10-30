@@ -44,9 +44,9 @@ export class Room extends TurnRoom {
     this.say(`Paket ${this.bomb} von ${this.settings.rounds} tickt – ${this.name(this.currentId)} hat es`, 'cards');
   }
   startFuse(ms) {
-    clearTimeout(this.fuseTimer);
-    this.fuseEndsAt = Date.now() + ms;
-    this.fuseTimer = setTimeout(() => { this.fuseTimer = null; if (this.phase === 'playing') { this.boom(); this.onChange('state'); } }, ms);
+    this.clock.clearTimeout(this.fuseTimer);
+    this.fuseEndsAt = this.clock.now() + ms;
+    this.fuseTimer = this.clock.setTimeout(() => { this.fuseTimer = null; if (this.phase === 'playing') { this.boom(); this.onChange('state'); } }, ms);
     this.fuseTimer.unref?.();
   }
   newPrompt() { this.prompt = { cat: CATEGORIES[randomInt(CATEGORIES.length)], letter: LETTERS[randomInt(LETTERS.length)] }; }
@@ -87,7 +87,7 @@ export class Room extends TurnRoom {
     this.moveNo++;
   }
 
-  clearFuse() { clearTimeout(this.fuseTimer); this.fuseTimer = null; }
+  clearFuse() { this.clock.clearTimeout(this.fuseTimer); this.fuseTimer = null; }
   finishRound(...args) { this.clearFuse(); return super.finishRound(...args); }
   onAbort() { this.clearFuse(); this.prompt = null; this.used = []; }
   dispose() { this.clearFuse(); super.dispose(); }
@@ -98,7 +98,7 @@ export class Room extends TurnRoom {
     return {
       bomb: this.bomb, rounds: this.settings.rounds, prompt: this.prompt, used: [...this.used], exploded: this.exploded,
       minus: { ...this.minus }, visibleFuse: !!this.settings.visibleFuse,
-      fuseLeft: this.settings.visibleFuse && this.fuseEndsAt ? Math.max(0, this.fuseEndsAt - Date.now()) : null, // nur beim sichtbaren Countdown
+      fuseLeft: this.settings.visibleFuse && this.fuseEndsAt ? Math.max(0, this.fuseEndsAt - this.clock.now()) : null, // nur beim sichtbaren Countdown
     };
   }
   static restore(data, onChange) { return TurnRoom.restoreInto(new this(data.code, data.settings, onChange), data); }

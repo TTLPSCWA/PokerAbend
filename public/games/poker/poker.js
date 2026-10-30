@@ -100,7 +100,6 @@ applyPrefs();
 // ---------- Zustand ----------
 let S = null;            // letzter Zustand vom Server
 let prevS = null;
-let clockOffset = 0;     // Server-Uhr minus Browser-Uhr
 let raiseValue = null;
 let raiseKey = null;
 let panel = null;
@@ -301,6 +300,7 @@ function render() {
   if (panel) renderPanel();
   renderSeb();
   checkGifts();
+  renderGamePause(S);
 }
 
 // Nach dem Showdown: wie die Chancen auf jeder Straße standen (nur gezeigte Hände)
@@ -365,7 +365,7 @@ function renderTable() {
       : `<div class="big">Gleich geht’s los</div><div class="sub">Der Host startet das Spiel.</div>`;
   } else if (h.done && h.result) {
     const lines = h.result.pots.map((p, i) => `<div class="${i ? 'sub' : 'big'}">${esc(p.names.join(' & '))} ${p.winners.length > 1 ? 'teilen sich' : 'gewinnt'} ${amt(p.amount)}${p.hand ? ` mit ${esc(p.hand)}` : ''}</div>`);
-    const next = S.nextAt ? Math.max(0, Math.ceil((S.nextAt - (Date.now() + clockOffset)) / 1000)) : null;
+    const next = S.nextAt ? Math.max(0, Math.ceil((S.nextAt - gameNow(S)) / 1000)) : null;
     let sub = '';
     if (S.paused) sub = 'Pause – der Host macht weiter';
     else if (next !== null) sub = `Nächste Hand in <span data-countdown>${next}</span> s`;
@@ -567,7 +567,7 @@ function tick() {
     const frozenLeft = S?.frozen ? S.hand?.frozenLeft : null;
     if (S?.hand && !S.hand.done && (S.hand.deadline || frozenLeft != null) && S.hand.turnTime) {
       const total = Math.max(1, S.hand.turnTime) * 1000;
-      const left = frozenLeft != null ? frozenLeft : S.hand.deadline - (Date.now() + clockOffset);
+      const left = frozenLeft != null ? frozenLeft : S.hand.deadline - gameNow(S);
       const f = Math.max(0, Math.min(1, left / total));
       fg.style.strokeDashoffset = String(RING * (1 - f));
       seat.classList.toggle('low', left < 8000);
@@ -576,13 +576,13 @@ function tick() {
   const bc = $('[data-blindclock]');
   const nb = S?.blinds?.next;
   if (bc && nb?.msLeft != null && S.blinds.running) {
-    const t = mmss(nb.msLeft - (Date.now() + clockOffset - S.now));
+    const t = mmss(nb.msLeft - (gameNow(S) - S.now));
     if (bc.textContent !== t) bc.textContent = t;
   }
   const mc = $('[data-myclock]');
   if (mc && S?.hand && S.legal) {
     const frozenLeft = S.frozen ? S.hand.frozenLeft : null;
-    const left = frozenLeft != null ? frozenLeft : S.hand.deadline ? S.hand.deadline - (Date.now() + clockOffset) : null;
+    const left = frozenLeft != null ? frozenLeft : S.hand.deadline ? S.hand.deadline - gameNow(S) : null;
     if (left !== null) {
       const secs = String(Math.max(0, Math.ceil(left / 1000)));
       const b = mc.firstChild;
@@ -591,7 +591,7 @@ function tick() {
     }
   }
   const cd = $('[data-countdown]');
-  if (cd && S?.nextAt) cd.textContent = Math.max(0, Math.ceil((S.nextAt - (Date.now() + clockOffset)) / 1000));
+  if (cd && S?.nextAt) cd.textContent = Math.max(0, Math.ceil((S.nextAt - gameNow(S)) / 1000));
   requestAnimationFrame(tick);
 }
 requestAnimationFrame(tick);
@@ -1380,7 +1380,6 @@ registerGame('poker', {
   },
   onState(st) {
     prevS = S; S = st;
-    clockOffset = st.now - Date.now();
     animateChips(prevS, S); syncHistory(); render(); cues(prevS, S);
   },
   onPrefs() { applyPrefs(); render(); },
