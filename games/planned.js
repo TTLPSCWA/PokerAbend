@@ -429,7 +429,7 @@ export const PLANNED = [
     art: chess(),
   }),
   spiel({
-    id: 'staedtehandel', name: 'Städtehandel', category: 'brett', minPlayers: 2, maxPlayers: 4, duration: 60, paeckchen: 'gross',
+    id: 'staedtehandel', name: 'Städtehandel (Catan-inspiriert)', category: 'brett', minPlayers: 2, maxPlayers: 4, duration: 60, paeckchen: 'gross',
     description: 'Rohstoffe erwürfeln, tauschen und eine eigene Stadt aufbauen.',
     rules: [
       'Das Spielfeld besteht aus sechseckigen Landschaften mit Zahlenchips; jede liefert einen Rohstoff.',
@@ -442,7 +442,7 @@ export const PLANNED = [
     art: hexBoard(['#7FD39A', '#C99A45', '#E3C08A', '#9DB7E8', '#D33B35', '#F7F3E8', '#1C7A43']),
   }),
   spiel({
-    id: 'gebietskampf', name: 'Gebietskampf', category: 'brett', minPlayers: 2, maxPlayers: 5, duration: 90, paeckchen: 'gross',
+    id: 'gebietskampf', name: 'Gebietskampf (Risiko-inspiriert)', category: 'brett', minPlayers: 2, maxPlayers: 5, duration: 90, paeckchen: 'gross',
     description: 'Truppen verteilen, würfeln und Gebiete erobern, bis nur noch einer übrig ist.',
     rules: [
       'Eine Weltkarte ist in Gebiete geteilt; die Gebiete werden unter den Spielern verteilt und mit Truppen besetzt.',
