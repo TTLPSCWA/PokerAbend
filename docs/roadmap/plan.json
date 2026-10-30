@@ -449,16 +449,16 @@
         "V2-00"
       ],
       "priority": "later",
-      "goal": "Ein neues rundenbasiertes Gebietseroberungsspiel im Stil von Risiko planen: eigene Karte/Gebiete, Armeen, Verstärkung, Angriffs- und Verteidigungswürfel, Gebietswechsel, Missions-/Siegbedingungen, Regeln für mehrere Spieler, Zuschauer, Reconnect, Mobilbedienung und optional passende Bots. Nicht mit dem bestehenden Backlogspiel 'risiko-wuerfeln' verwechseln. Spielmechaniken sauber auf Spielfairness prüfen und eigene Assets/Marke entwerfen.",
+      "goal": "Bestehenden geplanten Backlog-Eintrag 'gebietskampf' (Risiko-inspirierte Gebietseroberung) umsetzen, kein zweites Risiko-Spiel registrieren. Eigene Gebiete, Armeen, Verstärkung, serverseitige Würfelkonflikte und Siegbedingungen; Regeln, Mobile UI und optionale geeignete Bots.",
       "files": [
         "games/index.js",
         "games/planned.js",
         "games/roadmap.js",
-        "games/risiko/ (neu)",
-        "public/games/risiko/ (neu)",
         "games/bots.js",
-        "test/risiko.test.js (neu)",
-        "test/ui/risiko.spec.js (neu)"
+        "test/ui/risiko.spec.js (neu)",
+        "games/gebietskampf/ (spätere Implementierung)",
+        "public/games/gebietskampf/ (spätere Implementierung)",
+        "test/gebietskampf.test.js (spätere Implementierung)"
       ],
       "security": [
         "Karten-/Spielzustand und Würfelwürfe serverseitig autoritativ; keine klientseitig gefälschten Ergebnisse",
@@ -476,7 +476,9 @@
       "status": "planned",
       "implementation_commit": null,
       "completed_at": null,
-      "notes": []
+      "notes": [
+        "Repo-Abgleich am 30.10.2026: games/planned.js hat bereits 'gebietskampf' (Große Projekte). Im öffentlichen Roadmap-PR #4 wird der Name für die Verständlichkeit um den Risiko-Hinweis ergänzt. IDs bewahren; kein Duplikat anlegen."
+      ]
     },
     {
       "id": "V2-12",
@@ -486,16 +488,16 @@
         "V2-00"
       ],
       "priority": "later",
-      "goal": "Ein eigenständiges Hexfeld-Siedlungs- und Handelsspiel als neues Multiplayer-Brettspiel planen: modulare Insel/Hexfelder, Rohstoffverteilung, Ertragswürfe, Siedlungen, Straßen, Städte, Handel zwischen Spielern und Bank, Räuber, Baukosten und Siegpunkte. Namen, Figuren, Karten, Layout und Grafik eigenständig gestalten. Originalitäts-/Markenprüfung vor öffentlicher Benennung als Catan.",
+      "goal": "Bestehenden geplanten Backlog-Eintrag 'staedtehandel' (Catan-inspiriertes Hexfeld- und Handelsspiel) umsetzen, kein zweites Siedler-Spiel registrieren. Eigenständige Hexkarte, Rohstoffe, Straßen, Siedlungen, Städte, Handel, Räuber, Siegpunkte.",
       "files": [
         "games/index.js",
         "games/planned.js",
         "games/roadmap.js",
-        "games/siedlungsspiel/ (neu)",
-        "public/games/siedlungsspiel/ (neu)",
         "games/bots.js",
-        "test/siedlungsspiel.test.js (neu)",
-        "test/ui/siedlungsspiel.spec.js (neu)"
+        "test/ui/siedlungsspiel.spec.js (neu)",
+        "games/staedtehandel/ (spätere Implementierung)",
+        "public/games/staedtehandel/ (spätere Implementierung)",
+        "test/staedtehandel.test.js (spätere Implementierung)"
       ],
       "security": [
         "Rohstoffe/Entwicklungskarten pro Spieler geheim halten",
@@ -512,7 +514,9 @@
       "status": "planned",
       "implementation_commit": null,
       "completed_at": null,
-      "notes": []
+      "notes": [
+        "Repo-Abgleich am 30.10.2026: games/planned.js hat bereits 'staedtehandel' (Große Projekte). Im öffentlichen Roadmap-PR #4 wird der Name für die Verständlichkeit um den Catan-Hinweis ergänzt. IDs bewahren; kein Duplikat anlegen."
+      ]
     },
     {
       "id": "V2-13",
@@ -715,5 +719,8 @@
       "scope": "Sieben weitere Planungspakete V2-11..V2-17; alle ausschließlich geplant.",
       "priority": "Bei Überschneidung mit archivierter Ursprungs-Spezifikation gilt dieses Addendum für den hier beschriebenen Umfang."
     }
+  ],
+  "notes": [
+    "Öffentliche Roadmap wird in eigenständigem PR zur Prüfung synchronisiert. Integration nach main nur bewusst, da der Push auf main Docker-CI auslöst."
   ]
 }
