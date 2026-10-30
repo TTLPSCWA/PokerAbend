@@ -1,5 +1,71 @@
 # UI-Redesign – Arbeits- und Abnahmeprotokoll
 
+## Aktuelle Referenzkorrektur vom 30. Oktober 2026
+
+Dieser Abschnitt beschreibt den aktuellen Auftrag auf Basis von `main` bei `7c8b96c459feed1750dd7ee2caddf23b5686a66e`. Die weiter unten erhaltenen Abschnitte sind das historische Protokoll des ersten Redesigns; ihre Aussagen über optionale Fotos, frühere Branches und damals noch nicht erfolgte Pushes sind zeitgebunden. Für diese Korrektur wurde ausschließlich auf `main` gearbeitet. Die Originalreferenz wurde vor der Umsetzung und den visuellen Korrekturrunden tatsächlich geöffnet. Es wurden weder neue Spiele noch V2-Pakete implementiert.
+
+### Befund anhand echter Vorher-Screenshots
+
+Der unveränderte Ausgangsstand wurde auf einem isolierten temporären Server mit `POKER_NO_DOTENV=1` bei 1920×1080, 1440×900, 768×1024, 390×844 und 360×800 aufgenommen: jeweils Startseite und Bibliothek, insgesamt zehn Bilder. Die Baseline verwendete ein frisches Testprofil; Favoriten, offene Tische und fremde Online-Spieler wurden nicht erfunden.
+
+| Merkmal | Konkrete Abweichung vorher | Tatsächliche Korrektur |
+| --- | --- | --- |
+| Hintergrund | Abstrakte dunkelgrüne Verläufe; kein erkennbarer Raum | Eigenständige neue Spielelounge mit warmen Lampen, Bücherregalen, Pflanzen, Ledersessel und Kamin; zusammenhängende lokale Bildfläche, leicht unscharf |
+| Sidebar | 228 px breit, nur 18 px Außenabstand, große Rundungen und ein dichter Block aus Navigation und Kategorien | Referenznahe Außenabstände, 194–230 px Breite auf Desktop, 16-px-Rundungen, Pikzeichen und goldene Serif-Marke; alle bisherigen Ziele erhalten, die vier Spielarten in einem nativen Untermenü |
+| Hierarchie | Zweizeilige Begrüßung dominierte; Tabellenblock kam vor der Spieleauswahl | Große Bibliotheksüberschrift, kurze persönliche Begrüßung, echte Kopfzeilensuche, vier Kategorie-Kacheln und anschließend die hervorgehobene Spieleauswahl |
+| Karten | Auf Home bei 1920 px etwa 519×184 px mit 50-px-Motiven und zwei breiten Funktionskarten pro Reihe | Vier gleich hohe Karten pro Desktop-Reihe, etwa 223×247 px bei 1920 px, eigene 88-px-SVG-Motive; ruhige Serif-Spielnamen, kleine Spieler-/Zeit-Metadaten und weiter sichtbare Host-Aktionen |
+| Spalten | Rechte Spalte ungefähr 30 % des Inhalts; wirkte angehängt | Haupt-/Informationsspalte im Verhältnis 1,72:1, an der Referenz orientiert; gemeinsame Ausrichtung der oberen Panels, feinere warme Konturen |
+| Transparenz und Farben | Sehr deckende, gleichmäßig grüne Flächen | Gedämpfte anthrazit-/olivfarbene Glasflächen über dem warmen Raum, sparsame Goldkonturen und smaragdgrüne Aktionen; Blur nur auf großen Flächen |
+| Mobil/Tablet | Zusammengedrückte Desktop-Hierarchie, sehr kleine Spielmotive | Suche unter der mobilen Kopfzeile, Kategorien als 2×2-Raster, zwei einheitliche Spielkarten pro Reihe, gestapelte Informationen; Safe Areas und bestehendes mobiles Bereichsmenü erhalten |
+
+Bei 1440 px sind die Karten wegen längerer echter deutscher Spielnamen höher als im Referenz-Mockup. Diese Abweichung wird nicht als Pixelgleichheit ausgegeben. Die letzte Sichtkorrektur hat die anfänglich zu hohen Karten von rund 311 px auf rund 247 px bei 1920 px verkleinert, ohne Host-Aktionen oder Favoriten zu verstecken.
+
+### Architektur, wirksame Styles und erhaltene Funktionen
+
+Die wirksame Ladereihenfolge bleibt `style.css` → `hub.css` → weitere bestehende Seiten-/Spielstyles → `ui-theme.css` → `game-pause.css`. Dynamisch geladene Spielstyles bleiben an ihren bisherigen Stellen. Die Hub-Gestaltung wurde in `ui-theme.css` überarbeitet; vorhandene Basisregeln und DOM-Verträge aus `hub.css` werden weiter genutzt. Die Szenenfläche ist auf `.hub::before` beschränkt, nicht auf einzelnen Kacheln. Gemeinsame Spielmaterial-Tokens wurden nicht ersetzt. `-webkit-backdrop-filter`, eine deckende Grundfläche ohne Filterunterstützung sowie der gespeicherte und systemweite Transparenz-Fallback sind berücksichtigt.
+
+`public/hub.js` bezieht Spiele, Kategorien und Metadaten weiterhin aus `account.games` beziehungsweise `/me`. Der Einstieg zeigt ohne bisherige Auswahl vier kuratierte registrierte Spiele; vorhandene Favoriten und zuletzt geöffnete Spiele behalten ihre Priorität. Die Kopfzeilensuche führt in den vorhandenen Katalog. Suche, Filter, Listenansicht, Spielauswahl, Hosten, Varianten und Code-Beitritt verwenden weiterhin die bestehenden Funktionen. Die rechte Favoritenspalte aktualisiert sich auch direkt beim Stern-Klick in der Bibliothek. Profilnamen werden im neuen Kopfbereich weiterhin als escaped Text ausgegeben; technische Profil-/Session-Schlüssel, Cookies und der App-Titel „Spieleabend“ bleiben erhalten.
+
+Die rechte Spalte zeigt echte lokale Favoriten, die vorhandene Presence und das Code-Feld. Zuletzt geöffnete Spiele stehen im Hauptbereich und werden nur angezeigt, wenn solche Browserdaten vorhanden sind. Es wurden keine Bewertungen, Freundeslisten, fiktiven Personen, Spielerzahlen oder scheinbaren Benachrichtigungen hinzugefügt. Navigation zu Tickets/Admin, Bestenliste, Erfolgen, Roadmap, Planung und Rückblick bleibt vollständig vorhanden.
+
+### Lokale Assets
+
+Der eingebaute `image_gen`-Modus erzeugte einen eigenständigen Hintergrund; es wurde kein vollständiger Referenz-Screenshot als Website-Asset eingesetzt. Die fertigen Projektdateien sind [games-lounge.webp](../public/assets/games-lounge.webp) mit 1672×941 px / 135766 Bytes und [games-lounge-mobile.webp](../public/assets/games-lounge-mobile.webp) mit 768×432 px / 49618 Bytes. Mobil wird die kleinere Datei gewählt. Herkunft, vollständiger Generierungsprompt und SHA-256 stehen in [games-lounge-asset.md](../design/games-lounge-asset.md). Die bestehenden eigenen SVG-Spielmotive aus `games/art-kit.js` wurden wiederverwendet; keine neue Schrift-, Bild- oder UI-Abhängigkeit wurde installiert.
+
+### Screenshot-Abnahme und Reproduktion
+
+`node scripts/capture-home-reference.mjs before|iteration|after` erzeugt die Bilder und Geometriemessungen mit frischem Profil und temporärem Datenverzeichnis. `REFERENCE_BROWSER=webkit` wählt den installierten WebKit-Port und zusätzlich echte Bedienprüfungen für Suche, Favoriten, Host-Dialog, mobile Navigation und Transparenzpräferenz. Es handelt sich um WebKit auf Windows und emulierte Touch-Größen, nicht um eine Prüfung auf einem physischen iPhone.
+
+| Größe | Start vorher / nachher | Bibliothek vorher / nachher |
+| --- | --- | --- |
+| 1920×1080 | [vorher](../artifacts/home-reference/before/start-1920x1080.png) / [nachher](../artifacts/home-reference/after/start-1920x1080.png) | [vorher](../artifacts/home-reference/before/spiele-1920x1080.png) / [nachher](../artifacts/home-reference/after/spiele-1920x1080.png) |
+| 1440×900 | [vorher](../artifacts/home-reference/before/start-1440x900.png) / [nachher](../artifacts/home-reference/after/start-1440x900.png) | [vorher](../artifacts/home-reference/before/spiele-1440x900.png) / [nachher](../artifacts/home-reference/after/spiele-1440x900.png) |
+| 768×1024 | [vorher](../artifacts/home-reference/before/start-768x1024.png) / [nachher](../artifacts/home-reference/after/start-768x1024.png) | [vorher](../artifacts/home-reference/before/spiele-768x1024.png) / [nachher](../artifacts/home-reference/after/spiele-768x1024.png) |
+| 390×844 | [vorher](../artifacts/home-reference/before/start-390x844.png) / [nachher](../artifacts/home-reference/after/start-390x844.png) | [vorher](../artifacts/home-reference/before/spiele-390x844.png) / [nachher](../artifacts/home-reference/after/spiele-390x844.png) |
+| 360×800 | [vorher](../artifacts/home-reference/before/start-360x800.png) / [nachher](../artifacts/home-reference/after/start-360x800.png) | [vorher](../artifacts/home-reference/before/spiele-360x800.png) / [nachher](../artifacts/home-reference/after/spiele-360x800.png) |
+
+Die gleichen zehn Nachher-Ansichten für WebKit liegen unter `artifacts/home-reference/after-webkit/`. Beide Engines melden in allen zehn Aufnahmen keinen horizontalen Überlauf und keine JavaScript-Fehler. Zusätzlich stehen [Kontaktbogen mit Originalreferenz und Vorher/Nachher](../artifacts/home-reference/vergleich.png) und [absolute RGB-Differenz zwischen Vorher und Nachher](../artifacts/home-reference/differenz-vorher-nachher.png) bereit. Reproduktion: `node scripts/compare-home-reference.mjs`. Das Differenzbild zeigt tatsächliche Änderungen; es misst keine Übereinstimmungsquote mit der inhaltlich anderen Referenz. PNGs, Traces und Logs bleiben lokale, ignorierte Prüfartefakte.
+
+### Tests, gefundene Fehler und Grenzen
+
+- `npm.cmd test`: **810/810 bestanden**, Exitcode 0, keine übersprungenen Tests, 43,4 Sekunden (`artifacts/home-reference-unit.log`).
+- Die vier neuen Prüfungen in `test/ui/home-reference.spec.js` bestanden auf Desktop und Mobil: **8/8**. Sie prüfen reale Kategorien, SVG-Größen, gleich hohe Karten, funktionsfähige Suche, Favoriten und den deckenden Fallback.
+- Erster vollständiger Lauf `npm.cmd run test:ui -- --workers=2`: **273 bestanden, 2 fehlgeschlagen, 1 planmäßig übersprungen**, 12,1 Minuten (`artifacts/home-reference-all-ui.log`). Die erste Fehlerausgabe und Traces sind unter `artifacts/home-reference-initial-failures/` gesichert.
+- Ein mobiler Poker-Abendprogramm-Test fand einen tatsächlichen Layoutfehler: Die Tischgröße verwendete eine feste 110-px-Annahme für Kopfzeile und Innenabstände. Mit der bereits auf main vorhandenen zweizeiligen Pausen-Kopfzeile konnte der Tisch das Dock überragen. Eine unveränderte, isolierte Kopie von `7c8b96c` reproduzierte denselben Fehler an derselben Assertion (`artifacts/home-reference-true-baseline.log`). Die CSS-Zeile nutzt jetzt die tatsächliche `--topbar`-Höhe plus 52 px Innenabstand. Keine Spielregeländerung.
+- Der vorhandene private Planungstest fragte Socket-Zustand, Datenschutzflag und neuen Raum unmittelbar nach asynchronen Aktionen ab. Im Gesamtlauf beziehungsweise den Wiederholungen wurden ein noch leeres `lastState`, ein noch ausstehendes Privat-Update und ein laufender Dokumentwechsel sichtbar. Der Kontrolllauf auf dem alten Stand bestand diesen Fall einmal; ein dauerhaft geänderter Datenschutzablauf wurde nicht festgestellt. Der Test wartet jetzt gezielt auf bestätigten Raumcode/Privatstatus und wiederholt die Prüfung über den tatsächlichen Dokumentwechsel hinweg. Die Anwendung und ihre Datenschutz-API wurden dafür nicht verändert.
+- Nach diesen Korrekturen bestanden Planung, Abendprogramm und die neuen Home-Prüfungen gemeinsam mit je zwei Wiederholungen auf Desktop/Mobil: **32/32**, Exitcode 0, 1,2 Minuten (`artifacts/home-reference-final-recheck.log`).
+- Zweiter vollständiger Lauf `npm.cmd run test:ui -- --workers=2`: **274 bestanden, 1 fehlgeschlagen, 1 planmäßig übersprungen**, Exitcode 1, 13,0 Minuten (`artifacts/home-reference-final-all-ui.log`). Beide zuvor aufgefallenen Fälle bestanden jetzt auf Desktop und Mobil. Der verbliebene Fehler war ein Lebenszyklusproblem im vorhandenen Test für verzögertes Laden von `tickets.js`: Nach Erscheinen der Ticket-Überschrift wurde der temporäre Server bereits beendet, obwohl die Ticket-Abfrage noch lief (`ERR_CONNECTION_REFUSED`). Der Test wartet nun zusätzlich auf die geladene `.ticket-count`-Ansicht. Keine Änderung an der Ticket-Anwendung, keine unterdrückten Console-Fehler. Ursprünglicher Trace: `artifacts/home-reference-ticket-initial/`.
+- Nachprüfung genau dieses Ticket-Falls: **6/6 bestanden**, Exitcode 0, 11,6 Sekunden, je drei Wiederholungen Desktop/Mobil (`artifacts/home-reference-ticket-recheck.log`). Damit sind alle **275 tatsächlich ausgeführten unterschiedlichen UI-Fälle** über vollständigen Lauf und Nachprüfung erfolgreich validiert. Der vollständige 13-Minuten-Lauf wurde nach dieser reinen Test-Wartekorrektur nicht ein drittes Mal wiederholt. Der eine übersprungene Fall ist die doppelte mobile Ausführung der bereits vollständig im Desktop-Projekt durchlaufenen Sechs-Größen-Matrix.
+- Abschließende WebKit-Abnahme: zehn Ansichten bei allen fünf Größen sowie Bedienung von Suche, Favoriten, Host-Dialogen, mobiler Navigation und reduziertem Glas, ohne JavaScript-Fehler oder Überlauf (`artifacts/home-reference-webkit-final.log`).
+
+Aufbau, Raumwirkung, Kategorie-Proportionen und die links/rechts angeordneten Glasflächen sind der Vorlage deutlich angenähert. Unterschiede bleiben bewusst sichtbar: eigenständig generierte Raumszene, vier echte Kategorien, echte Spiele und Emoji-Profile statt Mockup-Fotos, eigene flache SVG-Motive, zusätzliche eindeutige Host-Aktionen und tatsächlich leere Datenbereiche bei einem frischen Profil. Eine pixelgenaue Übereinstimmung wurde nicht nachgewiesen und wird nicht behauptet. Physische iOS-/Android-Geräte und eine vollständige WCAG-Zertifizierung sind nicht Bestandteil dieser lokalen Abnahme.
+
+Es wurden keine Server-, Authentifizierungs-, Spielregel-, Datenbank-, Docker- oder V2-Planungsdateien verändert. `.env` und produktive Spielstände wurden nicht gelesen oder geändert. Der vorhandene Main-Workflow prüft Node-Tests und veröffentlicht ein GHCR-Image; ein Produktivdeployment ist dort nicht definiert und wird nicht manuell durchgeführt. `git diff --check` und die Syntaxprüfungen für Hub und Abnahmeskripte sind ohne Fehler.
+
+Implementierungscommit: **`cd29f57f6d40169d0f0ed171f67d7364b6915269`** (`fix: align home library with original lounge reference`). Dieser Abnahmenachtrag folgt als eigener Dokumentationscommit. Ziel der beauftragten Veröffentlichung ist ausschließlich [`origin/main`](https://github.com/TTLPSCWA/PokerAbend/tree/main), ohne neuen Branch, Pull Request oder Force-Push. Das konkrete CI-Ergebnis und der abschließende Main-Tip werden im Abschlussbericht verlinkt.
+
+## Historisches Protokoll des ersten Redesigns
+
 ## Ausgangspunkt und Auftrag
 
 - Ausgangs-Commit: `9b60e30`, 46 registrierte Spiele; das gelieferte Paket beschreibt den älteren Stand `55abf04` mit 45 Spielen.
