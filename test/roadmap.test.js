@@ -37,3 +37,31 @@ test('Jeder Backlog-Eintrag kommt genau einmal vor, mit automatisch übernommene
   assert.ok(extras.find((p) => p.id === 'turnier-blinds').erledigt);
   assert.ok(!extras.find((p) => p.id === 'time-bank').erledigt);
 });
+
+test('Öffentliche Roadmap enthält die geplanten V2-Wünsche ohne Doppelungen oder falsche Fertigmeldungen', () => {
+  const sections = resolvedRoadmap();
+  const points = sections.flatMap((section) => section.punkte);
+  const byId = new Map(points.map((item) => [item.id, item]));
+  const games = [['gebietskampf', /Risiko/], ['staedtehandel', /Catan/]];
+  for (const [id, title] of games) {
+    const matches = points.filter((item) => item.id === id);
+    assert.equal(matches.length, 1, id + ' steht genau einmal im Backlog');
+    assert.match(byId.get(id).titel, title);
+    assert.equal(byId.get(id).art, 'spiel');
+    assert.ok(!byId.get(id).erledigt);
+  }
+  const features = [
+    'discord-1', 'discord-3', 'discord-4', 'discord-5', 'discord-6',
+    'v2-liquid-glass', 'v2-einstellungen', 'v2-online-verbessern',
+    'v2-erfolge-ausbauen', 'v2-bot-schwierigkeit',
+    'v2-admin-rueckblicke', 'v2-admin-bestenlisten', 'v2-admin-sicherheit',
+  ];
+  for (const id of features) {
+    assert.ok(byId.has(id), 'Fehlender V2-Roadmap-Eintrag: ' + id);
+    assert.ok(!byId.get(id).erledigt, id + ' ist weiterhin geplant');
+  }
+  for (const id of ['v2-spielerkomfort', 'v2-admin-verwaltung', 'discord-login']) {
+    assert.equal(sections.find((section) => section.id === id)?.stufe, 'spaeter');
+  }
+  assert.equal(new Set(points.map((item) => item.id)).size, points.length);
+});
