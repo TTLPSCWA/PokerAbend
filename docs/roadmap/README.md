@@ -1,9 +1,10 @@
 # PokerAbend V2 – Gemeinsame Entwicklungsplanung
-**Status:** Nur geplant. Noch keine Implementierung freigegeben. Stand: 30.10.2026.
+**Status:** Nur geplant. Noch keine Implementierung freigegeben. Stand: 30.10.2026. **18 Arbeitspakete (V2-00 bis V2-17).**
 **GitHub-Repository:** TTLPSCWA/PokerAbend
 **Verwendbar durch:** Codex, Claude Code und andere Coding-Agenten.
 
 ## Wichtige Dateien
+- `docs/roadmap/V2_ADDENDUM_2026-10-30.md`: Sieben ergänzte Vorhaben zu Risiko, Catan-artigem Spiel, mehr Erfolgen, Presence, Einstellungen, Bot-Schwierigkeit und Adminverwaltung. Teil der verbindlichen Planung.
 - `docs/roadmap/plan.json`: Maschinenlesbare Master-Roadmap mit stabilen Arbeitspaket-IDs, Abhängigkeiten, Sicherheit, Akzeptanz und Status.
 - `docs/roadmap/POKERABEND_V2_ROADMAP.md`: Menschenlesbare Zusammenfassung, Prioritäten und Arbeitsanweisung.
 - `docs/roadmap/MASTERPROMPT_V2_SOURCE.md`: Archivierte vollständige fachliche Ausgangsspezifikation (nicht direkt ausführen).
