@@ -429,7 +429,7 @@ export const PLANNED = [
     art: chess(),
   }),
   spiel({
-    id: 'staedtehandel', name: 'Städtehandel', category: 'brett', minPlayers: 2, maxPlayers: 4, duration: 60, paeckchen: 'gross',
+    id: 'staedtehandel', name: 'Städtehandel (Catan-inspiriert)', category: 'brett', minPlayers: 2, maxPlayers: 4, duration: 60, paeckchen: 'gross',
     description: 'Rohstoffe erwürfeln, tauschen und eine eigene Stadt aufbauen.',
     rules: [
       'Das Spielfeld besteht aus sechseckigen Landschaften mit Zahlenchips; jede liefert einen Rohstoff.',
@@ -442,7 +442,7 @@ export const PLANNED = [
     art: hexBoard(['#7FD39A', '#C99A45', '#E3C08A', '#9DB7E8', '#D33B35', '#F7F3E8', '#1C7A43']),
   }),
   spiel({
-    id: 'gebietskampf', name: 'Gebietskampf', category: 'brett', minPlayers: 2, maxPlayers: 5, duration: 90, paeckchen: 'gross',
+    id: 'gebietskampf', name: 'Gebietskampf (Risiko-inspiriert)', category: 'brett', minPlayers: 2, maxPlayers: 5, duration: 90, paeckchen: 'gross',
     description: 'Truppen verteilen, würfeln und Gebiete erobern, bis nur noch einer übrig ist.',
     rules: [
       'Eine Weltkarte ist in Gebiete geteilt; die Gebiete werden unter den Spielern verteilt und mit Truppen besetzt.',
@@ -454,6 +454,37 @@ export const PLANNED = [
     ],
     houseRules: ['Missionen statt Weltherrschaft', 'Kartentausch-Bonus steigt', 'Schnelle Variante mit weniger Gebieten'],
     art: territory(),
+  }),
+  // Erhaltene Ideen aus dem alten Party-Katalog (PR #2): ausschließlich Backlog, nicht startbar.
+  spiel({
+    id: 'turmbauer', name: 'Turmbauer', category: 'party', bauart: 'B', minPlayers: 2, maxPlayers: 10, duration: 2, paeckchen: 'spaeter',
+    description: 'Bewegliche Blöcke im richtigen Moment auf dem eigenen Turm stapeln.',
+    rules: ['Alle erhalten dieselbe Folge beweglicher Blöcke für ihren eigenen Turm.', 'Ein Tipp hält den nächsten Block an; passende Flächen sollen möglichst übereinanderliegen.', 'Nach der vereinbarten Zeit gewinnt der höchste gültige Turm.'],
+    art: stairs(['#B78254', '#C99A45', '#E0C884']),
+  }),
+  spiel({
+    id: 'geschenkdiebe', name: 'Geschenkdiebe', category: 'party', bauart: 'C', minPlayers: 2, maxPlayers: 8, duration: 3, paeckchen: 'spaeter',
+    description: 'Geschenke einsammeln und sie den anderen in einer gemeinsamen Arena wieder abluchsen.',
+    rules: ['Alle bewegen sich gleichzeitig auf einer gemeinsamen Spielfläche.', 'Geschenke können eingesammelt und durch erlaubte Begegnungen anderen abgenommen werden.', 'Nach Ablauf der Runde gewinnt, wer die meisten Geschenke behalten hat.'],
+    art: glyph('crown'),
+  }),
+  spiel({
+    id: 'fallenbauer', name: 'Fallenbauer', category: 'party', bauart: 'C', minPlayers: 2, maxPlayers: 8, duration: 4, paeckchen: 'spaeter',
+    description: 'Gemeinsam Fallen platzieren und anschließend den entstandenen Parcours bestehen.',
+    rules: ['Zuerst platzieren alle nacheinander Hindernisse auf einem gemeinsamen Parcours.', 'Anschließend versuchen alle gleichzeitig, das Ziel ohne Treffer zu erreichen.', 'Erfolgreiche Zieleinläufe bringen Punkte; nach den vereinbarten Runden zählt die Gesamtsumme.'],
+    art: glyph('flag'),
+  }),
+  spiel({
+    id: 'reaktor-notfall', name: 'Reaktor-Notfall', category: 'party', bauart: 'A', minPlayers: 2, maxPlayers: 8, duration: 6, paeckchen: 'spaeter',
+    description: 'Gemeinsam Rätsel lösen, bevor eine fiktive Anlage überhitzt.',
+    rules: ['Die Gruppe erhält mehrere zusammengehörige Hinweise und kleine Rätsel.', 'Richtige gemeinsame Entscheidungen stabilisieren die Anlage; Fehler kosten Zeit.', 'Alle gewinnen gemeinsam, wenn sie die Aufgaben vor Ablauf des Timers lösen.'],
+    art: glyph('pen'),
+  }),
+  spiel({
+    id: 'bomben-duell', name: 'Bomben-Duell', category: 'party', bauart: 'C', minPlayers: 2, maxPlayers: 8, duration: 3, paeckchen: 'spaeter',
+    description: 'In einer eigenen Spielarena Sprengladungen setzen und rechtzeitig in Deckung gehen.',
+    rules: ['Alle bewegen sich auf einem eigenen gemeinsamen Raster mit Hindernissen.', 'Platzierte Sprengladungen lösen nach einer sichtbaren Vorwarnzeit aus.', 'Wer die Runde übersteht, erhält Punkte; nach mehreren Runden gewinnt die höchste Summe.'],
+    art: glyph('bomb'),
   }),
   funktion({ id: 'party-brett', name: 'Party-Brett', type: 'feature', paeckchen: 'gross', beschreibung: 'Ein Brettspiel, auf dem die Partyspiele als Aufgaben liegen: Ereignisfelder, Items und Sabotage sorgen für Abwechslung, Minispiele entscheiden um Felder und Punkte.' }),
 ];

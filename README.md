@@ -15,6 +15,28 @@ Die alten Namen bleiben an diesen Stellen absichtlich erhalten:
 | `server/security.js`, `public/core.js` | Cookie `pa_auth`, Browser-Schlüssel `poker:…` | Login und Wiederverbinden bleiben gültig |
 | `games/`, `public/games/`, gespeicherte Räume | IDs `farbenchaos`, `huetchen`, `zehnetappen`, `stapelrennen` | Alte Links, Module und Spielstände bleiben verwendbar |
 
+## Verbindlicher Entwicklungsworkflow: ausschließlich main
+
+Dieses Projekt verwendet ausschließlich den Branch `main` als aktiven Entwicklungsbranch.
+
+Erstelle nicht eigenständig neue Git-Branches oder Pull Requests.
+
+Alle ausdrücklich freigegebenen Änderungen werden direkt auf `main` implementiert, getestet, committed und gepusht.
+
+Vor jedem Schreibvorgang ist der aktuelle Remote-Stand zu prüfen. Falls der Branch zwischenzeitlich verändert wurde, müssen die Änderungen zuerst sicher abgeglichen werden.
+
+Verwende niemals Force-Push, um Konflikte zu umgehen.
+
+Ohne ausdrückliche Freigabe darf kein neues Entwicklungsarbeitspaket begonnen werden.
+
+Dokumentation und Planungsdateien sind keine automatische Implementierungsfreigabe.
+
+Technische Schreibsperren auf `main` werden gemeldet; kein Ersatzbranch und keine Umgehung von Schutzregeln. Diese Regel ersetzt alte Feature-Branch-Anweisungen. Codex und Claude Code beachten [AGENTS.md](AGENTS.md) und [CLAUDE.md](CLAUDE.md).
+
+Die [dauerhafte V2-Planung](docs/roadmap/README.md) enthält 18 Arbeitspakete (`V2-00` bis `V2-17`); zentraler Status ist [plan.json](docs/roadmap/plan.json). Alle Pakete sind weiterhin geplant. Die [Konsolidierungsprüfung](docs/roadmap/CONSOLIDATION_2026-10-30.md) dokumentiert die Übernahme der alten Branch-Inhalte. Öffentliche Roadmap und Entwicklungsplanung sind über geprüfte IDs verknüpft. Das vorhandene Redesign und alle 46 Spiele bleiben erhalten.
+
+Ein beauftragter Push startet derzeit Tests und GHCR-Image-Veröffentlichung, kein Repository-Workflow aktualisiert den Produktivserver. Ein Serverupdate oder eine Datenmigration benötigt eine gesonderte ausdrückliche Freigabe.
+
 ## Schnellstart
 
 ### Lokal mit Docker (empfohlen)

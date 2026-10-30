@@ -1,0 +1,641 @@
+{
+  "date": "2026-10-30",
+  "baseline": "aa2551793da45471c910d090e8eb2357e9ed13fd",
+  "branches": [
+    {
+      "name": "planning/pokerabend-v2-roadmap",
+      "head": "b0ab66146541867c01fa15ce55e8d6395a19cf42",
+      "pr": 3,
+      "action": "selective-integration",
+      "files": [
+        "AGENTS.md",
+        "CLAUDE.md",
+        "docs/roadmap/DESIGN_GUIDE.md",
+        "docs/roadmap/MASTERPROMPT_V2_SOURCE.md",
+        "docs/roadmap/POKERABEND_V2_ROADMAP.md",
+        "docs/roadmap/README.md",
+        "docs/roadmap/V2_ADDENDUM_2026-10-30.md",
+        "docs/roadmap/plan.json"
+      ],
+      "obsolete": "Alter Spielestand, Feature-Branch-Vorgaben und Wartestatus der öffentlichen Roadmap aktualisiert."
+    },
+    {
+      "name": "docs/public-roadmap-v2-ideas",
+      "head": "b96d62e8768e38e4df364c83dcd8dc921747e260",
+      "pr": 4,
+      "action": "selective-integration",
+      "files": [
+        "games/planned.js",
+        "games/roadmap.js",
+        "test/roadmap.test.js"
+      ],
+      "obsolete": "V2-Design als künftige Integration des bereits vorhandenen Redesigns präzisiert."
+    },
+    {
+      "name": "feature/partyspiel",
+      "head": "c788deeed43e3bc31057a834ffd179e0f95762de",
+      "pr": 2,
+      "action": "superseded-and-ideas-preserved",
+      "obsolete": "Alte Acht-Spiele-Lobby, plannedPartyGames-API und Acht-Spiele-Tests durch aktuellen 46-Spiele-Hub, PLANNED und vorhandene Schutztests ersetzt."
+    },
+    {
+      "name": "feat/liquid-glass-game-library",
+      "head": "fd4dd9317bbb7221e5aa452992c45da4b8ca2d23",
+      "local_only": true,
+      "action": "already-ancestor-of-main"
+    }
+  ],
+  "source_files": [
+    {
+      "path": "AGENTS.md",
+      "commit": "b0ab66146541867c01fa15ce55e8d6395a19cf42",
+      "sha256": "20bffd65210c6fdcabc685918108683552d5750e98f4dfaefb7409b2ee45da02"
+    },
+    {
+      "path": "CLAUDE.md",
+      "commit": "b0ab66146541867c01fa15ce55e8d6395a19cf42",
+      "sha256": "efa5dfbb3a9a6ee18f90778e36d32d841686e1cebf52e79b1b00e5140eaddc16"
+    },
+    {
+      "path": "docs/roadmap/DESIGN_GUIDE.md",
+      "commit": "b0ab66146541867c01fa15ce55e8d6395a19cf42",
+      "sha256": "f594c9fbef014fefcde51d06b10512cc849f1e9e40e72394b8436cbee07ea285"
+    },
+    {
+      "path": "docs/roadmap/MASTERPROMPT_V2_SOURCE.md",
+      "commit": "b0ab66146541867c01fa15ce55e8d6395a19cf42",
+      "sha256": "b5c138c6adb13bd85e07328531551d6b3c45d5af8d0b6666045c75e8bd00b265"
+    },
+    {
+      "path": "docs/roadmap/POKERABEND_V2_ROADMAP.md",
+      "commit": "b0ab66146541867c01fa15ce55e8d6395a19cf42",
+      "sha256": "a0c409e7194089af81338ce07daa790e544400027b0f86d1f8beb70a0adaa297"
+    },
+    {
+      "path": "docs/roadmap/README.md",
+      "commit": "b0ab66146541867c01fa15ce55e8d6395a19cf42",
+      "sha256": "e691e1372799e6dbd478868be44a0c97467e9d7e20fa55da995bad64f5cc56ee"
+    },
+    {
+      "path": "docs/roadmap/V2_ADDENDUM_2026-10-30.md",
+      "commit": "b0ab66146541867c01fa15ce55e8d6395a19cf42",
+      "sha256": "860c84ea1a186483fcd81675c0e4ffc3815f07e5b66c1fc596c308e7f25170db"
+    },
+    {
+      "path": "docs/roadmap/plan.json",
+      "commit": "b0ab66146541867c01fa15ce55e8d6395a19cf42",
+      "sha256": "00d4a201e59a6539a310b30235ae19fa3e23af8b0906c1b033bb074d2192b811"
+    }
+  ],
+  "legacy_party_ideas": [
+    {
+      "id": "zahlenzoo",
+      "name": "Zahlenzoo",
+      "description": "Symbole und Tiere unter Zeitdruck zählen.",
+      "players": "2–10 Spieler",
+      "duration": "30–60 Sek.",
+      "subtype": "wissen",
+      "effort": "Niedrig",
+      "current_id": "zahlenzoo",
+      "disposition": "implemented-before-consolidation"
+    },
+    {
+      "id": "brueckenroulette",
+      "name": "Brückenroulette",
+      "description": "Geheim einen Übergang wählen; manche Wege tragen nicht alle Spieler.",
+      "players": "2–10 Spieler",
+      "duration": "1–2 Min.",
+      "subtype": "bluff",
+      "effort": "Niedrig",
+      "current_id": "brueckenroulette",
+      "disposition": "planned"
+    },
+    {
+      "id": "turmbauer",
+      "name": "Turmbauer",
+      "description": "Bewegliche Blöcke im richtigen Moment stapeln.",
+      "players": "2–10 Spieler",
+      "duration": "1–2 Min.",
+      "subtype": "geschick",
+      "effort": "Niedrig",
+      "current_id": "turmbauer",
+      "disposition": "planned"
+    },
+    {
+      "id": "gedaechtniskueche",
+      "name": "Gedächtnisküche",
+      "description": "Zutaten merken und Bestellungen richtig zusammenstellen.",
+      "players": "2–10 Spieler",
+      "duration": "1–2 Min.",
+      "subtype": "wissen",
+      "effort": "Niedrig",
+      "current_id": "gedaechtnis-kueche",
+      "disposition": "implemented-before-consolidation"
+    },
+    {
+      "id": "luegenbaron",
+      "name": "Lügenbaron",
+      "description": "Erfundene Antworten tarnen und die Wahrheit erkennen.",
+      "players": "3–10 Spieler",
+      "duration": "2–5 Min.",
+      "subtype": "bluff",
+      "effort": "Niedrig",
+      "current_id": "luegenbaron",
+      "disposition": "planned"
+    },
+    {
+      "id": "laser-huepfer",
+      "name": "Laser-Hüpfer",
+      "description": "Zum richtigen Zeitpunkt über wandernde Laser springen.",
+      "players": "2–10 Spieler",
+      "duration": "1–2 Min.",
+      "subtype": "reaktion",
+      "effort": "Mittel",
+      "current_id": "laser-huepfer",
+      "disposition": "implemented-before-consolidation"
+    },
+    {
+      "id": "kronenjagd",
+      "name": "Kronenjagd",
+      "description": "Eine Krone stibitzen und möglichst lange behalten.",
+      "players": "2–10 Spieler",
+      "duration": "1–3 Min.",
+      "subtype": "echtzeit",
+      "effort": "Hoch",
+      "current_id": "kronenjagd",
+      "disposition": "implemented-before-consolidation"
+    },
+    {
+      "id": "tickendes-paket",
+      "name": "Tickendes Paket",
+      "description": "Ein Paket weiterreichen, bevor der geheime Timer abläuft.",
+      "players": "3–10 Spieler",
+      "duration": "1–2 Min.",
+      "subtype": "bluff",
+      "effort": "Niedrig",
+      "current_id": "tickendes-paket",
+      "disposition": "implemented-before-consolidation"
+    },
+    {
+      "id": "minenlauf",
+      "name": "Minenlauf",
+      "description": "Mit wenigen Scans durch ein unbekanntes Minenfeld gelangen.",
+      "players": "2–10 Spieler",
+      "duration": "1–3 Min.",
+      "subtype": "geschick",
+      "effort": "Mittel",
+      "current_id": "minenlauf",
+      "disposition": "planned"
+    },
+    {
+      "id": "sortierstation",
+      "name": "Sortierstation",
+      "description": "Objekte auf einem Förderband schnell richtig zuordnen.",
+      "players": "2–10 Spieler",
+      "duration": "30–60 Sek.",
+      "subtype": "reaktion",
+      "effort": "Niedrig",
+      "current_id": "sortierstation",
+      "disposition": "implemented-before-consolidation"
+    },
+    {
+      "id": "pfeilfieber",
+      "name": "Pfeilfieber",
+      "description": "Immer längere Tastensequenzen möglichst schnell wiederholen.",
+      "players": "2–10 Spieler",
+      "duration": "20–40 Sek.",
+      "subtype": "reaktion",
+      "effort": "Niedrig",
+      "current_id": "pfeilfieber",
+      "disposition": "implemented-before-consolidation"
+    },
+    {
+      "id": "broeckelboden",
+      "name": "Bröckelboden",
+      "description": "Sich auf einer zerfallenden Plattform in Sicherheit bewegen.",
+      "players": "2–10 Spieler",
+      "duration": "1–2 Min.",
+      "subtype": "echtzeit",
+      "effort": "Hoch",
+      "current_id": "broeckelboden",
+      "disposition": "implemented-before-consolidation"
+    },
+    {
+      "id": "labyrinth-chaos",
+      "name": "Labyrinth-Chaos",
+      "description": "Veränderliche Wege und Schlüssel im Labyrinth bewältigen.",
+      "players": "2–8 Spieler",
+      "duration": "2–4 Min.",
+      "subtype": "geschick",
+      "effort": "Mittel",
+      "current_id": "labyrinth-chaos",
+      "disposition": "planned"
+    },
+    {
+      "id": "geschenkdiebe",
+      "name": "Geschenkdiebe",
+      "description": "Geschenke einsammeln und den anderen wieder abluchsen.",
+      "players": "2–8 Spieler",
+      "duration": "2–3 Min.",
+      "subtype": "echtzeit",
+      "effort": "Hoch",
+      "current_id": "geschenkdiebe",
+      "disposition": "planned"
+    },
+    {
+      "id": "wortjagd",
+      "name": "Wortjagd",
+      "description": "Wörter tippen, bevor die Zeit abläuft.",
+      "players": "2–10 Spieler",
+      "duration": "30–90 Sek.",
+      "subtype": "wissen",
+      "effort": "Niedrig",
+      "current_id": "wortjagd",
+      "disposition": "planned"
+    },
+    {
+      "id": "puzzle-panik",
+      "name": "Puzzle-Panik",
+      "description": "Zerlegte Bilder schneller als die anderen zusammensetzen.",
+      "players": "2–10 Spieler",
+      "duration": "1–3 Min.",
+      "subtype": "geschick",
+      "effort": "Mittel",
+      "current_id": "puzzle-panik",
+      "disposition": "planned"
+    },
+    {
+      "id": "schubsarena",
+      "name": "Schubsarena",
+      "description": "Mit Schubsaktionen die gegnerischen Figuren aus der Arena drängen.",
+      "players": "2–8 Spieler",
+      "duration": "1–2 Min.",
+      "subtype": "echtzeit",
+      "effort": "Hoch",
+      "current_id": "schubsarena",
+      "disposition": "planned"
+    },
+    {
+      "id": "fallenbauer",
+      "name": "Fallenbauer",
+      "description": "Gemeinsam Fallen platzieren und anschließend den Parcours bestehen.",
+      "players": "2–8 Spieler",
+      "duration": "2–4 Min.",
+      "subtype": "echtzeit",
+      "effort": "Hoch",
+      "current_id": "fallenbauer",
+      "disposition": "planned"
+    },
+    {
+      "id": "regelwahnsinn",
+      "name": "Regelwahnsinn",
+      "description": "Alle paar Sekunden ändern sich Bewegungs- oder Siegbedingungen.",
+      "players": "2–10 Spieler",
+      "duration": "1–3 Min.",
+      "subtype": "echtzeit",
+      "effort": "Hoch",
+      "current_id": "regelwahnsinn",
+      "disposition": "planned"
+    },
+    {
+      "id": "rhythmus-rausch",
+      "name": "Rhythmus-Rausch",
+      "description": "Passende Tasten im Takt drücken und Kombos sammeln.",
+      "players": "2–10 Spieler",
+      "duration": "1–2 Min.",
+      "subtype": "reaktion",
+      "effort": "Mittel",
+      "current_id": "rhythmus-rausch",
+      "disposition": "planned"
+    },
+    {
+      "id": "scheinwerfer-flucht",
+      "name": "Scheinwerfer-Flucht",
+      "description": "Den wandernden Lichtkegeln möglichst lange ausweichen.",
+      "players": "2–10 Spieler",
+      "duration": "1–2 Min.",
+      "subtype": "geschick",
+      "effort": "Mittel",
+      "current_id": "scheinwerfer-flucht",
+      "disposition": "planned"
+    },
+    {
+      "id": "schatzgraeber",
+      "name": "Schatzgräber",
+      "description": "Hinweise kombinieren und versteckte Schätze ausgraben.",
+      "players": "2–10 Spieler",
+      "duration": "2–4 Min.",
+      "subtype": "wissen",
+      "effort": "Mittel",
+      "current_id": "schatzgraeber",
+      "disposition": "planned"
+    },
+    {
+      "id": "stillgestanden",
+      "name": "Stillgestanden!",
+      "description": "Nur bewegen, wenn der Kontrolleur nicht hinsieht.",
+      "players": "2–10 Spieler",
+      "duration": "1–2 Min.",
+      "subtype": "reaktion",
+      "effort": "Niedrig",
+      "current_id": "stillgestanden",
+      "disposition": "planned"
+    },
+    {
+      "id": "doppelagent",
+      "name": "Doppelagent",
+      "description": "Einen geheimen Begriff umschreiben, ohne den ahnungslosen Mitspieler zu verraten.",
+      "players": "3–10 Spieler",
+      "duration": "3–5 Min.",
+      "subtype": "bluff",
+      "effort": "Niedrig",
+      "current_id": "doppelagent",
+      "disposition": "planned"
+    },
+    {
+      "id": "stille-post",
+      "name": "Stille Post Deluxe",
+      "description": "Sätze zeichnen und Bilder wieder beschreiben.",
+      "players": "4–10 Spieler",
+      "duration": "5–10 Min.",
+      "subtype": "wissen",
+      "effort": "Mittel",
+      "current_id": "kritzelpost",
+      "disposition": "implemented-before-consolidation"
+    },
+    {
+      "id": "schaetzmeister",
+      "name": "Schätzmeister",
+      "description": "Ungewöhnliche Zahlen schätzen; wer am nächsten liegt, gewinnt.",
+      "players": "2–10 Spieler",
+      "duration": "1–3 Min.",
+      "subtype": "wissen",
+      "effort": "Niedrig",
+      "current_id": "schaetzmeister",
+      "disposition": "implemented-before-consolidation"
+    },
+    {
+      "id": "reaktor-notfall",
+      "name": "Reaktor-Notfall",
+      "description": "Gemeinsam Rätsel lösen, bevor die Anlage überhitzt.",
+      "players": "2–8 Spieler",
+      "duration": "3–6 Min.",
+      "subtype": "wissen",
+      "effort": "Mittel",
+      "current_id": "reaktor-notfall",
+      "disposition": "planned"
+    },
+    {
+      "id": "bomben-duell",
+      "name": "Bomben-Duell",
+      "description": "Sprengladungen setzen und rechtzeitig in Deckung gehen.",
+      "players": "2–8 Spieler",
+      "duration": "1–3 Min.",
+      "subtype": "echtzeit",
+      "effort": "Hoch",
+      "current_id": "bomben-duell",
+      "disposition": "planned"
+    }
+  ],
+  "existing_section_order": [
+    "klassiker-varianten",
+    "monopoly-co",
+    "hub-paket",
+    "ticket-board",
+    "party-modi",
+    "zeichnen",
+    "design-toene",
+    "spieleabend",
+    "benachrichtigungen",
+    "betrieb",
+    "technik",
+    "englisch",
+    "echtzeit",
+    "discord-login",
+    "poker-extras",
+    "party-extras",
+    "spaetere-spiele",
+    "grosse-projekte",
+    "wer-bin-ich-fertig",
+    "phase10-fertig",
+    "paket6-fertig",
+    "paket5-fertig",
+    "paket4-fertig",
+    "zurueck-fertig",
+    "tisch-komfort-fertig",
+    "hub-fertig",
+    "paket2b-fertig",
+    "schutz-fertig",
+    "bots-fertig",
+    "v1-fertig"
+  ],
+  "completed_sections": [
+    {
+      "id": "klassiker-varianten",
+      "date": "2026-10-30",
+      "point_ids": [
+        "p10-1",
+        "p10-2",
+        "p10-3",
+        "p10-4",
+        "p10-5",
+        "p10-6",
+        "p10-7",
+        "p10-8",
+        "p10-9",
+        "p10-10",
+        "p10-11",
+        "p10-12",
+        "p10-13",
+        "p10-14",
+        "p10-15",
+        "p10-16",
+        "p10-17",
+        "p10-18",
+        "p10-19",
+        "p10-20",
+        "p10-21"
+      ]
+    },
+    {
+      "id": "monopoly-co",
+      "date": "2026-10-29",
+      "point_ids": [
+        "sechs-nimmt",
+        "monopoly-deal",
+        "monopoly"
+      ]
+    },
+    {
+      "id": "hub-paket",
+      "date": "2026-10-29",
+      "point_ids": [
+        "roadmap-seite",
+        "gerade-online",
+        "backlog-ergaenzen"
+      ]
+    },
+    {
+      "id": "ticket-board",
+      "date": "2026-10-29",
+      "point_ids": [
+        "tickets-1",
+        "tickets-2",
+        "tickets-3"
+      ]
+    },
+    {
+      "id": "party-modi",
+      "date": "2026-10-29",
+      "point_ids": [
+        "party-mix",
+        "party-turnier",
+        "eigene-playlist",
+        "team-duell"
+      ]
+    },
+    {
+      "id": "zeichnen",
+      "date": "2026-10-29",
+      "point_ids": [
+        "zeichenwerkzeug",
+        "kritzelpost",
+        "bildunterschrift",
+        "malen-raten"
+      ]
+    },
+    {
+      "id": "design-toene",
+      "date": "2026-10-29",
+      "point_ids": [
+        "design-1",
+        "design-2",
+        "design-3"
+      ]
+    },
+    {
+      "id": "spieleabend",
+      "date": "2026-10-30",
+      "point_ids": [
+        "abend-1",
+        "abend-2",
+        "abend-3",
+        "abend-4"
+      ]
+    },
+    {
+      "id": "echtzeit",
+      "date": "2026-10-29",
+      "point_ids": [
+        "bauart-c",
+        "broeckelboden",
+        "kronenjagd",
+        "laser-huepfer"
+      ]
+    },
+    {
+      "id": "wer-bin-ich-fertig",
+      "date": "2026-10-28",
+      "point_ids": [
+        "wer-bin-ich"
+      ]
+    },
+    {
+      "id": "phase10-fertig",
+      "date": "2026-10-28",
+      "point_ids": [
+        "phase10-komfort"
+      ]
+    },
+    {
+      "id": "paket6-fertig",
+      "date": "2026-10-28",
+      "point_ids": [
+        "zahlenzoo",
+        "gedaechtnis-kueche",
+        "pfeilfieber",
+        "sortierstation",
+        "tickendes-paket",
+        "werwolf",
+        "bauart-b"
+      ]
+    },
+    {
+      "id": "paket5-fertig",
+      "date": "2026-10-28",
+      "point_ids": [
+        "wuerfelpoker",
+        "luegenwuerfel",
+        "chicago",
+        "reversi",
+        "dame",
+        "domino"
+      ]
+    },
+    {
+      "id": "paket4-fertig",
+      "date": "2026-10-28",
+      "point_ids": [
+        "mogeln",
+        "praesident",
+        "durak",
+        "omaha"
+      ]
+    },
+    {
+      "id": "zurueck-fertig",
+      "date": "2026-10-28",
+      "point_ids": [
+        "zurueck-routing"
+      ]
+    },
+    {
+      "id": "tisch-komfort-fertig",
+      "date": "2026-10-28",
+      "point_ids": [
+        "tisch-komfort"
+      ]
+    },
+    {
+      "id": "hub-fertig",
+      "date": "2026-10-27",
+      "point_ids": [
+        "hub-start"
+      ]
+    },
+    {
+      "id": "paket2b-fertig",
+      "date": "2026-10-27",
+      "point_ids": [
+        "schlagfertig",
+        "werhatdasgesagt"
+      ]
+    },
+    {
+      "id": "schutz-fertig",
+      "date": "2026-10-27",
+      "point_ids": [
+        "passwort-https"
+      ]
+    },
+    {
+      "id": "bots-fertig",
+      "date": "2026-10-25",
+      "point_ids": [
+        "muehle",
+        "zehntausend",
+        "computer-mitspieler"
+      ]
+    },
+    {
+      "id": "v1-fertig",
+      "date": "2026-10-24",
+      "point_ids": [
+        "poker"
+      ]
+    }
+  ],
+  "current_work": [
+    "benachrichtigungen"
+  ]
+}

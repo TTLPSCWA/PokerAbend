@@ -1,0 +1,840 @@
+{
+  "schema_version": 1,
+  "project": "TTLPSCWA/PokerAbend",
+  "title": "PokerAbend V2: Accountidentität, Discord, Ranked, Präferenzen, Design, Tischvideo",
+  "planning_mode": true,
+  "implementation_authorized": false,
+  "documentation_only": true,
+  "created_date": "2026-10-30",
+  "baseline": {
+    "branch": "main",
+    "commit": "aa2551793da45471c910d090e8eb2357e9ed13fd",
+    "registered_games": 46
+  },
+  "status": "planned",
+  "entrypoint": "docs/roadmap/README.md",
+  "source_of_truth": "docs/roadmap/plan.json",
+  "source_spec": "docs/roadmap/MASTERPROMPT_V2_SOURCE.md",
+  "shared_agents": [
+    "Codex",
+    "Claude Code"
+  ],
+  "excluded": [
+    "Freundeslisten",
+    "Direkte Discord-Videostream-Übernahme",
+    "3D",
+    "erfundene Ranglistenwerte",
+    "automatischer Produktionsdeploy"
+  ],
+  "rules": [
+    "KEINE Implementierung ohne expliziten Auftrag mit Arbeitspaket-ID.",
+    "Nur nach Umsetzung eines einzelnen freigegebenen Pakets Status, Nachweise und abhängige Punkte aktualisieren.",
+    "Bestehende Spiele, Räume, Statistiken, Tickets, Pläne, Sicherheiten, technische IDs und Volume schützen.",
+    "Vor Produktivmigration Backup und Rollback bestätigen.",
+    "Veraltete Baseline vor Umsetzung neu prüfen.",
+    "Jede Adminänderung an echten Statistiken benötigt eine serverseitige Rechteprüfung und ein nachvollziehbares Audit; keine stillen Direkt-Edits von Ranglistenwerten.",
+    "Ausschließlich auf main arbeiten; keine neuen Branches/PRs und kein Force-Push. Vor Schreibvorgängen Remote-Stand prüfen und Änderungen sicher abgleichen.",
+    "Roadmap-Metadaten dürfen ausdrücklich beauftragt synchronisiert werden; das erteilt keine Implementierungsfreigabe für V2-Pakete."
+  ],
+  "task_status_values": [
+    "planned",
+    "in_progress",
+    "blocked",
+    "review",
+    "done"
+  ],
+  "tasks": [
+    {
+      "id": "V2-00",
+      "title": "Bestandsaufnahme, Sicherheitsmodell und Daten-Sicherung",
+      "phase": 0,
+      "depends_on": [],
+      "priority": "critical",
+      "goal": "Aktuelle Architektur, Datenbestände und Risiken dokumentieren; Migrations-/Rückfallstrategie, keine Änderung am Produktivbestand.",
+      "files": [
+        "server/index.js",
+        "server/security.js",
+        "server/base-room.js",
+        "server/leaderboard.js",
+        "server/tickets.js",
+        "server/plan-api.js",
+        "docker-compose*.yml"
+      ],
+      "security": [
+        "Identitätsdiebstahl",
+        "Datenverlust",
+        "Berechtigungs- und Cookie-Grenzen",
+        "sichere Backups"
+      ],
+      "acceptance": [
+        "Threat Model vorhanden",
+        "Sicherungs-/Rollback-Checkliste dokumentiert",
+        "Altbestände und Tests inventarisiert"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": [],
+      "public_roadmap_ids": [
+        "v2-audit",
+        "v2-backup-migration"
+      ],
+      "test_results": [],
+      "commits": []
+    },
+    {
+      "id": "V2-01",
+      "title": "Plattformidentität: Accounts, Gäste, Bots und persistente IDs",
+      "phase": 1,
+      "depends_on": [
+        "V2-00"
+      ],
+      "priority": "critical",
+      "goal": "AccountId (intern), öffentliche kollisionsgeprüfte Game-ID, identifizierter Gast, Computerbot strikt trennen; versionierte persistente Speicherung; serverseitige Bindung an Räume.",
+      "files": [
+        "server/index.js",
+        "server/base-room.js",
+        "server/security.js",
+        "server/presence.js",
+        "server/party-program.js",
+        "server/identity.js (neu)",
+        "server/account-store.js (neu)"
+      ],
+      "security": [
+        "Keine vom Client behaupteten Account-/Bot-IDs akzeptieren",
+        "Sessions gehasht gespeichert",
+        "Reconnect-Rechte an serverseitige Identität binden",
+        "bei Accountwechsel kein fremder Platz",
+        "Gast niemals bot:true",
+        "SQLite-Treiber nur nach Node-22-Alpine-Kompatibilitätsprüfung"
+      ],
+      "acceptance": [
+        "Registrierte IDs bleiben nach Namenswechsel konstant",
+        "Gäste spielen ohne Discord in Lobbys und über Raumcode",
+        "Bots sind keine Gäste",
+        "mehrere Tabs/Reconnect dürfen keine Identität übernehmen",
+        "vorhandene Räume und Tokens bleiben soweit möglich kompatibel"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": [],
+      "public_roadmap_ids": [
+        "v2-account-identity",
+        "discord-3",
+        "discord-4"
+      ],
+      "test_results": [],
+      "commits": []
+    },
+    {
+      "id": "V2-02",
+      "title": "Discord OAuth2 und Sitzungssicherheit",
+      "phase": 2,
+      "depends_on": [
+        "V2-01"
+      ],
+      "priority": "critical",
+      "goal": "Optionalen Discord-Login mit identify-Scope, serverseitigem Code-Austausch und eigener Session implementieren; bestehendes SITE_PASSWORD und Ticket-Admin davon trennen.",
+      "files": [
+        "server/index.js",
+        "server/security.js",
+        "server/auth-discord.js (neu)",
+        "public/hub.js",
+        "public/core.js",
+        ".env.example"
+      ],
+      "security": [
+        "Authorization Code, State Single-Use, feste Redirect-URI, PKCE sofern unterstützt",
+        "keine Provider-Tokens im Browser",
+        "HttpOnly Secure Session-Cookies, CSRF-Schutz und Session-Rotation",
+        "Discord nicht automatisch Admin",
+        "keine IDs/Secrets in Logs",
+        "ohne Credentials bleibt Gastmodus nutzbar"
+      ],
+      "acceptance": [
+        "Login, Logout, Revocation, Timeout mit Tests",
+        "falscher State/Replay führt nicht zum Login",
+        "Discord-Identität ist serverseitig verifiziert",
+        "Discord-Login ohne konfigurierte Secrets sauber deaktiviert"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": [],
+      "public_roadmap_ids": [
+        "discord-1",
+        "v2-session-security"
+      ],
+      "test_results": [],
+      "commits": []
+    },
+    {
+      "id": "V2-03",
+      "title": "Ranked-Ergebnisse und historische Bestenlisten",
+      "phase": 3,
+      "depends_on": [
+        "V2-01",
+        "V2-02"
+      ],
+      "priority": "critical",
+      "goal": "Bestenlisten nach Account-ID und idempotenten Runden-IDs aus echten Serverereignissen aufbauen; historische namensbasierte Statistiken separat archivieren.",
+      "files": [
+        "server/leaderboard.js",
+        "server/index.js",
+        "server/achievements.js",
+        "games/variants.js",
+        "public/hub.js"
+      ],
+      "security": [
+        "Bots anhand Serverflag und Raum-ID statt Namen ausschließen",
+        "Ranked Eligibility vor Rundenbeginn einfrieren",
+        "mindestens zwei unterschiedliche registrierte Menschen, ohne Gäste/Bots",
+        "keine freien Ergebnisdaten vom Client",
+        "alte Namen niemals automatisch Discord-IDs zuordnen"
+      ],
+      "acceptance": [
+        "Gast/Bot/abgebrochene Runde nicht öffentlich gewertet",
+        "doppelte Runde höchstens einmal gezählt",
+        "Rangliste enthält nur wirklich qualifizierte Ergebnisse",
+        "historische Rangliste deutlich als unbestätigt gekennzeichnet",
+        "echte leere Zustände statt Fake-Top-Spieler"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": [],
+      "public_roadmap_ids": [
+        "discord-5",
+        "v2-historical-rankings"
+      ],
+      "test_results": [],
+      "commits": []
+    },
+    {
+      "id": "V2-04",
+      "title": "Spielerprofile, Erfolge und Game-ID",
+      "phase": 4,
+      "depends_on": [
+        "V2-03"
+      ],
+      "priority": "high",
+      "goal": "Öffentliches minimales Spielerprofil anhand Game-ID anzeigen; Statistiken und Erfolge aus validierten Account-Ergebnissen berechnen.",
+      "files": [
+        "server/achievements.js",
+        "server/index.js",
+        "public/achievements.js",
+        "public/hub.js"
+      ],
+      "security": [
+        "Game-ID kein Login-Geheimnis",
+        "Discord-ID/Account-ID/Tokens nicht öffentlich",
+        "Privacy-Opt-outs serverseitig prüfen",
+        "Rate-Limits für Such-/Profilabfragen"
+      ],
+      "acceptance": [
+        "Namenswechsel erhält Fortschritt",
+        "Profil nur erlaubte Felder",
+        "echte Ergebnisdaten statt Demo-Werte",
+        "Gäste ohne öffentliches globales Profil"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": [],
+      "public_roadmap_ids": [
+        "v2-player-profiles",
+        "v2-account-achievements"
+      ],
+      "test_results": [],
+      "commits": []
+    },
+    {
+      "id": "V2-05",
+      "title": "Personalisierung und Datenschutz-Einstellungen",
+      "phase": 5,
+      "depends_on": [
+        "V2-01",
+        "V2-02"
+      ],
+      "priority": "high",
+      "goal": "Einstellungen für Kategorien, Navigation, Erfolge, Bestenliste, Favoriten, Animationen, Präsenz, Video und Profil-Sichtbarkeit; Discord geräteübergreifend, Gast lokal.",
+      "files": [
+        "public/hub.js",
+        "public/core.js",
+        "public/hub.css",
+        "public/style.css",
+        "server/index.js",
+        "server/account-store.js (neu)"
+      ],
+      "security": [
+        "UI-Ausblenden ist keine serverseitige Berechtigung",
+        "Privatsphäre separat von lokalen Anzeigen",
+        "Daten per validiertem Schema speichern",
+        "gesperrte Kategorien bleiben via Einladungslink spielbar"
+      ],
+      "acceptance": [
+        "Brettspiele ausblendbar und wieder einblendbar",
+        "Erfolge nur UI verbergen vs öffentlich privat trennbar",
+        "Einstellungen mobil bedienbar",
+        "Gäste ohne Konto bleiben voll spielfähig"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": [],
+      "public_roadmap_ids": [
+        "v2-profile-preferences",
+        "v2-privacy"
+      ],
+      "test_results": [],
+      "commits": []
+    },
+    {
+      "id": "V2-06",
+      "title": "Bestehendes Liquid Glass in die V2-Kontooberflächen integrieren",
+      "phase": 6,
+      "depends_on": [
+        "V2-02",
+        "V2-04",
+        "V2-05"
+      ],
+      "priority": "high",
+      "goal": "Den bereits vorhandenen Liquid-Glass-Hub erhalten und nach Freigabe an V2-Accounts, neue Profile und profilgebundene Einstellungen anpassen; kein zweites Redesign und kein Rückbau der bestehenden Oberfläche.",
+      "files": [
+        "public/hub.js",
+        "public/hub.css",
+        "public/style.css",
+        "public/game-design.js",
+        "public/game-design.css",
+        "public/tickets.css",
+        "public/evening-plans.css",
+        "public/evening-reviews.css",
+        "public/achievements.css",
+        "public/ui-theme.js",
+        "public/ui-theme.css"
+      ],
+      "security": [
+        "keine externen Tracker/Fonts",
+        "keine geheimen Spieldaten in visuellem Hub",
+        "keine Fake-Buttons oder Live-Daten",
+        "barrierefreie Kontraste und reduzierte Bewegung"
+      ],
+      "acceptance": [
+        "Ein dominanter dezenter atmosphärischer Hintergrund",
+        "minimalistische bildfreie Kategorien- und Spielkacheln",
+        "keine wiederholten Motivbilder in Kacheln",
+        "responsive Desktop/iPhone",
+        "kein 3D, keine Freundesliste"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": [
+        "Redesign bereits vor dieser Konsolidierung auf main: aa25517; Abnahme in docs/ui-redesign.md. Die spätere V2-Kontointegration ist noch nicht implementiert und bleibt planned."
+      ],
+      "public_roadmap_ids": [
+        "v2-liquid-glass"
+      ],
+      "test_results": [],
+      "commits": []
+    },
+    {
+      "id": "V2-07",
+      "title": "Bestehende Tickets, Planungen, Rückblicke und Presence sicher integrieren",
+      "phase": 7,
+      "depends_on": [
+        "V2-01",
+        "V2-02",
+        "V2-05"
+      ],
+      "priority": "high",
+      "goal": "Bestehende Besucherrechte und URLs erhalten und optional identifizierte Nutzer verknüpfen, ohne eine fremde Identität via gleichlautenden Namen zu übernehmen.",
+      "files": [
+        "server/ticket-api.js",
+        "server/tickets.js",
+        "server/plan-api.js",
+        "server/presence.js",
+        "server/evening-reviews.js",
+        "public/tickets.js",
+        "public/evening-plans.js"
+      ],
+      "security": [
+        "Tickets/Planungen behalten aktuelle Cookie-basierten Besitzrechte",
+        "keine Rechteübernahme durch Account-/Namensgleichheit",
+        "Site- und Admin-Login weiter getrennt",
+        "Logout/Pseudonymänderung darf Rechte nicht ausweiten"
+      ],
+      "acceptance": [
+        "Ticket-Admin weiterhin eigenständig",
+        "bestehende private Planungen und Rückblicke funktionieren",
+        "Presence verbirgt private Tische und unsichtbare Spieler",
+        "keine Änderungen am Berechtigungsmodell ohne Test"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": [],
+      "public_roadmap_ids": [
+        "v2-platform-integration"
+      ],
+      "test_results": [],
+      "commits": []
+    },
+    {
+      "id": "V2-08",
+      "title": "Optionale sichere Tischkamera per WebRTC",
+      "phase": 8,
+      "depends_on": [
+        "V2-01",
+        "V2-02"
+      ],
+      "priority": "later",
+      "goal": "Eigenständiges opt-in Video pro Tisch und Spielerplatz (ohne Audio), Discord nur für Login; nur nach geprüften HTTPS/TURN Voraussetzungen aktivieren.",
+      "files": [
+        "server/index.js",
+        "public/core.js",
+        "public/games/kit.js",
+        "public/style.css",
+        "docker-compose.prod.yml",
+        ".env.example"
+      ],
+      "security": [
+        "Discord-Videocall ist nicht per OAuth zu spiegeln",
+        "Video standardmäßig aus, nie Auto-Start",
+        "nur aktuelle berechtigte Sitzplatzteilnehmer, Zuschauer ausgeschlossen",
+        "serverseitig autorisierte und begrenzte Socket.IO Signalisierung",
+        "WebRTC relay-only über TURN mit kurzlebigen Credentials",
+        "keine Speicherung/Aufnahme von Video",
+        "Tracks/Verbindungen bei Logout/Kick/Roomwechsel schließen"
+      ],
+      "acceptance": [
+        "ohne TURN/HTTPS bleibt Video deaktiviert",
+        "kein Mikrofonzugriff",
+        "Kamera ablehnen -> Avatar bleibt",
+        "Cross-Room-Video-Signaling abgelehnt",
+        "Safari/iPhone-Einschränkungen dokumentiert",
+        "höchstens 4 Sender in MVP"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": [],
+      "public_roadmap_ids": [
+        "discord-6"
+      ],
+      "test_results": [],
+      "commits": []
+    },
+    {
+      "id": "V2-09",
+      "title": "Regressionstests, Sicherheit und Datenschutz",
+      "phase": 9,
+      "depends_on": [
+        "V2-03",
+        "V2-04",
+        "V2-05",
+        "V2-06",
+        "V2-07",
+        "V2-08"
+      ],
+      "priority": "critical",
+      "goal": "Automatisierte Tests und Audits für Identität, Auth, Rangliste, Privatsphäre, Video, UI und alle vorhandenen Spiele.",
+      "files": [
+        "test/*.test.js",
+        "test/ui/*.spec.js",
+        "playwright.config.js",
+        "Dockerfile"
+      ],
+      "security": [
+        "OAuth-State, CSRF, IDOR, Session-Fixation und Replays testen",
+        "Account-/Gast-/Bot-Grenzen testen",
+        "XSS in Namen/Discord-Profildaten testen",
+        "WebRTC-Signaling-Rate/Room-Isolation testen",
+        "ohne produktive Secrets testen"
+      ],
+      "acceptance": [
+        "npm test grün",
+        "npm run test:ui Desktop/Mobil grün",
+        "Docker-Build Node22-Alpine geprüft",
+        "alle aktuell registrierten Spiele (Baseline: 46) bleiben verfügbar",
+        "offene Risiken dokumentiert"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": [],
+      "public_roadmap_ids": [
+        "v2-security-tests"
+      ],
+      "test_results": [],
+      "commits": []
+    },
+    {
+      "id": "V2-10",
+      "title": "Deployment-Plan, Feature-Flags und Übergabe",
+      "phase": 10,
+      "depends_on": [
+        "V2-09"
+      ],
+      "priority": "high",
+      "goal": "Sichere Veröffentlichung planen, nicht automatisch deployen; bestehende Volumes, URLs, Cookies, GHCR, Traefik und Rollback bewahren.",
+      "files": [
+        "README.md",
+        "docker-compose.yml",
+        "docker-compose.prod.yml",
+        ".env.example",
+        ".github/workflows/docker.yml"
+      ],
+      "security": [
+        "Produktivdaten vor Migration separat sichern",
+        "HTTPS/Traefik verifizieren, kein ungeschütztes Port-3000-Bypass",
+        "neue Secrets nie committen",
+        "Datenlöschung, Informationstexte und Videosicherheit dokumentieren"
+      ],
+      "acceptance": [
+        "Rollback und Backup wiederherstellbar dokumentiert",
+        "Feature-Flags mit sicheren Defaults",
+        "keine Produktionsbereitstellung ohne ausdrückliche Freigabe",
+        "Branch-/PR- und Testergebnisse dokumentiert"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": [],
+      "public_roadmap_ids": [
+        "v2-release-migration"
+      ],
+      "test_results": [],
+      "commits": []
+    },
+    {
+      "id": "V2-11",
+      "title": "Strategiebrettspiel Risiko (eigenständige Umsetzung)",
+      "phase": 11,
+      "depends_on": [
+        "V2-00"
+      ],
+      "priority": "later",
+      "goal": "Bestehenden geplanten Backlog-Eintrag 'gebietskampf' (Risiko-inspirierte Gebietseroberung) umsetzen, kein zweites Risiko-Spiel registrieren. Eigene Gebiete, Armeen, Verstärkung, serverseitige Würfelkonflikte und Siegbedingungen; Regeln, Mobile UI und optionale geeignete Bots.",
+      "files": [
+        "games/index.js",
+        "games/planned.js",
+        "games/roadmap.js",
+        "games/bots.js",
+        "test/ui/gebietskampf.spec.js (spätere Implementierung)",
+        "games/gebietskampf/ (spätere Implementierung)",
+        "public/games/gebietskampf/ (spätere Implementierung)",
+        "test/gebietskampf.test.js (spätere Implementierung)"
+      ],
+      "security": [
+        "Karten-/Spielzustand und Würfelwürfe serverseitig autoritativ; keine klientseitig gefälschten Ergebnisse",
+        "Angriffsaktionen turngebunden validieren; Reconnect und Ausfall absichern",
+        "Originale Karte, eigene Gebiets- und Kartennamen, eigenständige Symbole; Marken-, Urheber- und Designrechte vor Veröffentlichung prüfen",
+        "Keine regelwidrige Sicht auf geheime Aufträge oder Handkarten"
+      ],
+      "acceptance": [
+        "Spiel mit mehreren Menschen über bestehende Lobbys und Raumcodes ausführbar",
+        "Legale Armee-/Gebietszüge, Siegbedingung und Würfelkonflikte automatisiert getestet",
+        "Eigene originelle Karte und UI ohne Übernahme geschützter Grafiken",
+        "Desktop und Mobile Safari getestet",
+        "Kein bestehendes Risiko-Würfelspiel verändert"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": [
+        "Repo-Abgleich am 30.10.2026: games/planned.js hat bereits 'gebietskampf' (Große Projekte). Die öffentliche Roadmap nennt die Risiko-Inspiration. IDs bewahren; kein Duplikat anlegen."
+      ],
+      "public_roadmap_ids": [
+        "gebietskampf"
+      ],
+      "test_results": [],
+      "commits": []
+    },
+    {
+      "id": "V2-12",
+      "title": "Siedler von Catan-inspiriertes Hexfeld-Aufbauspiel",
+      "phase": 12,
+      "depends_on": [
+        "V2-00"
+      ],
+      "priority": "later",
+      "goal": "Bestehenden geplanten Backlog-Eintrag 'staedtehandel' (Catan-inspiriertes Hexfeld- und Handelsspiel) umsetzen, kein zweites Siedler-Spiel registrieren. Eigenständige Hexkarte, Rohstoffe, Straßen, Siedlungen, Städte, Handel, Räuber, Siegpunkte.",
+      "files": [
+        "games/index.js",
+        "games/planned.js",
+        "games/roadmap.js",
+        "games/bots.js",
+        "test/ui/staedtehandel.spec.js (spätere Implementierung)",
+        "games/staedtehandel/ (spätere Implementierung)",
+        "public/games/staedtehandel/ (spätere Implementierung)",
+        "test/staedtehandel.test.js (spätere Implementierung)"
+      ],
+      "security": [
+        "Rohstoffe/Entwicklungskarten pro Spieler geheim halten",
+        "Würfe, Handelsangebote, Tauschvalidierung und Baurechte ausschließlich serverseitig",
+        "Exploit-Schutz gegen unautorisierte Tauschbestätigungen, Doppelzüge und Endlosschleifen",
+        "Geistiges Eigentum: keine offiziellen Namen, Logos, Kartenillustrationen oder Kopien übernehmen ohne Lizenz"
+      ],
+      "acceptance": [
+        "Multiplayer per vorhandener Lobby, Spielstand- und Reconnect-Systematik",
+        "Platzierungsregeln, Rohstoffverteilung, Handel, Räuber und Siegbedingungen getestet",
+        "Mobile und Desktop: skalierbares Hexfeldbrett",
+        "Originale markenunabhängige Gestaltung und endgültiger Produktname vor Launch festgelegt"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": [
+        "Repo-Abgleich am 30.10.2026: games/planned.js hat bereits 'staedtehandel' (Große Projekte). Die öffentliche Roadmap nennt die Catan-Inspiration. IDs bewahren; kein Duplikat anlegen."
+      ],
+      "public_roadmap_ids": [
+        "staedtehandel"
+      ],
+      "test_results": [],
+      "commits": []
+    },
+    {
+      "id": "V2-13",
+      "title": "Erfolge & Errungenschaften deutlich ausbauen",
+      "phase": 13,
+      "depends_on": [
+        "V2-03",
+        "V2-04"
+      ],
+      "priority": "medium",
+      "goal": "Mehr spielübergreifende und spielspezifische Errungenschaften, Meilensteine, Schwierigkeitsstufen, Fortschrittsbalken, Kategorien, seltene Auszeichnungen sowie optionale private/öffentliche Anzeige planen. Freischaltungen ausschließlich anhand bestätigter serverseitiger Ereignisse, kompatibel mit Game-ID und bestehender Fortschrittslogik. Neue Spiele später in ihren Paketen ergänzen.",
+      "files": [
+        "server/achievements.js",
+        "server/leaderboard.js",
+        "server/index.js",
+        "public/achievements.js",
+        "public/achievements.css",
+        "test/achievements.test.js",
+        "test/ui/achievements.spec.js"
+      ],
+      "security": [
+        "Kein Farming von öffentlichen Ranked-Erfolgen über Bots/Gäste/manipulierte Daten",
+        "Freischaltung idempotent; derselbe Rundenabschluss zählt nur einmal",
+        "Private und öffentlich sichtbare Achievements trennen",
+        "Alte Abzeichen/Statistiken nicht ohne nachweisbaren Match auf neue Accounts übertragen"
+      ],
+      "acceptance": [
+        "Zusätzliche klar definierte Erfolge und Fortschrittsanzeige",
+        "Verifizierte Ergebnisse lösen die passenden Abzeichen genau einmal aus",
+        "Verborgene Erfolge erscheinen nur gemäß Privacy-Präferenz",
+        "Bestehende Erfolge und Benachrichtigungen bleiben funktionsfähig"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": [],
+      "public_roadmap_ids": [
+        "v2-erfolge-ausbauen"
+      ],
+      "test_results": [],
+      "commits": []
+    },
+    {
+      "id": "V2-14",
+      "title": "Gerade-online-Status und Presence verbessern",
+      "phase": 14,
+      "depends_on": [
+        "V2-01",
+        "V2-05",
+        "V2-07"
+      ],
+      "priority": "high",
+      "goal": "Online-/Abwesend-/Spielt-/Schaut-zu-Status zuverlässig geräte- und tabübergreifend anzeigen, an stabile Account-ID/Gast-ID statt Name binden. Onlineansicht übersichtlich gestalten, private Räume und Sichtbarkeit wahren; direkte Einladung/Beitritt über vorhandene öffentliche Räume beibehalten. Keine Freundesliste einführen.",
+      "files": [
+        "server/presence.js",
+        "server/index.js",
+        "public/hub.js",
+        "public/hub.css",
+        "test/presence.test.js",
+        "test/ui/roadmap-presence.spec.js"
+      ],
+      "security": [
+        "Unsichtbare Spieler dürfen weder in Online- noch Zuletzt-online-Listen erscheinen",
+        "Private Tische niemals über Status, Raumcode, Namen oder Spiel verraten",
+        "Rechte zu Zuschauer-/Beitritt-Aktionen am Server prüfen",
+        "Multi-Tab-Aktivität nicht doppelt zählen; Gast-IDs getrennt halten",
+        "Kein unnötiges dauerhaftes Aktivitäts-Tracking"
+      ],
+      "acceptance": [
+        "Korrekte Statuswechsel zwischen Startseite, aktivem Spiel, Zuschauer und Abwesenheit",
+        "Mehrere Tabs/Geräte eines Accounts werden nicht doppelt angezeigt",
+        "Zwei gleichnamige Personen bleiben getrennt",
+        "Unsichtbarkeit und private Tische bleiben geschützt",
+        "Safari und Reconnect überprüft"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": [],
+      "public_roadmap_ids": [
+        "v2-online-verbessern"
+      ],
+      "test_results": [],
+      "commits": []
+    },
+    {
+      "id": "V2-15",
+      "title": "Mehr Benutzer-Einstellungen: Anzeige, Filter und Bedienung",
+      "phase": 15,
+      "depends_on": [
+        "V2-05"
+      ],
+      "priority": "high",
+      "goal": "Feingranulare Einstellungen ergänzen für Spielkategorien (z. B. Brettspiele), Startseitenblöcke, Ranglisten, Erfolge, Präsenz-Bereich, Rückblicke, Roadmap, Tickets, Favoriten, zuletzt gespielt, Sound, reduzierte Bewegung/Transparenz, Kartengröße, Benachrichtigungen und Bedienung. Gute Standardwerte, Vorschau/Reset, profilgebundene Synchronisierung und lokale Gast-Fallbacks. UI-Verbergen und öffentliche Privatsphäre strikt trennen.",
+      "files": [
+        "public/hub.js",
+        "public/hub.css",
+        "public/core.js",
+        "public/style.css",
+        "server/account-store.js (neu)",
+        "test/ui/look.spec.js",
+        "test/ui/lobby-menu.spec.js"
+      ],
+      "security": [
+        "Versteckte Funktionen bleiben autorisierungspflichtig; Ausblenden darf API-Rechte nicht ändern",
+        "Serverseitige Präferenzen schematisch validieren, erlaubte Felder/Maximalwerte begrenzen",
+        "Account-Privacy darf nicht durch UI-Flags umgangen werden",
+        "Direkte Raumlinks müssen auch bei versteckter Spielkategorie funktionieren"
+      ],
+      "acceptance": [
+        "Jeder Bereich unabhängig ein-/ausblendbar; Option 'Alles zurücksetzen'",
+        "Mobile Einstellungen zugänglich und ohne Layoutfehler",
+        "Weder verwaiste Navigation noch unerreichbare private Einstellungen",
+        "Discord-Nutzer Einstellungen geräteübergreifend, Gast im Browser behalten",
+        "Ausblendung beeinflusst keine Spielregeln oder Rechte"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": [],
+      "public_roadmap_ids": [
+        "v2-einstellungen"
+      ],
+      "test_results": [],
+      "commits": []
+    },
+    {
+      "id": "V2-16",
+      "title": "Bots mit wählbarem Schwierigkeitsgrad",
+      "phase": 16,
+      "depends_on": [
+        "V2-01"
+      ],
+      "priority": "medium",
+      "goal": "Drei zunächst klar definierte Stufen (Leicht, Mittel, Schwer) für geeignete vorhandene Computergegner planen, pro Spiel/Host oder pro Bot auswählbar, konsistenter Standard 'Mittel'. Spielabhängige, nachvollziehbare Strategien und gezielte Tests statt bloß künstlicher Wartezeiten; Spiel ohne entsprechende KI bleibt funktionsfähig. Abgrenzung von menschlichen Gästen und späterem Ranked-Modus beachten.",
+      "files": [
+        "server/bots.js",
+        "games/bots.js",
+        "server/index.js",
+        "public/games/kit.js",
+        "public/games/poker/poker.js",
+        "games/*/bot.js (soweit vorhanden)",
+        "test/bots.test.js",
+        "test/bot-strategy.test.js",
+        "test/ui/bots.spec.js"
+      ],
+      "security": [
+        "Botstrategien nutzen nur erlaubte Spieler- und öffentlich sichtbare Informationen; keine geheime Gegnerhand",
+        "Schwierigkeit darf keine Gewinn-/Ergebnisberechtigung für Ranglisten auslösen",
+        "Host-only bei Änderung, nicht mitten im laufenden Zug/Runde",
+        "Schwierigkeitswahl serverseitig prüfen; Performance und Timeouts begrenzen"
+      ],
+      "acceptance": [
+        "Leicht/Mittel/Schwer auswählbar bei mindestens geeigneten Pilotspielen",
+        "Schwer spielt im Test messbar stärker, ohne unfairen Informationszugriff",
+        "Bestehende Bot-Funktion und Reconnect bleiben erhalten",
+        "Spiele ohne unterstützte Stufen zeigen einen ehrlichen Fallback",
+        "Bots niemals in öffentlichen Ranglisten"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": [],
+      "public_roadmap_ids": [
+        "v2-bot-schwierigkeit"
+      ],
+      "test_results": [],
+      "commits": []
+    },
+    {
+      "id": "V2-17",
+      "title": "Admin-Zentrale: Rückblicke, Bestenlisten und Daten moderieren",
+      "phase": 17,
+      "depends_on": [
+        "V2-02",
+        "V2-03",
+        "V2-07"
+      ],
+      "priority": "high",
+      "goal": "Eine abgesicherte Adminoberfläche mit Listen/Suche/Detailansicht für Abend-Rückblicke, historische und neue Bestenlisten, Spielerprofile sowie auf Wunsch weitere Wartungsdaten planen. Admins sollen fehlerhafte Einträge korrigieren, ausblenden, moderieren, logisch löschen und bei Bedarf wiederherstellen können; bei Rankings Korrekturen nachvollziehbar aus Wertungsereignissen ableiten statt verdeckt Summen umzuschreiben. Bestehende Ticket-Adminverwaltung konsistent einbinden.",
+      "files": [
+        "server/index.js",
+        "server/security.js",
+        "server/leaderboard.js",
+        "server/evening-reviews.js",
+        "server/ticket-api.js",
+        "server/admin-api.js (neu)",
+        "server/admin-audit.js (neu)",
+        "public/admin.js (neu)",
+        "public/admin.css (neu)",
+        "test/admin-api.test.js (neu)",
+        "test/ui/admin.spec.js (neu)"
+      ],
+      "security": [
+        "Rollen-/Rechteprüfung auf JEDEM Endpunkt; Discord-Login allein niemals Admin",
+        "MFA für Adminzugang erwägen; bestehendes TICKET_ADMIN_PASSWORD nicht automatisch zur globalen Freigabe machen",
+        "CSRF/IDOR/Ratelimits/Brute-Force-Schutz, Eingabevalidierung und sicheres HTML-Rendering",
+        "Soft-Delete/Restore mit Änderungsprotokoll (wer, wann, vorher/nachher, Grund); irreversible Löschung separat bestätigen",
+        "Sicherung und Restore vor Massenänderungen; Ergebnisse/Erfolge nach Korrekturen konsistent neu berechnen",
+        "Private Rückblicke und sensible Accountdaten nur für berechtigte Administratoren; Datensparsamkeit"
+      ],
+      "acceptance": [
+        "Normaler Discord-Account/Gast erhält niemals Adminrechte",
+        "Admin kann Rückblick bearbeiten, ausblenden, löschen und wiederherstellen; Rechte und Audit nachgewiesen",
+        "Ranglisteneinträge über dokumentierte Korrekturen moderieren; Rangfolge/Erfolge konsistent",
+        "Bestehende Ticketverwaltung funktioniert weiterhin",
+        "Jede destruktive Änderung erfordert Bestätigung, protokolliert Grund und ist testbar"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "completed_at": null,
+      "notes": [],
+      "public_roadmap_ids": [
+        "v2-admin-rueckblicke",
+        "v2-admin-bestenlisten",
+        "v2-admin-sicherheit"
+      ],
+      "test_results": [],
+      "commits": []
+    }
+  ],
+  "updated_date": "2026-10-30",
+  "addenda": [
+    {
+      "file": "docs/roadmap/V2_ADDENDUM_2026-10-30.md",
+      "date": "2026-10-30",
+      "scope": "Sieben weitere Planungspakete V2-11..V2-17; alle ausschließlich geplant.",
+      "priority": "Bei Überschneidung mit archivierter Ursprungs-Spezifikation gilt dieses Addendum für den hier beschriebenen Umfang."
+    }
+  ],
+  "notes": [
+    "PR #3 und #4 werden durch gezielte direkte Commits auf main konsolidiert; Herkunft und verworfene Altstände siehe consolidation.json und CONSOLIDATION_2026-10-30.md.",
+    "Alle 18 V2-Pakete bleiben planned. Der bereits vorhandene Liquid-Glass-Hub ist die Ausgangsbasis für spätere V2-Integration, keine Freigabe oder Fertigmeldung für V2-06."
+  ],
+  "workflow": {
+    "branch": "main",
+    "create_branches": false,
+    "create_pull_requests": false,
+    "force_push": false,
+    "remote_check_before_write": true,
+    "package_authorization_required": true,
+    "production_deployment_authorized": false
+  }
+}

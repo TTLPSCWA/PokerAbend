@@ -1,3 +1,7 @@
+# Historischer UI-Auftrag
+
+Der folgende Auftrag ist als Quelle erhalten; das Redesign wurde bereits auf `main` übernommen. Dies ist keine neue Implementierungsfreigabe. Für künftige Arbeiten gelten ausschließlich der Main-Only-Workflow in `AGENTS.md` / `CLAUDE.md` und eine ausdrückliche Freigabe des jeweiligen Arbeitspakets. Frühere Feature-Branch-Vorgaben im archivierten Text sind überholt.
+
 # CODEX / CLAUDE CODE — MASTERPROMPT: PokerAbend UI-Redesign (Game Library + Subtle Liquid Glass)
 
 ## AUFTRAG — SOFORT IMPLEMENTIEREN, NICHT NUR PLANEN

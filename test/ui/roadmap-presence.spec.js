@@ -1,4 +1,33 @@
 import { test, expect } from './helpers.js';
+import { readFileSync } from 'node:fs';
+
+test('Konsolidierte V2-Roadmap: Besucher sehen neue Planungen, geplante Spiele bleiben nicht startbar', async ({ page, app }, info) => {
+  await start(page, app, 'Anna');
+  await page.evaluate(() => { location.hash = '#roadmap'; });
+  await expect(page.locator('.roadmap-card.current')).toContainText('Benachrichtigungen');
+  await page.locator('[data-roadmap-stage="spaeter"] > summary').click();
+  for (const title of ['Dauerhafte Konten & Spieler-IDs', 'Eigene Spielerprofile', 'Privatsphäre selbst bestimmen', 'Bot-Schwierigkeitsgrade', 'Sichere Adminrechte']) {
+    await expect(page.getByText(title, { exact: true })).toBeVisible();
+  }
+  await page.locator('[data-roadmap-stage="gross"] > summary').click();
+  for (const id of ['gebietskampf', 'staedtehandel', 'turmbauer', 'geschenkdiebe', 'fallenbauer', 'reaktor-notfall', 'bomben-duell']) {
+    await page.locator(`[data-plan="${id}"]`).click();
+    await expect(page.locator('#host-dlg')).toContainText('Noch nicht spielbar');
+    await expect(page.locator('#host-form')).toHaveCount(0);
+    await page.locator('#host-dlg .host-close').click();
+  }
+  const response = await page.request.get(app.url + '/roadmap');
+  const sections = await response.json();
+  const plan = JSON.parse(readFileSync(new URL('../../docs/roadmap/plan.json', import.meta.url), 'utf8'));
+  const points = sections.flatMap(s => s.punkte);
+  for (const task of plan.tasks) for (const id of task.public_roadmap_ids) {
+    const matches = points.filter(p => p.id === id);
+    expect(matches, `${task.id}: ${id}`).toHaveLength(1);
+    expect(matches[0].erledigt).toBeFalsy();
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: info.outputPath('v2-roadmap.png'), fullPage: true });
+});
 
 async function start(page, app, name) {
   await page.addInitScript((name) => {
