@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { mkdtempSync, readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { setTimeout as wait } from 'node:timers/promises';
@@ -12,12 +12,12 @@ async function until(fn, ms = 6000) {
   while (Date.now() < deadline) { if (fn()) return; await wait(20); }
   throw new Error('Zeitüberschreitung');
 }
-async function start(dataDir) {
+async function start(dataDir, password = '') {
   const child = spawn(process.execPath, ['--input-type=module', '-e', `
     const { http } = await import('./server/index.js');
     const ready = () => console.log('PROGRAM_READY:' + http.address().port);
     if (http.listening) ready(); else http.once('listening', ready);
-  `], { env: { ...process.env, PORT: '0', DATA_DIR: dataDir, POKER_NO_DOTENV: '1', SITE_PASSWORD: '' }, stdio: ['ignore', 'pipe', 'pipe'] });
+  `], { env: { ...process.env, PORT: '0', DATA_DIR: dataDir, POKER_NO_DOTENV: '1', SITE_PASSWORD: password }, stdio: ['ignore', 'pipe', 'pipe'] });
   let output = '';
   const url = await new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error(output)), 12000);
@@ -36,6 +36,42 @@ async function client(url) {
   await new Promise((resolve, reject) => { socket.once('connect', resolve); socket.once('connect_error', reject); });
   return socket;
 }
+
+test('Rückblick-API verlangt Gruppenanmeldung und stellt beschädigte Archive nicht als leere Liste dar', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'review-auth-')); let server = await start(dir, 'Review-Testpasswort');
+  try {
+    for (const path of ['/api/evenings', '/api/evenings/00000000-0000-0000-0000-000000000000', '/api/evenings/00000000-0000-0000-0000-000000000000/export']) {
+      const r = await fetch(server.url + path, { redirect: 'manual' }); assert.equal(r.status, 302); assert.match(r.headers.get('location'), /^\/login/);
+    }
+    const signed = await fetch(server.url + '/login', { method: 'POST', redirect: 'manual', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ password: 'Review-Testpasswort' }) });
+    const cookie = signed.headers.get('set-cookie').split(';')[0];
+    const listing = await fetch(server.url + '/api/evenings', { headers: { Cookie: cookie } }); assert.equal(listing.status, 200); assert.equal(listing.headers.get('cache-control'), 'no-store');
+    assert.equal((await listing.json()).total, 0);
+    await server.stop(); writeFileSync(join(dir, 'evening-reviews.json'), '{broken'); server = await start(dir);
+    assert.equal((await fetch(server.url + '/api/evenings')).status, 503);
+    assert.equal(readFileSync(join(dir, 'evening-reviews.json'), 'utf8'), '{broken');
+    assert.equal((await fetch(server.url + '/health')).status, 200);
+  } finally { await server.stop(); }
+});
+
+test('Rückblick: abgebrochene Station zählt nicht; Tischschluss während nächster Partie archiviert den Zwischenstand', async () => {
+  const server = await start(mkdtempSync(join(tmpdir(), 'review-partial-'))), clients = [];
+  try {
+    const a = await client(server.url), b = await client(server.url); clients.push(a, b);
+    const created = await a.ask('create', { game: 'zahlenzoo', name: 'Anna' }); await b.ask('join', { code: created.code, name: 'Ben' });
+    await a.ask('sit'); await b.ask('sit');
+    await a.ask('programSave', { mode: 'abend', entries: [{ game: 'zahlenzoo', settings: { rounds: 1 } }, { game: 'viergewinnt' }] });
+    await a.ask('programStart'); await a.ask('abortRound');
+    const id = a.state.partyProgram.id;
+    assert.equal((await fetch(server.url + '/api/evenings/' + id)).status, 404);
+    assert.ok((await a.ask('programNext')).ok); await a.ask('next'); await a.ask('next');
+    await until(() => a.state.partyProgram.status === 'between');
+    assert.ok((await a.ask('programNext')).ok); assert.ok((await a.ask('closeTable')).ok);
+    const r = await (await fetch(server.url + '/api/evenings/' + id)).json();
+    assert.equal(r.status, 'stopped'); assert.equal(r.stations.length, 1); assert.equal(r.stations[0].game, 'zahlenzoo'); assert.equal(r.planned, 2); assert.ok(r.endedAt > 0); assert.deepEqual(r.winners, []);
+    assert.equal((await (await fetch(server.url + '/api/evenings')).json()).total, 1);
+  } finally { clients.forEach((s) => s.close()); await server.stop(); }
+});
 
 test('Programm über WebSocket: Rechte, Spielwechsel, Tokens, Speichern, Neustart, Wiederholung und Siegerehrung', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'party-program-'));
@@ -63,6 +99,13 @@ test('Programm über WebSocket: Rechte, Spielwechsel, Tokens, Speichern, Neustar
     await until(() => a.state.partyProgram.status === 'between');
     assert.equal(a.state.partyProgram.standings[0].name, 'Anna');
     assert.equal(a.state.partyProgram.standings[0].points, 2);
+    const reviewId = a.state.partyProgram.id;
+    const getReview = async () => (await fetch(server.url + '/api/evenings/' + reviewId)).json();
+    const listReviews = async (suffix = '') => (await fetch(server.url + '/api/evenings' + suffix)).json();
+    assert.equal((await listReviews()).total, 0, 'laufende Abende sind nur per Link erreichbar');
+    assert.equal((await getReview()).stations.length, 1);
+    await a.ask('unlisted', { value: true });
+    assert.equal((await getReview()).private, true);
     await until(() => { try { return JSON.parse(readFileSync(join(dir, 'rooms.json'), 'utf8'))[0]?.partyProgram?.status === 'between'; } catch { return false; } });
     a.close(); b.close(); z.close(); await server.stop();
     server = await start(dir);
@@ -85,8 +128,20 @@ test('Programm über WebSocket: Rechte, Spielwechsel, Tokens, Speichern, Neustar
     assert.equal(a.state.partyProgram.results.length, 2);
     assert.equal(a.state.partyProgram.standings.find((p) => p.name === 'Anna').points, 2);
     assert.deepEqual(a.state.partyProgram.winners, ['Anna']);
+    const review = await getReview();
+    assert.equal(review.id, reviewId); assert.equal(review.status, 'done'); assert.equal(review.stations.length, 2); assert.deepEqual(review.winners, ['Anna']);
+    for (const secret of ['987654321', created.token, joined.token, created.code, a.state.you.id]) assert.ok(!JSON.stringify(review).includes(secret));
+    assert.equal((await listReviews()).total, 0, 'privater Abend bleibt aus der allgemeinen Liste');
+    assert.equal((await listReviews('?known=' + reviewId)).total, 1);
+    const exported = await fetch(server.url + '/api/evenings/' + reviewId + '/export');
+    assert.equal(exported.status, 200); assert.match(exported.headers.get('content-disposition'), /attachment/); assert.match(await exported.text(), /Gesamtwertung/);
+    assert.equal((await fetch(server.url + '/api/evenings/not-an-id')).status, 404);
     assert.ok((await a.ask('programStop')).ok);
     assert.ok((await a.ask('switchGame', { game: 'maumau' })).ok);
+    assert.ok((await a.ask('closeTable')).ok);
+    assert.equal((await getReview()).status, 'done', 'fertiger Abend bleibt auch beim Schließen abgeschlossen');
+    a.close(); b.close(); await server.stop(); server = await start(dir);
+    assert.deepEqual((await getReview()).winners, ['Anna']);
   } finally { clients.forEach((socket) => socket.close()); await server.stop(); }
 });
 

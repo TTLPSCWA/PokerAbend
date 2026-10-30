@@ -21,11 +21,21 @@ import { createLeaderboard } from './leaderboard.js';
 import { addBot, removeBot, createBotRunner } from './bots.js';
 import { BOTS } from '../games/bots.js';
 import { configureBoards } from '../games/monopoly/boards.js';
+import { createReviewStore, reviewMarkdown } from './evening-reviews.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
 const DATA_DIR = process.env.DATA_DIR || join(__dirname, '..', 'data');
 configureBoards(DATA_DIR);
+let reviews = null;
+try { reviews = createReviewStore({ dir: DATA_DIR, games: GAMES }); }
+catch (error) { console.error('Abend-Rückblicke konnten nicht geladen werden:', error.message); }
+function archiveReview(room, { stopped = false, restoring = false } = {}) {
+  const p = room.partyProgram;
+  if (!p?.results?.length) return;
+  if (stopped && p.status !== 'done') { p.status = 'stopped'; p.endedAt ||= Date.now(); }
+  try { reviews?.capture(room, { restoring }); } catch (error) { console.error('Abend-Rückblick konnte nicht gespeichert werden:', error.message); }
+}
 const SAVE_FILE = join(DATA_DIR, 'rooms.json');
 const MAX_ROOMS = Number(process.env.MAX_ROOMS || 50);
 const ROOM_TTL_MIN = 30; // Notbremse: Tische ohne Verbindung werden spätestens nach 30 Minuten geschlossen
@@ -123,6 +133,20 @@ app.get('/roadmap', (_req, res) => {
   res.json(resolvedRoadmap());
 });
 app.use('/api/tickets', ticketAPI.router);
+app.get('/api/evenings', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  if (!reviews) return res.status(503).json({ error: 'Das Rückblick-Archiv ist derzeit nicht lesbar. Die Spiele funktionieren weiterhin.' });
+  res.json(reviews.list({ query: String(req.query.q || '').slice(0, 80), page: Number(req.query.page) || 1, known: String(req.query.known || '').split(',').slice(0, 100) }));
+});
+app.get(['/api/evenings/:id', '/api/evenings/:id/export'], (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  if (!reviews) return res.status(503).json({ error: 'Das Rückblick-Archiv ist derzeit nicht lesbar. Die Spiele funktionieren weiterhin.' });
+  try {
+    const review = reviews.get(req.params.id);
+    if (req.path.endsWith('/export')) return res.attachment(`spieleabend-${review.id}.md`).type('text/markdown; charset=utf-8').send(reviewMarkdown(review));
+    res.json(review);
+  } catch (error) { res.status(error.status || 500).json({ error: error.message }); }
+});
 // Bestenliste über alle Abende: ?game=maumau&period=all|2026-10 (nur angemeldet)
 const GAME_INFO = Object.fromEntries(Object.values(GAMES).map((g) => {
   const r = g.create('INFO', {}, () => {}); const info = { id: g.id, name: g.name, lowWins: !!r.opts?.lowWins, scoreLabel: r.opts?.scoreLabel || 'Chips' }; r.dispose?.();
@@ -214,6 +238,7 @@ function load() {
       r.unlisted = d.unlisted === true;
       r.partyProgram = restoreProgram(d.partyProgram);
       r.lastSnapshot = d;
+      archiveReview(r, { restoring: true });
       if (existsSync(historyFile(r.code))) {
         try { r.loadHistory(JSON.parse(readFileSync(historyFile(r.code), 'utf8'))); r.say('Server neu gestartet – Host startet weiter'); }
         catch (e) { console.error(`Verlauf ${r.code} nicht lesbar:`, e.message); }
@@ -229,7 +254,7 @@ function onRoomChange(room, kind, data) {
   if (kind === 'frame') { broadcastFrame(room); return; }
   // Ergebnis einer Partie: in die Bestenliste (gespeichert wird mit dem nächsten Speichern)
   if (kind === 'result') {
-    recordProgramResult(room);
+    if (recordProgramResult(room)) archiveReview(room);
     const botNames = new Set([...room.players.values()].filter((p) => p.bot).map((p) => p.name));
     leaderboard.record(room.game, data?.entries?.filter((p) => !botNames.has(p.name))); save(); return;
   }
@@ -381,6 +406,7 @@ function detach(socket, room) {
 }
 // Raum endgültig schließen: Timer und Bots stoppen, Code frei, Verlauf und Stand weg. Die Bestenliste bleibt (wird beim Rundenende geschrieben).
 function closeRoom(room) {
+  archiveReview(room, { stopped: true });
   bots.stop(room);
   room.dispose();
   rooms.delete(room.code);
@@ -505,7 +531,7 @@ io.on('connection', (socket) => {
   }, { needRoom: false });
 
   // Host: Tisch privat machen (nicht in der Liste der offenen Tische)
-  on('unlisted', ({ value }, room, p) => { room.requireHost(p.id); room.unlisted = !!value; save(); });
+  on('unlisted', ({ value }, room, p) => { room.requireHost(p.id); room.unlisted = !!value; archiveReview(room); save(); });
 
   // Ereignisse der Spiele: jedes Spiel bekommt nur seine eigenen
   for (const event of gameEvents()) {
@@ -540,7 +566,7 @@ io.on('connection', (socket) => {
   on('programStop', (_data, room, p) => {
     room.requireHost(p.id);
     if (room.busy) throw new Error('Beende oder brich zuerst die laufende Partie ab');
-    if (room.partyProgram) { room.partyProgram.status = 'stopped'; room.say('Abendprogramm beendet; die bisherige Gesamtwertung bleibt sichtbar', 'summary'); }
+    if (room.partyProgram) { room.partyProgram.status = 'stopped'; room.partyProgram.endedAt ||= Date.now(); archiveReview(room); room.say('Abendprogramm beendet; die bisherige Gesamtwertung bleibt sichtbar', 'summary'); }
   });
 
   // Für alle Spiele gleich: Host-Rechte

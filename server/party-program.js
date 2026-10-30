@@ -5,6 +5,7 @@ import { cleanText } from './security.js';
 import { shuffle } from './random.js';
 import { BOTS } from '../games/bots.js';
 import { DEFAULT_SETTINGS as POKER_DEFAULTS } from '../games/poker/room.js';
+import { randomUUID, createHash } from 'node:crypto';
 
 export const PROGRAM_MODES = ['mix', 'turnier', 'playlist', 'team', 'abend'];
 export const MAX_PROGRAM_GAMES = 12;
@@ -65,7 +66,7 @@ export function configureProgram(room, id, input) {
   room.requireHost(id);
   if (room.busy || programActive(room)) throw new Error('Beende zuerst das laufende Programm');
   const config = normalizeProgram(input);
-  room.partyProgram = { config, status: 'ready', index: 0, plan: [], roster: [], results: [], scores: {}, saved: {} };
+  room.partyProgram = { id: randomUUID(), config, status: 'ready', index: 0, plan: [], roster: [], results: [], scores: {}, saved: {}, startedAt: null, endedAt: null };
   room.say(`Abendprogramm „${config.name}“ vorbereitet`);
 }
 
@@ -95,6 +96,7 @@ export function beginProgram(room, id) {
   });
   next.scores = Object.fromEntries(next.roster.map((person) => [person.id, 0]));
   next.status = 'running';
+  next.startedAt = Date.now();
   return next;
 }
 
@@ -137,8 +139,10 @@ export function recordProgramResult(room) {
   const hasResult = result.winners.length || members.some((id) => value(id) !== 0);
   const points = Object.fromEntries(ordered.map((id) => [id, hasResult ? members.length - ordered.filter((other) => compare(other, id) < 0).length : 0]));
   for (const [id, value] of Object.entries(points)) p.scores[id] = (p.scores[id] || 0) + value;
-  p.results.push({ index: p.index, game: room.game, points, raw: Object.fromEntries(members.map((id) => [id, value(id)])) });
+  p.results.push({ index: p.index, game: room.game, points, raw: Object.fromEntries(members.map((id) => [id, value(id)])), at: Date.now(), lowWins: !!room.opts?.lowWins,
+    scoreLabel: room.table ? 'Chips netto' : room.opts?.scoreLabel || 'Punkte', winners: result.winners.filter((id) => members.includes(id)) });
   p.status = p.index === p.plan.length - 1 ? 'done' : 'between';
+  if (p.status === 'done') p.endedAt = Date.now();
   room.say(p.status === 'done' ? `Abendprogramm „${p.config.name}“ beendet: ${p.roster.map((person) => `${person.name} ${p.scores[person.id] || 0}`).join(' · ')}` : `Abendprogramm: ${p.index + 1} von ${p.plan.length} Spielen gewertet`, 'summary');
   return true;
 }
@@ -150,7 +154,7 @@ export function publicProgram(room) {
   const teams = ['a', 'b'].map((id, i) => ({ id, name: `Team ${i + 1}`, points: standings.filter((person) => person.team === id).reduce((sum, person) => sum + person.points, 0) }));
   const ranking = p.config.mode === 'team' ? teams : standings;
   const best = Math.max(0, ...ranking.map((row) => row.points));
-  return { config: clone(p.config), status: p.status, index: p.index, plan: clone(p.plan), results: clone(p.results), standings, teams,
+  return { id: p.id, startedAt: p.startedAt || null, endedAt: p.endedAt || null, config: clone(p.config), status: p.status, index: p.index, plan: clone(p.plan), results: clone(p.results), standings, teams,
     winners: p.status === 'done' ? ranking.filter((row) => row.points === best && best > 0).map((row) => row.name) : [] };
 }
 
@@ -168,6 +172,9 @@ export function restoreProgram(data) {
     if (!data.saved || typeof data.saved !== 'object') return null;
     if (data.plan.length) normalizeProgram({ ...config, entries: data.plan });
     if (!Number.isInteger(data.index) || data.index < 0 || data.index >= Math.max(1, data.plan.length)) return null;
-    return clone({ ...data, config });
+    // Altbestände bekommen eine reproduzierbare Archiv-ID; keine erfundenen Spieldaten.
+    const hash = createHash('sha256').update(JSON.stringify([config, data.roster.map((p) => p.id), data.plan])).digest('hex').slice(0, 32);
+    const id = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/.test(data.id || '') ? data.id : `${hash.slice(0, 8)}-${hash.slice(8, 12)}-${hash.slice(12, 16)}-${hash.slice(16, 20)}-${hash.slice(20)}`;
+    return clone({ ...data, config, id });
   } catch { return null; }
 }

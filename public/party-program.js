@@ -45,6 +45,7 @@ function programControlsHTML(S) {
     <p class="hint">${p ? `${esc(p.config.name)} · ${PROGRAM_LABELS[p.config.mode]}` : 'Karten, Würfel, Brett und Partyspiele verbinden – mit gemeinsamer Abendwertung.'}</p>
     <button type="button" class="btn" data-program="plan" ${programBusy(S) || active ? 'disabled' : ''}>${p ? 'Programm neu planen' : 'Abendprogramm planen'}</button>
     ${p?.status === 'ready' ? '<button type="button" class="btn btn-brass" data-program="start">Programm starten</button>' : ''}
+    ${p?.id && p.results.length ? `<button type="button" class="btn" data-review-open="${esc(p.id)}">Abend-Rückblick öffnen</button>` : ''}
     ${active && !programBusy(S) ? `<button type="button" class="btn btn-brass" data-program="next">${p.status === 'between' ? 'Nächstes Programm-Spiel' : 'Partie wiederholen'}</button>` : ''}
     ${p ? `<button type="button" class="btn" data-program="stand">Gesamtwertung ansehen</button>${p.status !== 'stopped' ? `<button type="button" class="btn btn-outline-red" data-program="stop" ${programBusy(S) ? 'disabled' : ''}>Programm beenden</button>` : ''}` : ''}</section>`;
 }
@@ -56,7 +57,7 @@ function programStandHTML(S) {
     ${p.status === 'done' ? `<p class="program-winners">${p.winners.length ? `★ ${esc(p.winners.join(' und '))} ${p.winners.length > 1 ? 'teilen sich den Sieg' : 'gewinnt'}!` : 'Das Programm ist beendet – ohne Sieger.'}</p>` : ''}
     ${p.config.mode === 'team' ? table([...p.teams].sort((a, b) => b.points - a.points)) : ''}${table(p.standings)}
     <p class="hint">Pro Spiel zählt die Platzierung: N Punkte für Platz 1 bei N Mitspielern, dann jeweils einer weniger. Gleichstände teilen sich den Platz.${p.config.mode === 'team' ? ' Die Einzelpunkte werden im Team addiert.' : ''} Zuschauer zählen nicht mit.</p>
-    <ol class="program-results">${p.results.map((r) => `<li>${esc(account.games.find((g) => g.id === r.game)?.name || r.game)}: ${p.standings.filter((person) => person.id in r.points).map((person) => `${esc(person.name)} ${r.points[person.id]}`).join(' · ')}</li>`).join('')}</ol></section>`;
+    <ol class="program-results">${p.results.map((r) => `<li>${esc(account.games.find((g) => g.id === r.game)?.name || r.game)}: ${p.standings.filter((person) => person.id in r.points).map((person) => `${esc(person.name)} ${r.points[person.id]}`).join(' · ')}</li>`).join('')}</ol>${p.id && p.results.length ? `<button type="button" class="btn btn-brass" data-review-open="${esc(p.id)}">Abend-Rückblick öffnen</button>` : ''}</section>`;
 }
 function programBannerHTML(S) {
   const p = S.partyProgram;

@@ -103,14 +103,15 @@ const ICONS = {
   brett: '<rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M3.5 9.2h17M3.5 14.8h17M9.2 3.5v17M14.8 3.5v17"/>',
   party: '<path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="m19 16 .8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/>',
   roadmap: '<path d="M6 4v16M6 5h12l-3 4 3 4H6"/><circle cx="6" cy="20" r="1"/>',
+  rueckblick: '<path d="M4 5h16v15H4zM8 3v4M16 3v4M4 10h16M8 14h3M8 17h7"/>',
   tickets: '<path d="M4 4h16v5a3 3 0 0 0 0 6v5H4v-5a3 3 0 0 0 0-6z"/><path d="M12 7v2m0 3v2m0 3v1"/>',
 };
-const PAGES = ['start', 'spiele', 'favoriten', 'tische', 'bestenliste', 'roadmap', 'tickets'];
+const PAGES = ['start', 'spiele', 'favoriten', 'tische', 'bestenliste', 'roadmap', 'tickets', 'rueckblick'];
 let route = { page: 'start', sub: '' };
 function parseRoute() {
   const [p = 'start', s = ''] = location.hash.replace(/^#/, '').split('/');
   const page = PAGES.includes(p) ? p : 'start';
-  return { page, sub: page === 'spiele' && GAME_CATEGORIES.some(([id]) => id === s) || page === 'tickets' && /^[1-9]\d{0,8}$/.test(s) ? s : '' };
+  return { page, sub: page === 'spiele' && GAME_CATEGORIES.some(([id]) => id === s) || page === 'tickets' && /^[1-9]\d{0,8}$/.test(s) || page === 'rueckblick' && EveningReviews.validId(s) ? s : '' };
 }
 const hashOf = (page, sub = '') => `#${page}${sub ? '/' + sub : ''}`;
 let hubTables = [];                      // offene Tische (vom Server, siehe Teil H3)
@@ -118,11 +119,11 @@ const openTableCount = () => hubTables.length;
 
 function navHTML() {
   const cur = hashOf(route.page, route.sub);
-  const item = (href, key, label, extra = '') => `<a class="nav-item" href="${href}" ${cur === href || key === 'tickets' && route.page === 'tickets' ? 'aria-current="page"' : ''}>${ico(ICONS[key])}<span class="side-label">${label}</span>${extra}</a>`;
+  const item = (href, key, label, extra = '') => `<a class="nav-item" href="${href}" ${cur === href || ['tickets', 'rueckblick'].includes(key) && route.page === key ? 'aria-current="page"' : ''}>${ico(ICONS[key])}<span class="side-label">${label}</span>${extra}</a>`;
   const n = openTableCount();
   const badge = n ? `<span class="badge" aria-label="${n} offene${n === 1 ? 'r' : ''} Tisch${n === 1 ? '' : 'e'}">${n}</span>` : '';
   const games = account.games || [];
-  return `${item('#start', 'start', 'Start')}${item('#tische', 'tische', 'Offene Tische', badge)}${item('#favoriten', 'favoriten', 'Favoriten')}${item('#bestenliste', 'bestenliste', 'Bestenliste')}${item('#roadmap', 'roadmap', 'Roadmap')}${item('#tickets', 'tickets', 'Tickets')}
+  return `${item('#start', 'start', 'Start')}${item('#tische', 'tische', 'Offene Tische', badge)}${item('#favoriten', 'favoriten', 'Favoriten')}${item('#bestenliste', 'bestenliste', 'Bestenliste')}${item('#rueckblick', 'rueckblick', 'Rückblick')}${item('#roadmap', 'roadmap', 'Roadmap')}${item('#tickets', 'tickets', 'Tickets')}
     <h2 class="side-title side-label">Spiele</h2>
     ${GAME_CATEGORIES.map(([id, title]) => item(`#spiele/${id}`, id, title, `<span class="count side-label" aria-label="${games.filter((g) => (g.category || 'karten') === id).length} Spiele">${games.filter((g) => (g.category || 'karten') === id).length}</span>`)).join('')}`;
 }
@@ -131,16 +132,16 @@ function tabbarHTML() {
   const tab = (href, key, label, on, extra = '') => `<a class="tab-item" href="${href}" ${on ? 'aria-current="page"' : ''}>${ico(ICONS[key])}<span>${label}</span>${extra}</a>`;
   const n = openTableCount();
   return tab('#start', 'start', 'Start', cur === 'start') + tab('#spiele', 'spiele', 'Spiele', cur === 'spiele' || cur === 'favoriten')
-    + tab('#tische', 'tische', 'Tische', cur === 'tische', n ? `<span class="badge" aria-label="${n} offen">${n}</span>` : '') + tab('#bestenliste', 'bestenliste', 'Bestenliste', cur === 'bestenliste') + tab('#roadmap', 'roadmap', 'Roadmap', cur === 'roadmap') + tab('#tickets', 'tickets', 'Tickets', cur === 'tickets');
+    + tab('#tische', 'tische', 'Tische', cur === 'tische', n ? `<span class="badge" aria-label="${n} offen">${n}</span>` : '') + tab('#bestenliste', 'bestenliste', 'Bestenliste', cur === 'bestenliste' || cur === 'rueckblick') + tab('#roadmap', 'roadmap', 'Roadmap', cur === 'roadmap') + tab('#tickets', 'tickets', 'Tickets', cur === 'tickets');
 }
 
-const TITLES = { start: 'Start', spiele: 'Spiele', favoriten: 'Favoriten', tische: 'Offene Tische', bestenliste: 'Bestenliste', roadmap: 'Roadmap', tickets: 'Tickets' };
+const TITLES = { start: 'Start', spiele: 'Spiele', favoriten: 'Favoriten', tische: 'Offene Tische', bestenliste: 'Bestenliste', roadmap: 'Roadmap', tickets: 'Tickets', rueckblick: 'Abend-Rückblick' };
 let renderedPage = null;
 function renderHub(focus = false) {
   route = parseRoute();
   $('#side-nav').innerHTML = navHTML();
   $('#hub-tabbar').innerHTML = tabbarHTML();
-  const page = { start: pageStart, spiele: pageGames, favoriten: pageGames, tische: pageTables, bestenliste: pageBoard, roadmap: pageRoadmap, tickets: pageTickets }[route.page];
+  const page = { start: pageStart, spiele: pageGames, favoriten: pageGames, tische: pageTables, bestenliste: pageBoard, roadmap: pageRoadmap, tickets: pageTickets, rueckblick: EveningReviews.page }[route.page];
   const main = $('#hub-main');
   const scroll = main.scrollTop;
   main.innerHTML = page();
@@ -214,6 +215,7 @@ function pageStart() {
     <section class="hub-block" id="presence-slot">${presenceHTML()}</section>
     ${gamesPreviewHTML()}
     ${codeBoxHTML()}
+    <section class="hub-block"><h2>Euer letzter Spieleabend</h2><p>Gesamtwertung, Punkteverlauf und besondere Momente zusammen ansehen.</p><a class="btn" href="#rueckblick">Abend-Rückblicke öffnen</a></section>
     <p class="hub-foot">Ohne Benutzerkonto. Nur Spielgeld, kein Echtgeld.</p>`;
 }
 // ---------- Spieleliste ----------
@@ -318,7 +320,7 @@ let boardPeriod = 'all';
 let boardToken = 0;
 function pageBoard() {
   loadBoard();
-  return `<section class="hub-head"><h1>Bestenliste</h1><p>Alle Abende, nach Siegen sortiert. Wiedererkannt wird man am Namen.</p></section><div id="board-body" class="board" aria-live="polite"><p class="hint">Lade …</p></div>`;
+  return `<section class="hub-head"><h1>Bestenliste</h1><p>Alle Abende, nach Siegen sortiert. Wiedererkannt wird man am Namen.</p><a class="btn" href="#rueckblick">Abend-Rückblicke öffnen</a></section><div id="board-body" class="board" aria-live="polite"><p class="hint">Lade …</p></div>`;
 }
 async function loadBoard() {
   const token = ++boardToken;
