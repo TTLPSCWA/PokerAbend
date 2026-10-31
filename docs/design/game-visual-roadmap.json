@@ -2,25 +2,27 @@
   "schema_version": 1,
   "updated_at": "2026-10-31",
   "audited_source_commit": "ef6511d76f78689fc525a63f6e3637c3f14f1252",
-  "audit_hash_format": "SHA-256 of UTF-8 source with LF line endings at audited_source_commit",
-  "authority": "Expliziter zweiphasiger Nutzerauftrag vom 31.10.2026; kein V2-Implementierungsauftrag.",
+  "audit_hash_format": "SHA-256 of UTF-8 source with LF line endings at package.source_audit_commit, falling back to audited_source_commit",
+  "authority": "Expliziter zweiphasiger Nutzerauftrag vom 31.10.2026; kein V2-Implementierungsauftrag. Ausdrücklicher Folgeauftrag für UNO, Skip-Bo und Phase 10 vom 31.10.2026.",
   "id_policy": "VIS-IDs sind dauerhafte Design-IDs. Bestehende IDs niemals neu nummerieren; spätere Einträge mit nächster freier Nummer ergänzen. Unabhängig von V2-XX und technischen Spiel-IDs.",
-  "scope_policy": "VIS-001 ist der einzige in diesem Auftrag visuell implementierte Pilot. Alle anderen Pakete sind Planung und erfordern eigene ausdrückliche Freigabe eines Spiels bzw. einer VIS-ID.",
-  "assessment_scope": "Alle registrierten Frontend-Ordner sowie direkte gemeinsame Komponenten und der gesamte Backlog inventarisiert. Manuelle Vorher-/Nachher-Sichtprüfung nur für den ausdrücklich beauftragten Scotland-Yard-Piloten. Für andere Spiele stehen spätere individuelle Sichtprüfungen noch aus.",
+  "scope_policy": "VIS-001 sowie die anschließend ausdrücklich freigegebenen VIS-004, VIS-009 und VIS-008 sind abgeschlossen. Alle anderen Pakete bleiben Planung und erfordern eigene ausdrückliche Freigabe. Kein V2-Implementierungsauftrag.",
+  "assessment_scope": "Alle registrierten Frontend-Ordner, direkte gemeinsame Komponenten und der Backlog sind inventarisiert. Manuelle Vorher-/Nachher-Abnahme für Scotland Yard, UNO, Skip-Bo und Phase 10. Für die übrigen Spiele stehen spätere individuelle Sichtprüfungen aus.",
   "references": [
     "AGENTS.md",
     "CLAUDE.md",
     "docs/design/GAME_VISUAL_GUIDELINES.md",
     "docs/design/SCOTLAND_YARD_REDESIGN.md",
     "games/index.js",
-    "games/planned.js"
+    "games/planned.js",
+    "docs/design/CARD_WORLDS_REDESIGN.md",
+    "docs/design/card-worlds-screenshots.json"
   ],
   "inventory": {
     "playable_count": 49,
     "not_implemented_count": 46,
-    "completed_visual_count": 1,
-    "open_playable_visual_count": 48,
-    "planned_visual_count": 94,
+    "completed_visual_count": 4,
+    "open_playable_visual_count": 45,
+    "planned_visual_count": 91,
     "total_visual_packages": 95,
     "playable_game_ids": [
       "poker",
@@ -122,7 +124,10 @@
       "bomben-duell"
     ],
     "completed_visual_game_ids": [
-      "scotland-yard"
+      "scotland-yard",
+      "farbenchaos",
+      "zehnetappen",
+      "stapelrennen"
     ],
     "individual_complex_board_game_ids": [
       "scotland-yard",
@@ -292,11 +297,8 @@
     "VIS-023",
     "VIS-043",
     "VIS-017",
-    "VIS-009",
     "VIS-037",
     "VIS-041",
-    "VIS-008",
-    "VIS-004",
     "VIS-045",
     "VIS-011",
     "VIS-007",
@@ -341,11 +343,8 @@
     "VIS-023",
     "VIS-043",
     "VIS-017",
-    "VIS-009",
     "VIS-037",
     "VIS-041",
-    "VIS-008",
-    "VIS-004",
     "VIS-045",
     "VIS-011",
     "VIS-007",
@@ -406,47 +405,102 @@
   ],
   "public_roadmap_section_id": "neue-spielwelten",
   "verification": {
-    "node_full": {
-      "passed": 867,
-      "failed": 0,
-      "duration_seconds": 53.1,
-      "log": "artifacts/visual-redesign-final-node.log"
+    "initial_pilot_and_planning": {
+      "node_full": {
+        "passed": 867,
+        "failed": 0,
+        "duration_seconds": 53.1,
+        "log": "artifacts/visual-redesign-final-node.log"
+      },
+      "planning_checks": {
+        "passed": 28,
+        "failed": 0,
+        "log": "artifacts/visual-plan-checks.log"
+      },
+      "final_planning_checks": {
+        "passed": 6,
+        "failed": 0,
+        "log": "artifacts/visual-plan-final-check.log"
+      },
+      "browser_full": {
+        "passed": 322,
+        "failed": 3,
+        "skipped": 1,
+        "duration_minutes": 17.4,
+        "log": "artifacts/scotland-full-ui.log",
+        "failures": [
+          "Desktop motif test expected the replaced generic Scotland Yard lobby SVG.",
+          "Mobile motif test expected the replaced generic Scotland Yard lobby SVG.",
+          "Slow-script test evaluated account before core.js had defined it."
+        ]
+      },
+      "browser_follow_up": {
+        "passed": 6,
+        "failed": 0,
+        "duration_seconds": 26.9,
+        "log": "artifacts/visual-plan-ui.log",
+        "coverage": [
+          "Both complete registered-game motif passes",
+          "Both delayed-script startup tests",
+          "German/English public design roadmap on desktop and mobile"
+        ]
+      },
+      "gameplay_files_changed": [],
+      "phase_two_other_game_frontends_changed": []
     },
-    "planning_checks": {
-      "passed": 28,
-      "failed": 0,
-      "log": "artifacts/visual-plan-checks.log"
-    },
-    "final_planning_checks": {
-      "passed": 6,
-      "failed": 0,
-      "log": "artifacts/visual-plan-final-check.log"
-    },
-    "browser_full": {
-      "passed": 322,
-      "failed": 3,
-      "skipped": 1,
-      "duration_minutes": 17.4,
-      "log": "artifacts/scotland-full-ui.log",
-      "failures": [
-        "Desktop motif test expected the replaced generic Scotland Yard lobby SVG.",
-        "Mobile motif test expected the replaced generic Scotland Yard lobby SVG.",
-        "Slow-script test evaluated account before core.js had defined it."
-      ]
-    },
-    "browser_follow_up": {
-      "passed": 6,
-      "failed": 0,
-      "duration_seconds": 26.9,
-      "log": "artifacts/visual-plan-ui.log",
+    "cards_redesign": {
+      "implementation_commit": "84cccbc5795ac9b0a28c5a6723526d8d7affc2e6",
+      "node_full": {
+        "passed": 879,
+        "failed": 0,
+        "duration_seconds": 48.42,
+        "log": "artifacts/cards-full-node.log"
+      },
+      "browser_full": {
+        "passed": 347,
+        "failed": 0,
+        "skipped": 1,
+        "duration_seconds": 1032,
+        "log": "artifacts/cards-full-ui.log"
+      },
+      "browser_final_focus": {
+        "passed": 26,
+        "failed": 0,
+        "skipped": 0,
+        "duration_seconds": 84,
+        "log": "artifacts/cards-release-focus.log"
+      },
+      "privacy_renderer_tests": {
+        "passed": 12,
+        "failed": 0,
+        "file": "test/cards-visual.test.js"
+      },
       "coverage": [
-        "Both complete registered-game motif passes",
-        "Both delayed-script startup tests",
-        "German/English public design roadmap on desktop and mobile"
-      ]
-    },
-    "gameplay_files_changed": [],
-    "phase_two_other_game_frontends_changed": []
+        "All 10 variants",
+        "Six viewport sizes",
+        "Host, guest, spectator and team partners",
+        "Pause, language, reconnect, result",
+        "Real draw and discard actions",
+        "Private-card invariance",
+        "Long hand scroll and focus",
+        "Dark Flip colour hover and circular controls",
+        "Skip-Bo source/target visibility in landscape"
+      ],
+      "permanent_screenshots": 25,
+      "gameplay_files_changed": [],
+      "post_metadata_node_full": {
+        "passed": 879,
+        "failed": 0,
+        "duration_seconds": 46.238,
+        "log": "artifacts/cards-final-node.log"
+      },
+      "final_planning_checks": {
+        "passed": 6,
+        "failed": 0,
+        "log": "artifacts/cards-final-plan.log"
+      },
+      "unchanged_other_package_entries": 92
+    }
   },
   "packages": [
     {
@@ -844,17 +898,18 @@
       "category": "karten",
       "category_name": "Kartenspiele",
       "implementation_status": "playable",
-      "visual_status": "planned",
+      "visual_status": "done",
       "implementation_authorized_now": false,
       "implemented_in_this_order": false,
       "inventory_source": "games/index.js",
       "existing_visual_work": {
-        "level": "shared_theme_with_custom_components",
+        "level": "individual_redesign_verified",
         "evidence": [
           "public/games/farbenchaos/farbenchaos.css",
-          "public/games/farbenchaos/farbenchaos.js"
+          "public/games/farbenchaos/farbenchaos.js",
+          "public/games/card-worlds.css"
         ],
-        "assessment": "Vorhandene Gestaltungsarbeit bleibt als Basis erhalten; das neue individuelle Paket ist noch nicht umgesetzt."
+        "assessment": "Nach ausdrücklicher Freigabe als individuelles VIS-Paket umgesetzt und auf Desktop/Handy geprüft."
       },
       "current_frontend_files": [
         "public/games/farbenchaos/farbenchaos.css",
@@ -866,12 +921,13 @@
         "public/game-design.css",
         "public/ui-theme.css",
         "public/style.css",
-        "public/games/kit.js"
+        "public/games/kit.js",
+        "public/games/card-worlds.css"
       ],
       "source_audit": [
         {
           "path": "public/games/farbenchaos/farbenchaos.css",
-          "sha256": "4ca07286c911265495f3519c3d122e0e087d1e24bd92b47e643664caa9e09709",
+          "sha256": "66209d350bf3fb0e602ee09ff8d522011dae31eaa0fa776198e0e3b6571eddc2",
           "css_classes": [
             "kc-fc",
             "oval",
@@ -897,14 +953,22 @@
         },
         {
           "path": "public/games/farbenchaos/farbenchaos.js",
-          "sha256": "8456c23e41cf38672fc94f83d6963bec02ad211473c0356a85a6c2e02501402b"
+          "sha256": "3ccd368ff6239033c3cbadcbf8cf47bb6c7f033f8b08ab6f20ab32139f4c85c3"
+        },
+        {
+          "path": "public/games/card-worlds.css",
+          "sha256": "6cf15ffedbcd8aeb8f3ff7b597907a4c953c3f6b2633fef8ec7f2bd4b215cea6"
+        },
+        {
+          "path": "public/games/kit.js",
+          "sha256": "33ebcb36e65c1edb0d0e082675641a3fa5af734736f1756ecd43bc1c2b5d9cd0"
         }
       ],
-      "current_design": "Eigene farbige Karten, Rückseiten und spezielle Variantenanzeigen; kitShedding als Basis.",
+      "current_design": "Geprüfte eigene Farbarena mit Kartenbriefing, großem Ablagebereich, Farb-/Richtungsleiste und aktiver Flip-Seite; vorhandene Karten und Variantenaktionen erhalten.",
       "known_visual_weaknesses": [
-        "Vier Varianten und zwei Kartenseiten konkurrieren um Aufmerksamkeit; der umgebende Standardtisch ordnet sie noch nicht als eigene Spielwelt."
+        "Die frühere kleine Ablage und generische Lobby wurden ersetzt. Lange Hände scrollen bewusst horizontal mit voller Kartenfläche; öffentliche Flip-Rückseiten und Details liegen in der vertikal verschiebbaren Arbeitsfläche."
       ],
-      "assessment_method": "Individueller Quellcode-/Komponentenaudit der angegebenen Dateien. Optische Verbesserungsziele sind Designbeurteilungen, keine nachgewiesenen Gameplay-Bugs. Eigene Vorher-Sichtprüfung ist vor der späteren Umsetzung erforderlich.",
+      "assessment_method": "Quellcode, persönliche Ansichten echter isolierter Räume, Geheimhaltungs-/HTML-Prüfungen, Varianten, sechs Größen, Desktop-/Mobilaufnahmen und manuelle Sichtprüfung.",
       "gameplay_summary": "Farbe oder Zahl ablegen, Aussetzen, Richtungswechsel, +2 und Farbwahl. Der Gewinner kassiert die Punkte.",
       "planned_style": "Lebendige grafische Farbarena mit kräftigen Flächen und ruhigen dunklen Rändern.",
       "background_concept": "Abstrakte lokale Farbformen außerhalb des Kartenbereichs.",
@@ -961,11 +1025,45 @@
         "VIS-001"
       ],
       "gameplay_prerequisite": null,
-      "screenshots": [],
-      "test_results": [],
-      "commits": [],
-      "implementation_commit": null,
-      "completed_at": null
+      "screenshots": [
+        "docs/design/screenshots/farbenchaos/before-lobby-desktop.png",
+        "docs/design/screenshots/farbenchaos/after-lobby-desktop.png",
+        "docs/design/screenshots/farbenchaos/before-table-desktop.png",
+        "docs/design/screenshots/farbenchaos/after-table-desktop.png",
+        "docs/design/screenshots/farbenchaos/before-table-mobile.png",
+        "docs/design/screenshots/farbenchaos/after-table-mobile.png",
+        "docs/design/screenshots/farbenchaos/after-long-hand-mobile.png"
+      ],
+      "test_results": [
+        {
+          "suite": "npm test",
+          "passed": 879,
+          "failed": 0,
+          "evidence": "docs/design/CARD_WORLDS_REDESIGN.md"
+        },
+        {
+          "suite": "All 10 card variants, Phase 10 groups and DE/EN roadmap after final CSS refinement",
+          "passed": 26,
+          "failed": 0,
+          "evidence": "docs/design/CARD_WORLDS_REDESIGN.md"
+        },
+        {
+          "suite": "Full UI regression suite, followed by final scoped CSS checks",
+          "passed": 347,
+          "failed": 0,
+          "skipped": 1,
+          "duration_seconds": 1032,
+          "log": "artifacts/cards-full-ui.log",
+          "evidence": "docs/design/CARD_WORLDS_REDESIGN.md"
+        }
+      ],
+      "commits": [
+        "84cccbc5795ac9b0a28c5a6723526d8d7affc2e6"
+      ],
+      "implementation_commit": "84cccbc5795ac9b0a28c5a6723526d8d7affc2e6",
+      "completed_at": "2026-10-31",
+      "completed_in_order": "2026-10-31-card-worlds",
+      "source_audit_commit": "84cccbc5795ac9b0a28c5a6723526d8d7affc2e6"
     },
     {
       "id": "VIS-005",
@@ -1353,17 +1451,18 @@
       "category": "karten",
       "category_name": "Kartenspiele",
       "implementation_status": "playable",
-      "visual_status": "planned",
+      "visual_status": "done",
       "implementation_authorized_now": false,
       "implemented_in_this_order": false,
       "inventory_source": "games/index.js",
       "existing_visual_work": {
-        "level": "shared_theme_with_custom_components",
+        "level": "individual_redesign_verified",
         "evidence": [
           "public/games/zehnetappen/zehnetappen.css",
-          "public/games/zehnetappen/zehnetappen.js"
+          "public/games/zehnetappen/zehnetappen.js",
+          "public/games/card-worlds.css"
         ],
-        "assessment": "Vorhandene Gestaltungsarbeit bleibt als Basis erhalten; das neue individuelle Paket ist noch nicht umgesetzt."
+        "assessment": "Nach ausdrücklicher Freigabe als individuelles VIS-Paket umgesetzt und auf Desktop/Handy geprüft."
       },
       "current_frontend_files": [
         "public/games/zehnetappen/zehnetappen.css",
@@ -1375,12 +1474,13 @@
         "public/game-design.css",
         "public/ui-theme.css",
         "public/style.css",
-        "public/games/kit.js"
+        "public/games/kit.js",
+        "public/games/card-worlds.css"
       ],
       "source_audit": [
         {
           "path": "public/games/zehnetappen/zehnetappen.css",
-          "sha256": "c38b30a6a94b4156030d8631b14521c8813fa850600770fb7909a25e5b49265a",
+          "sha256": "c000049eee69cf56b0961bf5d457db676bd527590efc1830cf7cde56fcec9579",
           "css_classes": [
             "kc-ze",
             "cr",
@@ -1406,14 +1506,22 @@
         },
         {
           "path": "public/games/zehnetappen/zehnetappen.js",
-          "sha256": "b2b7c4a25cab53b68eafde617c980587fb04fe025a94665c0fd4913f5652ca9a"
+          "sha256": "35ed6a91bdbf7322989a933730d3477b9ec43a1fd54780be750ca7ef4b3bf7e1"
+        },
+        {
+          "path": "public/games/card-worlds.css",
+          "sha256": "6cf15ffedbcd8aeb8f3ff7b597907a4c953c3f6b2633fef8ec7f2bd4b215cea6"
+        },
+        {
+          "path": "public/games/kit.js",
+          "sha256": "33ebcb36e65c1edb0d0e082675641a3fa5af734736f1756ecd43bc1c2b5d9cd0"
         }
       ],
-      "current_design": "Eigene Phasenkarten, Gruppenauswahl und Auslagen; bestehende Meldungssteuerung.",
+      "current_design": "Geprüfter Arbeitsplatz in Petrol, Creme und Koralle mit Phasenziel, Zugschritten und Gruppenauswahl im Hauptbereich; Hand und Bestätigung bleiben im Dock.",
       "known_visual_weaknesses": [
-        "Gruppenbildung, Phasenfortschritt und Aktionszustand sind visuell dicht und noch keine klare Werkfläche."
+        "Die früher das Handy ausfüllende Gruppenauswahl wurde aus dem Dock entfernt. Sehr dichte Auslagen bleiben vertikal verschiebbar; sehr große Hände können zusätzlich im begrenzten Dock scrollen."
       ],
-      "assessment_method": "Individueller Quellcode-/Komponentenaudit der angegebenen Dateien. Optische Verbesserungsziele sind Designbeurteilungen, keine nachgewiesenen Gameplay-Bugs. Eigene Vorher-Sichtprüfung ist vor der späteren Umsetzung erforderlich.",
+      "assessment_method": "Quellcode, persönliche Ansichten echter isolierter Räume, Geheimhaltungs-/HTML-Prüfungen, Varianten, sechs Größen, Desktop-/Mobilaufnahmen und manuelle Sichtprüfung.",
       "gameplay_summary": "Zehn Aufgaben nacheinander: Drillinge, Folgen, eine Farbe … Wer zuerst Phase 10 schafft, gewinnt.",
       "planned_style": "Präziser Kartenspiel-Arbeitsplatz in Petrol, Creme und Koralle.",
       "background_concept": "Textiler Hintergrund ohne Ornament hinter den Gruppen.",
@@ -1469,11 +1577,46 @@
         "VIS-001"
       ],
       "gameplay_prerequisite": null,
-      "screenshots": [],
-      "test_results": [],
-      "commits": [],
-      "implementation_commit": null,
-      "completed_at": null
+      "screenshots": [
+        "docs/design/screenshots/zehnetappen/before-lobby-desktop.png",
+        "docs/design/screenshots/zehnetappen/after-lobby-desktop.png",
+        "docs/design/screenshots/zehnetappen/before-table-desktop.png",
+        "docs/design/screenshots/zehnetappen/after-table-desktop.png",
+        "docs/design/screenshots/zehnetappen/before-table-mobile.png",
+        "docs/design/screenshots/zehnetappen/after-table-mobile.png",
+        "docs/design/screenshots/zehnetappen/before-groups-mobile.png",
+        "docs/design/screenshots/zehnetappen/after-groups-mobile.png"
+      ],
+      "test_results": [
+        {
+          "suite": "npm test",
+          "passed": 879,
+          "failed": 0,
+          "evidence": "docs/design/CARD_WORLDS_REDESIGN.md"
+        },
+        {
+          "suite": "All 10 card variants, Phase 10 groups and DE/EN roadmap after final CSS refinement",
+          "passed": 26,
+          "failed": 0,
+          "evidence": "docs/design/CARD_WORLDS_REDESIGN.md"
+        },
+        {
+          "suite": "Full UI regression suite, followed by final scoped CSS checks",
+          "passed": 347,
+          "failed": 0,
+          "skipped": 1,
+          "duration_seconds": 1032,
+          "log": "artifacts/cards-full-ui.log",
+          "evidence": "docs/design/CARD_WORLDS_REDESIGN.md"
+        }
+      ],
+      "commits": [
+        "84cccbc5795ac9b0a28c5a6723526d8d7affc2e6"
+      ],
+      "implementation_commit": "84cccbc5795ac9b0a28c5a6723526d8d7affc2e6",
+      "completed_at": "2026-10-31",
+      "completed_in_order": "2026-10-31-card-worlds",
+      "source_audit_commit": "84cccbc5795ac9b0a28c5a6723526d8d7affc2e6"
     },
     {
       "id": "VIS-009",
@@ -1482,17 +1625,18 @@
       "category": "karten",
       "category_name": "Kartenspiele",
       "implementation_status": "playable",
-      "visual_status": "planned",
+      "visual_status": "done",
       "implementation_authorized_now": false,
       "implemented_in_this_order": false,
       "inventory_source": "games/index.js",
       "existing_visual_work": {
-        "level": "shared_theme_with_custom_components",
+        "level": "individual_redesign_verified",
         "evidence": [
           "public/games/stapelrennen/stapelrennen.css",
-          "public/games/stapelrennen/stapelrennen.js"
+          "public/games/stapelrennen/stapelrennen.js",
+          "public/games/card-worlds.css"
         ],
-        "assessment": "Vorhandene Gestaltungsarbeit bleibt als Basis erhalten; das neue individuelle Paket ist noch nicht umgesetzt."
+        "assessment": "Nach ausdrücklicher Freigabe als individuelles VIS-Paket umgesetzt und auf Desktop/Handy geprüft."
       },
       "current_frontend_files": [
         "public/games/stapelrennen/stapelrennen.css",
@@ -1504,12 +1648,13 @@
         "public/game-design.css",
         "public/ui-theme.css",
         "public/style.css",
-        "public/games/kit.js"
+        "public/games/kit.js",
+        "public/games/card-worlds.css"
       ],
       "source_audit": [
         {
           "path": "public/games/stapelrennen/stapelrennen.css",
-          "sha256": "7a0cf3498cc14ac9fb99e0305edf87e0bef491b783e9b3c63e8a35fda9894ad6",
+          "sha256": "acc1e04b29fa38743332ee6b0932ec1c211981800661aade40c8accf7f88f9fe",
           "css_classes": [
             "kc-st",
             "cr",
@@ -1535,14 +1680,22 @@
         },
         {
           "path": "public/games/stapelrennen/stapelrennen.js",
-          "sha256": "7016463fe1b0c5054d83411bdfdbc5e11b9974995b342db982924481b92b1455"
+          "sha256": "30e7d46aaf3e32e8507e0e6369d725f9362f53def3847830107a923a30ea8ea8"
+        },
+        {
+          "path": "public/games/card-worlds.css",
+          "sha256": "6cf15ffedbcd8aeb8f3ff7b597907a4c953c3f6b2633fef8ec7f2bd4b215cea6"
+        },
+        {
+          "path": "public/games/kit.js",
+          "sha256": "33ebcb36e65c1edb0d0e082675641a3fa5af734736f1756ecd43bc1c2b5d9cd0"
         }
       ],
-      "current_design": "Eigene Zahlenkarten, Spielstapel, vier Ablagen und zentrale Baureihen.",
+      "current_design": "Geprüfter eigener Stapeltisch: helle nummerierte Baureihen, nächster Wert und Fortschritt; getrennte eigene Ablagen, Zielstapel und offene Partnerquellen.",
       "known_visual_weaknesses": [
-        "Viele gleichartig aussehende Stapel erschweren die Zuordnung von eigenem Zielstapel und gemeinsamer Baustelle."
+        "Früher gleichartige Stapel wurden räumlich getrennt. Kleine Bildschirme behalten lesbare Karten und vertikales Scrollen; im 900×450-Querformat stehen eigene Stapel und gemeinsame Reihen nebeneinander."
       ],
-      "assessment_method": "Individueller Quellcode-/Komponentenaudit der angegebenen Dateien. Optische Verbesserungsziele sind Designbeurteilungen, keine nachgewiesenen Gameplay-Bugs. Eigene Vorher-Sichtprüfung ist vor der späteren Umsetzung erforderlich.",
+      "assessment_method": "Quellcode, persönliche Ansichten echter isolierter Räume, Geheimhaltungs-/HTML-Prüfungen, Varianten, sechs Größen, Desktop-/Mobilaufnahmen und manuelle Sichtprüfung.",
       "gameplay_summary": "Reihen von 1 bis 12 bauen, Joker helfen. Wer zuerst seinen eigenen Stapel los ist, gewinnt.",
       "planned_style": "Heller strukturierter Kartentisch mit kräftigen nummerierten Stapelreitern.",
       "background_concept": "Ruhiges graublaues Tuch mit dezenten Stapelrahmen.",
@@ -1598,11 +1751,48 @@
         "VIS-001"
       ],
       "gameplay_prerequisite": null,
-      "screenshots": [],
-      "test_results": [],
-      "commits": [],
-      "implementation_commit": null,
-      "completed_at": null
+      "screenshots": [
+        "docs/design/screenshots/stapelrennen/before-lobby-desktop.png",
+        "docs/design/screenshots/stapelrennen/after-lobby-desktop.png",
+        "docs/design/screenshots/stapelrennen/before-table-desktop.png",
+        "docs/design/screenshots/stapelrennen/after-table-desktop.png",
+        "docs/design/screenshots/stapelrennen/before-table-mobile.png",
+        "docs/design/screenshots/stapelrennen/after-table-mobile.png",
+        "docs/design/screenshots/stapelrennen/before-stock-mobile.png",
+        "docs/design/screenshots/stapelrennen/after-stock-mobile.png",
+        "docs/design/screenshots/stapelrennen/before-landscape.png",
+        "docs/design/screenshots/stapelrennen/after-landscape.png"
+      ],
+      "test_results": [
+        {
+          "suite": "npm test",
+          "passed": 879,
+          "failed": 0,
+          "evidence": "docs/design/CARD_WORLDS_REDESIGN.md"
+        },
+        {
+          "suite": "All 10 card variants, Phase 10 groups and DE/EN roadmap after final CSS refinement",
+          "passed": 26,
+          "failed": 0,
+          "evidence": "docs/design/CARD_WORLDS_REDESIGN.md"
+        },
+        {
+          "suite": "Full UI regression suite, followed by final scoped CSS checks",
+          "passed": 347,
+          "failed": 0,
+          "skipped": 1,
+          "duration_seconds": 1032,
+          "log": "artifacts/cards-full-ui.log",
+          "evidence": "docs/design/CARD_WORLDS_REDESIGN.md"
+        }
+      ],
+      "commits": [
+        "84cccbc5795ac9b0a28c5a6723526d8d7affc2e6"
+      ],
+      "implementation_commit": "84cccbc5795ac9b0a28c5a6723526d8d7affc2e6",
+      "completed_at": "2026-10-31",
+      "completed_in_order": "2026-10-31-card-worlds",
+      "source_audit_commit": "84cccbc5795ac9b0a28c5a6723526d8d7affc2e6"
     },
     {
       "id": "VIS-010",
@@ -10348,6 +10538,25 @@
       "commits": [],
       "implementation_commit": null,
       "completed_at": null
+    }
+  ],
+  "order_history": [
+    {
+      "id": "initial-pilot-and-planning",
+      "implemented": [
+        "VIS-001"
+      ],
+      "implementation_commit": "ef6511d76f78689fc525a63f6e3637c3f14f1252",
+      "note": "implemented_in_this_order records this original two-phase order."
+    },
+    {
+      "id": "2026-10-31-card-worlds",
+      "implemented": [
+        "VIS-004",
+        "VIS-008",
+        "VIS-009"
+      ],
+      "implementation_commit": "84cccbc5795ac9b0a28c5a6723526d8d7affc2e6"
     }
   ]
 }

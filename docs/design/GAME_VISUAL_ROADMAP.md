@@ -2,7 +2,7 @@
 
 Stand: 31.10.2026. Quelle: [games/index.js](../../games/index.js) und [games/planned.js](../../games/planned.js), geprüft gegen Commit `ef6511d76f78689fc525a63f6e3637c3f14f1252`. Die zentrale maschinenlesbare Quelle ist [game-visual-roadmap.json](game-visual-roadmap.json).
 
-**49 spielbare Spiele, 46 noch nicht implementierte Spiele, 95 eigene VIS-Pakete.** Scotland Yard ist als einziges neues Pilot-Redesign abgeschlossen; 48 weitere spielbare Spiele und 46 Backlog-Konzepte bleiben geplant. Vorhandene Material-/Brettarbeit anderer Spiele ist dokumentiert und wird erhalten, aber nicht als Umsetzung dieses neuen Standards ausgegeben.
+**49 spielbare Spiele, 46 noch nicht implementierte Spiele, 95 eigene VIS-Pakete.** Scotland Yard sowie die anschließend beauftragten Kartenwelten UNO, Skip-Bo und Phase 10 sind abgeschlossen: **4 done, 91 planned**. 45 weitere spielbare Spiele und 46 Backlog-Konzepte bleiben geplant. Vorhandene Material-/Brettarbeit anderer Spiele ist dokumentiert und wird erhalten, aber nicht als Umsetzung dieses neuen Standards ausgegeben.
 
 ## Verbindliche Arbeitsweise
 
@@ -12,7 +12,7 @@ Ein späterer Auftrag wie „Implementiere das visuelle Redesign für Schiffe ve
 
 ## Inventur und Beurteilung
 
-Die vorhandenen Frontend-Dateien und ihre Komponenten wurden individuell aus dem Quellcode analysiert. Manuelle visuelle Abnahme und echte Vorher-/Nachher-Vergleiche wurden ausschließlich für Scotland Yard durchgeführt. Optische Schwächen anderer Spiele sind begründete Quellcode-/Designbefunde; sie ersetzen keine spätere Sichtprüfung. Nicht implementierte Spiele besitzen kein behauptetes bestehendes Frontend.
+Die vorhandenen Frontend-Dateien und ihre Komponenten wurden individuell aus dem Quellcode analysiert. Manuelle visuelle Abnahme und echte Vorher-/Nachher-Vergleiche wurden für Scotland Yard, UNO, Skip-Bo und Phase 10 durchgeführt. Optische Schwächen anderer Spiele sind begründete Quellcode-/Designbefunde; sie ersetzen keine spätere Sichtprüfung. Nicht implementierte Spiele besitzen kein behauptetes bestehendes Frontend.
 
 ## Reihenfolge
 
@@ -54,20 +54,17 @@ Die folgenden ersten Aufgaben sind kleine Verbesserungen mit überschaubarem Zus
 | 32 | [VIS-023](#vis-023) | Durak | 9–14 h | P2 |
 | 33 | [VIS-043](#vis-043) | Laser-Hüpfer | 9–14 h | P2 |
 | 34 | [VIS-017](#vis-017) | Mühle | 9–14 h | P2 |
-| 35 | [VIS-009](#vis-009) | Skip-Bo | 9–14 h | P2 |
-| 36 | [VIS-037](#vis-037) | Wer bin ich? | 9–14 h | P2 |
-| 37 | [VIS-041](#vis-041) | Bröckelboden | 10–15 h | P2 |
-| 38 | [VIS-008](#vis-008) | Phase 10 | 10–15 h | P2 |
-| 39 | [VIS-004](#vis-004) | UNO | 12–18 h | P3 |
-| 40 | [VIS-045](#vis-045) | Monopoly Deal | 12–18 h | P3 |
-| 41 | [VIS-011](#vis-011) | Blackjack | 13–20 h | P3 |
-| 42 | [VIS-007](#vis-007) | Mensch ärgere Dich nicht | 13–20 h | P3 |
-| 43 | [VIS-013](#vis-013) | Schiffe versenken | 14–21 h | P3 |
-| 44 | [VIS-036](#vis-036) | Werwolf | 14–21 h | P3 |
-| 45 | [VIS-002](#vis-002) | Texas Hold'em | 16–24 h | P3 |
-| 46 | [VIS-024](#vis-024) | Omaha | 7–11 h | P2 |
-| 47 | [VIS-047](#vis-047) | Spiel des Lebens | 18–27 h | P3 |
-| 48 | [VIS-046](#vis-046) | Monopoly | 20–30 h | P3 |
+| 35 | [VIS-037](#vis-037) | Wer bin ich? | 9–14 h | P2 |
+| 36 | [VIS-041](#vis-041) | Bröckelboden | 10–15 h | P2 |
+| 37 | [VIS-045](#vis-045) | Monopoly Deal | 12–18 h | P3 |
+| 38 | [VIS-011](#vis-011) | Blackjack | 13–20 h | P3 |
+| 39 | [VIS-007](#vis-007) | Mensch ärgere Dich nicht | 13–20 h | P3 |
+| 40 | [VIS-013](#vis-013) | Schiffe versenken | 14–21 h | P3 |
+| 41 | [VIS-036](#vis-036) | Werwolf | 14–21 h | P3 |
+| 42 | [VIS-002](#vis-002) | Texas Hold'em | 16–24 h | P3 |
+| 43 | [VIS-024](#vis-024) | Omaha | 7–11 h | P2 |
+| 44 | [VIS-047](#vis-047) | Spiel des Lebens | 18–27 h | P3 |
+| 45 | [VIS-046](#vis-046) | Monopoly | 20–30 h | P3 |
 
 Die JSON-Datei enthält eine reine Aufwandssortierung aller 95 Pakete sowie eine getrennte Reihenfolge für offene spielbare Spiele. Vorhandene individuelle Bretter behalten ihre Materialarbeit; spätere Pakete polieren sie nach eigener Freigabe.
 
@@ -216,12 +213,13 @@ Diese Reihenfolge gilt erst nach separater Gameplay-Freigabe und tatsächlicher 
 ### VIS-004 – UNO
 
 - **Spiel-ID/Kategorie:** `farbenchaos` / Kartenspiele.
-- **Implementierung / Design:** playable / **planned**.
-- **Priorität / Aufwand:** P3; 12–18 h; kompakte bis mittlere Spieloberfläche.
+- **Implementierung / Design:** playable / **done**.
+- **Priorität / Aufwand:** P3; 12–18 h; kompakte bis mittlere Spieloberfläche. Historische Schätzung; freigegebener Umfang abgeschlossen.
 - **Frontend:** [public/games/farbenchaos/farbenchaos.css](../../public/games/farbenchaos/farbenchaos.css), [public/games/farbenchaos/farbenchaos.js](../../public/games/farbenchaos/farbenchaos.js)
 - **Gemeinsame Komponenten:** [public/core.js](../../public/core.js), [public/game-design.js](../../public/game-design.js), [public/game-design.css](../../public/game-design.css), [public/ui-theme.css](../../public/ui-theme.css), [public/style.css](../../public/style.css), [public/games/kit.js](../../public/games/kit.js)
-- **Aktueller Stand:** Eigene farbige Karten, Rückseiten und spezielle Variantenanzeigen; kitShedding als Basis.
-- **Optische Verbesserungsziele:** Vier Varianten und zwei Kartenseiten konkurrieren um Aufmerksamkeit; der umgebende Standardtisch ordnet sie noch nicht als eigene Spielwelt.
+- **Zusätzliche gemeinsame Präsentation:** [card-worlds.css](../../public/games/card-worlds.css), ausschließlich von diesen drei Spielstyles importiert.
+- **Aktueller Stand:** Geprüfte eigene Farbarena mit Kartenbriefing, großem Ablagebereich, Farb-/Richtungsleiste und aktiver Flip-Seite; vorhandene Karten und Variantenaktionen erhalten.
+- **Abnahme / Darstellungsgrenzen:** Die frühere kleine Ablage und generische Lobby wurden ersetzt. Lange Hände scrollen bewusst horizontal mit voller Kartenfläche; öffentliche Flip-Rückseiten und Details liegen in der vertikal verschiebbaren Arbeitsfläche.
 - **Stil:** Lebendige grafische Farbarena mit kräftigen Flächen und ruhigen dunklen Rändern.
 - **Hintergrund:** Abstrakte lokale Farbformen außerhalb des Kartenbereichs.
 - **Spielfeld:** Aktive Seite, Ablage und Ziehstapel klar gliedern; Flip-Rückseiten korrekt zeigen.
@@ -238,7 +236,7 @@ Diese Reihenfolge gilt erst nach separater Gameplay-Freigabe und tatsächlicher 
 - Aktionssymbole bleiben ohne Farbwahrnehmung unterscheidbar.
 - Zusätzlich gelten G01–G10 aus dem Designstandard und die erforderlichen Zustands-/Größenprüfungen.
 
-**Nachweise:** Noch keine Implementierungscommits, Testergebnisse oder Screenshots für dieses neue Paket. Erst nach tatsächlicher Umsetzung ergänzen.
+**Nachweise:** Implementierungscommit `84cccbc5795ac9b0a28c5a6723526d8d7affc2e6`, [Kartenwelten-Abnahme](CARD_WORLDS_REDESIGN.md), [dauerhafte Bildvergleiche](card-worlds-screenshots.json). 7 versionierte Screenshots; 879 Node-Tests und 26 abschließende gezielte Browserfälle erfolgreich. Vollständige Browserergebnisse einschließlich Nachprüfungen stehen im Abnahmebericht.
 
 <a id="vis-005"></a>
 ### VIS-005 – Mäxchen
@@ -328,12 +326,13 @@ Diese Reihenfolge gilt erst nach separater Gameplay-Freigabe und tatsächlicher 
 ### VIS-008 – Phase 10
 
 - **Spiel-ID/Kategorie:** `zehnetappen` / Kartenspiele.
-- **Implementierung / Design:** playable / **planned**.
-- **Priorität / Aufwand:** P2; 10–15 h; kompakte bis mittlere Spieloberfläche.
+- **Implementierung / Design:** playable / **done**.
+- **Priorität / Aufwand:** P2; 10–15 h; kompakte bis mittlere Spieloberfläche. Historische Schätzung; freigegebener Umfang abgeschlossen.
 - **Frontend:** [public/games/zehnetappen/zehnetappen.css](../../public/games/zehnetappen/zehnetappen.css), [public/games/zehnetappen/zehnetappen.js](../../public/games/zehnetappen/zehnetappen.js)
 - **Gemeinsame Komponenten:** [public/core.js](../../public/core.js), [public/game-design.js](../../public/game-design.js), [public/game-design.css](../../public/game-design.css), [public/ui-theme.css](../../public/ui-theme.css), [public/style.css](../../public/style.css), [public/games/kit.js](../../public/games/kit.js)
-- **Aktueller Stand:** Eigene Phasenkarten, Gruppenauswahl und Auslagen; bestehende Meldungssteuerung.
-- **Optische Verbesserungsziele:** Gruppenbildung, Phasenfortschritt und Aktionszustand sind visuell dicht und noch keine klare Werkfläche.
+- **Zusätzliche gemeinsame Präsentation:** [card-worlds.css](../../public/games/card-worlds.css), ausschließlich von diesen drei Spielstyles importiert.
+- **Aktueller Stand:** Geprüfter Arbeitsplatz in Petrol, Creme und Koralle mit Phasenziel, Zugschritten und Gruppenauswahl im Hauptbereich; Hand und Bestätigung bleiben im Dock.
+- **Abnahme / Darstellungsgrenzen:** Die früher das Handy ausfüllende Gruppenauswahl wurde aus dem Dock entfernt. Sehr dichte Auslagen bleiben vertikal verschiebbar; sehr große Hände können zusätzlich im begrenzten Dock scrollen.
 - **Stil:** Präziser Kartenspiel-Arbeitsplatz in Petrol, Creme und Koralle.
 - **Hintergrund:** Textiler Hintergrund ohne Ornament hinter den Gruppen.
 - **Spielfeld:** Phasenziel, aktuelle Gruppierung und fremde Auslagen mit festen Lesebereichen.
@@ -350,18 +349,19 @@ Diese Reihenfolge gilt erst nach separater Gameplay-Freigabe und tatsächlicher 
 - Gültige/ungültige Gruppe und eigener Abwurfmodus sind sofort erkennbar.
 - Zusätzlich gelten G01–G10 aus dem Designstandard und die erforderlichen Zustands-/Größenprüfungen.
 
-**Nachweise:** Noch keine Implementierungscommits, Testergebnisse oder Screenshots für dieses neue Paket. Erst nach tatsächlicher Umsetzung ergänzen.
+**Nachweise:** Implementierungscommit `84cccbc5795ac9b0a28c5a6723526d8d7affc2e6`, [Kartenwelten-Abnahme](CARD_WORLDS_REDESIGN.md), [dauerhafte Bildvergleiche](card-worlds-screenshots.json). 8 versionierte Screenshots; 879 Node-Tests und 26 abschließende gezielte Browserfälle erfolgreich. Vollständige Browserergebnisse einschließlich Nachprüfungen stehen im Abnahmebericht.
 
 <a id="vis-009"></a>
 ### VIS-009 – Skip-Bo
 
 - **Spiel-ID/Kategorie:** `stapelrennen` / Kartenspiele.
-- **Implementierung / Design:** playable / **planned**.
-- **Priorität / Aufwand:** P2; 9–14 h; kompakte bis mittlere Spieloberfläche.
+- **Implementierung / Design:** playable / **done**.
+- **Priorität / Aufwand:** P2; 9–14 h; kompakte bis mittlere Spieloberfläche. Historische Schätzung; freigegebener Umfang abgeschlossen.
 - **Frontend:** [public/games/stapelrennen/stapelrennen.css](../../public/games/stapelrennen/stapelrennen.css), [public/games/stapelrennen/stapelrennen.js](../../public/games/stapelrennen/stapelrennen.js)
 - **Gemeinsame Komponenten:** [public/core.js](../../public/core.js), [public/game-design.js](../../public/game-design.js), [public/game-design.css](../../public/game-design.css), [public/ui-theme.css](../../public/ui-theme.css), [public/style.css](../../public/style.css), [public/games/kit.js](../../public/games/kit.js)
-- **Aktueller Stand:** Eigene Zahlenkarten, Spielstapel, vier Ablagen und zentrale Baureihen.
-- **Optische Verbesserungsziele:** Viele gleichartig aussehende Stapel erschweren die Zuordnung von eigenem Zielstapel und gemeinsamer Baustelle.
+- **Zusätzliche gemeinsame Präsentation:** [card-worlds.css](../../public/games/card-worlds.css), ausschließlich von diesen drei Spielstyles importiert.
+- **Aktueller Stand:** Geprüfter eigener Stapeltisch: helle nummerierte Baureihen, nächster Wert und Fortschritt; getrennte eigene Ablagen, Zielstapel und offene Partnerquellen.
+- **Abnahme / Darstellungsgrenzen:** Früher gleichartige Stapel wurden räumlich getrennt. Kleine Bildschirme behalten lesbare Karten und vertikales Scrollen; im 900×450-Querformat stehen eigene Stapel und gemeinsame Reihen nebeneinander.
 - **Stil:** Heller strukturierter Kartentisch mit kräftigen nummerierten Stapelreitern.
 - **Hintergrund:** Ruhiges graublaues Tuch mit dezenten Stapelrahmen.
 - **Spielfeld:** Persönlicher Spielstapel, vier Ablagen und gemeinsame Baureihen geometrisch trennen.
@@ -378,7 +378,7 @@ Diese Reihenfolge gilt erst nach separater Gameplay-Freigabe und tatsächlicher 
 - Partnerstapel ist in Teams eindeutig und ausschließlich regelkonform bedienbar.
 - Zusätzlich gelten G01–G10 aus dem Designstandard und die erforderlichen Zustands-/Größenprüfungen.
 
-**Nachweise:** Noch keine Implementierungscommits, Testergebnisse oder Screenshots für dieses neue Paket. Erst nach tatsächlicher Umsetzung ergänzen.
+**Nachweise:** Implementierungscommit `84cccbc5795ac9b0a28c5a6723526d8d7affc2e6`, [Kartenwelten-Abnahme](CARD_WORLDS_REDESIGN.md), [dauerhafte Bildvergleiche](card-worlds-screenshots.json). 10 versionierte Screenshots; 879 Node-Tests und 26 abschließende gezielte Browserfälle erfolgreich. Vollständige Browserergebnisse einschließlich Nachprüfungen stehen im Abnahmebericht.
 
 <a id="vis-010"></a>
 ### VIS-010 – Schwimmen
@@ -2744,9 +2744,9 @@ Diese Reihenfolge gilt erst nach separater Gameplay-Freigabe und tatsächlicher 
 
 ## Abschluss dieses Auftrags
 
-Der Pilot ist in [SCOTLAND_YARD_REDESIGN.md](SCOTLAND_YARD_REDESIGN.md) dokumentiert. Alle weiteren 94 VIS-Pakete sind ausschließlich geplant. Kein anderes Spiel wurde in Phase 2 neu gestaltet oder implementiert. Die öffentliche Roadmap bündelt die Ankündigung, die vollständigen Einzelanforderungen bleiben hier.
+Der Pilot ist in [SCOTLAND_YARD_REDESIGN.md](SCOTLAND_YARD_REDESIGN.md) dokumentiert. Dieser historische zweiphasige Pilotauftrag ließ die weiteren 94 VIS-Pakete zunächst geplant. Im anschließenden ausdrücklich freigegebenen [Kartenwelten-Auftrag](CARD_WORLDS_REDESIGN.md) wurden VIS-004, VIS-009 und VIS-008 umgesetzt; aktuell bleiben 91 Pakete geplant. Kein anderes Spiel wurde in Phase 2 neu gestaltet oder implementiert. Die öffentliche Roadmap bündelt die Ankündigung, die vollständigen Einzelanforderungen bleiben hier.
 
-### Nachweise der zweiphasigen Arbeit
+### Historische Nachweise der ursprünglichen zweiphasigen Arbeit
 
 - Scotland-Yard-Implementierungscommit: `ef6511d76f78689fc525a63f6e3637c3f14f1252`.
 - Inventur: **49 spielbare Spiele + 46 nicht implementierte Spiele = 95 eindeutige VIS-Pakete**. Davon **1 done, 94 planned**; die 94 Planungen bestehen aus 48 weiteren spielbaren Spielen und 46 bedingten Backlog-Konzepten. 20 Einträge sind als individuell aufwendiges Spielfeld gekennzeichnet.
@@ -2758,3 +2758,7 @@ Der Pilot ist in [SCOTLAND_YARD_REDESIGN.md](SCOTLAND_YARD_REDESIGN.md) dokument
 - Der bekannte GitHub-Workflow führt Tests und GHCR-Veröffentlichung aus. Die geprüften Repository-/Compose-Dateien weisen keinen automatischen Produktivdeploy auf; es ist keine externe Automatik bekannt. Kein manueller Produktivdeploy.
 
 Die nächsten kleinen Kandidaten sind **VIS-027 Chicago**, **VIS-035 Tickendes Paket**, **VIS-049 Würfelduell** und **VIS-025 Würfelpoker**, jeweils grob 3–5 Stunden reine Design-/Frontendarbeit. Auch diese Pakete sind noch nicht freigegeben. Dieser Auftrag endet hier.
+
+## Abgeschlossener Folgeauftrag: UNO, Skip-Bo und Phase 10
+
+VIS-004, VIS-009 und VIS-008 wurden anschließend ausdrücklich gemeinsam freigegeben. Implementierungscommit: `84cccbc5795ac9b0a28c5a6723526d8d7affc2e6`. Aktueller Gesamtstand: **4 done, 91 planned** (45 weitere spielbare Spiele, 46 bedingte Konzepte). [Änderungen, tatsächliche Testergebnisse und Vorher-/Nachher-Bilder](CARD_WORLDS_REDESIGN.md). Die übrigen Pakete bleiben unverändert geplant; aus der Reihenfolge folgt keine Freigabe.

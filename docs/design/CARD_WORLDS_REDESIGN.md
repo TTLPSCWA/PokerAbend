@@ -1,6 +1,6 @@
 # UNO, Skip-Bo und Phase 10 – individuelle Kartenwelten
 
-Stand: 31.10.2026. Ausdrücklich beauftragter Folgeauftrag für **VIS-004 / `farbenchaos`**, **VIS-009 / `stapelrennen`** und **VIS-008 / `zehnetappen`**. Vorher-Basis: `c4bb90e25245d6a46d64e5b7378d32d7f86b5f5a`. Der tatsächliche Implementierungscommit wird nach dem geprüften Codecommit in der [zentralen Planung](game-visual-roadmap.json) dokumentiert.
+Stand: 31.10.2026. Ausdrücklich beauftragter Folgeauftrag für **VIS-004 / `farbenchaos`**, **VIS-009 / `stapelrennen`** und **VIS-008 / `zehnetappen`**. Vorher-Basis: `c4bb90e25245d6a46d64e5b7378d32d7f86b5f5a`. Implementierungscommit: `84cccbc5795ac9b0a28c5a6723526d8d7affc2e6`; Status und Nachweise stehen in der [zentralen Planung](game-visual-roadmap.json).
 
 ## Tatsächliche Änderungen
 
@@ -43,7 +43,7 @@ Besonders dichte Sonderzustände werden als ausdrücklich markierte **reine Clie
 
 - Vorher-Aufnahmen: **20 Browserfälle bestanden**, `artifacts/cards-before.log`.
 - Neue Geheimhaltungs-/Darstellungsprüfungen: **12 bestanden**. Der erste Lauf hatte eine falsche Annahme über die zufällig aktive Flip-Seite; der Test setzt nun die darzustellende Seite ausdrücklich.
-- Vollständiger Node-Lauf: **879 bestanden, 0 fehlgeschlagen**, 48,4 Sekunden; `artifacts/cards-full-node.log`.
+- Vollständiger Node-Lauf: **879 bestanden, 0 fehlgeschlagen**, 48,4 Sekunden; `artifacts/cards-full-node.log`. Nach der abschließenden Planungs-/Nachweispflege erneut **879 bestanden**, 46,2 Sekunden; `artifacts/cards-final-node.log`. Zusätzlich **6 Planungstests erfolgreich**, einschließlich der Bildprüfsummen und der tatsächlichen Abschlussdaten. Die anderen 92 Paketeinträge wurden unverändert gegen die Vorher-Basis verglichen.
 - Erster gezielter Browserlauf einschließlich gemeinsamer Spielmotive: **43 bestanden, 1 fehlgeschlagen**. Der neue mobile UNO-Test hatte die bestehende Vorschau beim ersten Tipp übergangen. Die Prüfung berücksichtigt jetzt den zweiten Tipp.
 - Abschließender gezielter Lauf für alle zehn Varianten, Phase-10-Gruppen und öffentliche DE/EN-Roadmap: **26 bestanden**, `artifacts/cards-final-focus.log`.
 - UNO mit langen Händen: **8 bestanden**, `artifacts/cards-long.log`; zusätzliche Sonderansichten für Flip/No Mercy/All Wild: **8 bestanden**, `artifacts/cards-variants.log`.
@@ -73,6 +73,6 @@ Zusätzlich: [UNO mit 24 Karten auf dem Handy](screenshots/farbenchaos/after-lon
 
 ## Veröffentlichung und verbleibender Umfang
 
-Die drei VIS-Pakete werden erst nach den tatsächlichen Prüfungen samt Implementierungscommit als `done` dokumentiert. Die übrigen **91 VIS-Pakete** bleiben geplant: 45 weitere spielbare Spiele und 46 Backlog-Konzepte. Die öffentliche Roadmap bündelt diese drei Kartenwelten in einem erledigten Punkt; die noch ausstehenden allgemeinen Verbesserungen bleiben offen. V2-Statusangaben bleiben unverändert.
+Die drei VIS-Pakete sind nach den tatsächlichen Prüfungen samt Implementierungscommit als `done` dokumentiert. Die übrigen **91 VIS-Pakete** bleiben geplant: 45 weitere spielbare Spiele und 46 Backlog-Konzepte. Die öffentliche Roadmap bündelt diese drei Kartenwelten in einem erledigten Punkt; die noch ausstehenden allgemeinen Verbesserungen bleiben offen. V2-Statusangaben bleiben unverändert.
 
 Der bekannte Workflow `.github/workflows/docker.yml` führt bei einem Push auf `main` Tests mit Node 22 aus und baut/veröffentlicht das GHCR-Image. Die geprüften Compose-/Workflowdateien enthalten keinen automatischen Produktivdeploy. Es ist keine zusätzliche externe Deploymentautomatik bekannt. Kein manueller Produktivdeploy und keine Änderung von Produktivdaten.

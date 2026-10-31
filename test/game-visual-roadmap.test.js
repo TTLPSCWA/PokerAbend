@@ -63,8 +63,10 @@ test('Visual roadmap: completion requires real evidence; planned packages contai
     }
     if (p.implementation_status === 'not_implemented') assert.equal(p.visual_status, 'planned');
   }
-  const manifest = JSON.parse(read('docs/design/scotland-yard-screenshots.json'));
-  for (const { path, sha256 } of manifest.comparisons) assert.equal(createHash('sha256').update(readFileSync(new URL(path, root))).digest('hex'), sha256, path);
+  for (const file of ['docs/design/scotland-yard-screenshots.json', 'docs/design/card-worlds-screenshots.json']) {
+    const manifest = JSON.parse(read(file));
+    for (const { path, sha256 } of manifest.comparisons) assert.equal(createHash('sha256').update(readFileSync(new URL(path, root))).digest('hex'), sha256, path);
+  }
 });
 
 test('Visual roadmap: development order covers all open playable packages and respects dependencies; backlog stays separate', () => {
@@ -88,11 +90,12 @@ test('Visual roadmap: human instructions cover every package and both agents poi
   for (const path of plan.references) assert.ok(existsSync(new URL(path, root)), path);
 });
 
-test('Visual roadmap: one compact public section, only the verified pilot completed, and authored English metadata', () => {
+test('Visual roadmap: one compact public section, verified visual packages and authored English metadata', () => {
   const section = resolvedRoadmap().filter((p) => p.id === 'neue-spielwelten');
   assert.equal(section.length, 1); assert.equal(section[0].stufe, 'spaeter');
-  assert.equal(section[0].punkte.length, 6);
-  assert.deepEqual(section[0].punkte.filter((p) => p.erledigt).map((p) => p.id), ['visual-scotland-yard']);
+  assert.equal(section[0].punkte.length, 7);
+  assert.deepEqual(section[0].punkte.filter((p) => p.erledigt).map((p) => p.id), ['visual-scotland-yard', 'visual-kartenwelten']);
+  for (const game of ['scotland-yard', 'farbenchaos', 'stapelrennen', 'zehnetappen']) assert.equal(byGame.get(game).visual_status, 'done');
   assert.ok(section[0].punkte.every((p) => p.art === 'design' && !p.spiel && !p.plannedId));
   const { I18n } = i18nContext({}, 'en');
   for (const text of [section[0].titel, section[0].satz, ...section[0].punkte.flatMap((p) => [p.titel, p.text])]) assert.notEqual(I18n.t(text), text, text);

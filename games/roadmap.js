@@ -11,8 +11,9 @@ const liste = (prefix, art, rows, erledigt = false) => rows.map(([titel, text], 
 const spiele = (ids) => ids.map((id) => punkt(id, GAMES[id].name, 'spiel', GAMES[id].description, true));
 
 export const ROADMAP = [
-  { id: 'neue-spielwelten', titel: 'Neue Spielwelten & schönere Spieloberflächen', satz: 'Scotland Yard ist als visueller Pilot überarbeitet. Weitere individuelle Spielwelten folgen schrittweise nach eigener Freigabe.', stufe: 'spaeter', punkte: [
+  { id: 'neue-spielwelten', titel: 'Neue Spielwelten & schönere Spieloberflächen', satz: 'Scotland Yard, UNO, Skip-Bo und Phase 10 sind visuell überarbeitet. Weitere individuelle Spielwelten folgen schrittweise nach eigener Freigabe.', stufe: 'spaeter', punkte: [
     punkt('visual-scotland-yard', 'Scotland Yard: Ermittlungszentrale & Stadtkarte', 'design', 'Eigene Stadtviertel, persönliche Figuren, Fahrkarten und Ermittlungsprotokoll – auf Desktop und Handy geprüft.', true),
+    punkt('visual-kartenwelten', 'UNO, Skip-Bo & Phase 10: eigene Kartenwelten', 'design', 'Farbarena, nummerierte Baureihen und Phasen-Arbeitsfläche mit eigenen Lobbys und klaren Aktionen auf Desktop und Handy.', true),
     punkt('visual-hintergruende', 'Individuelle Spielwelten', 'design', 'Thematisch passende lokale Hintergründe für weitere Spiele, mit ruhigen und gut lesbaren Spielflächen.'),
     punkt('visual-spielfelder', 'Hochwertigere Spielbretter', 'design', 'Bretter, Kartenpläne und Figuren passend zum jeweiligen Spiel verfeinern; Regeln und Zugmöglichkeiten bleiben erhalten.'),
     punkt('visual-material', 'Klarere Karten & Würfel', 'design', 'Spielmaterial, Werte und Symbole hochwertiger und leichter unterscheidbar gestalten.'),

@@ -2,7 +2,9 @@
 'use strict';
 window.EN = {
   'Neue Spielwelten & schönere Spieloberflächen': 'New game worlds & better game interfaces',
-  'Scotland Yard ist als visueller Pilot überarbeitet. Weitere individuelle Spielwelten folgen schrittweise nach eigener Freigabe.': 'Scotland Yard has been redesigned as the visual pilot. More individual game worlds will follow step by step, each with separate approval.',
+  'Scotland Yard, UNO, Skip-Bo und Phase 10 sind visuell überarbeitet. Weitere individuelle Spielwelten folgen schrittweise nach eigener Freigabe.': 'Scotland Yard, UNO, Skip-Bo and Phase 10 have been visually redesigned. More individual game worlds will follow step by step, each with separate approval.',
+  'UNO, Skip-Bo & Phase 10: eigene Kartenwelten': 'UNO, Skip-Bo & Phase 10: individual card worlds',
+  'Farbarena, nummerierte Baureihen und Phasen-Arbeitsfläche mit eigenen Lobbys und klaren Aktionen auf Desktop und Handy.': 'A colour arena, numbered building piles and a phase workspace with individual lobbies and clear actions on desktop and mobile.',
   'Scotland Yard: Ermittlungszentrale & Stadtkarte': 'Scotland Yard: operations room & city map',
   'Eigene Stadtviertel, persönliche Figuren, Fahrkarten und Ermittlungsprotokoll – auf Desktop und Handy geprüft.': 'Original districts, personal markers, tickets and a case journal — tested on desktop and mobile.',
   'Individuelle Spielwelten': 'Individual game worlds',

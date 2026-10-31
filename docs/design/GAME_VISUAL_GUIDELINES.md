@@ -72,6 +72,6 @@ Gemeinsame Akzeptanz-IDs **G01–G10** stehen in der JSON-Datei. Sie ergänzen d
 
 ## Öffentliche und interne Roadmap
 
-`games/roadmap.js` enthält einen gebündelten Bereich „Neue Spielwelten & schönere Spieloberflächen“. Nur der geprüfte Scotland-Yard-Pilot ist darin erledigt; weitere Materialien, Hintergründe und Aktionsbereiche sind geplant. Die 95 Einzelpakete bleiben unter `docs/design/`; keine 95 zusätzlichen öffentlichen Etappen erzeugen.
+`games/roadmap.js` enthält einen gebündelten Bereich „Neue Spielwelten & schönere Spieloberflächen“. Der geprüfte Scotland-Yard-Pilot und ein gebündelter Punkt für UNO, Skip-Bo und Phase 10 sind darin erledigt; weitere Materialien, Hintergründe und Aktionsbereiche sind geplant. Die 95 Einzelpakete bleiben unter `docs/design/`; keine 95 zusätzlichen öffentlichen Etappen erzeugen.
 
 Die historische V2-Planung unter `docs/roadmap/` bleibt unverändert. Diese Designplanung setzt kein V2-Paket um und macht kein Backlog-Spiel startbar.
