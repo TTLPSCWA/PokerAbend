@@ -46,10 +46,7 @@ export const PLANNED = [
     description: "Jeder weitere Wurf kann den Zuggewinn erhöhen oder ihn vollständig kosten.",
     rules: ["Jeder Zug beginnt mit einem Wurf und einem vorläufigen Punktestand.","Nach jedem erfolgreichen Wurf kannst du sichern oder erneut würfeln.","Ein Fehlwurf kostet alle ungesicherten Punkte; zuerst am Ziel gewinnt."], art: dice([{ x: 9, y: 18, n: 1 }, { x: 25, y: 28, n: 3 }, { x: 37, y: 13, n: 5 }]),
   }),
-  spiel({ id: 'wuerfelduell', name: 'Würfelduell', category: 'wuerfel', minPlayers: 2, maxPlayers: 4, duration: 10, paeckchen: 'spaeter',
-    description: "Angriffs- und Verteidigungswürfel bestimmen, wer das Duell übersteht.",
-    rules: ["Alle beginnen mit gleich vielen Lebenspunkten und einer festen Würfelzahl.","Wer dran ist, wählt einen Gegner und würfelt Angriff gegen dessen Verteidigung.","Überzählige Angriffssymbole kosten Leben; ohne Leben scheidet man aus."], art: glyph('shield'),
-  }),
+
   spiel({ id: 'wuerfeljagd', name: 'Würfeljagd', category: 'wuerfel', minPlayers: 2, maxPlayers: 8, duration: 10, paeckchen: 'spaeter',
     description: "Unter Zeitdruck die gesuchte Würfelkombination erreichen und Punkte sammeln.",
     rules: ["Alle bekommen dieselbe Zielkombination und dasselbe Zeitfenster.","Würfel dürfen liegen bleiben, die übrigen werden erneut geworfen.","Jede rechtzeitig erreichte Kombination bringt Punkte; die höchste Summe gewinnt."], art: dice([{ x: 9, y: 18, n: 1 }, { x: 25, y: 28, n: 3 }, { x: 37, y: 13, n: 5 }]),
@@ -147,18 +144,7 @@ export const PLANNED = [
     houseRules: ['Mit Joker', 'Eröffnen nur mit Buben oder besser (Jacks or better)', 'Limit statt No Limit'],
     art: cardsChip({ kind: 'dot', color: '#1A1A1A' }, { kind: 'diamond' }, '#1C7A43'),
   }),
-  spiel({
-    id: 'hex', name: 'Hex', category: 'brett', minPlayers: 2, maxPlayers: 2, duration: 15, paeckchen: 'spaeter',
-    description: 'Auf sechseckigen Feldern die eigenen beiden Ränder verbinden – ein Remis gibt es nicht.',
-    rules: [
-      'Das Brett hat 11×11 sechseckige Felder, die Ränder gehören abwechselnd Blau und Rot.',
-      'Abwechselnd setzt jeder einen Stein auf ein freies Feld; Steine werden nie bewegt oder geschlagen.',
-      'Blau verbindet oben mit unten, Rot links mit rechts durch eine geschlossene Kette.',
-      'Wer als Erster seine Ränder verbunden hat, gewinnt – ein Remis ist unmöglich.',
-    ],
-    houseRules: ['Tauschregel: Der zweite Spieler darf den ersten Stein übernehmen', 'Kleineres Brett 9×9'],
-    art: hexBoard(),
-  }),
+
   spiel({
     id: 'schatzinsel', name: 'Schatzinsel', category: 'brett', minPlayers: 2, maxPlayers: 4, duration: 15, paeckchen: 'spaeter',
     description: 'Schätze auf der eigenen Insel verstecken und die der anderen ausgraben.',
@@ -400,21 +386,7 @@ export const PLANNED = [
     houseRules: ['Hochzeit', 'Schweine', 'Solo-Spiele', 'Pflichtsolo'],
     art: fan([{ ...CARD, kind: 'dot', color: '#1A1A1A' }, { ...CARD, kind: 'diamond' }, { ...CARD, kind: 'bars', color: '#C99A45' }, { ...CARD, kind: 'heart' }]),
   }),
-  spiel({
-    id: 'scotland-yard', name: 'Scotland Yard', category: 'brett', minPlayers: 3, maxPlayers: 6, duration: 60, paeckchen: 'gross',
-    vorbild: 'Fahndungsspiele wie Scotland Yard – nur die Mechanik; der Stadtplan ist eine eigene Erfindung, kein Original-Plan',
-    description: 'Eine Gruppe Detektive jagt Mr. X durch die Stadt, dessen Position fast immer verborgen bleibt.',
-    rules: [
-      'Ein Spieler ist Mr. X und bewegt sich verdeckt, alle anderen sind Detektive. Gespielt wird auf einem eigenen Stadtplan mit nummerierten Haltestellen.',
-      'Gezogen wird mit Taxi-, Bus- und U-Bahn-Tickets, die je Verkehrsmittel begrenzt sind; die Detektive sehen, welches Ticket Mr. X benutzt hat, aber nicht, wohin er gefahren ist.',
-      'In festen Runden (zum Beispiel 3, 8, 13 und 18) zeigt sich Mr. X und nennt seine Haltestelle.',
-      'Mr. X hat Black-Tickets, die das Verkehrsmittel verbergen, und Doppelzug-Tickets für zwei Züge hintereinander.',
-      'Die Detektive gewinnen, wenn einer von ihnen auf Mr. Xs Haltestelle zieht oder Mr. X nicht mehr ziehen kann; Mr. X gewinnt, wenn er alle Runden überlebt.',
-      'Der Server kennt Mr. Xs Position und schickt sie nie an die Detektive; erst bei Auftauchen oder Spielende erfahren sie sie.',
-    ],
-    houseRules: ['Mr. X kann auch ein Detektiv-Team gegen mehrere Mr. X sein', 'Anzahl der Auftauch-Runden', 'Zeit pro Zug', 'Weniger Tickets für schnellere Spiele'],
-    art: glyph('agent', '#2E3F57'),
-  }),
+
   spiel({
     id: 'schach', name: 'Schach', category: 'brett', minPlayers: 2, maxPlayers: 2, duration: 30, paeckchen: 'gross',
     description: 'Das Brettspiel der Könige: Matt setzen, bevor man selbst matt gesetzt wird.',

@@ -1,6 +1,6 @@
 # Spieleabend
 
-Spielesammlung für die Freundesgruppe, im Browser und online spielbar: Texas Hold'em, Mau-Mau, UNO, Mäxchen, Schocken, Mensch ärgere Dich nicht, Phase 10, Skip-Bo und viele weitere. Der Server ist Geber und Schiedsrichter: Er mischt, teilt aus, würfelt, prüft jeden Zug und rechnet ab.
+Spielesammlung für die Freundesgruppe mit 49 Spielen, im Browser und online spielbar: Texas Hold'em, Mau-Mau, UNO, Scotland Yard, Hex, Würfelduell und viele weitere. Der Server ist Geber und Schiedsrichter: Er mischt, teilt aus, würfelt, prüft jeden Zug und rechnet ab.
 
 > **Name:** Sichtbar heißt die Seite „Spieleabend“. Technisch bleibt „pokerabend“ – Repo, Docker-Image `ghcr.io/ttlpscwa/pokerabend`, Container, Volume `poker-data`, Paketname, Cookie `pa_auth` und die Browser-Speicherschlüssel `poker:…`. Sonst brechen Deployment und laufende Sitzungen.
 
@@ -133,9 +133,17 @@ Technik: `server/tickets.js` kapselt Daten, Rechte und Markdown; `server/ticket-
 
 ## Spiele
 
+### Neu: Scotland Yard, Hex und Würfelduell
+
+**Scotland Yard**: 3–6 Spieler, eigener Stadtplan mit 49 Haltestellen, geheime Mr.-X-Position, öffentliche Ticketspur, Black-Tickets, Fähren und Doppelzüge. Der Host kann Mr. X zuweisen; sonst wechselt die Rolle. Detektiv-Bots kennen nur öffentliche Hinweise.
+
+**Hex**: 2 Spieler auf 11×11 oder 9×9 Feldern, sichtbare Zielränder, optionaler Seitentausch nach dem ersten Stein und hervorgehobener Gewinnpfad. **Würfelduell**: 2–4 Spieler wählen Gegner, würfeln serverseitig Angriff gegen Verteidigung und spielen bis zum letzten Überlebenden.
+
+Alle drei unterstützen Bots, Host-Pause, Wiederverbinden und deutsche/englische Bedienung samt Regeln. Regeln, Anpassungen und Prüfnachweise: [docs/scotland-yard-und-kleine-spiele.md](docs/scotland-yard-und-kleine-spiele.md).
+
 ### Gemeinsame Spielpause
 
-In allen 46 Spielen und ihren Varianten kann ausschließlich der **Host** über **Pause** die gesamte Partie sofort anhalten. **Fortsetzen** startet sie an derselben Stelle mit der übrigen Zeit. Mitspieler und Zuschauer sehen einen gemeinsamen Pausenhinweis; Spielaktionen, Bots, Zug-/Rundentimer, Zünder und Echtzeitbewegungen warten. Auch lokal laufende Minispiele halten ihre Spielzeit und Eingaben an. Bei Poker bleibt zusätzlich „Pause nach dieser Hand“ erhalten.
+In allen 49 Spielen und ihren Varianten kann ausschließlich der **Host** über **Pause** die gesamte Partie sofort anhalten. **Fortsetzen** startet sie an derselben Stelle mit der übrigen Zeit. Mitspieler und Zuschauer sehen einen gemeinsamen Pausenhinweis; Spielaktionen, Bots, Zug-/Rundentimer, Zünder und Echtzeitbewegungen warten. Auch lokal laufende Minispiele halten ihre Spielzeit und Eingaben an. Bei Poker bleibt zusätzlich „Pause nach dieser Hand“ erhalten.
 
 Die Pause bleibt beim Wiederverbinden bestehen. Nach einem Hostwechsel kann der neue Host fortsetzen. Zur Startseite gehen, den Tisch verlassen, eine Runde gezielt abbrechen oder den Tisch schließen bleibt möglich. Eine Pause ist kein neuer dauerhafter Spielstand: Für Server-Neustarts gelten weiterhin die bestehenden Speicherregeln. Technische Details und Prüfungen: [Gemeinsame Spielpause](docs/game-pause.md).
 

@@ -11,6 +11,7 @@ const liste = (prefix, art, rows, erledigt = false) => rows.map(([titel, text], 
 const spiele = (ids) => ids.map((id) => punkt(id, GAMES[id].name, 'spiel', GAMES[id].description, true));
 
 export const ROADMAP = [
+  { id: 'fahndung-und-kleine-spiele', titel: 'Scotland Yard, Hex & Würfelduell', satz: 'Verdeckte Fahndung auf eigenem Stadtplan, danach zwei kompakte neue Spiele.', stufe: 'erledigt', datum: '2026-10-31', punkte: spiele(['scotland-yard', 'hex', 'wuerfelduell']) },
   { id: 'klassiker-varianten', titel: 'Päckchen 10 – Klassiker-Varianten', satz: 'Neue Wege durch bekannte Spiele und eine ganze Lebensreise.', stufe: 'erledigt', datum: '2026-10-30', paeckchen: '10', punkte: liste('p10', 'funktion', [
     ['Varianten-Baustein', 'Host-Auswahl, sichtbare Plaketten, Verlauf und getrennte Bestenlisten bei gemeinsamen Erfolgen.'],
     ['Monopoly Klassik', 'Eigenes cremefarbenes Brett, Besitzkarten, Geldscheine und acht wählbare SVG-Figuren.'],

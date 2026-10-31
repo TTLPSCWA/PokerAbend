@@ -471,3 +471,14 @@ Object.assign(window.EN, {
   'Vergrößert deine Handkarten. Die Einstellung wird in diesem Browser für alle Kartenspiele gespeichert.': 'Enlarges your hand cards. Saved in this browser for all card games.',
   'Sehr groß': 'Extra large', 'Ton ausprobieren': 'Try sound',
 });
+Object.assign(window.EN_GAMES, {
+  'scotland-yard': { name: 'Scotland Yard', description: 'Detectives hunt Mr. X across an original city map using taxi, bus and underground tickets. His location usually stays hidden.' },
+  hex: { name: 'Hex', description: 'Connect your two edges on a hexagonal board. Every stone matters and there are no draws.' },
+  wuerfelduell: { name: 'Dice Duel', description: 'Attack, defend and be the last player with health remaining.' },
+});
+Object.assign(window.EN, {
+  'Züge von Mr. X': 'Mr. X moves', 'Auftauchen von Mr. X': 'Mr. X surfacing', 'Normal (3, 8, 13, 18, 24)': 'Normal (3, 8, 13, 18, 24)',
+  'Alle 3 Züge': 'Every 3 moves', 'Alle 6 Züge': 'Every 6 moves', 'Brettgröße': 'Board size',
+  'Tauschregel nach dem ersten Stein': 'Swap rule after the first stone', 'Lebenspunkte': 'Health',
+  'Würfel je Angriff und Verteidigung': 'Dice for attack and defence',
+});

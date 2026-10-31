@@ -22,7 +22,9 @@
 
 **CI-Hinweis:** Der vorhandene Workflow führt bei einem Push auf `main` Tests aus und veröffentlicht ein GHCR-Image. Er enthält kein Produktivdeployment. Ein Image-Build ist keine Freigabe zur Aktualisierung des Servers oder seiner Daten. Prüfprotokoll und Herkunft: [CONSOLIDATION_2026-10-30.md](./CONSOLIDATION_2026-10-30.md).
 
-**Aktuelle Basis:** `main` bei `aa25517`, 46 registrierte Spiele und bereits vorhandenes Liquid-Glass-Redesign (siehe `docs/ui-redesign.md`). Die V2-Konto-/Profilintegration dieses Designs bleibt ausdrücklich geplant. Die 18 Pakete werden durch die Konsolidierung nicht als implementiert markiert.
+**Historische Konsolidierungsbasis (30.10.2026):** `main` bei `aa25517`, damals 46 registrierte Spiele und bereits vorhandenes Liquid-Glass-Redesign (siehe `docs/ui-redesign.md`). Die V2-Konto-/Profilintegration dieses Designs bleibt ausdrücklich geplant. Die 18 Pakete werden durch die Konsolidierung nicht als implementiert markiert.
+
+**Aktuelle Spielesammlung (31.10.2026):** 49 registrierte Spiele nach dem ausdrücklich beauftragten Ausbau um Scotland Yard, Hex und Würfelduell. Details: [Umsetzung und Prüfungen](../scotland-yard-und-kleine-spiele.md). `plan.json.baseline` bleibt die unveränderte historische Konsolidierungsbasis; dieser Spiele-Ausbau implementiert kein V2-Paket.
 
 **Schema:** `goal` enthält die Aufgabenbeschreibung. Jedes Paket führt ID, Titel, Priorität, Abhängigkeiten, betroffene Dateien, Sicherheitsanforderungen, Akzeptanzkriterien, `status`, `test_results`, `commits`, `implementation_commit` und `completed_at`. Ohne Implementierung bleiben Ergebnis-/Commitlisten leer und Abschlussfelder `null`. `public_roadmap_ids` verknüpft jedes Paket mit vorhandenen Besucher-Einträgen; Roadmap-Tests prüfen diese Zuordnung und die Abhängigkeiten. `consolidation.json` ist ein Herkunfts-/Altbranch-Inventar, keine zweite aktive Entwicklungsplanung.
 

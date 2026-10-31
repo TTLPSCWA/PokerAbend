@@ -16,7 +16,8 @@ test('V2-Plan: 18 vollständige, eindeutig geplante Pakete mit gültigen Abhäng
   assert.equal(plan.implementation_authorized, false);
   assert.equal(plan.documentation_only, true);
   assert.equal(plan.status, 'planned');
-  assert.equal(plan.baseline.registered_games, Object.keys(GAMES).length);
+  assert.equal(plan.baseline.registered_games, 46, 'Historische Konsolidierungsbasis bleibt erhalten');
+  assert.ok(Object.keys(GAMES).length >= plan.baseline.registered_games, 'Spätere Spiele dürfen den Katalog erweitern');
   const visited = new Set(), stack = new Set();
   const visit = (id) => {
     assert.ok(ids.includes(id), 'Unbekannte Abhängigkeit: ' + id);
@@ -55,7 +56,7 @@ test('Alle V2-Pakete sind über echte, noch offene Besucher-Einträge mit der ö
 });
 
 test('Historische Etappen und die Reihenfolge laufender Arbeiten bleiben bei der Konsolidierung erhalten', () => {
-  assert.deepEqual(ROADMAP.filter(s => !s.id.startsWith('v2-')).map(s => s.id), inventory.existing_section_order);
+  assert.deepEqual(ROADMAP.filter(s => inventory.existing_section_order.includes(s.id)).map(s => s.id), inventory.existing_section_order);
   assert.deepEqual(ROADMAP.filter(s => s.stufe === 'jetzt').map(s => s.id), inventory.current_work);
   for (const saved of inventory.completed_sections) {
     const current = ROADMAP.find(s => s.id === saved.id);

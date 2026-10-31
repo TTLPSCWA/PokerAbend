@@ -2,6 +2,8 @@
 
 Stand: 30.10.2026. Die persönliche Sprachwahl ist implementiert; **Englisch ist eine Beta und noch keine vollständige Übersetzung des Projekts**.
 
+Ergänzung 31.10.2026: Der Katalog ist mit Scotland Yard, Hex und Würfelduell auf 49 Spiele erweitert. Auch diese drei besitzen englische Katalogtexte, Bedienung und eigene Regeln. Die folgenden Prüfzahlen dokumentieren den ursprünglichen Sprachauftrag; die Prüfungen des Spiele-Ausbaus stehen in [dessen Dokumentation](scotland-yard-und-kleine-spiele.md).
+
 ## Bedienung
 
 - Auf der Anmeldung und oben im Hub zwischen **Deutsch** und **English (Beta)** wählen.
@@ -14,7 +16,7 @@ Stand: 30.10.2026. Die persönliche Sprachwahl ist implementiert; **Englisch ist
 
 - Ein gemeinsamer Übersetzungsbaustein ohne Build-Schritt oder externen Übersetzungsdienst: `public/i18n.js` und `public/i18n-en.js`.
 - Über 800 hinterlegte Oberflächentexte: Anmeldung, Hauptnavigation, Bibliothek, Kategorien, Suche, Favoriten, Tischanlage, gemeinsame Spielebedienung, persönliche Einstellungen und Host-Optionen.
-- Englische Namen/Beschreibungen für alle 46 registrierten Spiele. Die Bibliothek und der Dialog zur Spielauswahl finden sowohl deutsche als auch englische Namen/Beschreibungen. Technische Spiel- und Varianten-IDs bleiben erhalten.
+- Englische Namen/Beschreibungen für die ursprünglich 46, inzwischen 49 registrierten Spiele. Die Bibliothek und der Dialog zur Spielauswahl finden sowohl deutsche als auch englische Namen/Beschreibungen. Technische Spiel- und Varianten-IDs bleiben erhalten.
 - Die vorhandenen Render-Vorlagen aller Spiele sind an den gemeinsamen Baustein angeschlossen. Übersetzt werden ausdrücklich markierte Oberflächentexte und bekannte Metadaten. Die DOM-Aktualisierung bearbeitet nur solche Markierungen, keine beliebigen Texte und keine Spielereingaben.
 - Alle **423** eingebauten Aufgaben von **Schätzmeister (129)**, **Schlagfertig (182)** und **Wer hat das gesagt? (112)** erhalten englische Entsprechungen. Beide Sprachgruppen bekommen dieselbe Aufgabe. Auswahl, Antworten, Quellen und Wertung bleiben gleich.
 - Auch die englischen Aufgaben folgen der bisherigen Sichtbarkeit: persönliche Aufgaben nur für die jeweiligen Autoren; bei Schätzmeister keine vorzeitige Veröffentlichung der richtigen Zahl. Eigene Fragen erhalten keine automatische Übersetzung.

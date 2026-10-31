@@ -1,6 +1,7 @@
 import { test, expect, login } from './helpers.js';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { GAMES } from '../../games/index.js';
 
 test.use({ createLimit: '100' });
 
@@ -93,11 +94,11 @@ test('Alle Hub-Bereiche passen in sechs Bildschirmgrößen; weitere mobile Navig
 });
 
 // Getrennte Testserver respektieren das echte Limit für neue Spieler pro Anschluss.
-for (let offset = 0; offset < 46; offset += 5) test(`Alle 46 Spiele, Teil ${1 + offset / 5}: echter Start, Panels, Regeln und Tischende`, async ({ page, app }, info) => {
+for (let offset = 0; offset < Object.keys(GAMES).length; offset += 5) test(`Alle registrierten Spiele, Teil ${1 + offset / 5}: echter Start, Panels, Regeln und Tischende`, async ({ page, app }, info) => {
   test.setTimeout(90000);
   await login(page, app);
   const games = await page.evaluate(() => account.games.map(({ id, minPlayers }) => ({ id, minPlayers })));
-  expect(games).toHaveLength(46);
+  expect(games).toHaveLength(Object.keys(GAMES).length);
   const output = resolve('artifacts/ui-redesign/games', info.project.name);
   mkdirSync(output, { recursive: true });
   for (const { id, minPlayers } of games.slice(offset, offset + 5)) {

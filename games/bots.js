@@ -21,7 +21,14 @@ import { LETTERS as PAKET_LETTERS } from './tickendes-paket/room.js';
 import { botMove as sechsNimmt } from './sechs-nimmt/room.js';
 import { botMove as monopolyDeal } from './monopoly-deal/room.js';
 import { botMove as monopoly } from './monopoly/bot.js';
+import { botCell as hexCell } from './hex/room.js';
 const lifeBot = (room, id) => room.botMove(id);
+const scotlandYardBot = (room, id, rng) => room.botMove(id, rng);
+const hexBot = (room, id, rng) => {
+  if (room.canSwap(id) && Math.abs(Math.floor(room.last / room.size) - (room.size - 1) / 2) + Math.abs(room.last % room.size - (room.size - 1) / 2) <= 2) room.swapSides(id);
+  else room.place(id, hexCell(room.board, room.size, room.colors[id], rng));
+};
+const duelBot = (room, id) => room.onTimeout(id);
 
 const one = (list, rng) => list[Math.floor(rng() * list.length)];
 
@@ -502,3 +509,5 @@ function tickendesPaket(room, id, rng) {
 void PAKET_LETTERS;
 
 export const BOTS = { 'spiel-des-lebens': lifeBot, monopoly, 'monopoly-deal': monopolyDeal, 'sechs-nimmt': sechsNimmt, broeckelboden: partyBot, kronenjagd: partyBot, 'laser-huepfer': partyBot, 'tickendes-paket': tickendesPaket, werwolf: partyBot, zahlenzoo: partyBot, 'gedaechtnis-kueche': partyBot, pfeilfieber: partyBot, sortierstation: partyBot, wuerfelpoker, luegenwuerfel, chicago: (room, id) => room.throwDice(id), reversi: (room, id, rng) => room.place(id, reversiMove(room.board, id, rng)), dame: (room, id, rng) => { const m = dameMove(room.board, room.color(id), room.chain, rng); return room.move(id, m.from, m.to); }, domino, omaha: poker, mogeln, praesident, durak, poker, maumau: shedding, farbenchaos: shedding, maexchen, schocken, huetchen, zehnetappen, stapelrennen, schwimmen, schiffe, blackjack, kniffel, viergewinnt, shutthebox, zehntausend, muehle, schaetzmeister, schlagfertig: partyBot, werhatdasgesagt: partyBot };
+
+Object.assign(BOTS, { 'scotland-yard': scotlandYardBot, hex: hexBot, wuerfelduell: duelBot });

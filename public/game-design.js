@@ -12,8 +12,8 @@ const GameDesign = (() => {
   };
   const groups = {
     cards: 'poker omaha maumau farbenchaos zehnetappen stapelrennen schwimmen blackjack mogeln praesident durak sechs-nimmt monopoly-deal',
-    dice: 'maexchen schocken kniffel shutthebox zehntausend wuerfelpoker luegenwuerfel chicago',
-    board: 'huetchen schiffe viergewinnt muehle reversi dame domino monopoly spiel-des-lebens',
+    dice: 'maexchen schocken kniffel shutthebox zehntausend wuerfelpoker luegenwuerfel chicago wuerfelduell',
+    board: 'huetchen schiffe viergewinnt muehle reversi dame domino monopoly spiel-des-lebens scotland-yard hex',
     party: 'schaetzmeister schlagfertig werhatdasgesagt tickendes-paket werwolf wer-bin-ich',
     solo: 'zahlenzoo gedaechtnis-kueche pfeilfieber sortierstation',
     drawing: 'kritzelpost bildunterschrift malen-raten',

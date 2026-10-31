@@ -54,8 +54,8 @@ test('IDs sind eindeutig und kollidieren nicht mit gebauten Spielen oder Spiel-E
 
 test('Alle Spiele und Funktionen der Liste sind eingetragen – im richtigen Päckchen', () => {
   const want = {
-    spaeter: ['omaha-hi-lo', 'seven-card-stud', 'short-deck', 'stichmeister', 'exploding-deck', 'risiko-wuerfeln', 'wuerfelduell', 'wuerfeljagd', 'monsterwuerfel', 'labyrinth-brett', 'story-chaos', 'regelwahnsinn', 'jaeger-schatten', 'infektionsjagd', 'letzter-schutzplatz', 'kistenchaos', 'survival-abend', 'chaos-modus', 'backgammon', 'scrabble', 'hearts', 'five-card-draw', 'hex', 'schatzinsel', 'gummiband-challenge', 'geschenkfaenger', 'rhythmus-rausch', 'puzzle-panik', 'wortjagd', 'stillgestanden', 'schatzgraeber', 'minenlauf', 'labyrinth-chaos', 'schubsarena', 'scheinwerfer-flucht', 'doppelagent', 'luegenbaron', 'brueckenroulette', 'wuerfel-auktion', 'zahlenreihe', 'modifikatoren', 'turmbauer', 'geschenkdiebe', 'fallenbauer', 'reaktor-notfall', 'bomben-duell'],
-    gross: ['skat', 'doppelkopf', 'scotland-yard', 'schach', 'staedtehandel', 'gebietskampf', 'party-brett'],
+    spaeter: ['omaha-hi-lo', 'seven-card-stud', 'short-deck', 'stichmeister', 'exploding-deck', 'risiko-wuerfeln',  'wuerfeljagd', 'monsterwuerfel', 'labyrinth-brett', 'story-chaos', 'regelwahnsinn', 'jaeger-schatten', 'infektionsjagd', 'letzter-schutzplatz', 'kistenchaos', 'survival-abend', 'chaos-modus', 'backgammon', 'scrabble', 'hearts', 'five-card-draw',  'schatzinsel', 'gummiband-challenge', 'geschenkfaenger', 'rhythmus-rausch', 'puzzle-panik', 'wortjagd', 'stillgestanden', 'schatzgraeber', 'minenlauf', 'labyrinth-chaos', 'schubsarena', 'scheinwerfer-flucht', 'doppelagent', 'luegenbaron', 'brueckenroulette', 'wuerfel-auktion', 'zahlenreihe', 'modifikatoren', 'turmbauer', 'geschenkdiebe', 'fallenbauer', 'reaktor-notfall', 'bomben-duell'],
+    gross: ['skat', 'doppelkopf',  'schach', 'staedtehandel', 'gebietskampf', 'party-brett'],
   };
   for (const [p, ids] of Object.entries(want)) {
     assert.deepEqual(PLANNED.filter((e) => e.paeckchen === p).map((e) => e.id), ids, `Päckchen ${p}`);

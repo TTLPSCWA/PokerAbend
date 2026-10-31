@@ -1,6 +1,7 @@
 import { test, expect, login, selectGame } from './helpers.js';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { GAMES } from '../../games/index.js';
 
 test('Englische Anmeldung: Sprachwahl vor dem Login und übersetzter Passwortfehler', async ({ browser, app }, info) => {
   // A wrong password deliberately produces HTTP 401. Verify that response explicitly;
@@ -124,7 +125,7 @@ test('Live-Sprachwechsel erhält den lokalen Rezeptfortschritt eines Solo-Spiels
   expect(await page.evaluate(() => ({ seed: lastState.g.seed, round: lastState.roundNo }))).toEqual({ seed: snapshot.seed, round: snapshot.round });
 });
 
-for (let offset = 0; offset < 46; offset += 5) test(`English game surfaces, group ${1 + offset / 5}`, async ({ page, app }) => {
+for (let offset = 0; offset < Object.keys(GAMES).length; offset += 5) test(`English game surfaces, group ${1 + offset / 5}`, async ({ page, app }) => {
   test.setTimeout(90000);
   await login(page, app);
   await page.locator('#hub-language select').selectOption('en');

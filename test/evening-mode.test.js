@@ -17,7 +17,7 @@ test('Abendprogramm: Varianten und Auswahloptionen bleiben erhalten; Spielergren
   const { r, ids } = table('maumau', 5); configureProgram(r, ids[0], { mode: 'abend', entries: [{ game: 'monopoly', variant: 'junior' }] }); assert.throws(() => beginProgram(r, ids[0]), /Mitspieler/); r.dispose();
 });
 
-test('Abend-Modus: alle 46 Spiele und ihre gültigen Optionen sind auswählbar, Party-Modi bleiben auf Partyspiele begrenzt', () => {
+test('Abend-Modus: alle registrierten Spiele und ihre gültigen Optionen sind auswählbar, Party-Modi bleiben auf Partyspiele begrenzt', () => {
   const defaults = programDefaults();
   for (const game of Object.values(GAMES)) {
     const normalized = normalizeProgram({ ...config([game.id]), entries: [{ game: game.id, settings: defaults[game.id] }] });
