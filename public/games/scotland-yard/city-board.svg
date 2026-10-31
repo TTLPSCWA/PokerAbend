@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="920" viewBox="0 0 1200 920">
+  <defs>
+    <pattern id="paper" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M0 0h12v12H0z" fill="#e9e2d3"/><path d="M0 2h12M2 0v12" stroke="#d8cdb9" stroke-width=".3" opacity=".5"/></pattern>
+    <pattern id="blocks" width="110" height="110" patternUnits="userSpaceOnUse" patternTransform="rotate(-12)"><rect x="8" y="8" width="38" height="37" rx="5" fill="#d7cbb7" stroke="#c9bca5"/><rect x="55" y="9" width="44" height="26" rx="4" fill="#ded3bf" stroke="#c9bca5"/><rect x="8" y="55" width="29" height="43" rx="4" fill="#d8cdb9"/><path d="M48 51h51v48H48z" fill="#e0d6c4" stroke="#cfc2aa"/></pattern>
+    <pattern id="trees" width="27" height="25" patternUnits="userSpaceOnUse"><circle cx="9" cy="9" r="5" fill="#899984" opacity=".45"/><circle cx="22" cy="20" r="4" fill="#8a9b7f" opacity=".4"/></pattern>
+    <linearGradient id="river" x2="1" y2="1"><stop stop-color="#a4bdc2"/><stop offset="1" stop-color="#779aa7"/></linearGradient>
+  </defs>
+  <rect width="1200" height="920" fill="url(#paper)"/>
+  <path d="M30 28H1170V890H30Z" fill="url(#blocks)" opacity=".72"/>
+  <path d="M-50 412C180 295 280 480 472 455S666 375 816 486S989 601 1260 532" fill="none" stroke="#c7d0c6" stroke-width="106"/>
+  <path d="M-50 412C180 295 280 480 472 455S666 375 816 486S989 601 1260 532" fill="none" stroke="url(#river)" stroke-width="78"/>
+  <path d="M-50 412C180 295 280 480 472 455S666 375 816 486S989 601 1260 532" fill="none" stroke="#d6e2de" stroke-width="2" stroke-dasharray="2 14"/>
+  <g fill="#b5c1a5" stroke="#9bad94" stroke-width="2">
+    <path d="M324 130Q370 93 457 149L494 220Q437 250 346 222Z"/>
+    <path d="M860 92Q985 137 1055 179L1002 293 864 264 822 185Z"/>
+    <path d="M345 629L446 583 540 675 500 785 364 775Z"/>
+    <path d="M67 551L163 517 236 569 209 672 100 661Z"/>
+  </g>
+  <g fill="url(#trees)"><path d="M324 130Q370 93 457 149L494 220Q437 250 346 222Z"/><path d="M860 92Q985 137 1055 179L1002 293 864 264 822 185Z"/><path d="M345 629L446 583 540 675 500 785 364 775Z"/></g>
+  <!-- Decorative streets: pale, narrow and never a transport-line colour. -->
+  <g fill="none" stroke="#f5efdf" stroke-width="10" stroke-linejoin="round">
+    <path d="M-10 180L180 160 340 290 520 285 680 160 870 160 1220 330"/>
+    <path d="M40 35L180 170 170 300 375 537 360 690 185 920"/>
+    <path d="M490 -10L515 170 680 350 660 545 870 740 940 940"/>
+    <path d="M820 -20L715 210 833 338 1000 465 1060 720 1240 800"/>
+    <path d="M-20 730L180 765 335 730 580 780 920 775 1220 900"/>
+    <path d="M-20 535L160 467 354 530 520 550 750 688 940 660 1230 700"/>
+    <path d="M80 40L310 45 670 40 920 45 1150 190"/>
+  </g>
+  <g fill="none" stroke="#c7bea9" stroke-width="2"><path d="M87 319L262 419M533 393L601 523M962 491L979 578" stroke-width="15"/><path d="M87 319L262 419M533 393L601 523M962 491L979 578" stroke="#f1e6cf" stroke-width="10"/></g>
+  <!-- Original landmark drawings: courthouse, botanical dome, museum, docks. -->
+  <g fill="#c4b297" stroke="#93846d" stroke-width="2">
+    <path d="M185 105v-30h67v30zM180 75l38-22 39 22z"/><path d="M195 80v25m15-25v25m16-25v25m16-25v25"/>
+    <path d="M361 186v-20a36 36 0 0 1 72 0v20z" fill="#b6c6b1"/><path d="M361 166h72m-36-36v56m-20-51q-15 30 0 51m40-51q15 30 0 51" fill="none"/>
+    <path d="M696 315h86v33h-86zM690 315l49-28 49 28z"/><path d="M708 322v20m15-20v20m16-20v20m16-20v20m15-20v20"/>
+    <path d="M839 562h100v29H839zM832 560l58-24 58 24z"/><path d="M856 569v21m18-21v21m19-21v21m19-21v21"/>
+    <path d="M1020 644v-45h9m-9 8h55l-55 22m55-22v25m-61 14h28" fill="none"/>
+    <path d="M555 152h42v34h-42zM559 152v-35h12v35m14 0v-35h10v35M557 116l8-17 9 17m9 0 8-17 8 17"/>
+  </g>
+  <g font-family="Georgia,serif" font-size="15" fill="#726b5c" text-anchor="middle" letter-spacing="3">
+    <text x="285" y="182">ALTBURG</text><text x="916" y="179">PARKVIERTEL</text>
+    <text x="734" y="292">MUSEUMSUFER</text><text x="1033" y="679">OSTHAFEN</text>
+    <text x="219" y="641">WESTEND</text><text x="625" y="772">SÜDSTADT</text>
+  </g>
+  <text x="357" y="444" fill="#456876" font-family="Georgia,serif" font-size="17" font-style="italic" letter-spacing="4" transform="rotate(6 357 444)">Aure</text>
+  <g transform="translate(1138 48)" stroke="#6e6b61" fill="none"><path d="M0-18L7 0 0 18-7 0Z"/><path d="M-16 0h32M0-22v44"/><text y="-28" text-anchor="middle" fill="#6e6b61" stroke="none" font-family="Georgia,serif" font-size="12">N</text></g>
+  <g stroke="#7f7662" fill="none" opacity=".45"><rect x="15" y="15" width="1170" height="890" rx="14"/><rect x="22" y="22" width="1156" height="876" rx="10"/></g>
+</svg>

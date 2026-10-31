@@ -13,6 +13,7 @@
 //   intro: [[Überschrift, Text], …] → Erste Schritte beim ersten Spiel (3 Schritte), sounds(S, prev) → eigene Töne (Namen aus SFX),
 //   translate(text) → Texte vom Server anders benennen (z. B. deutsches Blatt), onClick(el, S) für Elemente mit data-g,
 //   ring: false → auch am großen Bildschirm die Spielerleiste oben statt Plätzen rund um den Tisch,
+//   lobby(S) → optionale eigene Lobby; ohne Haken bleibt die gemeinsame Lobby unverändert,
 //   roundWord → statt „Runde“ (Partyspiele: „Partie“), dockKey(S) → nur wenn sich der Schlüssel ändert, wird die Aktionsleiste neu gezeichnet
 //   (Eingabefelder behalten so ihren Text), watchDock(S) → Aktionen für Zuschauer, hostExtra(S) → zusätzlicher Teil im Host-Menü
 // Läuft nach /core.js ($, esc, send, toast, ask, beep, socket …).
@@ -279,7 +280,7 @@ function kitGame(def) {
     const main = $('#kg-main');
     main.classList.toggle('ring', ring);
     const help = I18n.html('<button class="help-btn" data-kit="help" aria-label="Kurzregeln und Hausregeln" title="Kurzregeln">?</button>');
-    const center = S.phase === 'lobby' ? lobbyHTML() : def.main(S, { ring });
+    const center = S.phase === 'lobby' ? (def.lobby?.(S) || lobbyHTML()) : def.main(S, { ring });
     main.classList.toggle('has-program', !!S.partyProgram);
     if (!def.keepMain?.(S)) main.innerHTML = GameDesign.backdrop(def.id) + help + programBannerHTML(S) + (ring ? ringHTML(center) : center) + (S.phase === 'over' && S.result && resultClosed !== S.roundNo ? resultHTML() : '');
 
