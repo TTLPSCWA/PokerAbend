@@ -1,6 +1,20 @@
 // Reviewed English UI messages; German source text is the fallback for missing entries.
 'use strict';
 window.EN = {
+  'Neue Spielwelten & schönere Spieloberflächen': 'New game worlds & better game interfaces',
+  'Scotland Yard ist als visueller Pilot überarbeitet. Weitere individuelle Spielwelten folgen schrittweise nach eigener Freigabe.': 'Scotland Yard has been redesigned as the visual pilot. More individual game worlds will follow step by step, each with separate approval.',
+  'Scotland Yard: Ermittlungszentrale & Stadtkarte': 'Scotland Yard: operations room & city map',
+  'Eigene Stadtviertel, persönliche Figuren, Fahrkarten und Ermittlungsprotokoll – auf Desktop und Handy geprüft.': 'Original districts, personal markers, tickets and a case journal — tested on desktop and mobile.',
+  'Individuelle Spielwelten': 'Individual game worlds',
+  'Thematisch passende lokale Hintergründe für weitere Spiele, mit ruhigen und gut lesbaren Spielflächen.': 'Themed local backgrounds for more games, with calm and readable playing areas.',
+  'Hochwertigere Spielbretter': 'Refined game boards',
+  'Bretter, Kartenpläne und Figuren passend zum jeweiligen Spiel verfeinern; Regeln und Zugmöglichkeiten bleiben erhalten.': 'Refine boards, maps and pieces for each game while preserving rules and legal moves.',
+  'Klarere Karten & Würfel': 'Clearer cards & dice',
+  'Spielmaterial, Werte und Symbole hochwertiger und leichter unterscheidbar gestalten.': 'Make playing materials, values and symbols more refined and easier to distinguish.',
+  'Bessere Status- & Aktionsbereiche': 'Better status & action areas',
+  'Eigener Zug, Warten, Tickets, Punkte und erlaubte Aktionen schneller erfassen.': 'Recognise your turn, waiting states, tickets, scores and legal actions more quickly.',
+  'Schrittweise weitere Spiele überarbeiten': 'Refine more games step by step',
+  'Für alle vorhandenen und geplanten Spiele liegen eigene Designkonzepte vor. Jede Umsetzung wird einzeln freigegeben und geprüft.': 'Individual design concepts cover every existing and planned game. Each implementation requires its own approval and testing.',
   'Sprache': 'Language', 'Deutsch': 'German', 'Englisch': 'English',
   'Start': 'Home', 'Startseite': 'Home', 'Spiele': 'Games', 'Spiel': 'Game',
   'Spielebibliothek': 'Game library', 'Deine Spielebibliothek': 'Your game library',

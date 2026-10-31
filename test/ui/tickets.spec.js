@@ -109,7 +109,7 @@ test('Langsames Laden des Ticket-Moduls: Anmeldung wartet auf die gemeinsamen Hu
   try {
     await page.reload({ waitUntil: 'commit' });
     await expect.poll(() => typeof release).toBe('function');
-    await expect.poll(() => page.evaluate(() => account.games.length)).toBeGreaterThan(0);
+    await expect.poll(() => page.evaluate(() => typeof account === 'undefined' ? 0 : account.games.length)).toBeGreaterThan(0);
     expect(await page.evaluate(() => document.readyState)).toBe('loading');
     await expect(page.locator('#hub')).not.toBeVisible();
   } finally { release?.(); }

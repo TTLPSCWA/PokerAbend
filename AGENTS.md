@@ -28,3 +28,12 @@ Diese Regel ersetzt frühere Feature-Branch-Anweisungen. Wenn direkte Änderunge
 - Keine Freundesliste, keine direkte Discord-Videostream-Übernahme und keine 3D-Implementierung aus dieser Planung ableiten.
 - Keine Secrets committen oder ausgeben; keine produktiven Daten migrieren/löschen und kein Produktivdeployment ohne gesonderte ausdrückliche Freigabe. Ein beauftragter Push kann den vorhandenen Test-/GHCR-Workflow starten; das ist vom Serverdeployment zu unterscheiden.
 - Weitere Details: `docs/roadmap/POKERABEND_V2_ROADMAP.md`, `V2_ADDENDUM_2026-10-30.md` und `CONSOLIDATION_2026-10-30.md`.
+
+## Individuelle visuelle Spielpakete
+
+- Einstieg: [Design-Roadmap](docs/design/GAME_VISUAL_ROADMAP.md), maschinenlesbare Quelle: [game-visual-roadmap.json](docs/design/game-visual-roadmap.json), Standard: [GAME_VISUAL_GUIDELINES.md](docs/design/GAME_VISUAL_GUIDELINES.md).
+- `VIS-xxx` bezeichnet eine visuelle Aufgabe unabhängig von Gameplay und `V2-XX`. Bestehende VIS-IDs niemals umnummerieren.
+- Nur ein ausdrücklich freigegebenes Spiel bzw. VIS-Paket visuell bearbeiten. Namen und Spiel-ID über die JSON-Datei zuordnen. Planungsstatus, Aufwand oder Reihenfolge sind keine Freigabe.
+- Nicht implementierte Spiele erhalten aus einem Designplan keine Spiellogik. Vorhandene andere Spiele und ihre Oberflächen bleiben unangetastet; gemeinsame Änderungen nur unmittelbar notwendig und eng begrenzt.
+- Nach Abschluss echten Designstatus, Tests, ausgewählte dauerhafte Screenshots und tatsächlichen Implementierungscommit dokumentieren. Ohne Umsetzung bleiben Status `planned`, Nachweislisten leer und Abschlussfelder `null`.
+- Scotland Yard ist der abgeschlossene Pilot; die übrigen Pakete sind nur geplant. Nach einem freigegebenen Paket stoppen und auf einen neuen Auftrag warten.

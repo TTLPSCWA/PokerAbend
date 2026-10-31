@@ -120,7 +120,11 @@ test.describe('Spielmotive', () => {
       await page.goto(app.url + '/?t=' + reply.code);
       await expect(page.locator('[data-scene]')).toHaveAttribute('data-scene', id);
       await expect(page.locator('.scene-backdrop > svg')).toHaveCount(1);
-      if (!['poker', 'omaha'].includes(id)) await expect(page.locator('.scene-hero > svg')).toBeVisible();
+      if (id === 'scotland-yard') {
+        await expect(page.locator('.sy-lobby')).toBeVisible();
+        await expect(page.locator('.sy-lobby-art img')).toBeVisible();
+        await expect.poll(() => page.locator('.sy-lobby-art img').evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
+      } else if (!['poker', 'omaha'].includes(id)) await expect(page.locator('.scene-hero > svg')).toBeVisible();
     }
   });
 });

@@ -11,6 +11,14 @@ const liste = (prefix, art, rows, erledigt = false) => rows.map(([titel, text], 
 const spiele = (ids) => ids.map((id) => punkt(id, GAMES[id].name, 'spiel', GAMES[id].description, true));
 
 export const ROADMAP = [
+  { id: 'neue-spielwelten', titel: 'Neue Spielwelten & schönere Spieloberflächen', satz: 'Scotland Yard ist als visueller Pilot überarbeitet. Weitere individuelle Spielwelten folgen schrittweise nach eigener Freigabe.', stufe: 'spaeter', punkte: [
+    punkt('visual-scotland-yard', 'Scotland Yard: Ermittlungszentrale & Stadtkarte', 'design', 'Eigene Stadtviertel, persönliche Figuren, Fahrkarten und Ermittlungsprotokoll – auf Desktop und Handy geprüft.', true),
+    punkt('visual-hintergruende', 'Individuelle Spielwelten', 'design', 'Thematisch passende lokale Hintergründe für weitere Spiele, mit ruhigen und gut lesbaren Spielflächen.'),
+    punkt('visual-spielfelder', 'Hochwertigere Spielbretter', 'design', 'Bretter, Kartenpläne und Figuren passend zum jeweiligen Spiel verfeinern; Regeln und Zugmöglichkeiten bleiben erhalten.'),
+    punkt('visual-material', 'Klarere Karten & Würfel', 'design', 'Spielmaterial, Werte und Symbole hochwertiger und leichter unterscheidbar gestalten.'),
+    punkt('visual-status', 'Bessere Status- & Aktionsbereiche', 'design', 'Eigener Zug, Warten, Tickets, Punkte und erlaubte Aktionen schneller erfassen.'),
+    punkt('visual-schrittweise', 'Schrittweise weitere Spiele überarbeiten', 'design', 'Für alle vorhandenen und geplanten Spiele liegen eigene Designkonzepte vor. Jede Umsetzung wird einzeln freigegeben und geprüft.'),
+  ] },
   { id: 'fahndung-und-kleine-spiele', titel: 'Scotland Yard, Hex & Würfelduell', satz: 'Verdeckte Fahndung auf eigenem Stadtplan, danach zwei kompakte neue Spiele.', stufe: 'erledigt', datum: '2026-10-31', punkte: spiele(['scotland-yard', 'hex', 'wuerfelduell']) },
   { id: 'klassiker-varianten', titel: 'Päckchen 10 – Klassiker-Varianten', satz: 'Neue Wege durch bekannte Spiele und eine ganze Lebensreise.', stufe: 'erledigt', datum: '2026-10-30', paeckchen: '10', punkte: liste('p10', 'funktion', [
     ['Varianten-Baustein', 'Host-Auswahl, sichtbare Plaketten, Verlauf und getrennte Bestenlisten bei gemeinsamen Erfolgen.'],

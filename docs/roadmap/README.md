@@ -4,6 +4,8 @@
 **Verwendbar durch:** Codex, Claude Code und andere Coding-Agenten.
 
 ## Wichtige Dateien
+
+- **Separate visuelle Planung:** [Design-Roadmap für alle Spiele](../design/GAME_VISUAL_ROADMAP.md), [JSON-Pakete](../design/game-visual-roadmap.json) und [Designstandard](../design/GAME_VISUAL_GUIDELINES.md). Scotland Yard ist der geprüfte Pilot; weitere VIS-Pakete benötigen eigene Freigaben und ändern keine V2-Statusangaben.
 - `docs/roadmap/V2_ADDENDUM_2026-10-30.md`: Sieben ergänzte Vorhaben zu Risiko, Catan-artigem Spiel, mehr Erfolgen, Presence, Einstellungen, Bot-Schwierigkeit und Adminverwaltung. Teil der verbindlichen Planung.
 - `docs/roadmap/plan.json`: Maschinenlesbare Master-Roadmap mit stabilen Arbeitspaket-IDs, Abhängigkeiten, Sicherheit, Akzeptanz und Status.
 - `docs/roadmap/POKERABEND_V2_ROADMAP.md`: Menschenlesbare Zusammenfassung, Prioritäten und Arbeitsanweisung.

@@ -2,6 +2,8 @@
 
 Stand: 31.10.2026. Auftrag: ausschließlich Scotland Yard visuell implementieren; die anderen Spiele anschließend individuell planen. Ausgangspunkt: `bea4e0d`. Visuelle Paket-ID: `VIS-001`.
 
+Tatsächlicher Implementierungscommit des Piloten: **`ef6511d76f78689fc525a63f6e3637c3f14f1252`** auf `main`. Die folgende Planungsänderung dokumentiert den Pilotabschluss und implementiert kein weiteres Spiel.
+
 ## Umgesetzt
 
 - Eigenständige Ermittlungszentrale in dunklem Blau und Anthrazit, mit warmen Papier-/Brauntönen, feinen Messingkanten und zurückhaltenden Glasflächen.
@@ -71,7 +73,11 @@ Die Karte bleibt auf schmalen Geräten bewusst verschiebbar, damit Stationen min
 - Engine und neue HTML-Geheimhaltungsprüfungen: **27 bestanden, 0 fehlgeschlagen**; einschließlich der bestehenden 92 vollständigen Botpartien. Protokoll: `artifacts/scotland-privacy.log`.
 - Vollständiger Node-Gesamtlauf: **861 bestanden, 0 fehlgeschlagen**, 50,3 Sekunden. Protokoll: `artifacts/scotland-all-node.log`.
 - Abschließende Screenshotprüfung in getrennten Projektordnern: **12 bestanden, 0 fehlgeschlagen**, 54,0 Sekunden. Protokoll: `artifacts/scotland-final-captures.log`; 48 Aufnahmen je Projekt unter `artifacts/scotland-redesign/after/desktop/` und `after/mobil/`.
-- Gemeinsame Browser-Regressionen werden nach Abschluss ebenfalls dokumentiert. Der Pilotstatus in der zentralen Designplanung wird mit diesen geprüften Nachweisen und einer echten Implementierungs-Commitreferenz als `done` eingetragen.
+- Vollständige gemeinsame Browser-Regression: **322 bestanden, 3 fehlgeschlagen, 1 bestehender geplanter Skip**, 17,4 Minuten. Zweimal erwartete ein alter Motivtest die ersetzte generische Lobbygrafik. Ein weiterer Test für langsame Skriptladung griff auf `account` zu, bevor `core.js` die Variable definiert hatte. Das waren Testannahmen/Synchronisation; keine weitere Spieloberfläche wurde verändert. Protokoll: `artifacts/scotland-full-ui.log`.
+- Die Motivprüfung prüft jetzt ausdrücklich die neue Scotland-Yard-Lobby und ihre tatsächlich geladene Stadtgrafik; für alle anderen Spiele bleibt die ursprüngliche Motivprüfung erhalten. Der Lade-Test wartet auch auf die Existenz der Variablen.
+- Nachprüfung: **6 bestanden, 0 fehlgeschlagen**, 26,9 Sekunden; enthält die beiden vollständigen Motivdurchläufe über alle 49 Spiele, den verzögerten Start und die neue DE/EN-Design-Roadmap jeweils auf Desktop/Handy. Protokoll: `artifacts/visual-plan-ui.log`. Damit sind alle 325 ausgeführten Fälle des ursprünglichen Browser-Gesamtlaufs erfolgreich bestätigt; der Skip bleibt bestehen. Der ursprünglich fehlgeschlagene Gesamtlauf wird ausdrücklich nicht als vollständig grün ausgegeben.
+- Endgültiger Node-Gesamtlauf nach Planung/Roadmap-Ergänzung: **867 bestanden, 0 fehlgeschlagen**, 53,1 Sekunden. Die sechs zusätzlichen Konsistenztests prüfen Inventur, reale Dateipfade, individuelle Konzepte, Abhängigkeiten, Nachweise, Agentenhinweise und öffentliche Übersetzungen. Protokoll: `artifacts/visual-redesign-final-node.log`. Die letzte Ergänzung der vollständigen Aufwandssortierung wurde zusätzlich mit allen sechs Planungstests geprüft.
+- `git diff --check` und Dokument-/Dateiverweise: erfolgreich. Der Pilotstatus in der zentralen Designplanung ist mit diesen geprüften Nachweisen und seiner echten Implementierungs-Commitreferenz `done`.
 
 ## Veröffentlichung
 

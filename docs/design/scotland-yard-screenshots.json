@@ -321,181 +321,181 @@
       "path": "artifacts/scotland-redesign/after/desktop/1440x900-black-ticket.png",
       "width": 1440,
       "height": 900,
-      "sha256": "16ee826704d709ac80aef029c4df47a2117628b2b5a49c454e28a881ba0fef45"
+      "sha256": "30f7b9ecf8d9c8b45d5273587eedccf3d29498934b2b14a26221240691f8a119"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/1440x900-detective-active.png",
       "width": 1440,
       "height": 900,
-      "sha256": "7b97d74d8db473ba2010504ce957f4eb9e78ba9fda3ef76db824a1012afb399c"
+      "sha256": "8579acb82de199b282ce2c5c0220e195a867013fa43f908f71817dd4b7c085f0"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/1440x900-detective-waiting.png",
       "width": 1440,
       "height": 900,
-      "sha256": "472793c940debdc9fb4f06e53cf9fb4407aef83e217d1a60e6ea51ef4fdb69d6"
+      "sha256": "596696a6f634de4391e461bca1ccdbbffdcf316f155c9fbc2fa725907f2226d6"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/1440x900-detectives-win.png",
       "width": 1440,
       "height": 900,
-      "sha256": "83a97bf80eb922ec4a3e7c70d47064bc49d27e65b72198c1b16697f7f7b2f752"
+      "sha256": "3a06cefaea6c035afbffd9aa3cf0a56e6298850482d16ec83bc68cc619d6e365"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/1440x900-double-ticket.png",
       "width": 1440,
       "height": 900,
-      "sha256": "a1b3adcb0ed39921c199850d99f5c16155c1eb470b270d0dd5544af62a4e50e6"
+      "sha256": "dc67e9fd71f1ce0e2fb3bdd29c724e8e602ffec084dc7f4cb64c77ed910d98e7"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/1440x900-english.png",
       "width": 1440,
       "height": 900,
-      "sha256": "703a63ca06a44f1ed221f71c14f56190d2a9b20f010d84ebc363fdc9532549eb"
+      "sha256": "a0dd4cb4085d37e011b8a72688138143b5d41138b8bab854ac72bb2cf1b4c5ed"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/1440x900-journal-detail.png",
       "width": 287,
       "height": 268,
-      "sha256": "8ea6424693c803fa3ac61871249455d03c28b27ebfe20a91afde90272b4a3231"
+      "sha256": "02c0670a6fd65fd6467898ab0ce133e21dfd28ef593bc830ff08976eee88ff6b"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/1440x900-lobby-ready.png",
       "width": 1440,
       "height": 900,
-      "sha256": "38f419c004ad8e829600295ad8546351470aac5d6f6d4400df90da90c1b353fb"
+      "sha256": "507a57db7fcdfead6079b175709b31c37e1c5984461a16ad743a9351695660f9"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/1440x900-lobby-waiting.png",
       "width": 1440,
       "height": 900,
-      "sha256": "cf2d784b757e57337069843574cfef6c22f3f8eed520138f334a226f1a513996"
+      "sha256": "e5c424509e34d0728f8c0f2567bbba1657578558806766951dee2a3fc34d3921"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/1440x900-mister-x-active.png",
       "width": 1440,
       "height": 900,
-      "sha256": "08993c0279b2f2d87885f6feadfbf8084ea72878468f0d29c4f5455f03070a61"
+      "sha256": "3c51db56a7241b601ae9ede1c07f9c982d60da5f5140999d5810e9d21ea556f6"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/1440x900-mister-x-defeat.png",
       "width": 1440,
       "height": 900,
-      "sha256": "838005979284cfc58b51769d644139a8329b83deb0bcdde54ec1d4bea27b0c52"
+      "sha256": "a4b34dfe1aff9bfc555c23353089109c12413bbdb04d7ece9b844c00051bb868"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/1440x900-paused.png",
       "width": 1440,
       "height": 900,
-      "sha256": "354bc2fcca9da6309ba5eaa305fb10a0142c44a59dc401d6a75db925406437b7"
+      "sha256": "a25af283ddf75bf1262d6c8bb882489f64ed6e42698b9265df655309f9a542a3"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/1440x900-public-sighting-and-log.png",
       "width": 1440,
       "height": 900,
-      "sha256": "9323051f0273fc7225de3aa97114069fa50e59e37794e66795542d4410dcf1a4"
+      "sha256": "889b077ab8a2e24bf37fae487d7cc2615cc5c4955986da8984f7627ff5d98792"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/1440x900-spectator.png",
       "width": 1440,
       "height": 900,
-      "sha256": "259427ec6d5b2b81981530eeff2d3bf971577f8d89c4849b5c85b1683ea1ca77"
+      "sha256": "e8e544c1d0981e7ae381704e1c288e9047035b6d534e11fba545bd0e8d345fb4"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/1920x1080-detective-active.png",
       "width": 1920,
       "height": 1080,
-      "sha256": "ddff52f8885e4efc8f0780a5002b28a72a4cfcd23500cf5f8c3b3bdaadc70c4d"
+      "sha256": "15b4c8b6cfbb7e99af6285512956833f69a66031c1489df2d2036167109f4f72"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/1920x1080-detective-waiting.png",
       "width": 1920,
       "height": 1080,
-      "sha256": "cbfe807d11f5cecca1ed9dbef188138f68196c445351d5d526dc9bfb9711a1ef"
+      "sha256": "45175253756a392aaa0e25486d6bc7f3364b41dcbfe431287a3a96c2308deb58"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/1920x1080-lobby-waiting.png",
       "width": 1920,
       "height": 1080,
-      "sha256": "5690a1fa1b30385c163a5635d9cede498a588a467bbbf82bbfd48393fc766cff"
+      "sha256": "d87231324a70550bc5b0e71c7519f4abdba0d91ecfd99711da71718182fd40ff"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/1920x1080-mister-x-active.png",
       "width": 1920,
       "height": 1080,
-      "sha256": "e65f24a935016fa4afb837b5d79f2d27e5dc44386ecea909753ad9425b551cd5"
+      "sha256": "7e715041356d2091f645c7feaf0ea4c2ef4899fd7f23296de5585c15b17e1038"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/1920x1080-spectator.png",
       "width": 1920,
       "height": 1080,
-      "sha256": "8df8d55a64e23844c295f48f87a22ead8aab3b7595375a7701de2aa33ac45ced"
+      "sha256": "018f314b3f17dc6bb9dad5345ce56bc1184a513e342e4435a21b11804271c27b"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/360x800-detective-active.png",
       "width": 360,
       "height": 800,
-      "sha256": "8a0bf04e9add965602500f6901b37e4c7f4810e51253392b0fb3e1bf067c7c8e"
+      "sha256": "d6e20d7fafe202927764b9b427ee152c3687af064daa443365b88140bfda4c2b"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/360x800-detective-waiting.png",
       "width": 360,
       "height": 800,
-      "sha256": "bb03c80a04456cb8d80ca160bb7efafc084f31d3ab23a9a8c54c6578de750704"
+      "sha256": "8339a72c360975770b6c5698df1e83fc4ce16a3353d683ca3ca78df241983fa2"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/360x800-lobby-waiting.png",
       "width": 360,
       "height": 800,
-      "sha256": "77d527a62bc452be980b33b7bd27ec0e24d88a16197a82cbfa5d9d6da9821c53"
+      "sha256": "7c5825d0107113c553c20f74e9dc6853dfbc3784ead646bad6d54cf6b182d9d2"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/360x800-mister-x-active.png",
       "width": 360,
       "height": 800,
-      "sha256": "f1e1ffc7d81736224273b67329c87d4637c81b6bed4dc3392bae55da6fdd25fc"
+      "sha256": "6b35de6a9c7b1885c85e43ddbb7f99d35edefe4d13327a4f1d1ab602df0e24e5"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/360x800-spectator.png",
       "width": 360,
       "height": 800,
-      "sha256": "6a168cf07c36ed1b2a1d092cf7df48e94f2553e2ab7b46246a74eaafae7f380e"
+      "sha256": "d365d34f2592f0b395d38741bd9bbefcba906f9c23adca22a0a6a39466c01597"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/390x844-black-ticket.png",
       "width": 390,
       "height": 844,
-      "sha256": "e5d222139a53455b4eea99c88580f8db2ede483ecf3a1c47a2d24e201c46c192"
+      "sha256": "b514eb7ad8736f5a7106de89512cd0f70b75f03383d37da3f8da9e7c1b73e95b"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/390x844-detective-active.png",
       "width": 390,
       "height": 844,
-      "sha256": "dca6a85b1e559a3e4c1dbbbaec67f4244c13d4e9af71c5be138f6af2f4585b17"
+      "sha256": "5065b32d29f17a0293cbb84ece18f2a69ae9b16fcb9404d8751ae64cb22afb80"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/390x844-detective-waiting.png",
       "width": 390,
       "height": 844,
-      "sha256": "4cffeaf7c83da12a037b56d02fb28d85e095c5d71e602a53bce0b5be409c184b"
+      "sha256": "02cc8c9f1ad6c9eda15327207dfe186ca57c6d814a6870a2a025fb8ef5375dc2"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/390x844-detectives-win.png",
       "width": 390,
       "height": 844,
-      "sha256": "f93e1d06f69639ea82981759fefdc7a64d5fcd535598e69fc5a5e19a053cafd7"
+      "sha256": "ef2d8280b139015169ae67103b62f7839de16fdaf64bc35e27c33d43fae5f487"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/390x844-double-ticket.png",
       "width": 390,
       "height": 844,
-      "sha256": "88a0712883f061deb5bd3a307b7fe308c27a8322a87ec37e341bd7cc73f1aa86"
+      "sha256": "b6ef7611a3c9adccc08a83a8dd7c6336aa807c8815919f98e8ec6d917ed77d20"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/390x844-english.png",
       "width": 390,
       "height": 844,
-      "sha256": "1a71ed33afdd744cf14c6d5336d498d237f1a8c9d15533fe5c71269bf577247a"
+      "sha256": "06e80e1b8c13b1966b5dcf171efe8abae778890e4a8cb6e81e19bcbc0bf88e62"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/390x844-journal-detail.png",
@@ -507,283 +507,283 @@
       "path": "artifacts/scotland-redesign/after/desktop/390x844-lobby-ready.png",
       "width": 390,
       "height": 844,
-      "sha256": "086d7725aeb108d87989ae92273da9818a35b670934d442fe7bb287d1bebb13a"
+      "sha256": "202467522e48107f8fe85cbb36fcc5afad390aee1feafdac52cd2b4ced3f15b9"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/390x844-lobby-waiting.png",
       "width": 390,
       "height": 844,
-      "sha256": "ee4e37880462d2cf3c412d7a3c52e5e43fc9979aa14297aa4b8ed3af5d3aff17"
+      "sha256": "9052c24909d262bfbfca263502d5ea87e957bdf8432880439d428c16cee6c63b"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/390x844-mister-x-active.png",
       "width": 390,
       "height": 844,
-      "sha256": "7c4ad026659c05ee048e27bbd4ecf167a8cfc85e332b8904259d9751184ad048"
+      "sha256": "d20477083aa27e97e052f43b6f9357acd3ece790cc3dca60f74f7702c01d640c"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/390x844-mister-x-defeat.png",
       "width": 390,
       "height": 844,
-      "sha256": "0703b9d802cd11a06444373b92113a11e7eeb3eb347f6e9fddd7108388ee8766"
+      "sha256": "7dcc7e27184283f4be3a670e8a7e232d536a5ed2f1c9f3f71498ad276210149d"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/390x844-paused.png",
       "width": 390,
       "height": 844,
-      "sha256": "da6683f5d9e37cf95f5374a3d6d7050cc5ffb08833a6908ee1de95c15af0f21d"
+      "sha256": "97b2798a4eca8c33b4486d79bfdbdb70c8b7781637da8bb92be23a6ef3b6b4ac"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/390x844-public-sighting-and-log.png",
       "width": 390,
       "height": 844,
-      "sha256": "c99f3d00925692d6c0354d1de33d3f518dc80a06f78b6a2fc621858f68c56061"
+      "sha256": "d1208daad9ee0296a513f9620c1ecf41003e6661849401565e35a6affc1f44ea"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/390x844-spectator.png",
       "width": 390,
       "height": 844,
-      "sha256": "730213ae1d18f261acbe52de188777c7bd9851e35435651f5e0d5af016a91b38"
+      "sha256": "8e70b8d7b8019d7fd0b29d5bc901e5c652314b5f884933629d37f1707b5273e3"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/768x1024-detective-active.png",
       "width": 768,
       "height": 1024,
-      "sha256": "f828559f9c760394d03d22da4eb56eb5ab360a437fc350ac0769848d7f1a8d5a"
+      "sha256": "734caab19d0a6d33fe5f5c3e4fc921c1c6a7152fa85911bc59c709db5093e620"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/768x1024-detective-waiting.png",
       "width": 768,
       "height": 1024,
-      "sha256": "d0d98dace14cbcfb4501aa888dbefcbe2961a1f59c74283a3c44ce6ac94ca5ee"
+      "sha256": "3667b15fa42e8922125106283ca332615874919ce6a8f4917db6b8cc341d7606"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/768x1024-lobby-waiting.png",
       "width": 768,
       "height": 1024,
-      "sha256": "e1fe50a92c3abaf5763a7811572ac55657e7ef772a513040aa050cfbfd35c8b1"
+      "sha256": "3547a03ed6134b209ecf1431172c0133dba16b41fb14ca561739df247eda815e"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/768x1024-mister-x-active.png",
       "width": 768,
       "height": 1024,
-      "sha256": "1d9a40dc1be2bdd05f83b4b2e276b69f4a220f352f8bad3e549dfeabfc1aa115"
+      "sha256": "2377cc48b77d3821818d5156e481ad1b77ed7e54940fed931582439610b5562f"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/768x1024-spectator.png",
       "width": 768,
       "height": 1024,
-      "sha256": "69690f4c3f30859a1fd8f7ca3dca8e1c24a6dbcb85cb146f0c282e7f53e9cad6"
+      "sha256": "4838feda7e7c206a6962d60aa6e37c1f1d6b3070ca3bc0094f34470d78e1007a"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/900x450-detective-active.png",
       "width": 900,
       "height": 450,
-      "sha256": "aecefe7fc96ca89f283e64c7da2f81e584728b775bd7134f6293af6cc77ccb24"
+      "sha256": "67223a1f1b3afb7a9aa5a6b65ba4b0b9a9b2acc9115ff6efa47e17b15c1a9257"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/900x450-detective-waiting.png",
       "width": 900,
       "height": 450,
-      "sha256": "5addff7d2570f75b07fcdbbb749f1a799ee7ba759fe69bde6aa4b49597b5cec8"
+      "sha256": "7591927a36138e3cb2088588c23012022b6e28f53e5d60b53424517c6a23c403"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/900x450-lobby-waiting.png",
       "width": 900,
       "height": 450,
-      "sha256": "b9ca57888c34f97503a02012664efa398f4a3d49f634d675e4510c48441bd70c"
+      "sha256": "1debb6e3f191aebf75d47d6256377e05de9150e1b991c1c0fcc51164b4cf1990"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/900x450-mister-x-active.png",
       "width": 900,
       "height": 450,
-      "sha256": "f465de014793c8a1f22932cccc22fdf60e8b347d8c0aa5404b411d18de564af9"
+      "sha256": "ae1f10fd205e5ee6a5155fc120f1cb9ffe621c3f036d229b76ae9fd69f8e93c9"
     },
     {
       "path": "artifacts/scotland-redesign/after/desktop/900x450-spectator.png",
       "width": 900,
       "height": 450,
-      "sha256": "b5c592e04bd3887dc916308f2a758f9572258c1fd487c4873cbe8e566b3c0f46"
+      "sha256": "1c16a59c25c3bd8ebd3bba3be186fdec355acdbca6c92c6efd27a19379f8716e"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/1440x900-black-ticket.png",
       "width": 1440,
       "height": 900,
-      "sha256": "ab500138004a8c0dad543015ac7431dacc0cba85b3b405cb9bb46e16530f4d34"
+      "sha256": "8d22bad37317256dd9a3882b0887f6235e174beb5ce5986c561439f836d9be3a"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/1440x900-detective-active.png",
       "width": 1440,
       "height": 900,
-      "sha256": "4359d65785afba655a432fbe58c8207d972550e09e81c282744ee3e259c6f9b7"
+      "sha256": "9d26229b54a7eb653a0ee81c880bf9f591a25765e5082e098020a5e560d38c64"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/1440x900-detective-waiting.png",
       "width": 1440,
       "height": 900,
-      "sha256": "c3500d0298a39bec7f29ab107df1df00911de6409bc828b29a9f16cc4057b234"
+      "sha256": "fdd69bce5dcc4f3b7ec75d570ea7667b1c891777fc5803ca006dc8352598d819"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/1440x900-detectives-win.png",
       "width": 1440,
       "height": 900,
-      "sha256": "ce56fa9adfb1c7acf4171bb20814d8df32d2b286bfbbb86b3f3645fd53b93ac3"
+      "sha256": "3b1e86bd730daa74ed14809898a8f2d074741dc01547b7fba298bfda5cc9bd3b"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/1440x900-double-ticket.png",
       "width": 1440,
       "height": 900,
-      "sha256": "dc3bd3347cb635e0aacaf4b67204a856b1f128bb1d572f91765b27addd82338c"
+      "sha256": "1be97fceebad011643867ca99b61e1abf9431336a4898ba3604c2f0fd629d734"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/1440x900-english.png",
       "width": 1440,
       "height": 900,
-      "sha256": "6d11e3bd2cfad61122c476a70de7b0e560ae7fd8cd3204811c8241770008e02f"
+      "sha256": "ea96d476564d993b2ebbc99363d65641423bd3bb800a2fd8bbb6090548bbf230"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/1440x900-journal-detail.png",
       "width": 287,
       "height": 268,
-      "sha256": "02c0670a6fd65fd6467898ab0ce133e21dfd28ef593bc830ff08976eee88ff6b"
+      "sha256": "f06c7abe1a012bb0d78781cc63b3521a88182205c06aed1b1255215f914d098f"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/1440x900-lobby-ready.png",
       "width": 1440,
       "height": 900,
-      "sha256": "08d979d7b4e82b1b09f5b307cf55d97c0043d5b9699ad7be1c932b33591900bd"
+      "sha256": "1f8640697562e71957c394b22eebdaaddb1848cadf365e60dbdf00348217c2af"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/1440x900-lobby-waiting.png",
       "width": 1440,
       "height": 900,
-      "sha256": "ea56363ecc913f09bbfe9bcaedfbbc93e08c4b3e6ef9f6ec1cba8e6c083a49b9"
+      "sha256": "1fac36d9d0a724c802cac5363a5d1afeaefd30bc7adb252e1965f4087ba21b7a"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/1440x900-mister-x-active.png",
       "width": 1440,
       "height": 900,
-      "sha256": "11958378f8c87523fc22724d505c151a41ae8da7ee7b48e55b75b8a7fd7fea46"
+      "sha256": "60530a7096ccb21dc2d1bf37babbfc2b7b74bbeafa7fe36abde09b81c4bcf903"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/1440x900-mister-x-defeat.png",
       "width": 1440,
       "height": 900,
-      "sha256": "f359eb57caf1f614a50dd493b4088645582545d57dc32f156985261934567f35"
+      "sha256": "d2daf79303d77385f975f52556fe2ca7992fd4ae0a758175edb27faa2a070848"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/1440x900-paused.png",
       "width": 1440,
       "height": 900,
-      "sha256": "6c9b02c8f5cc44e409a4bdb0e3347c9d0ec68e3249703f2aa216c935cdddf4d8"
+      "sha256": "f334fbcfb6067acf4954a5dcf7c17128eeb28f7fee238bac8ae35804407612b8"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/1440x900-public-sighting-and-log.png",
       "width": 1440,
       "height": 900,
-      "sha256": "b6a6e0f0afa887457dd21356f59bf49061e20a986cab5462772f1b67a9b599bd"
+      "sha256": "92aee74a3a8ab4416bc4b7b2b44761dd98ca5165ec321ad62b409f97d6a481e8"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/1440x900-spectator.png",
       "width": 1440,
       "height": 900,
-      "sha256": "b272330b69009395fac656d3e3a43ef13fc0387fb8636070912711404e29ad0d"
+      "sha256": "849026a18515be6b4f771cf9d1fb0d1236dd8feae6bcf2c3587fdde9ecc6a2cb"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/1920x1080-detective-active.png",
       "width": 1920,
       "height": 1080,
-      "sha256": "4a9a39da2aad53129bca0532f9f2717c2af3cc2189bf9e6094b6d4a3afc2c365"
+      "sha256": "a5fddf663d0e5be5035d217ff33049c5f601ec4ee8720427f3fd2e72066006ca"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/1920x1080-detective-waiting.png",
       "width": 1920,
       "height": 1080,
-      "sha256": "f398edf540fbe0523ce44188f4d29688401ac6aa3fb671f8844b4b124d30839a"
+      "sha256": "c9ee7c7abc17c83a81b28abba412ddcb98ddcc61e31f5d1a2d80a8fcff86608a"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/1920x1080-lobby-waiting.png",
       "width": 1920,
       "height": 1080,
-      "sha256": "95540bc47f8a78d7b53f371d0483038c29398caa142eb90c82889bddffd6ca8f"
+      "sha256": "0d629d9e5e4dd89dc86d963b2566450f5609aa433837065b07b2fe48feaf1860"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/1920x1080-mister-x-active.png",
       "width": 1920,
       "height": 1080,
-      "sha256": "33101d1a3cf747501845d8692ad17075875103648f31284e3e00294f328edcb1"
+      "sha256": "594bac26267a8ab46d86ad31177aca070c9fc47e81c80360a7afa473a79be782"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/1920x1080-spectator.png",
       "width": 1920,
       "height": 1080,
-      "sha256": "6dba072452190c2770b8f99956e8925124ad994f4a057cea4e710326ec6455c3"
+      "sha256": "c78aaeea2aafc856ba6f7c8e984027baa0bdd9e54142b1037e0b75cc299db2ff"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/360x800-detective-active.png",
       "width": 360,
       "height": 800,
-      "sha256": "4afc4e753e3706d256e96fa74366b43b3685ee09d40a88edce36112622eaf1cb"
+      "sha256": "ce2646014643c1a8d5e98fe59131cb8c4376f9501a57c9006a5401fa167713fc"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/360x800-detective-waiting.png",
       "width": 360,
       "height": 800,
-      "sha256": "f2b77e8575b9913c3c6fe643d5c4147b0d21797e57f96edb40073c5903e2d4e8"
+      "sha256": "55a4e3005eafcbaaeecd568bbe0d36a3ed350c29a54b9ef8288d1817f6a4cdbd"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/360x800-lobby-waiting.png",
       "width": 360,
       "height": 800,
-      "sha256": "e37652a778cef335caeb7e13b75e9e75aa0d8c20ff6ac6e6a0869dde0a63c184"
+      "sha256": "116d2204deef3843baff84ad0363f4e3944b149c97136a8b1085c5496c39b175"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/360x800-mister-x-active.png",
       "width": 360,
       "height": 800,
-      "sha256": "6247b59c53a32d86f7412beb00c70a3ceb8fa0b2fe09fbe61ee620b84a636bd3"
+      "sha256": "3446698333eb016d990930f965dfcb809c1e9487bda883a01bbb85d8f2cc10b1"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/360x800-spectator.png",
       "width": 360,
       "height": 800,
-      "sha256": "46ae6b11cb6531cbbf3733b6d44e7b03fd2af6e202f8076af08fce9a47e59018"
+      "sha256": "c4076af184771e56962c317fa32c03bc7d4e54485f54f55b89460e3de7b79220"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/390x844-black-ticket.png",
       "width": 390,
       "height": 844,
-      "sha256": "3f70366b0ab497d82f0ec4e0a84a4a40d677f9d55ecc3285220a80994885a7f1"
+      "sha256": "07e03efa67831c22f03073b27424b12c7ff8c2a933366ff485c5aee133e173ce"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/390x844-detective-active.png",
       "width": 390,
       "height": 844,
-      "sha256": "119c4e58f65346961c04ede1f2d7f534d181d87e685ebe63a163494ee279cef6"
+      "sha256": "359350a18e7e31c86da8a6bc08fe6fe6c0dc3d51169b0c3fe216e70e1ec73cd4"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/390x844-detective-waiting.png",
       "width": 390,
       "height": 844,
-      "sha256": "a82cc1da3b66579300941ad80d7a8156f0e25525bd03356b7500f5e222af304b"
+      "sha256": "f44ba02a6b623e361a4158c78e9a41845376bb6397c0708bed48457159032e47"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/390x844-detectives-win.png",
       "width": 390,
       "height": 844,
-      "sha256": "e9818088748de8416b23171faba693ffd2899be3686462408baa47734aa6f7c5"
+      "sha256": "49c1f4bfff6e55c4fd5a94e2b3d9cd7bf2f51fd64491ec6bb223e6bb0cffd62f"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/390x844-double-ticket.png",
       "width": 390,
       "height": 844,
-      "sha256": "4bfed13bc728ef319a19eeadcc31b274e77252c6f0db960d17f6b2c6c8e6281f"
+      "sha256": "6bdc295af723d1f5db07dd623775df7c5aa1fd6312607f08d586583a63569ec4"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/390x844-english.png",
       "width": 390,
       "height": 844,
-      "sha256": "ce68e6cda2880da60bcaf45dccabe3f876338d08f0e8ba97534de91738ddd4f7"
+      "sha256": "245e03fc682ea2087fc97ca50552e35ff19788281d4416e45a64e480d5d7836e"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/390x844-journal-detail.png",
@@ -795,103 +795,103 @@
       "path": "artifacts/scotland-redesign/after/mobil/390x844-lobby-ready.png",
       "width": 390,
       "height": 844,
-      "sha256": "c7aa7c5baa191a29273640f240be491b25fe56e7752669ee029be02192d0f4d9"
+      "sha256": "db8141ee364bd6460ce08282ad52534321c41a3d4d7abd8f612b43cd5d520a01"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/390x844-lobby-waiting.png",
       "width": 390,
       "height": 844,
-      "sha256": "e8559e69bb7519e86b46002c77bc5e28582a756110ca7e485d02fc16002ee83d"
+      "sha256": "944f229e1701f0781ffe458b65805a14fb8495c8421c871a1bf756111e23f931"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/390x844-mister-x-active.png",
       "width": 390,
       "height": 844,
-      "sha256": "2f3d3b222f395854ab3aa73c9d5fb56ae1f6efc1095a71286b827751bd3d6f9b"
+      "sha256": "b12482f01b76fb70ed5566d292cec48adc08cc9045fedb0f6f9cfa6084104e93"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/390x844-mister-x-defeat.png",
       "width": 390,
       "height": 844,
-      "sha256": "7f1ed31ea2ef04bab45213cb5a369c6d1ffbe399214fad326df627ac232d9904"
+      "sha256": "de6d9be804c39d1039819378a023cd2e9a61fec335a5c4b6b1649ca48349447b"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/390x844-paused.png",
       "width": 390,
       "height": 844,
-      "sha256": "e6f91322b6bcbcaa8e78f58f32370cb3c1f3f9e3e737d73759e99af67f0c542b"
+      "sha256": "0bfe1afe8745307accda3a05a4b3f96450943324e98f1c12de3eac0e9f37263e"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/390x844-public-sighting-and-log.png",
       "width": 390,
       "height": 844,
-      "sha256": "8e6853960165a04312778aac31d9e49ece0e0e96b7c6b7233dae50caba667a56"
+      "sha256": "8bb6748eb2d14231a61d366ee3605518b63769b7cf44ba9283efc15261bd1ed4"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/390x844-spectator.png",
       "width": 390,
       "height": 844,
-      "sha256": "d7495b8ba29991247e9ed0ba94e32181b8931a4e9f16678f59b7d2cab855db73"
+      "sha256": "e25eecdfbba591bbb958b4cabbf3d809c7c29a61ca18a1a1c521bb7fb3085b07"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/768x1024-detective-active.png",
       "width": 768,
       "height": 1024,
-      "sha256": "8cc7621e1864ef0018e9aa11a772c40ca4475f598dd2d5a1c9c7f592bbb05fa2"
+      "sha256": "d568e3310577864eb5c989262835e3b532c875086db8cfc128e575f5386fca28"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/768x1024-detective-waiting.png",
       "width": 768,
       "height": 1024,
-      "sha256": "ab0f092d19b579fb9c3708ae9359204c3418107616c6e8296882e38038325600"
+      "sha256": "3df45fbde1df8663579f79f5c7e169284e1745aebc42e7d374b01884c4d89691"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/768x1024-lobby-waiting.png",
       "width": 768,
       "height": 1024,
-      "sha256": "ebbff396d68b62ac6071dabe33a293f40c415e2d3accbc1c222d52e6f7200249"
+      "sha256": "06e368fa56c888d435f9bc30aca8b1616a7453e2a2e139ffc74695e890103c3b"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/768x1024-mister-x-active.png",
       "width": 768,
       "height": 1024,
-      "sha256": "5119c4d09e0acea5d5c780b44e4dfa351c25f2a21de070503d9df46d4473a953"
+      "sha256": "fd8f9fe44a025108f2970ee0698da0d5003a4e9f304b7ff52cd51757bcea97e3"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/768x1024-spectator.png",
       "width": 768,
       "height": 1024,
-      "sha256": "39f51a9f5d031e7f222ad78551737a44a545644937b9d35200d49e730d4919fb"
+      "sha256": "263a371a207f271afd3abfa945cfae90bc7836762b0d46b4652ec6454314c1dc"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/900x450-detective-active.png",
       "width": 900,
       "height": 450,
-      "sha256": "656a7e55cc3f725d4aa899d96a94f77aca541a1a1e52734ad6c2ee6f1416a140"
+      "sha256": "f88a4f932cae73c959fd08ef475b20077578f4fa1d10779ff8bb922bea28265e"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/900x450-detective-waiting.png",
       "width": 900,
       "height": 450,
-      "sha256": "d0ec488546142916f69c7f7e909e1571e1a0ad29a6c670ce8dd6997c1e2b8694"
+      "sha256": "ce766fef99cd1f63cbbc5f6556cf991744727e04bd841fae6ff9d0fb60259789"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/900x450-lobby-waiting.png",
       "width": 900,
       "height": 450,
-      "sha256": "76783c6ef75b010f2fac187351b5e45bf48faf809bd6c2076f9c3fca34698b01"
+      "sha256": "45abd45cd1d4f27922f0322ca973fbe24c37a0d47ecc7ba41951684accf42cf3"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/900x450-mister-x-active.png",
       "width": 900,
       "height": 450,
-      "sha256": "8b47747887c2ec90de8d453752413325f2f252a068191d3f0e7452c3ab469c70"
+      "sha256": "7b36d0778d8fa2e3e172d2b11c4c4dcfe2041f0e3c74b9655070c43d12d77977"
     },
     {
       "path": "artifacts/scotland-redesign/after/mobil/900x450-spectator.png",
       "width": 900,
       "height": 450,
-      "sha256": "88c972bd853e12a82d54aa510394b057267e80badbca439c6625a20478b766a9"
+      "sha256": "aaa9bc596a5f820048469d22a53e09385f043c84ecab1bb674c5bbb4b8ebf832"
     },
     {
       "path": "artifacts/scotland-redesign/before/1440x900-black-ticket.png",
@@ -1169,5 +1169,6 @@
       "height": 450,
       "sha256": "5c33ca9de62e87a5b9c14ba8d9040bc98efde4ebb911690e8b298d58af4fe154"
     }
-  ]
+  ],
+  "refreshed_after": "Full browser regression and follow-up, 2026-10-31"
 }

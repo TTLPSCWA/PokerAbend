@@ -23,3 +23,11 @@ Diese Regel ersetzt frühere Feature-Branch-Anweisungen. Wenn direkte Änderunge
 Zusätzlich vollständig `AGENTS.md` und `docs/roadmap/README.md` beachten. Die zentrale Planung ist `docs/roadmap/plan.json` mit 18 Paketen V2-00 bis V2-17. Ein Paket nur nach ausdrücklicher Freigabe seiner ID bearbeiten; anschließend stoppen. Konsolidierung und Dokumentation geben keine neue Implementierung frei.
 
 `MASTERPROMPT_V2_SOURCE.md` und `PROMPT.md` sind historische Quellen; ihre alten Implementierungs-/Branch-Anweisungen gelten nicht als Auftrag. Bestehende 46 Spiele, das vorhandene Redesign, Rechte, Cookies, Räume und Produktionsdaten erhalten. Keine Freundesliste, keine Discord-Video-Übernahme, keine 3D-Arbeit und kein Produktivdeployment ohne gesonderten Auftrag. Beauftragte GHCR-Builds sind vom Serverdeployment zu unterscheiden.
+
+## Individuelle visuelle Spielpakete
+
+Die verbindliche visuelle Planung steht in [docs/design/game-visual-roadmap.json](docs/design/game-visual-roadmap.json), ausführliche Einzelpläne in [GAME_VISUAL_ROADMAP.md](docs/design/GAME_VISUAL_ROADMAP.md), gemeinsame Regeln in [GAME_VISUAL_GUIDELINES.md](docs/design/GAME_VISUAL_GUIDELINES.md).
+
+VIS-Pakete sind unabhängig von Gameplay und V2-Arbeitspaketen. Nur das ausdrücklich freigegebene Spiel bzw. VIS-Paket umsetzen; Namen und technische ID anhand der JSON-Datei zuordnen. VIS-IDs stabil erhalten. Reihenfolge oder Planungsdateien geben keine Implementierung frei. Ein nicht implementiertes Spiel erhält dadurch keine Engine.
+
+Andere Spiele bleiben unverändert; gemeinsame Komponenten nur unmittelbar notwendig und eng begrenzt ändern. Nach echter Umsetzung Designstatus, Tests, dauerhafte Screenshots und tatsächlichen Commit dokumentieren und stoppen. Nicht umgesetzte Pakete bleiben `planned`, ohne erfundene Nachweise. Scotland Yard ist der abgeschlossene Pilot; alle weiteren individuellen Pakete sind nur geplant.
