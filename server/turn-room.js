@@ -124,6 +124,9 @@ export class TurnRoom extends BaseRoom {
       this.finishRound(left ? [left] : [], left ? `${this.name(left)} bleibt übrig und gewinnt die Runde` : 'Runde abgebrochen', left && this.opts.winPoints ? { [left]: this.opts.winPoints } : {});
       return;
     }
+    // Removing the current seat shifts the clockwise neighbour into its index.
+    // In reverse play, continue with the preceding seat instead.
+    if (wasCurrent && this.dir === -1) this.turn = (this.turn - 1 + this.order.length) % this.order.length;
     if (this.turn >= this.order.length) this.turn = 0;
     if (wasCurrent) this.onTurnStart();
   }

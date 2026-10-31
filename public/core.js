@@ -11,7 +11,14 @@ const uiText = (source) => esc(I18n.t(source));
 
 const AVATARS = ['🦊', '🐻', '🐼', '🐸', '🦉', '🐯', '🐙', '🦄', '🐺', '🐧', '🦁', '🐢'];
 const store = {
-  get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  get(k, d) {
+    try {
+      const raw = localStorage.getItem(k), value = raw === null ? d : JSON.parse(raw);
+      // Old or damaged caches must not turn an object/array preference into a scalar.
+      if (d && typeof d === 'object' && (!value || typeof value !== 'object' || Array.isArray(value) !== Array.isArray(d))) return d;
+      return value;
+    } catch { return d; }
+  },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* privater Modus */ } },
 };
 
@@ -22,11 +29,14 @@ function usePrefs(defaults) { for (const [k, v] of Object.entries(defaults)) if 
 usePrefs({ sound: true, calm: false, cardSize: 'normal' });
 function savePrefs() { store.set('poker:prefs', prefs); if (session) current?.onPrefs?.(); window.UITheme?.apply(); }
 
+let renderedLanguage = I18n.language;
 window.addEventListener('languagechange', () => {
   // Repaint existing state only: do not reconnect, reset a round or reload local games.
+  const previousLanguage = renderedLanguage;
+  renderedLanguage = I18n.language;
   const active = document.activeElement;
   const drafts = [...document.querySelectorAll('input[id]:not([type=checkbox]):not([type=radio]):not([data-language]), textarea[id], select[id]:not([data-language])')]
-    .map((el) => ({ id: el.id, value: el.value, focus: el === active, start: el.selectionStart, end: el.selectionEnd }));
+    .map((el) => ({ id: el.id, value: el.inputMode === 'decimal' ? I18n.numberDraft(el.value, previousLanguage, renderedLanguage) : el.value, focus: el === active, start: el.selectionStart, end: el.selectionEnd }));
   if (typeof hubVisible === 'function' && hubVisible()) renderHub();
   if (session) current?.onPrefs?.();
   if (typeof renderProfileChip === 'function') renderProfileChip();

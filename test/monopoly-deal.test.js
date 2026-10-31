@@ -33,8 +33,10 @@ test('Monopoly Deal: fremde Hände fehlen im gesamten Mitspieler- und Zuschauer-
 test('Monopoly Deal: Zahlung ohne Wechselgeld, keine Handkarten, kein Überspringen vorhandener Werte', () => {
   const { r, ids: [a, b] } = table();
   const ten = find((c) => c.kind === 'money' && c.value === 10)[0]; r.bank[b] = [ten];
+  // The shuffled hand may itself contain ten; choose a card that is not banked.
+  const handOnly = r.hands[b].find((id) => id !== ten);
   r.pending = { actor: a, target: b, targets: [b], index: 0, responder: b, kind: 'payment', stage: 'pay', amount: 5 };
-  assert.throws(() => r.pay(b, [r.hands[b][0]]), /Bank/); assert.throws(() => r.pay(b, []), /Betrag/);
+  assert.throws(() => r.pay(b, [handOnly]), /Bank/); assert.throws(() => r.pay(b, []), /Betrag/);
   r.pay(b, [ten]); assert.deepEqual(r.bank[a], [ten]); assert.deepEqual(r.bank[b], []);
   const prop = property('blue')[0]; r.put(b, prop, 'blue');
   r.pending = { actor: a, target: b, targets: [b], index: 0, responder: b, kind: 'payment', stage: 'pay', amount: 8 };

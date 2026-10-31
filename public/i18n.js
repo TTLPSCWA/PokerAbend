@@ -74,13 +74,29 @@ window.I18n = (() => {
     observer.observe(document.body, { childList: true, subtree: true });
   });
   const selector = () => `<label class="language-choice"><span>${language === 'en' ? 'Language' : 'Sprache'}</span><select data-language aria-label="${language === 'en' ? 'Language' : 'Sprache'}"><option value="de"${language === 'de' ? ' selected' : ''}>Deutsch</option><option value="en"${language === 'en' ? ' selected' : ''}>English (Beta)</option></select></label>`;
-  function number(value) {
-    if (language !== 'en') return value;
+  function number(value, lang = language) {
+    if (lang !== 'en') return value;
     const text = String(value).trim().replace(/\u2212/g, '-');
     if (!/^[+-]?(?:\d+(?:\.\d+)?|\d{1,3}(?:,\d{3})+(?:\.\d+)?)$/.test(text)) return null;
     const result = Number(text.replaceAll(',', ''));
     return Number.isFinite(result) ? result : null;
   }
+  function numberDraft(value, from, to) {
+    if (from === to || !value.trim() || /[.,]$/.test(value.trim())) return value;
+    let result;
+    if (from === 'en') result = number(value, 'en');
+    else {
+      // Match the German estimate parser, including grouped thousands and signs.
+      let text = value.replace(/[\s\u00a0'’]/g, '').replace(/^\+/, '').replace(/^−/, '-');
+      if (!/^-?[\d.,]+$/.test(text) || text.length > 30 || !/\d/.test(text)) return value;
+      text = /^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(text) ? text.replaceAll('.', '').replace(',', '.') : text.replace(',', '.');
+      result = Number(text);
+    }
+    if (result === null || !Number.isFinite(result) || Math.abs(result) > 1e15) return value;
+    // String() emits exponent notation for small values, which estimate inputs reject.
+    const text = result.toLocaleString('en-US', { useGrouping: false, maximumSignificantDigits: 21 });
+    return to === 'de' ? text.replace('.', ',') : text;
+  }
   const content = (source, english) => language === 'en' && typeof english === 'string' ? english : source;
-  return { t, html, select, selector, staticText, configureGames, content, number, get language() { return language; }, get locale() { return language === 'en' ? 'en-GB' : 'de-DE'; } };
+  return { t, html, select, selector, staticText, configureGames, content, number, numberDraft, get language() { return language; }, get locale() { return language === 'en' ? 'en-GB' : 'de-DE'; } };
 })();

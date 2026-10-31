@@ -5,6 +5,7 @@ import { i18nContext } from './i18n-harness.js';
 import { readFileSync } from 'node:fs';
 import { PARTY_ENGLISH, bilingual } from '../games/party-english.js';
 import { GAMES } from '../games/index.js';
+import { parseNumber } from '../games/schaetzmeister/room.js';
 
 test('Language: German is the default and unsupported values do not change it', () => {
   const c = i18nContext({}, 'fr');
@@ -105,6 +106,24 @@ test('Language: custom content has no English lookup, even when it matches a UI 
   assert.equal(i.content('Spiele'), 'Spiele');
   assert.equal(i.content('Spiele', 'Games'), 'Games');
   i.select('de'); assert.equal(i.content('Spiele', 'Games'), 'Spiele');
+});
+
+test('Language: numeric drafts retain their value when switching decimal/thousands notation', () => {
+  const { I18n: i } = i18nContext();
+  for (const text of ['1.234', '1,234', '1.234,5', '1.234.567', '+206', '−3,5', '1 234,5', "1'234,5", '.5', '0', '-0,001', '0,0000001', '1,23456']) {
+    const english = i.numberDraft(text, 'de', 'en');
+    i.select('en'); assert.notEqual(i.number(english), null, text);
+    assert.equal(parseNumber(i.number(english)), parseNumber(text), text);
+  }
+  for (const [text, expected] of [['1,234.5', '1234,5'], ['1.234', '1,234'], ['-3.5', '-3,5'], ['206', '206']]) {
+    assert.equal(i.numberDraft(text, 'en', 'de'), expected);
+    assert.equal(parseNumber(expected), i.number(text));
+  }
+  for (const text of ['', '-', '1,', '1.', 'wrong', '1.2.3']) {
+    assert.equal(i.numberDraft(text, 'de', 'en'), text);
+    assert.equal(i.numberDraft(text, 'en', 'de'), text);
+  }
+  assert.equal(i.numberDraft('1,234.5', 'en', 'en'), '1,234.5');
 });
 test('Language: storage changes sync the language, and blocked storage still permits an in-memory choice', () => {
   const c = i18nContext();

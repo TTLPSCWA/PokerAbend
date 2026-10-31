@@ -96,7 +96,10 @@ export class Room extends TurnRoom {
     delete this.positions[p.id]; delete this.tickets[p.id];
     if (!this.detectives.length) this.win('x', 'Alle Detektive haben die Fahndung verlassen.');
   }
-  publicPlayer(p) { return { role: p.id === this.xId ? 'x' : 'detective', ...(p.id !== this.xId && Object.hasOwn(this.positions, p.id) ? { station: this.positions[p.id] } : {}) }; }
+  publicPlayer(p) {
+    if (this.phase === 'lobby' || !this.order.includes(p.id)) return { role: null };
+    return { role: p.id === this.xId ? 'x' : 'detective', ...(p.id !== this.xId && Object.hasOwn(this.positions, p.id) ? { station: this.positions[p.id] } : {}) };
+  }
   gameView(id) {
     const own = id === this.xId, over = this.phase === 'over';
     const visible = over || own || this.travel.at(-1)?.station !== undefined;

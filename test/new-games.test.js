@@ -46,6 +46,28 @@ test('Scotland Yard: alternative verdeckte Ziele erzeugen exakt denselben öffen
   for (const k of keys) r[k] = structuredClone(backup[k]);
   r.move(x, 10, 'taxi'); assert.deepEqual(r.view(a), publicA);
 });
+
+test('Scotland Yard: Zuschauer und wartende Spieler haben keine aktive Rolle; Abbruch entfernt alte Rollen', (t) => {
+  const { r, ids: [x, a] } = chase(t);
+  const watcher = r.addPlayer('Zuschauer', null).id;
+  const role = (id) => r.view(watcher).players.find((p) => p.id === id).role;
+  assert.equal(role(x), 'x'); assert.equal(role(a), 'detective');
+  assert.equal(role(watcher), null);
+  r.sit(watcher);
+  assert.equal(r.view(watcher).you.inRound, false); assert.equal(role(watcher), null);
+  r.abortRound(x);
+  assert.equal(role(x), null); assert.equal(role(a), null);
+  r.newGame(x);
+  assert.equal(role(x), null);
+});
+
+test('Scotland Yard: veränderte Distanz-Ergebnisse beschädigen den Bot-Cache nicht', () => {
+  const first = distances(23);
+  assert.equal(first.size, 49); first.clear();
+  const second = distances(23);
+  assert.equal(second.size, 49); assert.equal(second.get(23), 0); assert.equal(second.get(24), 1);
+  second.set(24, 99); assert.equal(distances(23).get(24), 1);
+});
 test('Scotland Yard: unerlaubte Züge, fremde Rolle und Doppelzug werden ohne Mutation abgelehnt', (t) => {
   const { r, ids: [x, a] } = chase(t);
   for (const args of [[a, 8, 'taxi'], [x, 1, 'taxi'], [x, 999, 'taxi'], [x, '8', 'taxi'], [x, 8, '__proto__'], [x, 8, 'taxi', 'true']]) {

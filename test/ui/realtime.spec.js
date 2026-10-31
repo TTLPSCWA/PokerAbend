@@ -121,7 +121,10 @@ test('Abendprogramm: alle drei Echtzeitspiele, gleicher Raum, Übergänge und Si
     await expect(page.locator('.kg-over')).toBeVisible({ timeout: 20000 });
     expect(await page.evaluate(() => lastState.code)).toBe(code);
     expect(await page.evaluate(() => lastState.partyProgram.results.length)).toBe(i + 1);
-    if (i < 2) await page.locator('.kg-over [data-kit="start"]').click();
+    if (i < 2) await Promise.all([
+      page.waitForEvent('load'),
+      page.locator('.kg-over [data-kit="start"]').click(),
+    ]);
   }
   await expect(page.locator('.kg-over')).toContainText('Siegerehrung');
   expect(await page.evaluate(() => lastState.partyProgram.status)).toBe('done');

@@ -83,9 +83,9 @@ test('Zwei Sprachen an einem Tisch: gemeinsame Frage, Pause, Entwurf und englisc
     await page.locator('#pk-in').fill('1,234.5');
     await page.locator('[data-kit-panel="me"]').click();
     await page.locator('#kg-panel [data-language]').selectOption('de');
-    await expect(page.locator('#pk-in')).toHaveValue('1,234.5');
+    await expect(page.locator('#pk-in')).toHaveValue('1234,5');
     await page.locator('#kg-panel [data-language]').selectOption('en');
-    await expect(page.locator('#pk-in')).toHaveValue('1,234.5');
+    await expect(page.locator('#pk-in')).toHaveValue('1234.5');
     await page.locator('.panel-head [data-kit="close"]').click();
     await page.locator('.pk-send').click();
     await expect.poll(() => page.evaluate(() => lastState.g.mine)).toBe(1234.5);
@@ -130,10 +130,17 @@ for (let offset = 0; offset < Object.keys(GAMES).length; offset += 5) test(`Engl
   await login(page, app);
   await page.locator('#hub-language select').selectOption('en');
   const games = await page.evaluate(() => account.games.map(({ id, minPlayers }) => ({ id, minPlayers })));
+  let opened = false;
   for (const { id, minPlayers } of games.slice(offset, offset + 5)) {
     const reply = await page.evaluate((game) => new Promise((resolve) => socket.emit('create', { game, name: profile.name, avatar: profile.avatar }, resolve)), id);
     expect(reply.ok, id).toBe(true);
-    await page.evaluate((reply) => enterGame(reply), reply);
+    // The next module is mounted through a full reload. Wait for that navigation
+    // before testing its DOM instead of racing the previous page under load.
+    await Promise.all([
+      opened ? page.waitForEvent('load') : Promise.resolve(),
+      page.evaluate((reply) => enterGame(reply), reply),
+    ]);
+    opened = true;
     const poker = id === 'poker' || id === 'omaha';
     await expect(page.locator(poker ? '#game' : '#kg')).toBeVisible();
     const started = await page.evaluate(async ({ code, count }) => {

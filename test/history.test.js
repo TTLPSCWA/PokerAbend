@@ -2,7 +2,7 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { mkdtempSync, existsSync } from 'node:fs';
+import { mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { io } from 'socket.io-client';
@@ -118,15 +118,22 @@ test('Ganzer Verlauf per „history“, auch nach einem Neustart', async () => {
   // Ein Fremder ohne Tisch bekommt nichts
   const x = client();
   assert.equal((await x.ask('history', {})).ok, false);
-  // Gespeichert wird nach der Hand – dann Neustart
-  await until(() => existsSync(join(dataDir, `history-${c.code}.json`)) && existsSync(join(dataDir, 'rooms.json')), 5000);
-  await wait(100);
+  // Existing files can still contain a snapshot from before Ben joined or the
+  // hand ended. Wait for the completed debounced save, not an arbitrary delay.
+  await until(() => {
+    try {
+      const saved = JSON.parse(readFileSync(join(dataDir, 'rooms.json'), 'utf8')).find((r) => r.code === c.code);
+      const history = JSON.parse(readFileSync(join(dataDir, `history-${c.code}.json`), 'utf8'));
+      return saved?.handNo === 1 && saved.players.some((p) => p.token === j.token) && history.some((e) => e.cat === 'win');
+    } catch { return false; }
+  }, 5000);
   for (const s of [a, b, x]) s.disconnect();
   await stopServer();
   // Windows gibt den Port manchmal erst kurz nach dem Beenden frei
   for (let k = 0; ; k++) { try { await start(); break; } catch (e) { if (k >= 4) throw e; await wait(300); } }
   const again = client();
-  assert.ok((await again.ask('join', { code: c.code, token: j.token })).ok);
+  const joined = await again.ask('join', { code: c.code, token: j.token });
+  assert.equal(joined.ok, true, joined.error);
   const back = await again.ask('history', { after: 0 });
   assert.ok(back.entries.some((e) => e.text === 'Hand #1'), 'Verlauf ist noch da');
   assert.ok(back.entries.some((e) => /gewinnt/.test(e.text)));

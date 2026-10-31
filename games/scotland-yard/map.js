@@ -20,5 +20,5 @@ export function distances(from) {
   const found = new Map([[from, 0]]), queue = [from];
   for (const node of queue) for (const next of neighbours(node, 'black')) if (!found.has(next)) { found.set(next, found.get(node) + 1); queue.push(next); }
   distanceCache.set(from, found);
-  return found;
+  return new Map(found);
 }
