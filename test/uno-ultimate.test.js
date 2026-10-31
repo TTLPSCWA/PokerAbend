@@ -117,12 +117,14 @@ for (const variant of modes) test(`UNO material ${variant}: all actual card valu
 });
 
 test('UNO effects use public changes only, respect both motion controls and never animate an initial/reconnected hand', async () => {
-  const state = { variant: 'flip', phase: 'playing', roundNo: 1, you: { id: 'me' }, players: [], g: { side: 0, top: '2r', hand: ['PRIVATE'] } };
+  const state = { code:'FIRST', variant: 'flip', phase: 'playing', roundNo: 1, you: { id: 'me' }, players: [], g: { side: 0, top: '2r', hand: ['PRIVATE'] } };
   for (const controls of [{ reduced: true }, { reduced: false, calm: true }, { reduced: false }]) {
     const { def, animations, dataset } = renderer(controls);
     def.onState(state, null); def.afterRender(state); assert.equal(animations.length, 0);
     const hidden = structuredClone(state); hidden.g.hand = ['DIFFERENT-PRIVATE'];
     def.onState(hidden, state); def.afterRender(hidden); assert.equal(animations.length, 0);
+    const anotherRoom = structuredClone(state); anotherRoom.code = 'SECOND'; anotherRoom.g.side = 1;
+    def.onState(anotherRoom, state); def.afterRender(anotherRoom); assert.equal(animations.length, 0);
     const flipped = structuredClone(state); flipped.g.side = 1; flipped.g.hand = ['NEW-AUTHORISED-FACE'];
     def.onState(flipped, state); def.afterRender(flipped);
     assert.equal(animations.length, controls.reduced || controls.calm ? 0 : 1);

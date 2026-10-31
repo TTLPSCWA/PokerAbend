@@ -54,7 +54,7 @@
   let pendingEffect = null, activeEffect = null;
   function observePresentation(S, prev) {
     pendingEffect = null;
-    if (!prev || prev.variant !== S.variant || S.gamePaused || prev.gamePaused) return;
+    if (!prev || prev.code !== S.code || prev.variant !== S.variant || S.gamePaused || prev.gamePaused) return;
     if (prev.phase !== 'playing' && S.phase === 'playing') pendingEffect = 'start';
     else if (prev.phase === 'playing' && S.phase === 'over') pendingEffect = S.result?.winners?.includes(S.you?.id) ? 'win' : 'end';
     else if (S.phase === 'playing' && S.roundNo === prev.roundNo) {
