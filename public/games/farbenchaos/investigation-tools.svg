@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 300" fill="none">
+  <!-- Original static edge props. Decorative only; no measurements or game state. -->
+  <g stroke="#aac09d" stroke-width="1.4" opacity=".7" transform="translate(80 72) rotate(-9 38 72)">
+    <rect width="76" height="145" rx="9" fill="#142822"/><rect x="9" y="17" width="58" height="42" rx="3"/>
+    <path d="m14 40 8-5 7 9 9-17 7 13 10-3 7 5M20 76h36M20 84h36M20 92h36M28 115h20"/>
+    <circle cx="38" cy="126" r="7"/><path d="M38 0v-30" stroke-width="3"/>
+  </g>
+  <g transform="translate(934 55) rotate(10 48 85)" stroke="#b3bea2" stroke-width="1.2" opacity=".65">
+    <rect width="102" height="172" rx="4" fill="#233a2e"/><path d="M26 0v10h50V0M15 33h71M15 43h45M15 105h70M15 115h60M15 125h72M15 146h37"/>
+    <circle cx="51" cy="75" r="18"/><path d="m33 75 18-18 18 18-18 18ZM40 75h22M51 64v22"/>
+  </g>
+  <g transform="translate(824 246) rotate(-17)" stroke="#af9dc4" stroke-width="1.5" opacity=".5">
+    <path d="M0 0h71l13 7v20l-13 7H0Z" fill="#1a2b28"/><path d="M10 0v34M63 0v34M72 5v24M22 11h28M22 19h28M84 7l28-16v52L84 27"/>
+  </g>
+</svg>

@@ -1,0 +1,1582 @@
+{
+  "captured_at": "2026-10-31",
+  "baseline_commit": "cb1e3a460b2303a760862b87ea1c10699d695673",
+  "policy": "comparisons are permanently versioned. images is a separate inventory of ignored local browser captures, including iterations.",
+  "fixture_policy": "Material sheets contain only known public card prototypes. Penalty/elimination and dark-colour-choice sheets are controlled display-only fixtures. No server state or distribution is modified; reload precedes all real actions.",
+  "comparisons": [
+    {
+      "variant": "classic",
+      "stage": "before",
+      "path": "docs/design/screenshots/uno-ultimate/classic-before-table-desktop.png",
+      "source": "artifacts/cards-redesign/ultimate-before/desktop/farbenchaos-classic/1440x900-own-turn.png",
+      "sha256": "b75e479f6edbaa83eec57a7d753c5e260f498c6df60ddc6b67ff361956963cb2"
+    },
+    {
+      "variant": "classic",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/classic-after-table-desktop.png",
+      "source": "artifacts/uno-ultimate/desktop/classic/1440x900-table.png",
+      "sha256": "7f1810ce6ccffaa51f14c9d5eb98574ceeb42e62ac87462e1f1753f2d278f85f"
+    },
+    {
+      "variant": "classic",
+      "stage": "before",
+      "path": "docs/design/screenshots/uno-ultimate/classic-before-table-mobile.png",
+      "source": "artifacts/cards-redesign/ultimate-before/mobil/farbenchaos-classic/390x844-own-turn.png",
+      "sha256": "4e7a7f549aa52c83a1674781e0f6d0e6f143edd1577229b43b6bc8285318bbcb"
+    },
+    {
+      "variant": "classic",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/classic-after-table-mobile.png",
+      "source": "artifacts/uno-ultimate/mobil/classic/390x844-table.png",
+      "sha256": "98ceb4c96a3da73fdba4e4bc9d824da133bc087e2774413b3f437d010a650edc"
+    },
+    {
+      "variant": "classic",
+      "stage": "before",
+      "path": "docs/design/screenshots/uno-ultimate/classic-before-lobby-desktop.png",
+      "source": "artifacts/cards-redesign/ultimate-before/desktop/farbenchaos-classic/1440x900-lobby-ready.png",
+      "sha256": "d61f5a01c69f993476c7b90ef7d77d3730e31e12759ab96f117b3f80d1c68705"
+    },
+    {
+      "variant": "classic",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/classic-after-lobby-desktop.png",
+      "source": "artifacts/uno-ultimate/desktop/classic/1440x900-lobby-ready.png",
+      "sha256": "95e2628e719fa7a559be7058810c3b8e3d8b986e9bfc347dfc6fed086df49b76"
+    },
+    {
+      "variant": "classic",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/classic-material-0.png",
+      "source": "artifacts/uno-ultimate/desktop/classic/1440x1000-material-0.png",
+      "sha256": "39663be5d6e67770f39b917e0a9ff2d3e1688670862877afa9577d1e59cd7735"
+    },
+    {
+      "variant": "flip",
+      "stage": "before",
+      "path": "docs/design/screenshots/uno-ultimate/flip-before-table-desktop.png",
+      "source": "artifacts/cards-redesign/ultimate-before/desktop/farbenchaos-flip/1440x900-own-turn.png",
+      "sha256": "558347c73180662cdf34968eb9fae403ceaa0a79a322c0a664a4ba973ab552b5"
+    },
+    {
+      "variant": "flip",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/flip-after-table-desktop.png",
+      "source": "artifacts/uno-ultimate/desktop/flip/1440x900-table.png",
+      "sha256": "4a6104938715b0ff4696179ebcb43cc3395f5209f3a4f027b2dd6bb58dd1c4bb"
+    },
+    {
+      "variant": "flip",
+      "stage": "before",
+      "path": "docs/design/screenshots/uno-ultimate/flip-before-table-mobile.png",
+      "source": "artifacts/cards-redesign/ultimate-before/mobil/farbenchaos-flip/390x844-own-turn.png",
+      "sha256": "a32bcf7fc52228a9f774a00fa1cc55830aeb26b9f2c1c5955469c72752fa0ff4"
+    },
+    {
+      "variant": "flip",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/flip-after-table-mobile.png",
+      "source": "artifacts/uno-ultimate/mobil/flip/390x844-table.png",
+      "sha256": "019e1512e294159e62059658c90b9f2a2cf0ee4426de29624aa6b18e83e63c43"
+    },
+    {
+      "variant": "flip",
+      "stage": "before",
+      "path": "docs/design/screenshots/uno-ultimate/flip-before-lobby-desktop.png",
+      "source": "artifacts/cards-redesign/ultimate-before/desktop/farbenchaos-flip/1440x900-lobby-ready.png",
+      "sha256": "c48c838243e88dd4973f9ccb94538b2fdffa44ea73213c2385db7b914becdf9f"
+    },
+    {
+      "variant": "flip",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/flip-after-lobby-desktop.png",
+      "source": "artifacts/uno-ultimate/desktop/flip/1440x900-lobby-ready.png",
+      "sha256": "aaf7e2fefe8881bccc259cfd108438d71591187b170a25c2caf9a819ca18b5a4"
+    },
+    {
+      "variant": "flip",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/flip-material-0.png",
+      "source": "artifacts/uno-ultimate/desktop/flip/1440x1000-material-0.png",
+      "sha256": "b205c8358412f627903bbdafe2dda124cdae2c89d21b77ac76f6c97b54c2451c"
+    },
+    {
+      "variant": "flip",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/flip-material-1.png",
+      "source": "artifacts/uno-ultimate/desktop/flip/1440x1000-material-1.png",
+      "sha256": "963efa642b608d26b7f9a6de713276db0051fc4f9e77d98b573cb40636aa1930"
+    },
+    {
+      "variant": "no-mercy",
+      "stage": "before",
+      "path": "docs/design/screenshots/uno-ultimate/no-mercy-before-table-desktop.png",
+      "source": "artifacts/cards-redesign/ultimate-before/desktop/farbenchaos-no-mercy/1440x900-own-turn.png",
+      "sha256": "c878b22f27394ba02db3d7baed257b75cb7c992cd5b43369a6140a6a0a23b29a"
+    },
+    {
+      "variant": "no-mercy",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/no-mercy-after-table-desktop.png",
+      "source": "artifacts/uno-ultimate/desktop/no-mercy/1440x900-table.png",
+      "sha256": "31ed776ff68a53d45e1936de173f9242382266eb0d58f5af405479772368edc8"
+    },
+    {
+      "variant": "no-mercy",
+      "stage": "before",
+      "path": "docs/design/screenshots/uno-ultimate/no-mercy-before-table-mobile.png",
+      "source": "artifacts/cards-redesign/ultimate-before/mobil/farbenchaos-no-mercy/390x844-own-turn.png",
+      "sha256": "c40aa7843aeb604a6ed584717152dcaada155096c46a501e37f34d2df183d90c"
+    },
+    {
+      "variant": "no-mercy",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/no-mercy-after-table-mobile.png",
+      "source": "artifacts/uno-ultimate/mobil/no-mercy/390x844-table.png",
+      "sha256": "6f44c68f1a0ff31781ec2ab010624f1944d389c4293b8608e12ed695e7177e02"
+    },
+    {
+      "variant": "no-mercy",
+      "stage": "before",
+      "path": "docs/design/screenshots/uno-ultimate/no-mercy-before-lobby-desktop.png",
+      "source": "artifacts/cards-redesign/ultimate-before/desktop/farbenchaos-no-mercy/1440x900-lobby-ready.png",
+      "sha256": "eed59851d0db799b82b097782169e958eb2fec356d3b5d6d4e8c6a92ae64a414"
+    },
+    {
+      "variant": "no-mercy",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/no-mercy-after-lobby-desktop.png",
+      "source": "artifacts/uno-ultimate/desktop/no-mercy/1440x900-lobby-ready.png",
+      "sha256": "1a6e9420055378c53e09ed6c68d3a3ca29b7ed07a88c71b728d9367116c66e96"
+    },
+    {
+      "variant": "no-mercy",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/no-mercy-material-0.png",
+      "source": "artifacts/uno-ultimate/desktop/no-mercy/1440x1000-material-0.png",
+      "sha256": "d47b8f245f95846222842548eff6967a3fd701fcf184e730e26f89585c9beae8"
+    },
+    {
+      "variant": "all-wild",
+      "stage": "before",
+      "path": "docs/design/screenshots/uno-ultimate/all-wild-before-table-desktop.png",
+      "source": "artifacts/cards-redesign/ultimate-before/desktop/farbenchaos-all-wild/1440x900-own-turn.png",
+      "sha256": "34bada31e0a7516435047455f72a85a30c081e42ee5c973a67d37328948a797f"
+    },
+    {
+      "variant": "all-wild",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/all-wild-after-table-desktop.png",
+      "source": "artifacts/uno-ultimate/desktop/all-wild/1440x900-table.png",
+      "sha256": "c4c690c759494054fefa954a62c8ab0f60c204da8abaece04860f3da4bf27bab"
+    },
+    {
+      "variant": "all-wild",
+      "stage": "before",
+      "path": "docs/design/screenshots/uno-ultimate/all-wild-before-table-mobile.png",
+      "source": "artifacts/cards-redesign/ultimate-before/mobil/farbenchaos-all-wild/390x844-own-turn.png",
+      "sha256": "b89164ca508704666a02852e096d76ff29bd3b36f76c1f9fed87cfff6941e9de"
+    },
+    {
+      "variant": "all-wild",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/all-wild-after-table-mobile.png",
+      "source": "artifacts/uno-ultimate/mobil/all-wild/390x844-table.png",
+      "sha256": "c1641cef1b384cccaaa09b29ca2baa894fecc78e4e54a38b021ce1e3032d5f96"
+    },
+    {
+      "variant": "all-wild",
+      "stage": "before",
+      "path": "docs/design/screenshots/uno-ultimate/all-wild-before-lobby-desktop.png",
+      "source": "artifacts/cards-redesign/ultimate-before/desktop/farbenchaos-all-wild/1440x900-lobby-ready.png",
+      "sha256": "31fe68385bfcf5b50dcbb7c0badb494972fee2ced9991e7ff7dc64d6cd9e2a56"
+    },
+    {
+      "variant": "all-wild",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/all-wild-after-lobby-desktop.png",
+      "source": "artifacts/uno-ultimate/desktop/all-wild/1440x900-lobby-ready.png",
+      "sha256": "f91d3fdd2b7d187c4aa5b76dcd47eeeace299d4c3efd5923f6bd7d54747ce8b4"
+    },
+    {
+      "variant": "all-wild",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/all-wild-material-0.png",
+      "source": "artifacts/uno-ultimate/desktop/all-wild/1440x1000-material-0.png",
+      "sha256": "6d9bc119dd04f95eabb08ae215edbddccf2ecf805d47f328de67ad6355359d30"
+    },
+    {
+      "variant": "halloween-ghosthunt",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-after-table-desktop.png",
+      "source": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/1440x900-table.png",
+      "sha256": "dd6e0e83ddc84e0713d20f02fab6e21c0597c011677e317bcd147c8f4c2bcd53"
+    },
+    {
+      "variant": "halloween-ghosthunt",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-after-table-mobile.png",
+      "source": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/390x844-table.png",
+      "sha256": "e58ef50e20fd9363d7461d3720f9b09337d41ab921529329b2821a5326fdd7c9"
+    },
+    {
+      "variant": "halloween-ghosthunt",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-after-lobby-desktop.png",
+      "source": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/1440x900-lobby-ready.png",
+      "sha256": "1241b6abdd88ee7afa87a035b6f681328687bdda0811f6b63a048608fdc1ed61"
+    },
+    {
+      "variant": "halloween-ghosthunt",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-material-0.png",
+      "source": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/1440x1000-material-0.png",
+      "sha256": "d3e46a69e60523efc7a9d56065628ffdc7fd584a6b8dfeba4b4640ebabee578f"
+    },
+    {
+      "variant": "halloween-ghosthunt",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-host-menu-desktop.png",
+      "source": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/1440x900-host-menu.png",
+      "sha256": "d97c12e8a8df2939d8604428eaa4007b783a94f9ae594366d4145bf123677895"
+    },
+    {
+      "variant": "halloween-ghosthunt",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-host-menu-mobile.png",
+      "source": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/390x844-host-menu.png",
+      "sha256": "9f92479bc62fb2486fcd822a1d0755006ba1a89ff2d4e0893a3a896358db12c5"
+    },
+    {
+      "variant": "halloween-ghosthunt",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-landscape.png",
+      "source": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/900x450-table.png",
+      "sha256": "689b2768176d4d078e171f71a6c4d457aad05b3af90da871aac1fe29730e2182"
+    },
+    {
+      "variant": "halloween-ghosthunt",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-paused.png",
+      "source": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/390x844-paused.png",
+      "sha256": "f6d98f3f730df09e2f65855470dad8132391e4e639f3f12cbff033f695f09bb5"
+    },
+    {
+      "variant": "halloween-ghosthunt",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-english.png",
+      "source": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/390x844-english.png",
+      "sha256": "5e7b514cb4ac33a69c866cabb7a75cbd3b9431377311bc2dd670ff0b57dea779"
+    },
+    {
+      "variant": "halloween-ghosthunt",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-result.png",
+      "source": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/390x844-result.png",
+      "sha256": "e5be55dfd9c19f88fba0060d6ed553fcb73660c6c86b536d84721cf9e0490104"
+    },
+    {
+      "variant": "classic",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/classic-host-switch.png",
+      "source": "artifacts/uno-ultimate/desktop/classic/1440x900-host-variant-switch.png",
+      "sha256": "878bad31517cfa508b66ae91b753112c2424bdc49b4b953edbc9c4dfe578b93d"
+    },
+    {
+      "variant": "no-mercy",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/no-mercy-penalty-elimination.png",
+      "source": "artifacts/uno-ultimate/mobil/no-mercy/390x844-penalty-and-elimination.png",
+      "sha256": "798af648113f3cba3550fc6562650f9ad6c9ee342444584938798acb5b20b912"
+    },
+    {
+      "variant": "flip",
+      "stage": "after",
+      "path": "docs/design/screenshots/uno-ultimate/flip-dark-colour-choice.png",
+      "source": "artifacts/cards-redesign/ultimate-after/mobil/farbenchaos-flip/390x844-fixture-variant-action.png",
+      "sha256": "5b232c52635876b091ba80d1a3ec5f9ec7718e12ad2f7dfc66877ac5cb14c456"
+    }
+  ],
+  "images": [
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/1440x1000-material-0.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "6d9bc119dd04f95eabb08ae215edbddccf2ecf805d47f328de67ad6355359d30"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/1440x900-english.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "690595e1c0cd41589554334eead1a08b0ad5645927833e93d1d0c9b5002a85cb"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/1440x900-host-menu.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "c8e88b6915a9361c85ad86d6d78cab2a042a5ba33cc86bb90f5ccebf3560752f"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "f91d3fdd2b7d187c4aa5b76dcd47eeeace299d4c3efd5923f6bd7d54747ce8b4"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "369ea2a8ca07d6b8f0f81f256943f5c3a376510c101d5b57f14619a04c6644c5"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/1440x900-paused.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "6da42ce4fd3be70e6bf7c866a56bb21bf4ca95d24c3af428ab4a6fee15f5c360"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "cf376cbb84e136a6a21bec0bab1b3c1b390975d52cf8e5f0ef847da26d95bff4"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/1440x900-table.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "c4c690c759494054fefa954a62c8ab0f60c204da8abaece04860f3da4bf27bab"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "fb5ca908277349cdf2d88fc284cffe3125f8e4bc120c87704acfcb66377a78aa"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/1920x1080-spectator.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "b003e524d3e71825b723b49ee4d673c06e155a7115228ba040f884e8ad6e23b2"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/1920x1080-table.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "ba29db0145ca3d989db2030e67c0cdf564cdde3191f7003075432f67fa609a2d"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/1920x1080-waiting.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "e35988994945da0799d19e8197da23768294e1c53d150aef02b8581126232c71"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/360x800-spectator.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "af220ef62cc2dbf00cc9a73d2df7b81dccd0148214357bd4b54923e0abb9a3d6"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/360x800-table.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "3ec55a07b49eac0c1bcb48ed8c8e5701ae036a3f7ff31fcaa5c1d94f615ee7d1"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/360x800-waiting.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "a881f21af0e0aff728474037000e38b787ed47a293979443a55bfcd8ae7d7991"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "0052b776f7ebd3c0e9aa7dc02a48daeae481d1cf5eec02cf2489439e08c55950"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/390x844-table.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "4b2629b1aeb1bcfe0d1d030b5f284f32c95b803250a22238761cfe284739942b"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "c5ce683d6cfbea2248b1b396c8f4686e9d3b1d2d91add15665129e3098d4ec38"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/768x1024-spectator.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "b1e2cd2c27f5115df3334d2595891fdc51a8ee5a4283dd49f736e8b3554c83ab"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/768x1024-table.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "5d9c764887327cc75aa498cc15f8550605023fdab41866ef2737cff95ed6ea47"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/768x1024-waiting.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "770e7fabd410d5efcc297fca3ae2453c6091346b0987f0773857d53c284c179d"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/900x450-result.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "7d2cc0ef74c38f8b24a9f93fa074c620a71125637496aeb19518f9c3f5aea2eb"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/900x450-spectator.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "b9df09242b807bd62f1b5e4c7af021100d16ab33f5d4a9feb8cfe4a232956f77"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/900x450-table.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "64a566af85ff6e96c08146bb0fb23dec8d457a52536b4d91bed4f39eeecef5e3"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/all-wild/900x450-waiting.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "8e392e930a6570a045f366f90595b249aeda73d1902aa09d85cea0937dbea541"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/1440x1000-material-0.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "39663be5d6e67770f39b917e0a9ff2d3e1688670862877afa9577d1e59cd7735"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/1440x900-english.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "5a5f364955019d1f56d888c0e6c5a04a692e7021c94ed22f877a113d49303620"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/1440x900-host-menu.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "0b2ab48eff5a92d0eb4870a91ae9a09f524e15994739c5808e35a0a21b5049c1"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/1440x900-host-variant-switch.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "878bad31517cfa508b66ae91b753112c2424bdc49b4b953edbc9c4dfe578b93d"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "95e2628e719fa7a559be7058810c3b8e3d8b986e9bfc347dfc6fed086df49b76"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "032d51c932d1216840f98470989f9469cecd0cb9c70afdef5913e9df43c6a5c1"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/1440x900-paused.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "13ab686d74afee24b56d43de39feb60cd789269f88c45294e5d9701b3f9baf9d"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d7ea36a7d7576d7bd2ab5dd1a45a5babdb53ad227df040b42880043d81a71415"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/1440x900-table.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "7f1810ce6ccffaa51f14c9d5eb98574ceeb42e62ac87462e1f1753f2d278f85f"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "85b87a0630f8cf3b9719199d51a07b4ac73c0c854de0a8bc878677fa2eb551cf"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/1920x1080-spectator.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "2fbbb410c61d260a2616a7455f722f1ff93eb161ebbc8fe0a3ee7e2ec17bd5b2"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/1920x1080-table.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "5a317fd67051c1e07c63415ca9060c46fbd19920702ee43744947f08f4ea4065"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/1920x1080-waiting.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "e3452af9964f68659ddcf387018c63c5eb0943612fa978a0eee9b6fc77c44637"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/360x800-spectator.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "b456ce1bf810c67846acbd6729df18607a2edaefdd6c6e23d92419e2c4350e32"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/360x800-table.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "3d71b5e5d0bec88bb9488b720b3de5082d2f864ecaafba35d678f17f8073f284"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/360x800-waiting.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "d0077469a130493f4d76dfd9e1a33b771c2a718bdf4f8a5fd0fd7696b65c92f8"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "5ce624900b7c320207ed6e47a8fbb141671e5deb30208807415ddb29e8a9a33e"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/390x844-table.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "c2909c913d581ac8a937bc428515f8ccf24fde7e8a04e3a1ed3ecf14419a721e"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "17101868cdb887b41342f9a263c4896f5af3604e83a4f303c91c51487b4a55a4"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/768x1024-spectator.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "5c93f831efb95a8e52aa3097bdaa3046a0d480173394bc084a288ad430952d15"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/768x1024-table.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "3c92bc68c8dcd4249bb927bd47e5f50bf485e19e36ff1c9b480b5743862bb4e2"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/768x1024-waiting.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "670259535cd4a1d6f94908099506fba50215cf559c28ac6fd4c307d9d8cc05ff"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/900x450-result.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "9af5a73f289c39b6c36b17ca0e27cd495e970d43d683845e9f59a0c093a4d3f7"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/900x450-spectator.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "cfac08c48a921380403e223f4facb899442211b91daf5844af5eee0d20ba750e"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/900x450-table.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "49793c20385dc64466cbe46846aa6c6d1eec75f89d778fc0c21856a2a893b184"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/classic/900x450-waiting.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "3544aa003194fd3217c52e247a68d3ac951b39eccdbd2e8d18896e682a0b5785"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/1440x1000-material-0.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "b205c8358412f627903bbdafe2dda124cdae2c89d21b77ac76f6c97b54c2451c"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/1440x1000-material-1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "963efa642b608d26b7f9a6de713276db0051fc4f9e77d98b573cb40636aa1930"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/1440x900-english.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d0290f4fe7a85c1cf849156ccfd985b0f8c8d12b171a3fd05b53e279c628ef80"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/1440x900-host-menu.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "33070dca9d90fe30964b69644c918902bc11f29d830a9ae444fa96295b027ce9"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "aaf7e2fefe8881bccc259cfd108438d71591187b170a25c2caf9a819ca18b5a4"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "5f06616047fb8cc42b48658d9026683fdae037dfee480408c91c23d061472e08"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/1440x900-paused.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "53a997c992d7cc028c3dbd9033f9ccbe4cb93a3e0a2745f77d05abf02337d8e6"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "7cc96d91f7615a50c16a00e762cf18fb138da1db4d0ccd179c95ad0cd13829c1"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/1440x900-table.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "4a6104938715b0ff4696179ebcb43cc3395f5209f3a4f027b2dd6bb58dd1c4bb"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "b12480af9eb1565ee2a8fca0e42d8c8b7cc7f3ca9fbe7bc4faf0d3887388fa56"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/1920x1080-spectator.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "37c6a400a67b4a7f40a30bc1134cce4191a438ad85c0355f61eb15f44ca6c0ad"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/1920x1080-table.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "823623c82911f483faa787ed7907d68f56aaeeb11018cdfe177cd0828be6c4d4"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/1920x1080-waiting.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "51befa127dac0f9a48e33be8da2e95f3cfee59a4970f746cca1c09ec1085762a"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/360x800-spectator.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "0eed07e0c68d39588960a8db949832fca76296451defb9d0319dbeb05d67c6aa"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/360x800-table.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "921786e564058d29e5fefbf14c39b4e55a46378b0e0eac4da4562c54a9991cb3"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/360x800-waiting.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "4db5b50bab482e8856cf9222e76d49dc90ff5624a6aca5628fde2fc87ac76312"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "bc5e58180cd3bfd226b727a8b4104ce742516d0bcf205074670a30908fb394e3"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/390x844-table.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "5d75e13854c9777929486d62241c484d80698a11adebd0a581c037bb65ce6d84"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "afbb1091a1bb547223af9ad1ce0023fb352b8acfb8259958ee4a0f2c135f4f7e"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/768x1024-spectator.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "39533e9d1a0fd2b4175619e9e84d47c7be548e6b9d79446e54c70da6d6e478de"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/768x1024-table.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "63e3ac34b4c5235ed51073ea2ae917c61ae224c1492ddb3cd7cdfcb5104f05d2"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/768x1024-waiting.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "02e105539b3ab3bc78da54fd86c5f6246f82d48de48425e9323b035d9acbd074"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/900x450-result.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "244c5a96e7a0b236cd863af09759aadb2ca6f1a1011eb2d24edcd15eb3b13595"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/900x450-spectator.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "0e483f7d024eb832077970d9626451becc2386938f3c3351d887ebc6b61ab2d0"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/900x450-table.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "d5c2c0cd2e140da3d6a2ae4efa614d3ceaf708967162ad582917ef23fa2fa786"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/flip/900x450-waiting.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "7495f9116d97027b44e1d242ab3cd9a97e7e688e689664602272c12ad01dcd15"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/1440x1000-material-0.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "d3e46a69e60523efc7a9d56065628ffdc7fd584a6b8dfeba4b4640ebabee578f"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/1440x900-english.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d3d9b7aa2d1458daa882788f39129b2c017c7480fcd8b2807041e3a14c01fa47"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/1440x900-host-menu.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d97c12e8a8df2939d8604428eaa4007b783a94f9ae594366d4145bf123677895"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "1241b6abdd88ee7afa87a035b6f681328687bdda0811f6b63a048608fdc1ed61"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "03c8f5f6d2fc32cd59cd411a756cb1878e55415342728cb6066e6bd25c69d816"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/1440x900-paused.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "7fcc4a0cf07ebd97497a77c4af8f1b743d291d1c4d4f9ef5dee4a3877bb42005"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/1440x900-result.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d172532bed87032fffa932eae856a2ed755e220e490e4506cbe468b5303c041f"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "4319271e70b897b861705a5da314671fc9f425abbb0101a8e420403822b702f7"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/1440x900-table.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "dd6e0e83ddc84e0713d20f02fab6e21c0597c011677e317bcd147c8f4c2bcd53"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "525c7310ba727ef6f81c7e8055137a4171aec54b05cbfd97fc61933a1acb7ec4"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/1920x1080-spectator.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "a8618f25219ba039fccfb1ea0dd081a17917cd52cb9271c7720f4aa363363216"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/1920x1080-table.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "8cd4b914fca4b0cbc80ca4175b47b822e3dd7be458915798d097c1e48a90a956"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/1920x1080-waiting.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "577e6217dc82e9ca3a5588ddbde979cf7bdcac193e52de12884d775638ff4896"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/360x800-spectator.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "42942933677bf886fc20fb275f926e631a6a9284bd2b932d963e31316b5081c6"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/360x800-table.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "12ad9c58dacba882ef555283fe2a99409945162d83eee1d0fe83d15e37121bac"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/360x800-waiting.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "86625ee15a317f2a5c7e1ff4ab364ec979a94f38d0d54af82386d896ea4eccf1"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "8845cddd33236b1bd032d9203fe998f98b269174add91e044ca4c70bfa71c86d"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/390x844-table.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "3fad6b9a4c51a8697715186fbb708e94750a7129b635cd8141db7f1370ea012c"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "5be870553cc1edc4afdd09bbe45412d8795f4dd3164c167242ac11a8c5669a50"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/768x1024-spectator.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "c59f54348609c8ae191b398ee92189d7cafce8d99383bd950df186338c0cab6b"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/768x1024-table.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "6f7f49370b7c0846ed6efdef675d376b82bd4185a4766de1608fffdf63875764"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/768x1024-waiting.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "5cc5039c2bd7fe01f18e8310924c776dcee0fc8b907ac0a3b73578e5cec6d54c"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/900x450-result.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "c660f747ab537fae7b090d1e9b781d261a3dd056ea956cd17298a9c2bd0b5d4b"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/900x450-spectator.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "6cad1c29468cbbe538f13a718ca47d7fd03bb3dd2e63872070d3b2e7e3f279f4"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/900x450-table.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "689b2768176d4d078e171f71a6c4d457aad05b3af90da871aac1fe29730e2182"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/halloween-ghosthunt/900x450-waiting.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "e4c49d158db6267fc06d089a879a30cfa44fa13b55cb89f26b8a147594f62ede"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/1440x1000-material-0.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "d47b8f245f95846222842548eff6967a3fd701fcf184e730e26f89585c9beae8"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/1440x900-english.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "9f2ce4e5e2958d567c8369cc2898dc15b0bc59b66d7db259a222f6156ab874b4"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/1440x900-host-menu.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ea9737a714a08e92fe4bbf73d138a03935eca480abbae853a7c5fb00de76c583"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "1a6e9420055378c53e09ed6c68d3a3ca29b7ed07a88c71b728d9367116c66e96"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "06cdc1e5acc4a54e4e0268d44c4cdf9fb784ac1989a691021ff69abc46bbf51b"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/1440x900-paused.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ef4f7a511860fa9ecf10a91efa6fdc23f84bb38ace5904f3e3311fa905ef0d4c"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/1440x900-penalty-and-elimination.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "10849f29a5c4decec4a77beb6a1d71d4e9cc73ce35a97234b95b5bda23910ebf"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "bb54f62f6887ba5fd4d4b4ad41d20e71d386435f3e8763a73ec0fd7a1ab052ac"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/1440x900-table.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "31ed776ff68a53d45e1936de173f9242382266eb0d58f5af405479772368edc8"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d6fd24eea64b75ac06fffcee55b7073fa85d31a1806a9d39d43f1e2a3f31668f"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/1920x1080-spectator.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "6fd1ab6316baf77cc36d0432f0cc57aa40895195f3d3649e4230018dae230ca0"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/1920x1080-table.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "ef54d6710c5b5073e3aad47487713040edc1a9e4293fde98ac0f77e47edeb94f"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/1920x1080-waiting.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "f8ee15803daa33a613722d3e8879fa4cae0b38184bd371049a78b493d25ea453"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/360x800-spectator.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "3ed2d11a2909db53471e66d23bc99e8914b0101671856608f7ab07eb19371a83"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/360x800-table.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "83ced3e958d2014487eb8aee11f9ecf64122a04f94d23deb7dd0bdbd6fd8e290"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/360x800-waiting.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "dd2d595439f29b08641a6758ab75e6f1c25040317398795f25235a9b6ff5cfd4"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "bd3f829a667c976ec2d3e47fc6338321f3fd734a6e8cb2b5bdaeb3ecf12fcb8c"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/390x844-table.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "2dee2b448162a2d3c06060dc11d6bdd488ba8ffaffce15939639195745f24cc4"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "7c0575e090e7782e013aef99c7ada9efd252c34c21ad6b1aa692a2113b672e5d"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/768x1024-spectator.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "85c7a890e0d26cff4b9cc0d85e5d983503518648545954e8ccf33492ccdefd29"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/768x1024-table.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "cb03e71bafbabeb1357f311872290e8a190fd7ecc221fe623e55cd5e1b60e1c3"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/768x1024-waiting.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "24b7447916714033a1bad03f09fff776fa6092d319b9fba820fa46093efead39"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/900x450-result.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "fc85180f218d21405ca7f121f4a4ef9aa963ae14be3e6917670cd2914b6fd1b7"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/900x450-spectator.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "17fb896f92145e7601d30aac541fb1f8af0b684ccc9c440b5c4dba686acb0653"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/900x450-table.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "c49f1c98807bf3480220f40d3dc4bc268f369aa68237f89344346908c21e11ba"
+    },
+    {
+      "path": "artifacts/uno-ultimate/desktop/no-mercy/900x450-waiting.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "ae77b4d822fad8cdb9b05e6147b1370d7320e90f17c8702551c3da1cd6aaa42d"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/all-wild/1440x1000-material-0.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "165e5d3e9b7678c044dc3d6653803507222e508f00133c86f3caf07686a778d0"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/all-wild/360x800-spectator.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "5d93be1ea5197fd8e248c0a4268534be903cfd8199924ba8ed2936b39dccfc0b"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/all-wild/360x800-table.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "c7ce7f9264c3d5b9f1342375e75253c2627d9280421a0e952dd471a45caa5a34"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/all-wild/360x800-waiting.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "f477318cfc65bbe4d90c8c67a00a46cd56750014fd8412091c1d0d8ecd95b7cd"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/all-wild/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "2545949055f8433532b46546fb5f0f7bdb3063c70f9b1413ee90070660c58d78"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/all-wild/390x844-host-menu.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "9d463b787e225ecf1102a2871673edefebe07eb60410dd3b122a878532046282"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/all-wild/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "40eccb201339657b9b4603967d3f56856522488eb45cbae5ccb92ddcf8206621"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/all-wild/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "a48984b720d14254a4e0ecca10e4b162a057ba28b044ea0139c40065bdd5161e"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/all-wild/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "a7ea3f24a5742c0801333c1ac35471471e23e4d3ee808d2936f297387c8d9586"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/all-wild/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "5d90e9d7d9966ffbe091e414b6d1cc48e2e1850b5083bb77bc0f1a34e1fa17fb"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/all-wild/390x844-table.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "c1641cef1b384cccaaa09b29ca2baa894fecc78e4e54a38b021ce1e3032d5f96"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/all-wild/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "a0a33e875be15e5fc8d2fb76601a3040e37f4243c7669c64fd8e308fd2894cfe"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/all-wild/900x450-result.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "0d40e284b0e86f83420ced3d74f7e6a91cac8dc780de518265cccdb66b1ef87f"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/all-wild/900x450-spectator.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "4b2059b3b9998d1646ca5d26c3f5a10391d8f0d4d48904c7657e88490e52406e"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/all-wild/900x450-table.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "ac67e5d3ac10cb8adf32e223a318a5de4e2bf29a91ce79e397891bfaafba1ceb"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/all-wild/900x450-waiting.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "372fdd6227bd50e093a8f116fa7c8d46605b033dc7f5b02be028d6d2f402ec28"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/classic/1440x1000-material-0.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "f3c38b7dd201d6daee0298898231056257aac509e4ed8421e0c1aea5f1d890f0"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/classic/360x800-spectator.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "1f34fbec5d5e998e344cccddec93d5b68bc23c93b0a10de713fbff4a5562f125"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/classic/360x800-table.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "661044038b44e734d93d0541a3f356294854efd07f908f7519936462ae59df85"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/classic/360x800-waiting.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "4f86be5d6961bfc09f22380e106405361b36d1a70917be5a7a129df869df3521"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/classic/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "11f3ffe5e83d0c07713fcc529904d8456c9222025596076d37b3943660e9d878"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/classic/390x844-host-menu.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "b4eaf3c2a580b0d74807d7f949e32d700e39c153ef22228236d5fd110387c79b"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/classic/390x844-host-variant-switch.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "420aaa51c56d80c24187bace0ae22078ab2d4756a8ffa3e52782ebec70fe7d65"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/classic/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "7653b4385e407b4c18bfad090373a3cf5469501609320ceb07893f617acc51cf"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/classic/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "07f16e028aa6467a2a312633d62cf5a5aced0dbe6082d328aad0bf2d2a503fd9"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/classic/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "058b47d7569ac07d035d4099ff27c196a88000cab95a642b3f0654a822c4cfe3"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/classic/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "3b8a271ce130b33fc33581be4500f1e8e7b34fb47040dfe0fc26a492099138e6"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/classic/390x844-table.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "98ceb4c96a3da73fdba4e4bc9d824da133bc087e2774413b3f437d010a650edc"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/classic/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "6ca4c994f8cb878762676c7e4ff701e64a08a70b50abcf80a9063a3347bb2e4f"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/classic/900x450-result.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "2567dd8d0b8addae0a92e29e3c11e196d03a1d19d955622403d19fcc6776e504"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/classic/900x450-spectator.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "39f3fd316c1d34c8c00d59040d95192a2d160195849bfaed26b2b3d17acd6462"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/classic/900x450-table.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "47f6adfcdad32e3d0ac7eccba070b5e97317eeea04619415f073846bb5042e7c"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/classic/900x450-waiting.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "fa1d44ee3c00f1e3ee78cd839268ad0ccc66cc73b5bd511058f85b28b451af6a"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/flip/1440x1000-material-0.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "2edfaf056f47570e15333d9134b1018da69edc0989ab110a6cfaa96b85a86241"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/flip/1440x1000-material-1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "c33b97059bcab5b1359419f0d4acfaf8b90107dbd4049021ee4d6226fc78c213"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/flip/360x800-spectator.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "3069482c2fc908e54bc60c5c24fbe0ea7ea2303470c3b8dce68f7ca52e27a9c6"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/flip/360x800-table.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "6645d4d3316cc9ed940cfc225f5498bab827118d81d57e2b42f98cbb73ee9797"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/flip/360x800-waiting.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "2e528b7d3c61c3256911efad2179834b5ed86062b414233871f61ec2c8222731"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/flip/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "ce378f2a34bf64d0ce539962c5aba2f2064a57ce9151fffad727956ba4b89f94"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/flip/390x844-host-menu.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "dd2bec87ceb296f5c8440d2fa580ab2b34b0fe52076ad3ccbc8a626fba9de544"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/flip/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "1a0f7f7be3c4d1763dd85501ea887a92b8776cafce260eec336cc83af25f9712"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/flip/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "32ebd805acd2255aa076cb9dddf2f5e1452443ab0f7f8bd002a3bf4f33e9ad30"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/flip/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "01a0fc4b073b276ad3d8cf98cb284acd860b0fa9021196c7ace8b3c02acd671c"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/flip/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "b410451d32f06ed581355aeac9542d658909f8b2a511a5fffc5b40a9f217c739"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/flip/390x844-table.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "019e1512e294159e62059658c90b9f2a2cf0ee4426de29624aa6b18e83e63c43"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/flip/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "55144571c2f20bfb4050ee04f257b2ce58fffd870fd30610b02eb203aa37ca2c"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/flip/900x450-result.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "e797dc3918c6c6c42cba28f9691220cb5fe2e1920d039ebf1f986f49e8902356"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/flip/900x450-spectator.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "161dc1afd554118140d8f9da4086d2e09419fce65e1f7b7b38eb6903e1a6e497"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/flip/900x450-table.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "3f58bf638f11a488567d7de27e1de61b225dbc6cccc1f3ec4c474eca916153cc"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/flip/900x450-waiting.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "61220fee809031690d1dc320869bc15dfdaccfeebc018de8eec1d890ce5ac081"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/1440x1000-material-0.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "51f01b939a4498286a695564293ac383cb0e60b0214358ed244a1e87f9a67434"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/360x800-spectator.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "9d9e86d1c91c49c71e3fbcd288830aaf2b8f27074bd8d1fc3c5fe2c03f34fc03"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/360x800-table.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "06b79fe06713c54cc189a4e10f02e1af3b82aa26fad7042fc7b3a17687fd6a46"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/360x800-waiting.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "5365cb064b1ec1ac547debbb84d1869242129386c3c9d8752485b77bc211ce73"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "5e7b514cb4ac33a69c866cabb7a75cbd3b9431377311bc2dd670ff0b57dea779"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/390x844-host-menu.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "9f92479bc62fb2486fcd822a1d0755006ba1a89ff2d4e0893a3a896358db12c5"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "731d320fdb06b96aa2f634466248164a43c71962c3265c73b891e963877b0a7e"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "58343e39eccf91cbe0e93b52142d1ae8012ab595fa68fd29f29dabf9ed63ef76"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "f6d98f3f730df09e2f65855470dad8132391e4e639f3f12cbff033f695f09bb5"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "e5be55dfd9c19f88fba0060d6ed553fcb73660c6c86b536d84721cf9e0490104"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "fc515673d2019658624862eb50d0b514118d1d47e7455beeb3c2a224d5d7b4bd"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/390x844-table.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "e58ef50e20fd9363d7461d3720f9b09337d41ab921529329b2821a5326fdd7c9"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "648c19ed5d3b6914b5d086097bfc854e65b65ed82579e8d0295d01f81a44cdcc"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/900x450-result.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "b2b3d57560338dcef57b3818942b74193a282c6fe817602c2db8b289be4e576c"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/900x450-spectator.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "981924832085a6b278367ed2e6d17c0fa5ef948f84a44d66dcdf4c7269353358"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/900x450-table.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "a42ed1339b44efb74bc6579ae10b88d1cc268f7a61c078dad73c220eca2e1775"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/halloween-ghosthunt/900x450-waiting.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "9431237ab1003b8502d969f7dd24d13ffbb503c55f31862192af7671fbea61b3"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/no-mercy/1440x1000-material-0.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "ade5b0932cf3f466d631248b51fa54b5fe7c823501924eeb3fd93150022845b2"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/no-mercy/360x800-spectator.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "8852b638d193e60db6ba48913fa9f4b5305bf806a8c63577cdab4978945aa90d"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/no-mercy/360x800-table.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "59e551183a2fb688c818a35afc9389344365ce0e47d982baba3a0ce40f6838fa"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/no-mercy/360x800-waiting.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "cf528690f77279aabe3214554542f6dbe7642db5cbbe0e1fe3266db6515d33f9"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/no-mercy/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "91095b4705fb5590f2c2bfe5363a1813139bb7e399eacb71db014e4c6e0b49b4"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/no-mercy/390x844-host-menu.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "a740a167b57b6e6e14616972f1123431425b16a2cb665e522570a92e8d044217"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/no-mercy/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "ccff81c5c3e99fd24eb2eb9b79f020a3beab058184c3e12534d4dae8280f4cfd"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/no-mercy/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "5c8c6a66bc663bb3bbeb4b542b32e2b8a568c0fa2775017cc02c0b06c3101751"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/no-mercy/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "55e189f446d7eea78efbcc6656a916a1451fbc4c1c442f6a9eee7d0448a52b8a"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/no-mercy/390x844-penalty-and-elimination.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "798af648113f3cba3550fc6562650f9ad6c9ee342444584938798acb5b20b912"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/no-mercy/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "5d070f15d33d2b599cda1526b9bb5a23a42d3b6b2e4e5fabe15994b48c924eb7"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/no-mercy/390x844-table.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "6f44c68f1a0ff31781ec2ab010624f1944d389c4293b8608e12ed695e7177e02"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/no-mercy/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "5160fe1337dbf7f5e93dffa59786995c22e9267fb6317838c969a0934fa8970c"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/no-mercy/900x450-result.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "d3c0ca1857504eec3e727656fe5051ddc4b9379a49b5923c6aadcce9ad79ce64"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/no-mercy/900x450-spectator.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "a927ef3511712050e61d91b0b6e3020c6c45377511349d796251a90fff6f7638"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/no-mercy/900x450-table.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "a9bd6470f3ceef8cf73f956615079b1863286e011e3754e777c53c488930be33"
+    },
+    {
+      "path": "artifacts/uno-ultimate/mobil/no-mercy/900x450-waiting.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "02b039243bbe6bf09f4cbbc21d89425ed34ff97b60177c61c4ead489d9f741b7"
+    }
+  ]
+}

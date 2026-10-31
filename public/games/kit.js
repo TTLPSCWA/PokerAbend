@@ -635,6 +635,7 @@ function kitShedding(opts) {
     id: opts.id, name: opts.name, house: opts.house, sort: opts.sort, prefs: opts.prefs, translate: opts.translate, intro: opts.intro,
     // Optional presentation hooks; existing shedding games keep their defaults.
     lobby: opts.lobby, ring: opts.ring, resultExtra: opts.resultExtra,
+    afterRender: opts.afterRender,
     look: (S) => [{ title: I18n.t('Zuletzt gelegt'), html: lookMoves(S.moves, { filter: (m) => /^legt /.test(m.t), n: 10 }) }],
     moveDetail: () => '',
     get rules() { return opts.rules; },
@@ -655,11 +656,12 @@ function kitShedding(opts) {
       return n ? opts.playHint(g) : I18n.t('Nichts passt – zieh eine Karte');
     },
     onDrop(src) { if (src.dataset.card) src.click(); }, // Ablage ist das einzige Ziel – Ziehen = Antippen
-    onState(S) {
+    onState(S, prev) {
       if (!S.g?.playable?.includes(wishFor)) wishFor = null; // Karte weg oder nicht mehr spielbar
       if (targetFor && !S.g?.playable?.includes(targetFor)) { targetFor = null; chosenTarget = null; }
       if (S.turnId !== S.you?.id) chosenTarget = null;
       if (S.turnId !== S.you?.id) callArmed = false;
+      opts.onState?.(S, prev);
     },
     main(S) {
       const g = S.g;
@@ -671,8 +673,8 @@ function kitShedding(opts) {
       return I18n.html`<div class="kg-table">
         ${opts.tableIntro?.(S) || ''}
         <div class="kg-piles">
-          <div class="kg-pile">${backCard(g.deck)}<small>Stapel</small></div>
-          <div class="kg-pile kg-discard ${opts.pileClass ? opts.pileClass(g) : ''}" data-drop="discard">${g.top ? opts.card(g.top, { cls: 'big', attrs: 'disabled' }) : ''}${penalty}<small>Ablage</small></div>
+          <div class="kg-pile">${opts.backCard ? opts.backCard(g.deck, S) : backCard(g.deck)}<small>Stapel</small></div>
+          <div class="kg-pile kg-discard ${opts.pileClass ? opts.pileClass(g) : ''}" data-drop="discard">${g.top ? opts.card(g.top, { cls: 'big', attrs: 'disabled' }, S) : ''}${penalty}<small>Ablage</small></div>
           ${wishBig}
         </div>
         <div class="kg-chips">${wish}${pending}</div>${opts.extraMain?.(S) || ''}
@@ -685,7 +687,7 @@ function kitShedding(opts) {
       const hand = (g.hand || []).map((c, i) => opts.card(c, {
         cls: `${myTurn && playable.has(c) ? 'can' : ''} ${wishFor === c ? 'sel' : ''}`,
         attrs: `data-g="card" data-card="${c}" data-peek="${c}:${i}" ${myTurn && playable.has(c) ? `data-drag="${c}"` : ''} ${myTurn ? '' : 'disabled'}`,
-      })).join('');
+      }, S)).join('');
       let acts = '';
       if (myTurn && targetFor) {
         acts = I18n.html`<div class="kg-acts">${S.players.filter((p) => p.inRound && p.id !== S.you.id && !p.eliminated).map((p) => I18n.html`<button class="btn" data-g="target" data-target="${esc(p.id)}">${esc(p.name)} (${p.cards} Karten)</button>`).join('')}<button class="btn btn-ghost" data-g="nowish">Abbrechen</button></div>`;

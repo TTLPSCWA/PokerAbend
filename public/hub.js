@@ -197,6 +197,7 @@ function openHost(id) {
       <p class="host-meta">${uiText(catTitle(g.category))} · ${esc(playersText(g))} · ca. ${g.duration} Min.</p></div>
       <p>${uiText(g.description)}</p>
       ${(g.variants || []).length > 1 ? I18n.html`<label class="field"><span>Spielvariante</span><select class="input" id="host-variant">${g.variants.map((v) => I18n.html`<option value="${v.id}">${esc(v.name)} · ${v.minPlayers}–${v.maxPlayers} Spieler</option>`).join('')}</select></label>` : ''}
+      ${unoVariantPreviewsHTML(g.id, g.variants || [])}
       ${(g.createFields || []).length ? `<div class="host-fields">${g.createFields.map((f) => `<label class="field"><span>${uiText(f.label)}</span>
         <input data-cf="${esc(f.key)}" type="${f.type === 'number' ? 'number' : 'text'}" ${f.min !== undefined ? `min="${f.min}"` : ''} ${f.step ? `step="${f.step}"` : ''} value="${esc(f.value)}"></label>`).join('')}</div>` : ''}
       <p class="hint">Alles Weitere stellst du am Tisch unter „Host“ ein.</p>

@@ -1,6 +1,12 @@
 // Reviewed English UI messages; German source text is the fallback for missing entries.
 'use strict';
 window.EN = {
+  'UNO-Varianten': 'UNO variants', 'Spuknacht': 'Ghost Night', 'UNO: Spuknacht': 'UNO: Ghost Night',
+  'Modern Card Table · Gleiche Farbe oder Zahl, mit wählbaren Classic-Hausregeln.': 'Modern Card Table · Match a colour or number, with configurable Classic house rules.',
+  'Dual World · Zwei Kartenseiten, neue Farben und echte Flip-Wechsel.': 'Dual World · Two card sides, new colours and actual flips.',
+  'Extreme Edition · Strafketten, mächtige Aktionen und Ausscheiden bei 25 Karten.': 'Extreme Edition · Draw chains, powerful actions and elimination at 25 cards.',
+  'Wild Card Universe · Jede Karte passt; Aktionen und Handtausch bestimmen den Zug.': 'Wild Card Universe · Every card fits; actions and hand swaps shape your turn.',
+  'Halloween Special – Die Geisterjagd beginnt. Classic-Regeln und Hausregeln auf einem paranormalen Ermittlertisch.': 'Halloween Special — the ghost hunt begins. Classic rules and house rules on a paranormal investigation table.',
   'Neue Spielwelten & schönere Spieloberflächen': 'New game worlds & better game interfaces',
   'Scotland Yard, UNO, Skip-Bo und Phase 10 sind visuell überarbeitet. Weitere individuelle Spielwelten folgen schrittweise nach eigener Freigabe.': 'Scotland Yard, UNO, Skip-Bo and Phase 10 have been visually redesigned. More individual game worlds will follow step by step, each with separate approval.',
   'UNO, Skip-Bo & Phase 10: eigene Kartenwelten': 'UNO, Skip-Bo & Phase 10: individual card worlds',

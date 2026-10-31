@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 650" fill="none">
+  <!-- Original PokerAbend investigation scene, drawn locally. -->
+  <defs><radialGradient id="moon"><stop stop-color="#c7d6c6" stop-opacity=".3"/><stop offset="1" stop-color="#adc5c4" stop-opacity="0"/></radialGradient><linearGradient id="mist" x2="1" y2="1"><stop stop-color="#8da7b1" stop-opacity="0"/><stop offset=".5" stop-color="#b6c2b3" stop-opacity=".12"/><stop offset="1" stop-color="#7a94a7" stop-opacity="0"/></linearGradient></defs>
+  <circle cx="850" cy="180" r="190" fill="url(#moon)"/><circle cx="850" cy="180" r="48" fill="#c8d2be" opacity=".45"/>
+  <path d="M328 530V300l105-86 96 85v-67l88-86 88 86v67l96-85 103 86v230" fill="#111f21" stroke="#658181" stroke-opacity=".4" stroke-width="3"/>
+  <path d="m310 307 123-113 101 86m-24-43 107-108 108 108m-24 43 100-86 122 113M332 330h566M532 240v290M702 240v290" stroke="#698380" stroke-opacity=".4" stroke-width="5"/>
+  <path d="M583 530V399q34-42 68 0v131" fill="#0a1519" stroke="#62807b" stroke-opacity=".4" stroke-width="2"/>
+  <g fill="#d7be82" opacity=".42"><path d="M395 315h37v61h-37zM802 315h37v61h-37zM592 249h48v65h-48z"/></g>
+  <g stroke="#15262a" stroke-width="5"><path d="M413 315v61M395 344h37M820 315v61M802 344h37M616 249v65M592 279h48"/></g>
+  <path d="M213 580V190m0 127-72-89m72 48 66-106M1008 580V132m0 184 91-119m-91 48-68-92" stroke="#152a2b" stroke-width="17"/>
+  <path d="M60 530q310-95 590-10t500-26v111H60Z" fill="url(#mist)"/><path d="M120 581q300-75 580-10t480-30" stroke="#a3b9b1" stroke-opacity=".12" stroke-width="18"/>
+  <g stroke="#738c82" stroke-opacity=".4"><path d="M345 559h550M375 589h490M408 622h425"/></g>
+</svg>

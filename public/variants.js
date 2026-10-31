@@ -1,10 +1,23 @@
 'use strict';
 const variantMeta = (game, id = 'classic') => account.games.find((g) => g.id === game)?.variants?.find((v) => v.id === id);
 const variantBadgesHTML = (game) => (game.variants || []).filter((v) => v.id !== 'classic').map((v) => `<span class="variant-badge">${esc(v.name)}</span>`).join('');
+// UNO keeps its native select as the single source of truth, with accessible visual choices.
+const unoVariantPreviewsHTML = (game, variants, selected = 'classic', disabled = false) => game !== 'farbenchaos' ? '' : `<div class="uno-variant-options" role="group" aria-label="${I18n.t('UNO-Varianten')}">${variants.map((v) => `<button type="button" class="uno-variant-pick" data-uno-variant="${esc(v.id)}" aria-pressed="${v.id === selected}" ${disabled ? 'disabled' : ''}><span class="uno-preview-art">${v.art || ''}</span><span><b>${I18n.t(v.displayName || v.name)}</b><small>${I18n.t(v.description || '')}</small><em>${v.minPlayers}–${v.maxPlayers} ${I18n.t('Spieler')}</em></span></button>`).join('')}</div>`;
 const variantControlsHTML = (S) => {
   const variants = account.games.find((g) => g.id === S.game)?.variants || [];
-  return variants.length > 1 ? I18n.html`<section><h3>Variante</h3><label class="field"><span>Spielvariante</span><select class="input" data-variant ${S.phase === 'playing' || programRunning(S) ? 'disabled' : ''}>${variants.map((v) => I18n.html`<option value="${v.id}" ${v.id === (S.variant || 'classic') ? 'selected' : ''}>${esc(v.name)} · ${v.minPlayers}–${v.maxPlayers} Spieler</option>`).join('')}</select></label><p class="hint">Beim Wechsel gelten die Standardregeln der neuen Variante und ein neuer Tischstand. Ein vorbereitetes Abendprogramm wird dabei ersetzt.</p></section>` : '';
+  return variants.length > 1 ? I18n.html`<section><h3>Variante</h3><label class="field"><span>Spielvariante</span><select class="input" data-variant ${S.phase === 'playing' || programRunning(S) ? 'disabled' : ''}>${variants.map((v) => I18n.html`<option value="${v.id}" ${v.id === (S.variant || 'classic') ? 'selected' : ''}>${esc(v.name)} · ${v.minPlayers}–${v.maxPlayers} Spieler</option>`).join('')}</select></label>${unoVariantPreviewsHTML(S.game, variants, S.variant, S.phase === 'playing' || programRunning(S))}<p class="hint">Beim Wechsel gelten die Standardregeln der neuen Variante und ein neuer Tischstand. Ein vorbereitetes Abendprogramm wird dabei ersetzt.</p></section>` : '';
 };
+
+document.addEventListener('click', (e) => {
+  const button = e.target.closest('[data-uno-variant]'); if (!button || button.disabled) return;
+  const control = button.closest('form,section')?.querySelector('#host-variant,[data-variant]');
+  if (!control || control.disabled) return;
+  control.value = button.dataset.unoVariant; control.dispatchEvent(new Event('change', { bubbles: true }));
+});
+document.addEventListener('change', (e) => {
+  if (!e.target.matches('#host-variant,[data-variant]')) return;
+  e.target.closest('form,section')?.querySelectorAll('[data-uno-variant]').forEach((el) => el.setAttribute('aria-pressed', String(el.dataset.unoVariant === e.target.value)));
+});
 document.addEventListener('change', (e) => { if (e.target.matches('[data-variant]')) send('setVariant', { variant: e.target.value }); });
 const VARIANT_RULES = {
   'monopoly/speed': ['Tempowürfel', 'Standard-Startgeld 2.500. Jeder schaltet den dritten Würfel erst nach seinem ersten Überqueren von Los frei. Im Gefängnis werden nur die beiden weißen Würfel geworfen.', '1, 2 oder 3 werden zu beiden weißen Würfeln addiert. Bus: einen weißen Würfel oder deren Summe wählen. Bei drei gleichen Zahlen ein beliebiges Feld wählen. Nur weiße Pasche zählen für den Zusatzwurf und drei aufeinanderfolgende Pasche.', 'Glück: Erst das normale Zielfeld vollständig abwickeln, dann zum nächsten freien Grundstück ziehen. Sind alle vergeben, zum nächsten fremden, unbelasteten Grundstück mit Miete. Ein Gang ins Gefängnis beendet den Glückszug. Ansonsten gelten die normalen Monopoly-Regeln.'],

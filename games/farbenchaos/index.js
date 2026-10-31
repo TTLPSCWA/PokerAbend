@@ -9,6 +9,7 @@ const str = (v) => String(v ?? '').slice(0, 20);
 export default turnGame(Room, {
   id: 'farbenchaos',
   variantRooms: { flip: VariantRoom, 'no-mercy': VariantRoom, 'all-wild': VariantRoom },
+  implementedVariants: ['halloween-ghosthunt'], // The existing Classic Room, including every house rule.
   name: 'UNO',
   description: 'Farbe oder Zahl ablegen, Aussetzen, Richtungswechsel, +2 und Farbwahl. Der Gewinner kassiert die Punkte.',
   category: 'karten', // Karten, Würfel oder Brett – gruppiert die Startseite
