@@ -1,6 +1,14 @@
 // UNO im Browser (Regeln: games/farbenchaos/room.js). Bedienung wie Mau-Mau (kitShedding), eigene Karten.
 'use strict';
 {
+  const tx = (de, en) => I18n.language === 'en' ? en : de;
+  const variantLabel = (S) => ({ classic: tx('Klassisch', 'Classic'), flip: 'Flip', 'no-mercy': 'No Mercy', 'all-wild': 'All Wild' }[S.variant] || tx('Klassisch', 'Classic'));
+  const variantBrief = (S) => ({
+    classic: tx('Gleiche Farbe. Gleiche Zahl. Dein nächster Zug.', 'Match a colour. Match a number. Make your move.'),
+    flip: tx('Zwei Seiten. Neue Farben. Eine überraschende Wendung.', 'Two sides. New colours. An unexpected turn.'),
+    'no-mercy': tx('Große Aktionen. Klare Entscheidungen. Bei 25 Karten scheidest du aus.', 'Big actions. Clear choices. Reaching 25 cards eliminates you.'),
+    'all-wild': tx('Jede Karte passt. Welche Aktion spielst du?', 'Every card fits. Which action will you play?'),
+  }[S.variant] || '');
   const COLOR = { r: 'Rot', y: 'Gelb', g: 'Grün', b: 'Blau', w: 'Schwarz', p: 'Pink', t: 'Türkis', o: 'Orange', v: 'Lila' };
   const LABEL = { S: 'Aussetzen', R: 'Richtungswechsel', D: 'plus zwei', W: 'Farbwahl', F: 'plus vier', I: 'plus eins', H: 'plus fünf', B: 'Farbwahl plus zwei', L: 'Flip', E: 'Alle aussetzen', C: 'Zieh bis Farbe', A: 'Alle ablegen', U: 'plus sechs', Z: 'plus zehn', V: 'Richtung plus vier', Q: 'Farbroulette', K: 'Zwei aussetzen', T: 'Gezieltes plus zwei', X: 'Hände tauschen' };
   // Symbole selbst gezeichnet: Aussetzen = Kreis mit Strich, Richtungswechsel = zwei Pfeile, Farbwahl = vierfarbiger Kreis
@@ -22,6 +30,20 @@
   kitShedding({
     id: 'farbenchaos',
     name: 'UNO',
+    ring: false,
+    lobby(S) {
+      const players = S.players.filter((p) => p.seated), ready = players.length >= S.minPlayers;
+      return `<section class="cw-lobby fc-lobby"><div class="cw-lobby-art fc-lobby-art" aria-hidden="true"><div class="fc-colour-orbit"></div>${(S.variant === 'all-wild' ? ['Ww','Rw','Dw','Fw'] : S.variant === 'flip' ? ['7r','Lb','Iy','9g'] : ['7r','Rb','Dy','9g']).map((c, i) => `<span style="--fan:${i}">${card(c, { attrs: 'disabled' })}</span>`).join('')}<span class="cw-art-caption">${variantLabel(S)} · ${S.variant === 'flip' ? tx('Zwei Kartenseiten', 'Two card sides') : S.variant === 'all-wild' ? tx('Jede Karte passt', 'Every card fits') : tx('Vier Farben', 'Four colours')}</span></div><div class="cw-brief"><span class="cw-eyebrow">UNO · ${variantLabel(S)}</span><h2>${tx('Farbe bekennen.<br>Karten loswerden.', 'Show your colours.<br>Play your hand.')}</h2><p class="cw-lead">${variantBrief(S)}</p><div class="cw-facts"><span><b>${S.minPlayers === S.maxPlayers ? S.minPlayers : `${S.minPlayers}–${S.maxPlayers}`}</b>${tx('Spieler', 'Players')}</span><span><b>${S.variant === 'all-wild' ? tx('Aktion', 'Action') : tx('Farbe', 'Colour')}</b>${S.variant === 'all-wild' ? tx('Jede Karte passt', 'Every card fits') : tx('oder Zahl / Symbol', 'or number / symbol')}</span><span><b>UNO!</b>${tx('Die letzte Karte zählt', 'Make your last card count')}</span></div><div class="cw-ready"><i class="${ready ? 'ready' : ''}"></i><b>${ready ? tx('Bereit für die nächste Runde', 'Ready for the next round') : tx('Warten auf Mitspieler', 'Waiting for players')}</b><span>${players.length}/${S.maxPlayers}</span></div><ul class="cw-roster">${players.map((p) => `<li><span class="cw-player-initial">${esc(Array.from(p.name)[0] || '?')}</span>${esc(p.name)}${p.id === S.you?.id ? `<small>${tx('du', 'you')}</small>` : ''}</li>`).join('')}</ul><p class="cw-footnote">${S.you?.isHost ? tx('Starte unten, sobald alle bereit sind. Bots und Hausregeln findest du im Host-Menü.', 'Start below when everyone is ready. Bots and house rules are in the host menu.') : tx('Der Host startet. Deine Hand bleibt nur für dich sichtbar.', 'The host will start. Only you can see your hand.')}</p></div><div class="cw-brief-steps"><article><b>01</b><span>${tx('Passend ablegen', 'Find your match')}</span><p>${S.variant === 'all-wild' ? tx('Jede Karte passt. Lies ihre Aktion, bevor du sie spielst.', 'Every card fits. Read its action before playing it.') : tx('Farbe, Zahl oder Symbol – die passende Karte hat einen klaren Rand.', 'Colour, number or symbol — playable cards have a clear outline.')}</p></article><article><b>02</b><span>${tx('Aktionen lesen', 'Read the action')}</span><p>${tx('Richtung, Ziehstrafe und Farbwahl bleiben auf dem Tisch sichtbar.', 'Direction, draw penalties and colour choices stay visible on the table.')}</p></article><article><b>03</b><span>${tx('Die letzte Karte', 'Your last card')}</span><p>${tx('Die geltenden Ansage- und Erwischen-Regeln stehen unter „?“.', 'Find the current call and catch rules under “?”.')}</p></article></div></section>`;
+    },
+    tableIntro(S) {
+      const g = S.g, color = g.top?.[1] === 'w' ? g.wish : g.top?.[1];
+      const name = esc(S.players.find((p) => p.id === S.turnId)?.name || '');
+      return `<header class="cw-table-head fc-table-head"><div><span class="cw-eyebrow">UNO · ${variantLabel(S)}</span><h2>${tx('Deine nächste Karte.', 'Your next card.')}</h2></div><span class="cw-turn ${S.turnId === S.you?.id ? 'is-mine' : ''}">${S.phase === 'over' ? tx('Runde beendet', 'Round complete') : S.turnId === S.you?.id ? tx('Du bist am Zug', 'Your turn') : `${name} · ${tx('am Zug', 'on turn')}`}</span></header><div class="fc-state-strip"><span class="fc-current-colour fc-${color || 'w'}">${colorMark(color || 'w')}<b>${S.variant === 'all-wild' ? tx('Alle Karten passen', 'Every card fits') : color ? I18n.t(COLOR[color]) : tx('Freie Farbwahl', 'Open colour choice')}</b></span><span>${S.dir < 0 ? '↶' : '↷'} ${tx('Spielrichtung', 'Direction')}</span>${S.variant === 'flip' ? `<span class="fc-side-state">${g.side ? '◐' : '◒'} ${g.side ? tx('Dunkle Seite', 'Dark side') : tx('Helle Seite', 'Light side')}</span>` : ''}${g.pending ? `<strong>+${g.pending} ${tx('ziehen', 'to draw')}</strong>` : ''}</div>`;
+    },
+    resultExtra(S) {
+      const involved = S.result.players?.includes(S.you?.id), won = S.result.winners.includes(S.you?.id);
+      return `<div class="cw-result fc-result"><span class="cw-eyebrow">UNO · ${variantLabel(S)}</span><h3>${won ? tx('Diese Runde gehört dir.', 'This round is yours.') : tx('Neue Runde, neue Farben.', 'New round, new colours.')}</h3><p>${involved ? won ? tx('Du gewinnst diese Runde.', 'You win this round.') : tx('Der Rundensieg geht an die andere Seite.', 'The other side takes this round.') : tx('Die Wertung steht oben. Die nächste Runde startet der Host.', 'The scores are above. The host starts the next round.')}</p></div>`;
+    },
     // Erste Schritte beim ersten Spiel (3 Schritte, abschaltbar unter „Ich“)
     intro: [
       ["Ziel", I18n.html("Werde als Erster alle Karten los: gleiche <b>Farbe</b> oder gleiche <b>Zahl bzw. gleiches Symbol</b>.")],

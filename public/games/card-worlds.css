@@ -1,0 +1,50 @@
+/* Shared presentation, loaded only by the three explicitly redesigned games.
+   Card faces and all input/state logic remain in the individual game modules. */
+:is(.kg-farbenchaos,.kg-stapelrennen,.kg-zehnetappen){--cw-text:#f2f0e8;--cw-muted:#b8c5ce;--cw-edge:#b8cbd32b;--cw-panel:#172832;--cw-bg:#0f1b25;--cw-accent:#a7d6cb;color:var(--cw-text);background:var(--cw-bg)}
+:is(.kg-farbenchaos,.kg-stapelrennen,.kg-zehnetappen) .topbar,:is(.kg-farbenchaos,.kg-stapelrennen,.kg-zehnetappen) .kg-players{background:var(--cw-bg);border-color:var(--cw-edge)}
+:is(.kg-farbenchaos,.kg-stapelrennen,.kg-zehnetappen) .kg-main{position:relative;isolation:isolate;align-content:start;place-items:start center;padding:clamp(16px,2.3vw,34px);background:radial-gradient(ellipse at 15% 8%,color-mix(in srgb,var(--cw-accent) 9%,transparent),transparent 54%),var(--cw-bg)}
+:is(.kg-farbenchaos,.kg-stapelrennen,.kg-zehnetappen) .scene-backdrop{display:none}
+:is(.kg-farbenchaos,.kg-stapelrennen,.kg-zehnetappen) .kg-dock{background:linear-gradient(130deg,var(--cw-panel),var(--cw-bg));border-color:var(--cw-edge);padding-block:12px}
+:is(.kg-farbenchaos,.kg-stapelrennen,.kg-zehnetappen) .kg-hint{font-size:12px;font-weight:500;line-height:1.5;color:var(--cw-muted)}
+:is(.kg-farbenchaos,.kg-stapelrennen,.kg-zehnetappen) .kg-hint.mine{color:var(--cw-accent)}
+:is(.kg-farbenchaos,.kg-stapelrennen,.kg-zehnetappen) .kg-dock-in{gap:8px}
+:is(.kg-farbenchaos,.kg-stapelrennen,.kg-zehnetappen) .panel{background:var(--cw-panel);border-color:var(--cw-edge)}
+:is(.kg-farbenchaos,.kg-stapelrennen,.kg-zehnetappen) .help-btn{z-index:2;width:44px;height:44px;min-width:44px;right:8px;top:8px;border-color:var(--cw-edge);background:var(--cw-panel)}
+:is(.kg-farbenchaos,.kg-stapelrennen,.kg-zehnetappen) .kg-over-card{border-color:var(--cw-edge);background:linear-gradient(145deg,var(--cw-panel),var(--cw-bg));box-shadow:0 24px 90px #0008}
+:is(.kg-farbenchaos,.kg-stapelrennen,.kg-zehnetappen) .kg-table{width:min(100%,1160px);min-width:0}
+.cw-eyebrow{font-size:10px;line-height:1.5;letter-spacing:.16em;font-weight:600;color:var(--cw-accent);text-transform:uppercase}
+.cw-table-head{display:flex;gap:16px;align-items:center;justify-content:space-between;width:100%;padding-right:26px;min-width:0}
+.cw-table-head h2{font-size:clamp(23px,2.4vw,34px);font-weight:500;letter-spacing:-.04em;line-height:1.15;margin:6px 0 0;color:var(--cw-text)}
+.cw-turn{display:inline-flex;align-items:center;gap:9px;padding:9px 12px;max-width:38%;border:1px solid var(--cw-edge);border-radius:6px;background:#ffffff04;color:var(--cw-muted);font-size:11px;line-height:1.5;overflow-wrap:anywhere}
+.cw-turn::before{content:'';width:5px;height:5px;flex:none;background:currentColor;border-radius:50%}.cw-turn.is-mine{color:var(--cw-accent);border-color:color-mix(in srgb,var(--cw-accent) 45%,transparent);background:color-mix(in srgb,var(--cw-accent) 6%,transparent)}
+.cw-section-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px 14px;width:100%;font-size:11px;line-height:1.5;color:var(--cw-muted);margin-bottom:14px}.cw-section-head>span:last-child{font-size:10px}
+.cw-lobby{width:min(100%,1200px);display:grid;grid-template-columns:1.05fr 1fr;align-items:center;gap:28px 60px;padding-block:clamp(8px,3vh,35px);margin:auto 0;min-width:0}
+.cw-lobby-art{position:relative;isolation:isolate;display:grid;place-items:center;min-height:390px;min-width:0;pointer-events:none}
+.cw-lobby-art .kc{opacity:1;pointer-events:none;filter:none}
+.cw-art-caption{position:absolute;bottom:8px;left:0;width:100%;text-align:center;font-size:10px;letter-spacing:.13em;color:var(--cw-accent);text-transform:uppercase}
+.cw-brief{min-width:0}.cw-brief h2{font-size:clamp(36px,4vw,60px);line-height:1.06;letter-spacing:-.05em;font-weight:500;margin:16px 0 22px;color:var(--cw-text)}
+.cw-lead{font-size:14px;line-height:1.8;max-width:45ch;margin:0 0 24px;color:var(--cw-muted)}
+.cw-facts{display:flex;gap:24px;flex-wrap:wrap;padding-block:18px;border-block:1px solid var(--cw-edge)}
+.cw-facts>span{display:grid;gap:6px;font-size:10px;color:var(--cw-muted)}.cw-facts b{font-size:25px;line-height:1;font-weight:500;letter-spacing:-.025em;color:var(--cw-accent)}
+.cw-ready{display:flex;align-items:center;gap:9px;margin-top:20px;font-size:12px;color:var(--cw-text)}.cw-ready>b{font-weight:500}.cw-ready>span{margin-left:auto;color:var(--cw-muted);font-size:11px}.cw-ready>i{width:6px;height:6px;flex:none;border-radius:50%;background:#778896}.cw-ready>i.ready{background:var(--cw-accent)}
+.cw-roster{list-style:none;padding:0;margin:15px 0 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.cw-roster>li{display:flex;align-items:center;gap:9px;font-size:12px;overflow-wrap:anywhere;min-width:0}.cw-roster small{font-size:10px;color:var(--cw-muted)}
+.cw-player-initial{display:grid;place-items:center;flex:none;width:29px;height:29px;border-radius:50%;background:color-mix(in srgb,var(--cw-accent) 16%,transparent);border:1px solid var(--cw-edge);color:var(--cw-accent);font-size:13px}
+.cw-footnote{font-size:11px;line-height:1.7;color:var(--cw-muted);margin:17px 0 0;padding-top:15px;border-top:1px solid var(--cw-edge)}
+.cw-brief-steps{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:30px;border-top:1px solid var(--cw-edge);padding-top:24px;margin-top:12px}
+.cw-brief-steps>article{display:grid;grid-template-columns:27px 1fr;gap:6px 11px;align-content:start}.cw-brief-steps>article>b{grid-row:1/3;font-size:11px;font-weight:500;color:var(--cw-accent);padding-top:3px}.cw-brief-steps>article>span{font-size:16px;letter-spacing:-.025em;font-weight:500}.cw-brief-steps p{font-size:11px;line-height:1.7;color:var(--cw-muted);margin:0}
+.cw-result{display:grid;justify-items:center;text-align:center;padding:22px 12px 14px;border-top:1px solid var(--cw-edge);margin-top:12px}.cw-result h3{font-size:28px;font-weight:500;letter-spacing:-.04em;color:var(--cw-text);margin:8px 0 12px}.cw-result p{font-size:12px;line-height:1.7;color:var(--cw-muted);margin:0}
+@media(max-width:900px){.cw-lobby{gap:24px 30px}.cw-lobby-art{min-height:330px}.cw-brief h2{font-size:43px}.cw-lead{font-size:13px}.cw-facts{gap:18px}.cw-facts b{font-size:22px}.cw-brief-steps{gap:18px}}
+@media(max-width:600px){
+ :is(.kg-farbenchaos,.kg-stapelrennen,.kg-zehnetappen) .kg-main{padding:14px 12px}
+ :is(.kg-farbenchaos,.kg-stapelrennen,.kg-zehnetappen) .kg-dock{padding:9px 10px calc(9px + env(safe-area-inset-bottom))}
+ :is(.kg-farbenchaos,.kg-stapelrennen,.kg-zehnetappen) .kg-hint{font-size:11px}
+ .cw-table-head{gap:8px;align-items:flex-start;padding-right:27px}.cw-table-head h2{font-size:24px}.cw-eyebrow{font-size:8px}.cw-turn{font-size:9px;padding:5px 7px;max-width:35%}.cw-turn::before{display:none}.cw-section-head{margin-bottom:10px;font-size:10px}.cw-section-head>span:last-child{font-size:9px}
+ .cw-lobby{grid-template-columns:minmax(0,1fr);gap:13px;padding:0 4px}.cw-lobby-art{min-height:205px;height:205px;overflow:hidden}.cw-art-caption{font-size:8px;bottom:4px}.cw-brief h2{font-size:38px;margin:12px 0 17px}.cw-lead{font-size:12px;line-height:1.7;margin-bottom:18px}.cw-facts{gap:20px;padding-block:14px}.cw-facts b{font-size:23px}.cw-facts>span{font-size:9px}.cw-ready{font-size:11px;margin-top:16px}.cw-roster{gap:10px 6px}.cw-roster>li{font-size:11px}.cw-footnote{font-size:10px;line-height:1.6}.cw-brief-steps{grid-template-columns:1fr;gap:18px;padding-top:18px;margin-top:6px}.cw-brief-steps>article>span{font-size:17px}.cw-result h3{font-size:24px}
+}
+@media(max-height:560px) and (min-width:641px) and (orientation:landscape){
+ :is(.kg-farbenchaos,.kg-stapelrennen,.kg-zehnetappen) .kg-main{padding:12px}
+ .cw-table-head{gap:7px;padding-right:25px}.cw-table-head h2{font-size:22px}.cw-turn{font-size:9px;padding:5px 8px}.cw-lobby{grid-template-columns:.8fr 1fr;gap:18px}.cw-lobby-art{min-height:280px}.cw-brief h2{font-size:33px;margin:8px 0 12px}.cw-lead{font-size:11px;margin-bottom:14px}.cw-facts{gap:20px;padding:12px 0}.cw-facts b{font-size:22px}.cw-brief-steps{gap:14px}.cw-brief-steps>article>span{font-size:14px}
+}
+@media(prefers-reduced-motion:reduce){.cw-lobby *,.cw-result *{animation:none;transition:none}}
+.cw-table-head{padding-right:48px}

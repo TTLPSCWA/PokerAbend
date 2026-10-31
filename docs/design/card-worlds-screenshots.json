@@ -1,0 +1,3065 @@
+{
+  "captured_at": "2026-10-31",
+  "baseline_commit": "c4bb90e25245d6a46d64e5b7378d32d7f86b5f5a",
+  "policy": "comparisons are versioned; images lists ignored local captures, including intermediate iterations. Only selected comparisons are permanent evidence.",
+  "fixtures": "fixture-* images use display-only client states. Rooms, decks, seeds and rules are unchanged. Real actions and reconnect are tested after reloading the authoritative server state.",
+  "comparisons": [
+    {
+      "game_id": "farbenchaos",
+      "stage": "before",
+      "path": "docs/design/screenshots/farbenchaos/before-lobby-desktop.png",
+      "source": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/1440x900-lobby-ready.png",
+      "sha256": "62b981338762ef84fa39b47312dfa1e9375e4d80d01e1c53df93d93c7994cf20"
+    },
+    {
+      "game_id": "farbenchaos",
+      "stage": "after",
+      "path": "docs/design/screenshots/farbenchaos/after-lobby-desktop.png",
+      "source": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/1440x900-lobby-ready.png",
+      "sha256": "992b8a29597e85f828ed3a871ca691025edf77e772ec3e8493a4471486b34a5c"
+    },
+    {
+      "game_id": "farbenchaos",
+      "stage": "before",
+      "path": "docs/design/screenshots/farbenchaos/before-table-desktop.png",
+      "source": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/1440x900-own-turn.png",
+      "sha256": "40ad6902ef23f5db6257a69a2065bbea65d8ef66fd218c257a9992f775e891d6"
+    },
+    {
+      "game_id": "farbenchaos",
+      "stage": "after",
+      "path": "docs/design/screenshots/farbenchaos/after-table-desktop.png",
+      "source": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/1440x900-own-turn.png",
+      "sha256": "039416dfa2a424ce856079b2fa2d26ab0cdc4790bc068a4ce132fe1b2991a096"
+    },
+    {
+      "game_id": "farbenchaos",
+      "stage": "before",
+      "path": "docs/design/screenshots/farbenchaos/before-table-mobile.png",
+      "source": "artifacts/cards-redesign/before/mobil/farbenchaos-classic/390x844-own-turn.png",
+      "sha256": "f6fc59ba647fa3cecc0b555e6fccb9ba1dd0d887028f4cf89a267cc6f2320695"
+    },
+    {
+      "game_id": "farbenchaos",
+      "stage": "after",
+      "path": "docs/design/screenshots/farbenchaos/after-table-mobile.png",
+      "source": "artifacts/cards-redesign/after/mobil/farbenchaos-classic/390x844-own-turn.png",
+      "sha256": "bac73f8a64aeabc87d990e2c883a575a68aebe00d8b0c17d37e1d39497a57dba"
+    },
+    {
+      "game_id": "farbenchaos",
+      "stage": "after",
+      "path": "docs/design/screenshots/farbenchaos/after-long-hand-mobile.png",
+      "source": "artifacts/cards-redesign/after/mobil/farbenchaos-classic/390x844-fixture-long-hand.png",
+      "sha256": "f7ed331a251454fb55c88171d028105dc6857c36dc8208a53ab229f8c440cf36"
+    },
+    {
+      "game_id": "stapelrennen",
+      "stage": "before",
+      "path": "docs/design/screenshots/stapelrennen/before-lobby-desktop.png",
+      "source": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/1440x900-lobby-ready.png",
+      "sha256": "450a2be0144bdb3f4905f82770f3fbd9eef9e03cdca9a77932b1c8f2c87adb94"
+    },
+    {
+      "game_id": "stapelrennen",
+      "stage": "after",
+      "path": "docs/design/screenshots/stapelrennen/after-lobby-desktop.png",
+      "source": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/1440x900-lobby-ready.png",
+      "sha256": "189d977d0e96fb22ee92445933f6c3f554ddac9e48c02fe12e0faac04dc685f9"
+    },
+    {
+      "game_id": "stapelrennen",
+      "stage": "before",
+      "path": "docs/design/screenshots/stapelrennen/before-table-desktop.png",
+      "source": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/1440x900-own-turn.png",
+      "sha256": "42ef1e91e867ad298d897a938ea305637fa493338b66770cbadd32564ec3a65a"
+    },
+    {
+      "game_id": "stapelrennen",
+      "stage": "after",
+      "path": "docs/design/screenshots/stapelrennen/after-table-desktop.png",
+      "source": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/1440x900-own-turn.png",
+      "sha256": "5281b452ef822e6c531f9bce7f82a63f1bbd652c732569e139e4539971f38037"
+    },
+    {
+      "game_id": "stapelrennen",
+      "stage": "before",
+      "path": "docs/design/screenshots/stapelrennen/before-table-mobile.png",
+      "source": "artifacts/cards-redesign/before/mobil/stapelrennen-classic/390x844-own-turn.png",
+      "sha256": "d1cfed91c0f5afffa6d5bab8415e4f2cc2ab302570e1170258ce13373244d7bc"
+    },
+    {
+      "game_id": "stapelrennen",
+      "stage": "after",
+      "path": "docs/design/screenshots/stapelrennen/after-table-mobile.png",
+      "source": "artifacts/cards-redesign/after/mobil/stapelrennen-classic/390x844-own-turn.png",
+      "sha256": "0bde49f6b1e75681b262829539cefb8c2463a67cbc1c871cd3fdd62a7929ab9a"
+    },
+    {
+      "game_id": "stapelrennen",
+      "stage": "before",
+      "path": "docs/design/screenshots/stapelrennen/before-stock-mobile.png",
+      "source": "artifacts/cards-redesign/before/mobil/stapelrennen-classic/390x844-fixture-stack-choice.png",
+      "sha256": "f0188b82047c4dbcd40a9be090b4432eaf7134b78eedf79fa1dd293de15a9372"
+    },
+    {
+      "game_id": "stapelrennen",
+      "stage": "after",
+      "path": "docs/design/screenshots/stapelrennen/after-stock-mobile.png",
+      "source": "artifacts/cards-redesign/after/mobil/stapelrennen-classic/390x844-fixture-stack-choice.png",
+      "sha256": "7934f517d3d17a3d6aa905d8fc9a9de9958fc97db4655ff85ade623ce5f7f362"
+    },
+    {
+      "game_id": "stapelrennen",
+      "stage": "before",
+      "path": "docs/design/screenshots/stapelrennen/before-landscape.png",
+      "source": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/900x450-own-turn.png",
+      "sha256": "7ab3a25cb316fbc6109b4bdfdccc5c0ec49ebc1f8b17b5ed8ac6304fd8076ec4"
+    },
+    {
+      "game_id": "stapelrennen",
+      "stage": "after",
+      "path": "docs/design/screenshots/stapelrennen/after-landscape.png",
+      "source": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/900x450-own-turn.png",
+      "sha256": "7956497aae6b4d45a87c04eb3d74fb317c7f85d50e23d8f3c3b85fae8f9da1b2"
+    },
+    {
+      "game_id": "zehnetappen",
+      "stage": "before",
+      "path": "docs/design/screenshots/zehnetappen/before-lobby-desktop.png",
+      "source": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/1440x900-lobby-ready.png",
+      "sha256": "0390d3d732460f2bb93a9d6129c78ec4d5b9cdb8431ffbef3f45c06ed6fea26e"
+    },
+    {
+      "game_id": "zehnetappen",
+      "stage": "after",
+      "path": "docs/design/screenshots/zehnetappen/after-lobby-desktop.png",
+      "source": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/1440x900-lobby-ready.png",
+      "sha256": "a42e440e92011f5ce82101e68d78be549505dd83546b791a14284139c2909fff"
+    },
+    {
+      "game_id": "zehnetappen",
+      "stage": "before",
+      "path": "docs/design/screenshots/zehnetappen/before-table-desktop.png",
+      "source": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/1440x900-own-turn.png",
+      "sha256": "5784614f6723e2ebf3aec73790f23f3edb68a14cde406dd4e6684315b4324fd7"
+    },
+    {
+      "game_id": "zehnetappen",
+      "stage": "after",
+      "path": "docs/design/screenshots/zehnetappen/after-table-desktop.png",
+      "source": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/1440x900-own-turn.png",
+      "sha256": "059c9f3e90efd7b7c807a3f3ce5408ec2c78d733b02e33bb25a0bc5b2dbc73dd"
+    },
+    {
+      "game_id": "zehnetappen",
+      "stage": "before",
+      "path": "docs/design/screenshots/zehnetappen/before-table-mobile.png",
+      "source": "artifacts/cards-redesign/before/mobil/zehnetappen-classic/390x844-own-turn.png",
+      "sha256": "32f32da9ed6bc0e279015b5f46c656c80d530dc22e66c9c7d6d402420045f71d"
+    },
+    {
+      "game_id": "zehnetappen",
+      "stage": "after",
+      "path": "docs/design/screenshots/zehnetappen/after-table-mobile.png",
+      "source": "artifacts/cards-redesign/after/mobil/zehnetappen-classic/390x844-own-turn.png",
+      "sha256": "fee964bbf41e15a80a5d4f697fae6dd34e12d7d926e472796c8d83bb7659c425"
+    },
+    {
+      "game_id": "zehnetappen",
+      "stage": "before",
+      "path": "docs/design/screenshots/zehnetappen/before-groups-mobile.png",
+      "source": "artifacts/cards-redesign/before/mobil/zehnetappen-classic/390x844-fixture-two-groups.png",
+      "sha256": "28ee0fdf29ac40263d15370a32be995e0c5e0ce8d41ca828020d87fa294d7f2c"
+    },
+    {
+      "game_id": "zehnetappen",
+      "stage": "after",
+      "path": "docs/design/screenshots/zehnetappen/after-groups-mobile.png",
+      "source": "artifacts/cards-redesign/after/mobil/zehnetappen-classic/390x844-fixture-two-groups.png",
+      "sha256": "3ec02257b64babb820b4dd7405200eb1a0666e2d789789e02940b1cfb2836347"
+    }
+  ],
+  "images": [
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-all-wild/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "c31e84797851ed929c34264c6c46438a8609474be33aea007ec5ace806fc729d"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-all-wild/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "9e9f97c53d8058c1c46242ab3f620e42055d92e574970d8a1f3d834e809c0c6e"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-all-wild/1440x900-own-turn.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "25356c1035ca631df627c527fa433e399109fb4fefd62a30025d03434462da10"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-all-wild/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "f03193bfb2c05fa24731c6e5eaa60f3d67323f388e213ca12c618e0bbcf9c008"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-all-wild/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "766476c4436bd118f342a41f599bdfc213f41869d43a120a838fc395a917f881"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-all-wild/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "50ffa5f88fca8371665a1dc5541fa5cf72a7767585d46de164e0a1f4eff43027"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-all-wild/390x844-fixture-variant-action.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "d65ae7fb4633a1f6b67bb36f2addec7c5f5ee8803db04d103e83d87e06364173"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-all-wild/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "5c677727f8e52cef8be6274d17b242f4e686624669e73ee789a2b99596ff88a9"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-all-wild/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "e1bddef5e8d81aa37f42eb4f71b519cdbf3935daa70f146d244db84173e3c38f"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-all-wild/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "a13ec1c2899eab1cbe3977bbc6a54c83ec1a0e5d80ce64292e276cc3d8b9569b"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-all-wild/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "af176c9af524b5b22bca208013e8d8120d48393dee3a8f862bd82231bd070f87"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-all-wild/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "ae55fc645fe83be962f30a841da6c56378c94c18ef049c17cefa490e195e5608"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/1440x900-fixture-long-hand.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "187e1491ebfc705cf15b2e15f5db6f361fa190ef621729398973e0859f88e17c"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "992b8a29597e85f828ed3a871ca691025edf77e772ec3e8493a4471486b34a5c"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d709e8c318cf7c6e3bb299b9fd35f4af801602db920ce10bbcab5a3b5163c906"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/1440x900-own-turn.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "039416dfa2a424ce856079b2fa2d26ab0cdc4790bc068a4ce132fe1b2991a096"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "7ab029c983277df7eaaccf9075e975f01be6bb5ae92a6464eba4691cf27d6592"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "a12d97b521730eb58c37b12194fb2446d03bac3824ed2ece2e8f041d7250e50a"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/1920x1080-own-turn.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "eff5f8f3d348e0fff5209c1ccf543bf599b6eb24783bc0780d1a714ad6322769"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/1920x1080-spectator.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "b9d6662ba36337e4ffe6321303582b94186f85a18b455719b52038cd409e8053"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/1920x1080-waiting.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "ccb51b76c3c215a982411949dca579005f008f2ca46edf1b73019bfc08eda7b0"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/360x800-fixture-long-hand.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "13a841d05655c50f3033a2d8b00fb91e48016188cb5d1efbc75a4921ffba67b6"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/360x800-own-turn.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "dad17a7401338a5697155e5e0da74086b06c206f657eaed7a921a21e38e8a981"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/360x800-spectator.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "0d41e37565a4cb8a1552509f611f4605fd69d3903affcecb2526d6f34060b083"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/360x800-waiting.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "75d37c0f994ea858b05bda657039d87023da4952dd93d06b66cc4bceeab8ed3d"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "8e664b2ac2adbde353551bf4afd0f531558010eb7c1008ee3c41ff6f46041c96"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "b644ebd17dafcef375ef04a50f4cd279e75eebd8b8f339cc911ebae1b80f72a8"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "b34883e6e148587900887a53641a15b07b207de35ef6b24fd55429a38f743b38"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/768x1024-own-turn.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "ca4708801c5bf6a2f1f46beb49f6e34ad8a090d3fd13cb2a6bb7cc40d2c48281"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/768x1024-spectator.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "1df3a163eacd07092ba1edbc3a1c4b491a2761f0a1be094c3c7e75dd1463e387"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/768x1024-waiting.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "41a20c0fa0cddf91ce87006429008246a19e21c032991b8260afc2dd3cea7ecd"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/900x450-english.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "aea920b9a75cd4260fc4d907997dce33d6b4d25c9575f7f8401bb848c008b7f5"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/900x450-fixture-colour-choice.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "c19ac19d7a0622d81342f3575b875e1aa3c4aec2dd87e427ad5c8ac8c064405c"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/900x450-fixture-long-hand.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "0154441a6d4ee2bead548b1bef58be6151fec5dc59759a525fc4991f71705d78"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/900x450-own-turn.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "a1e6c9dad520cd70d7538dc8b21d916e3a3be14c65d4b330529ce6daacf1c671"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/900x450-paused.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "bf9c3b74468c88d9e66c87589d6cc29ad5b781f616f71bd9826c0928b5bfcd63"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/900x450-real-action.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "dce852c873891966e4012284057270e580d032b02e4f096f6792d956adca62af"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/900x450-result.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "4a6285d665e65061183ef877fbc673df6952687af13df530e37606f82fc2da5f"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/900x450-spectator.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "7f6ee6e3172cf1238bd84a1ed1aa0cf086545702df95de8c7a5c1d25346a1bce"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-classic/900x450-waiting.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "0629fdb51e23d813630209c631b9b7a1b4790709b39de19e2e29eb31b882afef"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-flip/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "766fe2c6c170542e525098eab522f429b134cdf2eb5a2ada5c15e35d7563bb36"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-flip/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "0be9f34fbf3f81ec48bb59b8dcaf372171c53c9788319743ed415eca902b46ee"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-flip/1440x900-own-turn.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "9bbc955ec6d092026e6ee24567799975eb321d56edf899876f9ca36977c3163e"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-flip/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "45f0b635e5e3bc5845507064f61886617fb79a98df1b85fa5d78dd76cd8ebc35"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-flip/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d3c92507d95eae22b61028125247f74b71587e9fd93bf33592af5e8e666bd25b"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-flip/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "d5e4d6d171bff3c128a832a710676f1dc277ca4adbd4210bab774d85cf2296ad"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-flip/390x844-fixture-variant-action.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "2e192eea70f5edb52accb77b2e9cd0ec26027a163122457df520ab2843e5ca23"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-flip/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "44bfbd95b280250933d30cb5747c973422a22ff98098b997d40608015a53d200"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-flip/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "10020e2153979f2f20d4a10a9a0bf4d8d49dc6bff5b43ce09b3ae3c04bcdb0a2"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-flip/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "b5014fb18fc2a83bc0509e67430db409d59435b38b1ba861bdb98c65c00461bb"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-flip/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "51c076b798ed56e247f48ce3ba1a8cb994aa72f97b53c33a4b4087d60dcd00ff"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-flip/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "47c079dfd99d9e5094daa41779e99513b55024964b9bc00f36a88db13614b666"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-no-mercy/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ca3ab2a32d1e05eeddd499305f3b3681377323cb0a64d9a8e99407322a738a7b"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-no-mercy/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "cea8758b4f53728903296a87f3cf6fe32608517a2fe8e0461f353e90d0938bd5"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-no-mercy/1440x900-own-turn.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "1c8481372d835c9b8c43b78b7dcfc55d89dca163a5c90cf80d2fe4160051b7d5"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-no-mercy/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "31cffb57adcdb5c51bf8dc4271fba69c5b70d3d220b66c9a8b07bd7d4924e064"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-no-mercy/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "2dc6135e243f90a1a62730571ccc24e54bbd22ab50d413f416627d19f97e8e31"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-no-mercy/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "f99494bd74b4fab94f9d47066f64cea2003a7ee685e7a0117150726ff76685b3"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-no-mercy/390x844-fixture-variant-action.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "221eb3bec0ac9cbce083debfe9bb7c680018ec0b75d92cf78ca6bf58056f09e7"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-no-mercy/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "091df8a4c7cee1586ed1b3b7c1685c8822d8fe999ef6b3b127b120fe1d0be873"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-no-mercy/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "d1403be8d13522e3e0d173a5338f86b968b198e67d868d690ba5382e316e06f8"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-no-mercy/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "ed00ef03ebfc9cf4aec317bcdfd9fabd4a1acab35b574f422645762735e1d9be"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-no-mercy/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "8c4610c9b71a57344a76ee24e0c197003e294faa45f12667af2759d0d9a85b35"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/farbenchaos-no-mercy/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "ca118a454d4d8fdc10addb2d401d5963d121b0e7e18bed50afab024ddd7636b2"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "189d977d0e96fb22ee92445933f6c3f554ddac9e48c02fe12e0faac04dc685f9"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "df9a87e302ac8560184010eb26b325fb8ed1c33e6027d9119fc3ec841a2b6ae7"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/1440x900-own-turn.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "5281b452ef822e6c531f9bce7f82a63f1bbd652c732569e139e4539971f38037"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "56aea515370f2dd15d3a5bfcb44fd4937173d8ef0ab465b0c5f0e1e21b748977"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "6492668389e8fdc69f2143ee50df58e905bd6157bb051e2a95461b07b2cfc121"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/1920x1080-own-turn.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "bc7a9cbc5eb63ea3a7bb14e8b33b8aab67905f014bd7be70c525b2e3032bbd09"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/1920x1080-spectator.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "e20013b9c50a4aeabc76bd27da6622dcf9d0b008f2ab6ab0e33e74189c07a5da"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/1920x1080-waiting.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "330a8e71c6ad4285edbc4079152b0a82ba5a85e09ac1f3843eb550bb13d1bb0c"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/360x800-own-turn.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "d9bdc3cd84191884374a27cebf17a1bc2eb51e6d7a33a58679fcf38610a29012"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/360x800-spectator.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "c7aaf4412623fa29b6e7d9aa6ce5e29a69f0203e0872936989545e3e85d822e9"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/360x800-waiting.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "55649a742953cec75a3a9104bfe97c56c79a126f29c8c3c2c97d868d9785ac02"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "063760a50cc0522687f8b6f7d5f3e69e6fc393f7332d4662f427cd76ce2f3c72"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "bcb98d685386c4cd66f50afae42533100c0cdceed7e3c865d47d766f41aaecfd"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "b0871f043f1aaef71d70ac71b9d324de421d4d8032fc7dcf846b117c88940d13"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/768x1024-own-turn.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "045a3f20639d5f81f117f294e3e2641ddbafb5adb406b241a1625f1c2e5be05a"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/768x1024-spectator.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "d30b3511aac4d55aed43199200b400cfb08188096356499b5fc74915b0a40f42"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/768x1024-waiting.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "755e64d740cbf4c5751f1c25910d3b83b63d2005dcce6f350b4156d93f1e2abd"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/900x450-english.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "05fbf50adcb5d71f02fe1c98bfcacdc6664bcfaae3b7454ba7946049d100251f"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/900x450-fixture-stack-choice.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "4b1d256e61b893296b30794595f82096cad93d1a91ee6dbfead64e60e38526ac"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/900x450-own-turn.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "7956497aae6b4d45a87c04eb3d74fb317c7f85d50e23d8f3c3b85fae8f9da1b2"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/900x450-paused.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "1032478758b11577d344adc655f94179a7094c88bee066a194f520bba332a010"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/900x450-real-action.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "b4dbcc4c502da5c9389a261a11ba887e80374c107633a7b8b5f57e5caa47a3be"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/900x450-result.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "e2b775fe803783bae68260346a2d10c31d697931bfc6be84662c90dbc5bd023e"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/900x450-spectator.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "1b5379d89ac0c0efe3ceaaf47933a0beffed2f8a661c4c16209ad10d89a61dd8"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-classic/900x450-waiting.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "2cf6c479ae7a5318d4316ba694c4fc11df39da09c00cae3a22e79bfd1f56c4f0"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-short/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d61d29b55f1653c4fe523eb935b85e1e6ecbf62d4b1b9287d267d9d740625f30"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-short/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "4285c993ab0f2109e9217f4b1828b689b2fe66904e974d6e30e435598e8594b8"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-short/1440x900-own-turn.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "a9620c81d7e0a9a8e8b2bbc9c8c7d4209a04be17293cce81bb7078781b3a10ce"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-short/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "2305d94b531d403e92ce047c403583ce83b97f3b18bbd5bf606c8220743258bd"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-short/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "845bfb5d7e9ae2b889b551aef42128c84e07fbaa12f665562c9d77888f4c4d6f"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-short/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "30710b41094441d280b8fb1260ec44c8c5ba503149b60f59167c256facff522d"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-short/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "1975b287567debf93acb00742dcb143a919a09acf7815e66939cfd3393a84afe"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-short/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "1090db8004c516f94c6709a194f61266c1676ba539ffbf9acc29f73b005caede"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-short/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "bf67817e7ba55191c4cfec419513efd7f060f1bdb4ee136b6322da47735e4029"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-short/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "2e1384f7bd26717e456a3c5ae51f174cddba8be1d63f2318c514f517e3129c4e"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-short/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "7acae875c58f816e265152fd660984d8b8413d51db78915a554ec20bb7323a5a"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-team/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "611edddbd7c25863bf829acb426e1e904b33864fdfa7d0bc25843b1e3c62ad82"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-team/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "6c89a3242d2f5d78ba716a73e6c5beedcee804a7255a0046dfc99ff0f5ec760d"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-team/1440x900-own-turn.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "269785ff4bbf072b39c1eecf3a2bba28f704b43aab5e0ae695e288a40ff32a12"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-team/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "cec805fff97a654b400dd1386fb2776e5d9ccabb116c3c1457f427ca8124ab41"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-team/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d820986a9dfc4e6ee7092b5e70522a990ffd9f74df1b274c32dca7ac5c686f1c"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-team/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "f38540bad0dca44751a1935c45c56453c8d1d55e4b556e4df46c4c1c7cea9795"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-team/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "d5c91e9cab5b81b3d1125c53f9116ba4e6f0740abbec369de04da950f55d9c09"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-team/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "545be68ad8bf13170c0ccbc06888a3a98bc400250380c41c1ff665a38aa26a04"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-team/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "e5764682dd01eb342d5b4bf02442ec1dcef5a48ea0a946f91e7630c4e2728090"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-team/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "076cffae7d08c39b7a9b76f3ba231ef010c245493e827016779137bef210051b"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/stapelrennen-team/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "8def67675a59108cb08ede65724408b158332cfd2190a97140d18f364b6f4dc2"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "a42e440e92011f5ce82101e68d78be549505dd83546b791a14284139c2909fff"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "077de9992c0b9760cdc46b1e86bcdf8f6c3d7db5a696a3a506d03a951fb41d61"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/1440x900-own-turn.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "059c9f3e90efd7b7c807a3f3ce5408ec2c78d733b02e33bb25a0bc5b2dbc73dd"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "0c71b2a80e31e53b94eb1b14d0383e0de3a638945de516110e1bdd0a94963de8"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ac4bda93e9f941cb8589c67f268c1dfa5222d0759bd95030d6dfec0cd4613bf0"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/1920x1080-own-turn.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "7095dbf3da086823687b5a62fff0bf6ba066655634fe7506abbd1abcc9143bd7"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/1920x1080-spectator.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "999d62dcc699cab91f8cd406c0e3b2a579d1e56f91ea08387d9e1b4213f897d3"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/1920x1080-waiting.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "f30c3f0453034de2ad0f09b459b2c5455a16d01c1a5b87739376366f64ab3ea7"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/360x800-own-turn.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "4b925f11cb013de45db3cc64d55b111ec92653a5d6d67e293ad5f983e486a947"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/360x800-spectator.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "e4814e1f556388b3e4d928b37d38e7bca278546002b6dc24fc16473e63b39e32"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/360x800-waiting.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "1f0d7d166138b90729b77b9fc75098f59df6704f1b52e07d99dd1b759519ed0c"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "542d685385b87cc86032ac5122c31b6e83dd51324576cd3fd59fdf7a1643a605"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "2c5fd726c659c94897e6b10cfe307ea38742f76ebd319c9058fcf349e27e594d"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "3c5a9f9b93d9d7173f285d4a7dd90acfb544670a8999830a5fd01d3e734837a9"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/768x1024-own-turn.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "961441474db786531da842452b8da612174f21208fc71373a5eab371488a7643"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/768x1024-spectator.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "30134b63926bb06b51703b5f3686efef033be0be6f35a407acfc28f22ca52e89"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/768x1024-waiting.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "c9b030098ddc7709234328b9ac580bd99b5829c55e9c751ed6ecec3433f7633f"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/900x450-english.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "35dbab62d559eae70a24f6a3d3a3cc89c74a2c0e914d8a98f7a55a22c3a26b6a"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/900x450-fixture-two-groups.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "0294b53bdb4311c92308dde24689278cf7b185af8b421740986fe33dd6acbfb1"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/900x450-own-turn.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "eb91d84c348871d3088d937464087f493d7eb0374a5a7bd4e25d22ba6386df9e"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/900x450-paused.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "ab437fa1ea8d4f63e007a3d1ca4db176c8dff45a9b08914449eeedf3a26a90d3"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/900x450-real-action.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "f85913dea0fc4227273614f24303a6936b969db4817c1f51abf6dcd7d3561d9f"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/900x450-result.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "25566620701f385cb7f86b15c59873ad5f4793ddd5b812f557333c5e9a4c468a"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/900x450-spectator.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "869b077e7f39a2b345dd0bd8545ad413c5c2902a79149f0f90de26628ec3e367"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-classic/900x450-waiting.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "6bb07eb771fab351abbff02f04736e9cf61022bb025e3ac32b39226d3ee9c5d7"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-short/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "0b9a7e7894c694f34f58b59fd7a7a9e42995318b54b8da4fed71213e69ec61b3"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-short/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "e632cb93a9ff10d11483536d40831e9f44c1f25681f0b0fdcca27612d165e485"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-short/1440x900-own-turn.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "42ccb0383d9c1ce50a4d0f6c5fd9b6572800da8845aad46ad7d4067bad6ef97e"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-short/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "6b07f9a14bc78a12de83fe2d6d38838a66a4382c94adef829fb90c24d6085847"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-short/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "6b1d189e5472e9109d130633eb56264aa20ef40253affa052860e0199fe75a53"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-short/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "4f5bd72f3acb105c224d635e0f3515bb6733ea8bfc81faaba57912fcd0d5e535"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-short/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "55b55d6da521b713f1c394e5355920d0e5d5d673818d0e827573e17cb38ff752"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-short/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "219422351842faa2ad9f08ed69543ac5728cc57fe0ad211c295dd88148e32091"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-short/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "9f7abda14af855381ba8bd1f7ecbad2617f8f20bf99e5f5545fca920670f68ad"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-short/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "f240a3fcdc4fb51baae40a2aa5f0681fadbd9f5e6814eb5edc4c8a94bf55efc0"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-short/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "8d66126b8e4465d81d5d5ab61377e4581f8007e9b0c55125f3fdce7350f85292"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-team/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "850ee5baefcc24589b3409e84787faa09e8b49cfe4b9ae80bb2d6659b0d8b939"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-team/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "f5995c4ac834f1d4661cbb0dd43a57258f5f38c24ed6fd30f94eb56837d5f938"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-team/1440x900-own-turn.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "55dfc6ce56b9bda72e2fd4adbde01e41e7e6f5ba0dde21905753f3f887d0df10"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-team/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "70153e7a4cea6d109d164a468c9177970685182d683359653050839939b31d4d"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-team/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "e6d0126e4fa6836ca9057395c11221193f6648283d6bccec3fc2245f2316d12a"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-team/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "0dbb06dda627c8558bc608f6ed3e5e793288b7739a2510e02b2502af0836bece"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-team/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "cd1a41b69275cc4da151cb77adf75bd468edc016b3a09f0d1483ba039b9620b4"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-team/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "a67ad5c97aa4387badef8142669a2d3e20cc10fcb82cca8e38e5ae5d0ba58fd9"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-team/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "97cc76dd19a1b185e7fd139936f8a8b6babafff833647773d014000e32aaf242"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-team/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "d9533649b64216230c098a592cd0842bcd41fd255a12baaaa072706264c75e95"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/desktop/zehnetappen-team/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "056b777b4e732447307bb417d75234dfd33887eab281ec3e125ce28f56fc7afc"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-all-wild/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "80859dcd697cd2e0258de28a0103e004fc1795f44424100d50d6459b12c3635d"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-all-wild/390x844-fixture-variant-action.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "628d05a4bb7ae1055d2be77ce82f149b382d70cff80270ef8792737f881d04ef"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-all-wild/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "a7b4a97514420d100e382d0470f45f1e01fdf0b716bc1f98c6a4467c8e61927f"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-all-wild/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "c6af0fc80b4c6a62846af1673a369845a93b350c881430271f31b8cd439cab7b"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-all-wild/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "ddfd6548f03f3f34e095c66b8143c12bb48df4c52a38127a18d0b8e4f27997fb"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-all-wild/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "0cad827deb3c8605fee8c5301411b37c601cbc107bb0bf792e20c8c52739a664"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-all-wild/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "7e6860a59d3302ba257c3de431b9df6f37f8c6583b86d1a7a3fae789114b1ae6"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-all-wild/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "00cf4a56011dc2d72c85339e46fc9392c62f11feb264fb6b34f93f265551dceb"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-all-wild/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "b4d4989e4f25b8e3ff3d022b0c0672d03bcdf76584b9d40cc30f7f7a1c5453a9"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-classic/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "26b68dd858d9abc4a77a57d71ad616453b2dbeeeeadd2a1644607ea6b80389e7"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-classic/390x844-fixture-colour-choice.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "96b902d56a39d49499d7241e3ff79c0843cea201fca59cc7b74c28fdf6c19d2a"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-classic/390x844-fixture-long-hand.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "f7ed331a251454fb55c88171d028105dc6857c36dc8208a53ab229f8c440cf36"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-classic/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "70e88bf57ec9dab946728309c12da9a3c0c650263824f34eaf6a4bd24e702e68"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-classic/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "e2b1a83c9a6afdad6ec86b888dc0bf9c0d871bf713bf76b8150dc97dad200a34"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-classic/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "bac73f8a64aeabc87d990e2c883a575a68aebe00d8b0c17d37e1d39497a57dba"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-classic/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "83957364fee988b1f2ca6a7dee7ab82e3b1ddacf8bc9e385e33cdf77108f5bde"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-classic/390x844-real-action.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "5f414c2ac37039ac3d1067d1a49c34c022dcff5c61e9aa605430ad657342047d"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-classic/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "e44b8a2710382c58e8f92cc3712ccc601bca6f0506ebaf06426657de5cc1d9db"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-classic/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "005873c0cbce1a109e52df2fde91f027ab01bf3d7d46a042aabe3a5945114695"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-classic/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "6aa5e963bb4a4cd5ff7c1fe68f491b6e0f5291dcd1037ac105c5e8e6a88d34f7"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-flip/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "5e4226516609b8603a94e15ee93f4fe27960ef7cdbf9950d8edae92d27d0b6a2"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-flip/390x844-fixture-variant-action.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "b374d591f7b79fcd69da9397665a83b24a8d8109a62f265d74d0c64d4a5f0517"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-flip/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "3bcd3329550a0b2e8da3555f735d8a6ab398d0cd633cb1b165a2233d879f747d"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-flip/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "0d384f7a85d2a48e556bbb4e778911e74a0aca6369510a6594373e36e43aafc7"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-flip/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "5f5cf362d11f398217081a3ae647104bc552a8774e0897e630fd81b818cd0759"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-flip/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "403ec8e6ee6a9c3adea6e87562466ef7e188acbbd67b1721d92dbfe8a2a54f34"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-flip/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "ae4860b61dbea49f5b75859e4a92898741febe5aeb3e7591d5c0043de4184cbe"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-flip/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "5242d682579af0632ec46bb526df7936bd1649961b3d1280893abb2b56daf3e0"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-flip/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "8af47ff7e2e74878a360c10d995711ee3581c4b4b7b639a706f113382e234416"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-no-mercy/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "501c7482088430e6a9cd68ed2f3f8798ecd04e2a375e6db55640b41504c5825e"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-no-mercy/390x844-fixture-variant-action.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "64431f843b4a35f6e6b486f5a162b25c60319ed7421a1f4a6e5851de7b60e939"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-no-mercy/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "3f1f4e91b3d62151eef05967428430f1f8967605b16f2da1940b854b2fa57ee9"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-no-mercy/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "e8e898e37e52837e8364ad43f7c005b281fa66e127ecf9e27c6615c155c229c8"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-no-mercy/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "eb50dc343f560996449b5d0c035d31fcd76f347202f03a63989ab6567b57ce33"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-no-mercy/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "aae573a86052772a4d11dfa1261fe54693421226b6cdb4277fc2c3c22cf51737"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-no-mercy/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "4a860b8d837052c87661818d8f78ad33c2b9186dc3b6e546356991c0a6d3f491"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-no-mercy/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "08fb12ef62e079ec679c5d7910e22f54cb78e1041624013b85e42a6d24e99a25"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/farbenchaos-no-mercy/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "c4f8d94f987d49e725601f7288684721d0899f82f2a899da91afcc37cdcb572d"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-classic/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "a036d2942fec7a3b7a80110fff2d8c152ebd0841cca2938d3d12f7642918dc30"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-classic/390x844-fixture-stack-choice.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "7934f517d3d17a3d6aa905d8fc9a9de9958fc97db4655ff85ade623ce5f7f362"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-classic/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "01c564d1c6dbd05d4c765719dd169c3d049f80ff27828e35556f3ac933b650cc"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-classic/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "2b37f4c5adb9f171fab87ff52cdbd0674e3d9462b21b015b77338e8ff4149ccb"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-classic/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "0bde49f6b1e75681b262829539cefb8c2463a67cbc1c871cd3fdd62a7929ab9a"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-classic/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "2ff37e13201bb688b6a31b1489048610cd5ae553e44a4ce6312159b025422fe8"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-classic/390x844-real-action.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "171acac47158c1d54729fe3bf117ef235ba738a2e431027f3f180ac317f8e20a"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-classic/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "e91ba5b223d65ebe863979cf97ff9a3023f2212c2ffb88bf77a0a48346e6f77b"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-classic/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "74f5fab93929d7a0047e6614109e28cacd3443bf0e154202b110da9910d92030"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-classic/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "e2db616330f3169769b876393e854a50e4f13e76acb34d94e10c6e821dc545b4"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-short/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "f75ab3c5c7451c2371883361585456d39b9a201c6efda03e73c6b470a5060dfe"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-short/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "7e94132d98f9ed4857b00fe8c8b636f2d5c4c4a1cde9ea6f7bc8c5d2b72ace50"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-short/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "9b9f9a97a929006bdafe38dc6f85c9f47fe7e5ced6e9a2a0067c296afae5a9fa"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-short/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "b300981e7d4bf0bb7a1060386c451cf5075b69d177f646925433663d81c02fbe"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-short/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "5601fa593d974a103e9a4ce4cded4d03fa5b973c7c45c27b3769830673616b17"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-short/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "cb83845d73e15eb5ea64c975dd215ef8adff8e090686befca1af7d68ec334d10"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-short/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "1351ad76a9ad3122d28ed3362037e3fb95f9d1ebe33f54ba3d68780a5d0208bf"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-short/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "63193ae2e878ce195be199014fc120b9ad75184dd92a16f881756fef61f06a71"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-team/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "76369f5982de32f29da9ce2586c5f41f1e403ec9407b7b331158b75f216b33a3"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-team/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "d6c107e4662ff8b93226fdb873e67e6561cfd9707567645228ee0751375138ab"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-team/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "24ee44b05f893f660be308d8f89ff3d13d56fcc1b1ceb2d49bda603641cd3201"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-team/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "af1094c68b0c59e0cc4ea74182114eb7c7b3511e4ad6578e2be25a8885e2879c"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-team/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "9bda0670e8609fb51f45fde2c5769b1a701637ca46f6a2d30072dfa86d2f6941"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-team/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "cae4e1c3e364f698b97931de9d8965762b3242d400740b5f6066fa14def32f0b"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-team/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "10beb646b8fbe2fd1def9b568a631d80eb97de68d05f13a5272fadf997c2b587"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/stapelrennen-team/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "982c1765d388c0ca0e96738d2101941d5a735d30a4af51135467d883a7e4c1f0"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-classic/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "2cb4b2c354902a43c9521bb2c0fb7c2e5f0a1da49abd834813f1797edffa9f4e"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-classic/390x844-fixture-two-groups.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "3ec02257b64babb820b4dd7405200eb1a0666e2d789789e02940b1cfb2836347"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-classic/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "3ed7092f9a50a8f76835130ebf99ae8df0a5c13c09ee0bea51524c6bc51ce771"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-classic/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "9a0f3f9a5217adf6e0efd0a25ef1506274d42b09001f37d3a9ccd77e697436cc"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-classic/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "fee964bbf41e15a80a5d4f697fae6dd34e12d7d926e472796c8d83bb7659c425"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-classic/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "eacf8ae2b839f97dfcfe0d9c4365d91c50692bd440fb49ed2b225174bc3ee9d0"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-classic/390x844-real-action.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "f020afb23563e9fec26ba56c93cde9a739ffb76fab81a15c6f896d087f7ddcf8"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-classic/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "083f6b8a604f0c07820babf9a8643518523ae9401aa347afca8e5674e2247ee5"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-classic/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "b08435dfc5ae0923efcac1d9b176fb8f035762ca581319af4637f7a5f6454096"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-classic/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "7d8c6e21d2c7a3b64b799cf8ca7db9f2a6b3e5b0d6dcc1f1793d9282879f1613"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-short/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "d74af60c9edef0fb6d3beeab1599acc098d53ab9ee3eae03dd81cf5c0f26a650"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-short/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "3b5860a5b7ceba6c4a227b19be013d7625271824c9489ffde61c9292be4d695f"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-short/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "d4d0106446d2e108cc19c775d6802cf82da4da105d083ad5d41a1a03ffd12ee5"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-short/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "bb9bdf8e393c9868585dc4ee4d59379c06753380692c0cb214af2e3e082e75b8"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-short/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "0c3085dc8e423dd59c4b74f1a6d65d9ef937c19a3b810f3cdbe1399020452894"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-short/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "49a13f2b1088cb3a5862f7c4fa289a7e7d61e5b26f6536bff2aa91aa66b973ec"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-short/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "43554d581fc671116f632a5b632a35d8995aadbc76f87ef6d6b2d85e50d0ac4f"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-short/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "258ddbe423d3fc413a1ae1ffdebad9a66f6086835be476e466f2472db0f77fc7"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-team/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "7f2d796832e0574e4dd8a4e55a01bf0a5614dfb803ee24aac21785a4757b9e6c"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-team/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "eb8239afd92f76e2279abbf593cea9bcb61f9d915bf536c29533be0ae587d180"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-team/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "8f88b446b54e90ab82f9dcbf32154459d65bc654d9a90f9bd7eb6f2f90a6ab59"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-team/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "992f64b5c5fb9c0e92640e7e37d44e91858318b5051789dc440d7f8dcd02e5e1"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-team/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "936beb76ac0a1954da57183967ae7262723b6aa092e3abe37380d29a0e0220b4"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-team/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "862665d285544c889b59817d4aea8adc2fdb36f3643995df453fc524e42b19f6"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-team/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "ae280e88294de98e5cfea004a874bb4498c4d8b23410732011a4b80200c9d315"
+    },
+    {
+      "path": "artifacts/cards-redesign/after/mobil/zehnetappen-team/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "9c808aa4ae51cc89360315e04ad458149101142f825845b4dcad3e2a024235dd"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-all-wild/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "49017e75b47b54a88a1ecc2ea482fe18ab7b89730153ab1659b9f053f67ca494"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-all-wild/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "99ee79c6c2d94a4775e734c196705fbd6f4394c23fd34372ceda9bb56c54959d"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-all-wild/1440x900-own-turn.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "fd90051e5f8953b32a6c6358249ba3e7db246ae04191eaaced4bd712bceac926"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-all-wild/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "65647a556660e59647c51a19bb0a9ac6d592ea911dea4724d7b40da4142bcb54"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-all-wild/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "b9973ac8c6c10e8f585db887ba350289fb784d0b1e16a113a2faea5b119419e8"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-all-wild/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "71fed21d5a53cecf5520c4cd7551ba34e7a4b282975881ffa4475fff9f910ae3"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-all-wild/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "8b40982d44efd201a74393874e71301cf4e2c336c3daef584e07ecda7f096532"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-all-wild/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "d90bf9ea93d4cbe7c7587c561f91dcfd562382f0f8a89eea621ae51c87de6339"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-all-wild/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "535aa049fbb535e11ad694d9046003c1d5854ace91b6bb965ac3542db17a90d2"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-all-wild/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "f396a348e02d02eb360d04d6958c18bc5b32e80f5459e42b398e350a041d4407"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-all-wild/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "74cd629fa4f3b5bb1303dbf184c4442652c1d55d942d7b0db86740c5c2f0a786"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "62b981338762ef84fa39b47312dfa1e9375e4d80d01e1c53df93d93c7994cf20"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "a699244120ca0b0a4bb45216325dc34c63bbf1061ddbe43685e6fe6cfeada869"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/1440x900-own-turn.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "40ad6902ef23f5db6257a69a2065bbea65d8ef66fd218c257a9992f775e891d6"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "2253d8bbdbcaca501c7f2a441a0647f7f19ad6b54c48e221d49c12da83a9e3e3"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "5f0cd664a2e970b57710b896a3f7a246e9cbca072fb13bf29cfb0491076f2fbb"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/1920x1080-own-turn.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "3eaaddcb91c2acb09d9b0911d9cc7d20cb414cf6ec8cda3b585fa38242d75b21"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/1920x1080-spectator.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "3f231b0661b8953a4ab22643f4e36b64dac5268f1f4973e3defb8d395fdfa8a0"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/1920x1080-waiting.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "d82dc0592f52f6dcabc623534910d39650b3d18597a174d84eaa6a636d0e308f"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/360x800-own-turn.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "289805a7e9e861c49ad56ed36c0facbd73b6c5df730c73ba306f5981039f00ed"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/360x800-spectator.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "887caae0eeb790e526b15ba002d5c5dbccb549e920adcb7734539741fe86300a"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/360x800-waiting.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "bc3e6fd555ec097257bcaab8897816aabf5fe283c8458ad732f704def12fe102"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "04f47ecb907c2688848879b737737189f25c6187bbd839834edfc1a6f99f3886"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "ec613f26f3cedc968aa47bfe6af445be00f4abf478bec6ef260b7539e0bf0b52"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "70e17b77ea835c3d466a1c1c34193fa3104e780e11a830aa8db232d89bedabda"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/768x1024-own-turn.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "312cfc840290030c8a79a46aae51b9e8cbd01c7dcf6a6841ad6cd7da5d57b946"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/768x1024-spectator.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "2ef1c8099a69c876a81e354c48c84c3e0b12143fde65ad7c151f8063c48bdb0e"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/768x1024-waiting.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "5ef911bb802e50f4765754c7673ba8e3da4bce93dcaaf577491239db4ae70ebc"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/900x450-english.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "99808a27dd644fa7930d17d49ee54f91143dd4ff6e5cde635bd779f5d1db2b49"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/900x450-fixture-colour-choice.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "30428dc2cbc9e5730f8e115a166eb1e9708fbc0a373d6d824f131748b143fea4"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/900x450-own-turn.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "d5aa38148c330ae4aa210e7548dcc8252a5732aeeaeb5f8bb731fdba0af01a15"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/900x450-paused.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "cf90362b26a34f91cca856a2da0895f40bcdaabe1f4b919442e3e1dfc1b60f97"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/900x450-result.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "040412cad91a77fcc34d3b429806cf0a4224efb6b929fcda200be45fc24b6aa5"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/900x450-spectator.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "56737d7b79df70d311c11d8cc076a05770e65f487e35fd074556b71a8c89c96e"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-classic/900x450-waiting.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "4b590bb8cd4d704a45051f4d7c6d12a31e74365b441a222f8fd4c1ab54cb52c7"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-flip/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "3325a40b50939c9be7b439c099d1eedeb4c8d9b6a18a4decdc468be5f2ffc3fe"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-flip/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "f99555f634ba1aafe9717f621c5f3f729d63c87635ab7dbb6d2d3c7da6149bf2"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-flip/1440x900-own-turn.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "31746c03148635ee5c6bf31a9bed3c282f6eaa1146ab20ef65368f2e6841810d"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-flip/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "c2ff03ccc3a4139bbf8076af05c3f7657bec6b2ff98a41c6ef34efeddbe87f6c"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-flip/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "8c04a6f3fd754f40d30062dc198175fe4b1d90966b10cf68ff05edd49f9ffde1"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-flip/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "9b077b64c075e51910c1a33765dd2345b61a8632166b7686b5165f70dae8ecb2"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-flip/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "5c18e44de158d3ec6c0fad833bd6d07349cde2509f05d81fea8be2ec8829624a"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-flip/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "87747cb14b38b2b66352d21fd9a14e7ebace38a69b4db3a5d3d19f3e6ce1e886"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-flip/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "ea34920964ebb4163ff678f00f041d5454ff6a1ed5491635f6b2b3b72d5125c8"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-flip/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "0df0e730a91255562298083b00d09407f16a664268122288c519bf4d137988c2"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-flip/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "4e2d0e3ddee0933b26cd1c0c3e883f32ea76d5466ef7a8017232cac98d82f10b"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-no-mercy/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "351987613f08a8c5d8653782a1682fac34c4f6ae84b87d3cb56e53f03581f913"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-no-mercy/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "c39f084ece7bc29264b2de9274c2f87f35c688c5a2d3b69c05be3059f46b3a47"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-no-mercy/1440x900-own-turn.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ba6ca904288111cede28dffe33dade0a26604bd6a930d2e82769b99c4ee79fe1"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-no-mercy/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ce0caa5b454624bb61f15bf5af409e273f4d3af41f3c4f31dca8989c5af50b71"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-no-mercy/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "f9bb73c49d1f792f2fdea88389c10290bfa6b831cc9398673b096b6dfd50b397"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-no-mercy/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "df5df9351f5567482caf1c71bd103a29798f46de70b2a1e32d863ccd297655a1"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-no-mercy/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "6778f24422f7677d47192829a7fa4f27217c48a73a5ed7c7252cfc0ffad28355"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-no-mercy/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "cf8b2fb15f9f3a29242b89906ab05190e464267d4ab8630fc2db25070b088ff0"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-no-mercy/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "883e595034ff135c302cdb338f4631fa81ce7e1ca9186c68bd947c800e7d4b1c"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-no-mercy/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "cc60f652ca889581878123150aa6236e31268ae4a7d28e2b5ef0923f5a2b9d38"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/farbenchaos-no-mercy/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "a7817aab79ac917e8fee17158d0415b0b298ec866f43cccab4088450365cc11c"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "450a2be0144bdb3f4905f82770f3fbd9eef9e03cdca9a77932b1c8f2c87adb94"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "2814fb8e07a0e5fabf30ea7d7ce0a92fdfb88a9bf8613dcba82b3d4e28ac51fb"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/1440x900-own-turn.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "42ef1e91e867ad298d897a938ea305637fa493338b66770cbadd32564ec3a65a"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ade28f673a62c76d1158bb85fd3a276523707ad173c92518192ad874c0156bb7"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "8d8e0d9ce66c130182f8528f6487dd16d82e6f14006815c486584bfe23bb5fef"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/1920x1080-own-turn.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "aeab1980809228f9628fe940c4033277ed0ab6ad533d093fe27748c51f4a2a6a"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/1920x1080-spectator.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "02df860afb4dc21014f0ace6b287e326c66c41e0b241b5f7d00b262944a001d3"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/1920x1080-waiting.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "601ce5df3a4c04893172ce27930f0a196f34fade20ad3ac598010e4987fd3c09"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/360x800-own-turn.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "753bff930669f5574ed2a361da6ff559740f8f0e951e0331754c328c4152b125"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/360x800-spectator.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "3f8d269302820f5947bdafb1dbed4bc1865841651d4d24879fa9083fe352ae1d"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/360x800-waiting.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "37affef6b6282d116812b00d0cec906b5f2061fa32cedd74ae03cc9b406a4ff2"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "43b87af51bf0c99c1dc049afa2bc5a342da749a4958257ad17bebe6e8f327b61"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "e1bfe5a83d36d683b299349720c11f01be3a84b2d9c43bdc7ee7e20e90d2e121"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "e0950020b263ec56f18daa3c943d5dc85542aaf2154be1d615cf42bcf678a5ec"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/768x1024-own-turn.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "0385ea55b00c3ba2bcf8cdd88b5e94dc66910e7e6d11f6bf84c2598616db95ed"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/768x1024-spectator.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "acc7014206afbf4c1480d171effa5c3a4e4ff51bfe7b1b15330f9dbd24367a23"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/768x1024-waiting.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "79a6ac64dfed5125bb7f7b6fbafd43b96f88d30969d71813578753c17f31dd0b"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/900x450-english.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "882543e27a2242282aa36c3720e0f00f8f6a7f2dd11ba1f6ce0854962aa3c1cf"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/900x450-fixture-stack-choice.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "65f8b27ad7ef35982df7aae1e3926a1c163feb66d2494bc4329f9a98ba69efb0"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/900x450-own-turn.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "7ab3a25cb316fbc6109b4bdfdccc5c0ec49ebc1f8b17b5ed8ac6304fd8076ec4"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/900x450-paused.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "3d873173cc06ca1ab0f9d6e69766faf663b34ed596393f76d684bb93be11d9be"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/900x450-result.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "22d225e18b92f712628735bfac77fdcc9c11f896305f68241f9e17c68f37423b"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/900x450-spectator.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "6060446607518b2622ba248e7ecca8855cafda51c4a23b110b0c43ce5c2ec8e4"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-classic/900x450-waiting.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "f20df96f6ed88889782fce9ed391cacca74ba7f9ef83eb81fedb11fce8027ed1"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-short/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "e79822c3898a8caaa41f49acfe2d81b6479ed6c0b5a436fe99bc8cb0b9a3ee3c"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-short/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "8dc9074fb7cd60205bd4607a175f23e9ca559f8a84d6ff9b594cf70d60703893"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-short/1440x900-own-turn.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "c21b855f11ff5ec94e2d876e162fe72053b703ea56e323858b7f4ffaf6f6f7ad"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-short/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "34d3b7319723cfc758f03e5ada29a27334ae17c027bea6a7844496b60b174c93"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-short/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "7a5c4281f581ac8c1f8abfc2d88c8bd3caa1da8072d9e668afb758e61134b7de"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-short/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "c3bd150930e7360dd268c673416380c3d4a2b4d79f7164e66abacb012b3fcb03"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-short/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "660d9c4a1ff241d048e71ffd3b0cc592d7833162d58fabf9929d4bb0f9ebc3ca"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-short/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "7cba2f9ad22c071cd3a439e3405a8ee47e4b77420fd3027cd8804c9306903e82"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-short/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "94326043c2c0aecc76f66ea3eecd71ed88c0ae008ee199a639348e511f345b9a"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-short/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "e67869b4e3f0e9e79f0eb26312cf2227c79af7e0ea013722483a06d78a80b220"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-short/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "33d516a24c137f900f7d78deb386abe9a0866411aa038a300c98939cb1066606"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-team/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "4c78f023b0953a0b5a48089a4d409098a6f1966fb9f26b4fb2d7840ffa0943f5"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-team/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "13688844c42fec78715206b875b96fcf4243771c68be7b02f1def7ee38dcbbb0"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-team/1440x900-own-turn.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "3ec98229f2e5c653ea442042bf65f3b20730adc348db9790b8e30134ac6ddd5f"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-team/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "186b220ca57cda58fbe7adf7546a8d823cfdcfd3e65562b2324d05741ed64bcc"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-team/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "37ed078f26e6095c76b60e1fcc126c157f0ced2eb6445328ba8c1051f0af691b"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-team/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "ada97d7b9ec49ebc3d13e4ab3caecc2e504f3be625ff0c45cebc38f7dbfd01a6"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-team/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "ceef03475e28816f685e3b3c19a87e63d7632a34eb335e612af4ac04ec995590"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-team/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "0f5fa9a96230b2abea0c20346e588a4527c59c9967e083923df4900616ea8221"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-team/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "d3303641eb52c5721839bbf81203586705785d51662d53b6fa8e07f874af6b8e"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-team/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "dbb64fbcededbbb304a218696c4a16efc0ef1d8afda8a54c2b582590f6914c3b"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/stapelrennen-team/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "487fbf62902b932fcd3ed6953b4187745db9434fc31e7ea4c248a974a7098902"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "0390d3d732460f2bb93a9d6129c78ec4d5b9cdb8431ffbef3f45c06ed6fea26e"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "3cb3bc242f647dd5ba369b8621080e55e1baea473ee65d82b7bd3b1bff2ca132"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/1440x900-own-turn.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "5784614f6723e2ebf3aec73790f23f3edb68a14cde406dd4e6684315b4324fd7"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "a8eb3fde89ac7c8ece5594e3a9c929f1a37485b4764a161708318e8778b17161"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "b897516b451eff0b1b35591c183f8fd43289cd516269ef21405aeb6bb6d1cc31"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/1920x1080-own-turn.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "f312b71265f2baecc6a67adfd6feb2d5a6d93c74a22d12363b0fb0c7ea065200"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/1920x1080-spectator.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "39a4e6e1cc085da01e9b19840f66b1f2af7b3a2d71ae0cf24952d53ff545dc53"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/1920x1080-waiting.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "459ae0880e646b81e89e9e9e244f405c54bf5774f97e24a6f91e3d3a5ff80b87"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/360x800-own-turn.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "52cc16120e3d43bc8bf4cad368d649aad1f2381993b691818d5a6f079914bfb0"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/360x800-spectator.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "556836ed77d071b69c2bd78affe71e8eeca04e3ab7aac706bce8fbaff52d8e6f"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/360x800-waiting.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "1699ea1a1db52351a001af89a94b43b29f025bb28562474d8e6a0d0e4c1aa8ac"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "7391f6cea10757cc495fc7bd225ee8d0fdbafb8d55569dc065f8ef3dda8a40a7"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "c87ac36f45fee03126cb245b567d80d85d4a1409be93fbfb730709988878b920"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "6eda0e978974e500b1714ede05e78a06c50c97c50a3ecde974f213d51d41f173"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/768x1024-own-turn.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "d6e14910450b308fc19cbd4672204b7b841a294fd768aa3b86264fd5896503f2"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/768x1024-spectator.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "699f8cbbe3aaa82f89b4572d24c13b1b858a1964a39881538f138ea4920d2111"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/768x1024-waiting.png",
+      "width": 768,
+      "height": 1024,
+      "sha256": "97823b25b1afb38d974a6fb70e998472ab0d4b39a37647a6e5eab009942334d4"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/900x450-english.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "a938a691931c43d93433d0b16df63abc6553f1418fb4258a18bb58284566051d"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/900x450-fixture-two-groups.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "eac02ad8971772ba71c488b472ef853d2ecbb3f631ea683da67d2abf73d77a3d"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/900x450-own-turn.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "546c73e549d745a0aa9479324194e7885e4ac8e8114043d598f9c07a58e44a3c"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/900x450-paused.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "8c99bbea217ba11cf861f1af973a6808996fb7a9a3a55623d602742be852f5cf"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/900x450-result.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "b4cdd657c629cb3bf622fb0a3d72e7e2f6091fbafc5d87f009d0538e713810df"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/900x450-spectator.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "99d31de413dd192875c77e17b5febd3dd3846dd65c35cd69dbe507f5cb56a3f7"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-classic/900x450-waiting.png",
+      "width": 900,
+      "height": 450,
+      "sha256": "c76b1c418f1ddc40adcd01da3898a0e6cadef6054ac89197c36d75923ce57988"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-short/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "57d3a635078979831d09eaec9505e4425370dd442417b02128298995cb0a3b5a"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-short/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "adedf0e5ead15da877083552a7f141700f8b2eb1d7d7248f556669a76544bfce"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-short/1440x900-own-turn.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "b9cf68ad4199a2b11973f3ec7abd51473b0c9d4bf1b45789468534320d47317d"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-short/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "699d2e8989d031030ab671304b04269459b0ed9c3a23b28f01b55384c5e03ebe"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-short/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "99c579d33be9241ac4370d8958ef4b45da3e3a226f879e0c72b6da3d15477d04"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-short/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "35fa2c61bdf15f56b09e117dfcfa080859eef7ea4bd639fb19051e29ec4730a4"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-short/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "a855fe0e10bda02a7e14fd8524971da13da9def2e053d02d825ac63b64b858d6"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-short/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "a3218eafb65a3fe40c9c3bf9c09ef507988aac67d5c716c3a5fe5ef301d1d812"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-short/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "0bdb612a7738d86b5d34fbaacfaeeef66b0187bc957ffe8d73003519c6bb13ed"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-short/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "dd988a2bc6fad883954b4aea7be634f568d96f6e2cf8bbd1a9a590128a9902dd"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-short/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "48ba701932bf5e11e929c5be85382f403f8045d1e31805125c2dd810a424322f"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-team/1440x900-lobby-ready.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "bf8333f5ec6dacd070bff8b200bc5a128c77db23f40f5282512131c018a6f071"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-team/1440x900-lobby-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "8734a43dbf7613c7a8b9d0163f0114beaabbb42403ef2669a7a4c5d121845ab7"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-team/1440x900-own-turn.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "2f14c4f4624f18a4e1ff75654458938249d890b9b5e82b111d097a9443af7d97"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-team/1440x900-spectator.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "9dfbd06fb9453ce072ca086187c2e47e961902b43f74062c019b59156ac28e03"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-team/1440x900-waiting.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "1bf3afb7dc89541f595d6ba12ece9a731103e8a4489bf89f304eae7dfce0749d"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-team/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "da5c29f0269fe0c4865f0e28dd2ce4706833b5a9866ad629a50a077a5daf675b"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-team/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "f936202e15994965f530ff25fca6ca65325a6b62bbf3c314096816f631cc6b53"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-team/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "8b8353a9bae798edd4fb35786359e0d3baec27d1ead2744fc3014b30e59cf9f6"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-team/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "897411072fefead3dfb878faf3c2e560a4971bb52210a12f3eb4de53210cdaff"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-team/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "11c243206be5c20a8605709fc4f93994375fddb1129324c2c8d968fc7a4f8b63"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/desktop/zehnetappen-team/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "1882d0f3b57cd93357cb49964246928ea5036fad9a3536f4800c47b5797b52f9"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-all-wild/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "bc2ca0f00095c4a423efda03c88ef6c67d40830e50d5cdaacfe6a2e714225954"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-all-wild/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "8bd3cce9540e6a00ce8a663a75b5f7ba61b10804c3f36dbda98e78a372bb8330"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-all-wild/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "99afb63114371a041aabaa57de867e82ccbb2ab194ed0dc4f21b6dc6e0470972"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-all-wild/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "ad77f5d0862397d5e96396f93d7d3bcb4bedd908527875679f672b38d40c7861"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-all-wild/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "7fe530e94ae72548d4cb92318070b92c937b3995868ee20498184307cfd2028b"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-all-wild/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "cd8e55c9c462ed8c1627155c27a6090c42e493b7ec2801b0d1a1f41725c6d9c4"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-all-wild/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "58e42cbc7948d6493a8e25281cdd2b2834ca445e2d47e98f68bcf04d01aa2098"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-all-wild/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "12adfede0f0e0c80745c2ad85f7edcd988019e4915cbc8095eaf24e06e8b46e3"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-classic/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "82ecc9fc6dd14b97505c2ff55a3ccacc89bc945c24ea9f7b3779c6df80f4c124"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-classic/390x844-fixture-colour-choice.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "066eaa851b1c22c8bfe267e339910ef004cd80cea421f5f74b7869c560af8345"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-classic/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "de85c56d509214f94ebbc9162178c51498ba2a6f68d801d5e9734d0645c4ca0e"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-classic/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "7baed94e15a5434d83dc679fbd4867c2c237742593c125ae2c8d65a48db9ad49"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-classic/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "f6fc59ba647fa3cecc0b555e6fccb9ba1dd0d887028f4cf89a267cc6f2320695"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-classic/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "2d6f3ff46beb4bfe5b3814ce8640b21dd0aa0b112f74b6778fee35b2f3ee21cc"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-classic/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "c6ac94d90601d31108914f13953508155d439d6d86030ad78ea75ce6b0b4b11e"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-classic/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "8b8fc1b2011d7d8205a3b6bd726d8fa4ab19e0045ac75bd09494d89da6aab084"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-classic/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "0831545ae3190988e64fdb6b61e55e4d7346aa4f5962f775b85a8eeaa300be99"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-flip/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "c4fb071a20cf79925183715261b4a2a2092edfddd1e0fb25033fefa9d1c759f6"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-flip/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "08fbca1023c155435b73277cedd9577cf36a1dfe51b811e7c2c65e6c24c5a920"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-flip/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "b0debb6f33a2d9b99424286cbc0aa650b02aa456ccea69d9c6476623851b7741"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-flip/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "4e6c203013ed5d763c197f684eb507cfec9459eb878ccd86be0bce05bdfedcc0"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-flip/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "8f03992b2ada07c6ac8338570d9aff6abb98849a228c81c2e40f1aee9ff224ea"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-flip/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "fd9e354924b528d2ed3e100a4464ad456420453b0386ea95688cdc6d5e534703"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-flip/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "64f7f2628ab3b6533b77a2cdf8dad2d7462f21680dc3377998e33ede7b232bcf"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-flip/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "caa209352431bb5881c9ba6a5d013238a0137e40f06b2f439be130675c67dfa5"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-no-mercy/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "10da3778fbf20f72b37b63d4211c6de686d5ee70f5911bf7220b42ce6b7cab54"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-no-mercy/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "3480bd93ac3e9b93e7f9406b1ee2ac4552d483ed23dbd3f05fc6bab03eabbb1b"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-no-mercy/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "42a018164fe8008c3de7d5b8ea8a5b1af1a9893c7f8f3f9f78536a6b82e1f098"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-no-mercy/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "b140ef32588f6c30901f825088fe04f6484b3fbd8c9bc53e64d7f25526b41606"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-no-mercy/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "9e096066771043ee6ed2a45e643efa806a2f2539339676c40d8a60d3eb67035a"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-no-mercy/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "3786b827a272bc91931c5108cf78d10645475dfee1c3868535e69320c0042ae0"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-no-mercy/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "6265ed6a510024cc71aabb99250dbc65b8bd2edb445b0da2d6d110def42f1ba3"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/farbenchaos-no-mercy/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "441e79bd8b6132fc144d6317686bb38af28b03ef83cdf06ae6f703e6c890cb0d"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-classic/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "d8a00188da9740888cf41369d60241f8c7581e484d7bbaaa17b1ecfd5baf5616"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-classic/390x844-fixture-stack-choice.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "f0188b82047c4dbcd40a9be090b4432eaf7134b78eedf79fa1dd293de15a9372"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-classic/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "5b89774c507ae2ac910ae7a9bc36055bf0a3fc3c86420387dfcced0ddd8a4a9b"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-classic/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "21d448aada820ca006f27e2760c34588467f034c50276a8161de3c4f06337e20"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-classic/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "d1cfed91c0f5afffa6d5bab8415e4f2cc2ab302570e1170258ce13373244d7bc"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-classic/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "f802f91053faf0bc56093ff472a3e435f27cb912694f60e7af0cae3a5f7e0ac7"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-classic/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "3995152adca8e19c7b13670229763a0a3eec9898d276bd19c6166b58f459362b"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-classic/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "427450bcaff14e4c874e11aff87eda162faa245c27bac4b942881f20f5549b90"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-classic/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "4adeecae21009dc32701e4347edaba4dfd3d30258b04aa68969a2753538bee6f"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-short/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "11b2412b1befa425ce3d75d9b2c51f91e4aa5bad27b5d3e0d227c271ff94989b"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-short/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "fe32194c7a17fe9a5f9c074d669eb3f897ed490e0901ff3c45df12c110087ae2"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-short/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "3662d5d41c5cc3306b0c11a6aa7da9e74ac01c972147948e9fb724479c6a3089"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-short/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "99bf829838587743571dd3e892196ed9fb728d62e384c8df9aa46770b9b9358a"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-short/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "6c96789d31805238860b21a9abb24469b6037ced7eb3144e3da3ed730f33a334"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-short/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "a5f08162bc7b36aee0a085b017f631b8f7cf1263987c75e6f7feec5c37b7356a"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-short/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "58c974b6f7ba38274569c9adab5e7cc3e382fa3d41d39848dbb404d615113291"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-short/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "d5c2189b0131b022a279b61d0552db126a93b2d04431a3e52e56a5b398cc7f66"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-team/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "2ae472b15c70c683e2ede351289c1c9b22d44a26c3ed51b61050a6b470d82a04"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-team/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "a4c5ca14bee3b158a0c9f8c0be3f8b158f5078fca32c26a3ca7038d740d19bf9"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-team/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "148905a43856b06908fff7bf86eb0dd71ef3b2e0c44a71c07c5cbad990489cd0"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-team/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "f302382794babd32bb58bbaea1cb04f3ab9300d0ee3451aa4e8dc30413081435"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-team/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "1a6389c5543a6d6d772df0e4ebc233f7ab2d79eb97b811419d8bd78ba39ed298"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-team/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "ca3b440f1f0f1e3446a5a8fa3aeb5a67b951bab52074602f57923304f32c5fbf"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-team/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "79f4329e6e9a59d7b1fe43038b4f5b330fe8714fefcd57d1f44cd1ae4a07c769"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/stapelrennen-team/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "c512f738f7962d08b634a8b06f1bbb5bd9dcd05752cf77c3657aabce6c69ee0b"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-classic/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "d54a9a2b7c36b7f1c7c76a2462287e78b17a1ea04535d6693684091fedf53ecc"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-classic/390x844-fixture-two-groups.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "28ee0fdf29ac40263d15370a32be995e0c5e0ce8d41ca828020d87fa294d7f2c"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-classic/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "8da974a61bb567d0b01cf2f7080e037070e95d7c597e3e0492f66c8f5b2155c4"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-classic/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "29c1f39a362e5800baa813bc87da32129b6b41443f98a29bc388587056f2035e"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-classic/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "32f32da9ed6bc0e279015b5f46c656c80d530dc22e66c9c7d6d402420045f71d"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-classic/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "542ec13fb8b42e559531da8aa8e8b31915ec1e60897e0cb664a0cfb604e1bc95"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-classic/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "be7ff23f91746ce2705acdba937f2feaddb458209dfc8033df6c6ac05883a9c2"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-classic/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "19d7a98b5e8814b5510c3b3249f191d2f41fa67bf6d00f1b6d96eded586daae4"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-classic/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "0a223b4ef2ce3c9d66a9bc443ae1b8819c00efbd90dabdd36d683788c2238973"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-short/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "d36845c7bb7876851083b6bc14e2e37938872070d188e0cbe4ac47e0338d660a"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-short/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "90d593be00a7b8bce5a34839bb66fcfb7cec3c63d250442b29e7d60b24fb7690"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-short/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "4c81c080df6b3b03febab09d1e288f664b857df5cf2268a25586c713f09b3555"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-short/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "cbcf30a8e79a37437cb2c5eb7a12e3f4a772bb39a0e568af85b965ccd4c623f1"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-short/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "62fe0a27e0f9ad4ef9f496b69eea10278dd06475ccc4b5028b71bd257ce6da95"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-short/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "23a08573b82ccc269fb5bd85207ecf3d2b0e63a8882432118ba5be921c5560c5"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-short/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "3cdd287dfaa34a2797d1bce1007524de92a971dfe7ce71a6bdb351a8f5072b19"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-short/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "1414eb84552d9cf0f8352b1c7b1c32126c867187b1655b192a00f7088796fbd3"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-team/390x844-english.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "a4a9065ce5a34620376b1c6c22a3581ffd7702f53440ef873342af766c7bb6d3"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-team/390x844-lobby-ready.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "d141d0421e1874b02418ce6df85e22a0326d3a6a2ea4ded7877a45a8b59fdce3"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-team/390x844-lobby-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "b73786d70a64f756cde856ca2125d1deb512a4f2a97fa73e386da0e1a0d75944"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-team/390x844-own-turn.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "a2ce29d3db0c645293c59c0edc0cd702db05c390311c56c772ad1eb152ae0d2e"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-team/390x844-paused.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "fb745b42e8f2b796158ae12c267a2729fd5e96e29447abbedd63db13787ecc11"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-team/390x844-result.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "cd3265966e90276e0c47545985120bc2ddd4e6f9c0310dabc47e7e627db13722"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-team/390x844-spectator.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "210a40675eed7f3fb62f331f493062e9f868daf3871f873fbbb73e25e3f75741"
+    },
+    {
+      "path": "artifacts/cards-redesign/before/mobil/zehnetappen-team/390x844-waiting.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "56fcb5c2fab10bae384b856e8f470e0ec7f15799a63cf9bad71fec70d5bc4c31"
+    }
+  ]
+}

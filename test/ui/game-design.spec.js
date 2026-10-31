@@ -124,6 +124,9 @@ test.describe('Spielmotive', () => {
         await expect(page.locator('.sy-lobby')).toBeVisible();
         await expect(page.locator('.sy-lobby-art img')).toBeVisible();
         await expect.poll(() => page.locator('.sy-lobby-art img').evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
+      } else if (['farbenchaos', 'stapelrennen', 'zehnetappen'].includes(id)) {
+        await expect(page.locator('.cw-lobby')).toBeVisible();
+        expect(await page.locator('.cw-lobby-art .kc').count()).toBeGreaterThan(0);
       } else if (!['poker', 'omaha'].includes(id)) await expect(page.locator('.scene-hero > svg')).toBeVisible();
     }
   });

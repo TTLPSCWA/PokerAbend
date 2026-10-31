@@ -4,6 +4,7 @@
 // Die Prüfung im Browser ist nur Anzeige – der Server entscheidet.
 'use strict';
 {
+  const tx = (de, en) => I18n.language === 'en' ? en : de;
   const COLOR = { r: 'Rot', g: 'Grün', b: 'Blau', y: 'Gelb' };
   const SKIP = '<svg class="sym" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="3"/><path d="M6.5 17.5l11-11" stroke="currentColor" stroke-width="3"/></svg>';
   let picked = new Set();  // gewählte Karte(n) zum Anlegen oder Abwerfen
@@ -93,8 +94,31 @@
     send('hit', { card: id, owner, group, end }).then((r) => { if (r?.ok) picked.clear(); });
   }
 
+  // The existing selection renderer lives on the table; validation and actions stay unchanged.
+  function selectionGroups(S) {
+    const g = S.g, me = meOf(S), m = modeOf(S), inRound = !!me?.inRound;
+      // Ausleg-Leiste über der Hand: ein Feld je Gruppe
+      const bar = inRound && !me.laidDone && g.myGroups.length && m !== 'discard' ? I18n.html`<div class="ze-slots" role="group" aria-label="Phase auslegen: Gruppen">${g.myGroups.map((gr, i) => {
+        const cards = slotCards(S, i);
+        const why = slotReason(S, i);
+        const exact = S.settings.exactSize;
+        return I18n.html`<div class="ze-slot ${why === null ? 'ok' : ''} ${active === i ? 'active' : ''}" data-drop="slot" data-i="${i}">
+          <button type="button" class="ze-slot-head" data-g="slot" data-i="${i}" aria-pressed="${active === i}" aria-label="Gruppe ${i + 1}: ${groupName(gr)} wählen">
+            <b>Gruppe ${i + 1}: ${groupName(gr)}</b><small>${cards.length}/${gr.size}${exact ? '' : '+'}${why === null ? ' ✓' : ''}</small></button>
+          <div class="ze-slot-cards">${cards.length ? cards.map((c) => card(c, { attrs: `data-g="unslot" data-id="${c.id}" title="Zurück auf die Hand"` })).join('') : `<span class="ze-empty">${active === i ? 'Karten antippen – sie kommen hierher' : 'Feld antippen, dann Karten wählen'}</span>`}</div>
+          <div class="ze-why ${why === null ? 'ok' : ''}" role="status">${why === null ? '✓ passt' : esc(why)}</div></div>`;
+      }).join('')}</div>` : '';
+    return bar;
+  }
+
   const kit = kitGame({
     id: 'zehnetappen',
+    ring: false,
+    lobby(S) {
+      const players = S.players.filter((p) => p.seated), ready = players.length >= S.minPlayers, limit = S.variant === 'short' ? 5 : 10;
+      return `<section class="cw-lobby ze-lobby"><div class="cw-lobby-art ze-lobby-art" aria-hidden="true"><div class="ze-art-phase">${Array.from({ length: limit }, (_, i) => `<i>${i + 1}</i>`).join('')}</div><div class="ze-art-group">${['r','g','b'].map((c) => card({c,n:7}, {tag:'span'})).join('')}<b>✓</b></div><div class="ze-art-group ze-art-run">${[3,4,5,6].map((n,i) => card({c:'rgby'[i],n}, {tag:'span'})).join('')}</div><span class="cw-art-caption">${tx('Deine nächste Phase', 'Your next phase')}</span></div><div class="cw-brief"><span class="cw-eyebrow">PHASE 10 · ${S.variant === 'team' ? tx('Teamspiel', 'Team play') : S.variant === 'short' ? tx('Kurze Partie', 'Short game') : tx('Klassisch', 'Classic')}</span><h2>${tx('Schritt für Schritt.<br>Phase für Phase.', 'Step by step.<br>Phase by phase.')}</h2><p class="cw-lead">${tx('Sammle Sätze, baue Folgen und halte deine nächste Aufgabe im Blick. Jede ausgelegte Phase bringt dich weiter.', 'Collect sets, build runs and focus on your next task. Each completed phase takes you further.')}</p><div class="cw-facts"><span><b>${S.minPlayers === S.maxPlayers ? S.minPlayers : `${S.minPlayers}–${S.maxPlayers}`}</b>${tx('Spieler', 'Players')}</span><span><b>${limit}</b>${tx('Phasen', 'Phases')}</span><span><b>J</b>${tx('Joker helfen', 'Wild cards help')}</span></div><div class="cw-ready"><i class="${ready ? 'ready' : ''}"></i><b>${ready ? tx('Bereit für Phase eins', 'Ready for phase one') : tx('Warten auf Mitspieler', 'Waiting for players')}</b><span>${players.length}/${S.maxPlayers}</span></div><ul class="cw-roster">${players.map((p) => `<li><span class="cw-player-initial">${esc(Array.from(p.name)[0] || '?')}</span>${esc(p.name)}${p.id === S.you?.id ? `<small>${tx('du', 'you')}</small>` : ''}</li>`).join('')}</ul><p class="cw-footnote">${tx('Erst ziehen, dann auslegen oder anlegen, zum Schluss eine Karte abwerfen. Die Gruppen zeigen dir, was noch fehlt.', 'Draw first, lay down or add cards, then discard one card. The groups show what is still missing.')}</p></div><div class="cw-brief-steps"><article><b>01</b><span>${tx('Aufgabe lesen', 'Read your task')}</span><p>${tx('Deine Phase und ihr Fortschritt stehen zusammen.', 'Your phase and its progress stay together.')}</p></article><article><b>02</b><span>${tx('Gruppen bauen', 'Build your groups')}</span><p>${tx('Karten wählen und gültige Sätze oder Folgen vorbereiten.', 'Choose cards and prepare valid sets or runs.')}</p></article><article><b>03</b><span>${tx('Passend abschließen', 'Complete your turn')}</span><p>${tx('Auslegen, anlegen und abwerfen sind klar getrennte Schritte.', 'Laying down, adding cards and discarding are distinct steps.')}</p></article></div></section>`;
+    },
+    resultExtra(S) { return `<div class="cw-result ze-result"><span class="cw-eyebrow">PHASE 10</span><h3>${tx('Runde ausgewertet.', 'Round scored.')}</h3><p>${tx('Die bestätigte Wertung und die erreichten Phasen findest du im Stand. Der Host startet die nächste Runde.', 'Find confirmed scores and completed phases in the standings. The host starts the next round.')}</p></div>`; },
     look(S) {
       const laid = Object.entries(S.g.laid).filter(([, gs]) => gs.length).map(([id, gs]) => I18n.html`<div class="look-pile"><h4>${esc(S.players.find((p) => p.id === id)?.name ?? '?')} · Phase ${S.players.find((p) => p.id === id)?.phase ?? ''}</h4>${gs.map((gr) => `<p class="hint" style="margin:6px 0 2px">${TYPE[gr.type]}</p><div class="look-fan">${groupCards(gr)}</div>`).join('')}</div>`).join('');
       const thrown = S.moves.filter((m) => m.t === 'wirft ab' && m.d).slice(-5).map((m) => card(m.d, { tag: 'span' }));
@@ -183,11 +207,15 @@
       }).join('')}</div>`).join('');
       const targetPile = playing && m === 'discard' && picked.size === 1;
       const top = g.top ? card(g.top, { cls: 'big', attrs: 'disabled' }) : '<div class="kc kc-empty"></div>';
-      return I18n.html`<div class="kg-table">
+      const ownTurn = S.phase === 'playing' && S.turnId === S.you?.id;
+      return I18n.html`<div class="kg-table ze-workbench">
+        <header class="cw-table-head"><div><span class="cw-eyebrow">PHASE 10 · ${tx('DEINE KARTENWERKSTATT', 'YOUR CARD WORKSPACE')}</span><h2>${tx('Plane deine nächste Phase.', 'Plan your next phase.')}</h2></div><span class="cw-turn ${ownTurn ? 'is-mine' : ''}">${S.phase === 'over' ? tx('Runde beendet', 'Round complete') : ownTurn ? tx('Du bist am Zug', 'Your turn') : `${name(S.turnId)} · ${tx('am Zug', 'on turn')}`}</span></header>
+        ${me?.inRound ? `<ol class="ze-flow" aria-label="${tx('Schritte deines Zugs', 'Your turn steps')}"><li ${ownTurn && g.step === 'draw' ? 'aria-current="step"' : ''}><b>01</b>${tx('Ziehen', 'Draw')}</li><li ${ownTurn && g.step === 'play' && m !== 'discard' ? 'aria-current="step"' : ''}><b>02</b>${me.laidDone ? tx('Anlegen', 'Add cards') : tx('Auslegen', 'Lay down')}</li><li ${ownTurn && m === 'discard' ? 'aria-current="step"' : ''}><b>03</b>${tx('Abwerfen', 'Discard')}</li></ol>` : ''}
         <div class="ze-top">${phase}
         <div class="kg-piles"><div class="kg-pile">${backCard(g.deck)}<small>Stapel</small></div>
           <div class="kg-pile ${targetPile ? 'ze-target' : ''}" ${playing ? 'data-drop="discard"' : ''}><button type="button" class="ze-pile-btn" data-g="discard-pile" ${targetPile ? '' : 'disabled'} aria-label="Ablage${targetPile ? ' – hier abwerfen' : ''}">${top}</button><small>${targetPile ? 'Hier abwerfen' : I18n.t('Ablage')}</small></div></div></div>
-        <div class="ze-table">${laid || I18n.html('<p class="hint">Noch hat niemand eine Phase ausgelegt.</p>')}</div>
+        ${selectionGroups(S)}
+        <section class="ze-public"><div class="cw-section-head"><span class="cw-eyebrow">${tx('OFFENE AUSLAGEN', 'PUBLIC GROUPS')}</span><span>${tx('Hier kannst du nach deiner Phase anlegen', 'Add cards here after completing your phase')}</span></div><div class="ze-table">${laid || I18n.html('<p class="hint">Noch hat niemand eine Phase ausgelegt.</p>')}</div></section>
       </div>`;
     },
     dock(S, myTurn) {
@@ -195,17 +223,6 @@
       const me = meOf(S);
       const m = modeOf(S);
       const inRound = !!me?.inRound;
-      // Ausleg-Leiste über der Hand: ein Feld je Gruppe
-      const bar = inRound && !me.laidDone && g.myGroups.length && m !== 'discard' ? I18n.html`<div class="ze-slots" role="group" aria-label="Phase auslegen: Gruppen">${g.myGroups.map((gr, i) => {
-        const cards = slotCards(S, i);
-        const why = slotReason(S, i);
-        const exact = S.settings.exactSize;
-        return I18n.html`<div class="ze-slot ${why === null ? 'ok' : ''} ${active === i ? 'active' : ''}" data-drop="slot" data-i="${i}">
-          <button type="button" class="ze-slot-head" data-g="slot" data-i="${i}" aria-pressed="${active === i}" aria-label="Gruppe ${i + 1}: ${groupName(gr)} wählen">
-            <b>Gruppe ${i + 1}: ${groupName(gr)}</b><small>${cards.length}/${gr.size}${exact ? '' : '+'}${why === null ? ' ✓' : ''}</small></button>
-          <div class="ze-slot-cards">${cards.length ? cards.map((c) => card(c, { attrs: `data-g="unslot" data-id="${c.id}" title="Zurück auf die Hand"` })).join('') : `<span class="ze-empty">${active === i ? 'Karten antippen – sie kommen hierher' : 'Feld antippen, dann Karten wählen'}</span>`}</div>
-          <div class="ze-why ${why === null ? 'ok' : ''}" role="status">${why === null ? '✓ passt' : esc(why)}</div></div>`;
-      }).join('')}</div>` : '';
       const chosen = m === 'lay' ? slots.flat().length : picked.size;
       const counter = inRound && (m === 'lay' || picked.size || m === 'discard')
         ? I18n.html`<div class="ze-count" role="status"><span>${chosen} ausgewählt${m === 'discard' ? ' (zum Abwerfen: genau 1)' : ''}</span>${chosen ? I18n.html('<button type="button" class="btn btn-sm btn-ghost" data-g="clear">Auswahl aufheben</button>') : ''}</div>` : '';
@@ -230,7 +247,7 @@
           ${m === 'discard' ? I18n.html`<button class="btn btn-outline-red ze-discard-btn" data-g="discard" ${picked.size === 1 ? '' : 'disabled title="Genau eine Karte auswählen"'}>Abwerfen</button><button class="btn btn-ghost" data-g="mode-back">${done ? 'Zurück zum Anlegen' : 'Zurück zum Auslegen'}</button>`
             : I18n.html`<button class="btn" data-g="mode-discard">Karte abwerfen …</button>`}`;
       }
-      return I18n.html`${bar}${counter}<div class="kg-hand ze-hand" role="group" aria-label="Deine Karten">${hand}</div><div class="kg-acts">${acts}</div>`;
+      return I18n.html`${counter}<div class="kg-hand ze-hand" role="group" aria-label="Deine Karten">${hand}</div><div class="kg-acts">${acts}</div>`;
     },
     async onClick(t, S) {
       const g = t.dataset.g;

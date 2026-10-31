@@ -633,6 +633,8 @@ function kitShedding(opts) {
   }
   const kit = kitGame({
     id: opts.id, name: opts.name, house: opts.house, sort: opts.sort, prefs: opts.prefs, translate: opts.translate, intro: opts.intro,
+    // Optional presentation hooks; existing shedding games keep their defaults.
+    lobby: opts.lobby, ring: opts.ring, resultExtra: opts.resultExtra,
     look: (S) => [{ title: I18n.t('Zuletzt gelegt'), html: lookMoves(S.moves, { filter: (m) => /^legt /.test(m.t), n: 10 }) }],
     moveDetail: () => '',
     get rules() { return opts.rules; },
@@ -667,6 +669,7 @@ function kitShedding(opts) {
       const pending = g.pending ? `<div class="kg-chip warn">${esc(opts.pendingText(g))}</div>` : '';
       const penalty = g.pending ? I18n.html`<span class="kg-penalty" aria-label="Strafe: ${g.pending} Karten ziehen">+${g.pending}</span>` : '';
       return I18n.html`<div class="kg-table">
+        ${opts.tableIntro?.(S) || ''}
         <div class="kg-piles">
           <div class="kg-pile">${backCard(g.deck)}<small>Stapel</small></div>
           <div class="kg-pile kg-discard ${opts.pileClass ? opts.pileClass(g) : ''}" data-drop="discard">${g.top ? opts.card(g.top, { cls: 'big', attrs: 'disabled' }) : ''}${penalty}<small>Ablage</small></div>

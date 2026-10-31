@@ -1,3 +1,4 @@
+@import url('/games/card-worlds.css');
 /* UNO: eigene Karten mit Farbrahmen, Eckwerten und kantigem Mittelfeld.
    Selbst gebaut mit CSS/SVG, kein Original-Logo. */
 .kc-fc { --ink-c: #fff; color: #fff; border: 2px solid #111; box-shadow: inset 0 0 0 calc(var(--w) * .06) #fff, 0 2px 6px rgba(0,0,0,.4); overflow: hidden; }
@@ -45,3 +46,35 @@ body:not(.marks) .wc-dot { display: none; }
 .kg-farbenchaos .btn-call:hover:not(:disabled) { background: #E04242; }
 .kg-farbenchaos .btn-call.armed { background: #8E1E1E; }
 .kg-farbenchaos .btn-call.catch { font-size: 17px; }
+
+/* VIS-004: a graphic colour arena, with the actual active side kept explicit. */
+.kg-farbenchaos{--cw-bg:#141b29;--cw-panel:#202b3d;--cw-accent:#efc18b;--cw-edge:#aebacb30;--cw-text:#f5f0e8}
+.kg-farbenchaos .kg-main{background:radial-gradient(ellipse at 2% 14%,#b2463b25,transparent 45%),radial-gradient(ellipse at 98% 85%,#355c9b20,transparent 45%),#141b29}
+.kg-farbenchaos .kg-table{display:grid;gap:18px;justify-items:stretch;max-width:1060px}
+.fc-state-strip{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 18px;padding:12px 14px;border:1px solid var(--cw-edge);border-radius:8px;background:#ffffff04;font-size:11px;color:#b9c6d5}
+.fc-state-strip>strong{color:#ffd2a3;font-size:13px;font-weight:500}
+.fc-current-colour{display:flex;gap:7px;align-items:center;padding:5px 9px;border-radius:4px;color:#fff;font-size:11px}.fc-current-colour.fc-y{color:#3d330c}.fc-current-colour .cm{position:static;display:inline-block;width:13px;height:13px;fill:currentColor}.fc-current-colour b{font-weight:500}
+.fc-side-state{color:#e0d1ef}
+.kg-farbenchaos .kg-piles{position:relative;isolation:isolate;display:flex;gap:50px;justify-content:center;align-items:center;min-height:270px;padding:30px 24px;border:1px solid #b9c6d329;border-radius:16px;background:radial-gradient(ellipse at 50% 50%,#3d4d6344,transparent 65%),#1b2533;box-shadow:inset 0 0 0 7px #ffffff02,0 10px 32px #0002}
+.kg-farbenchaos .kg-piles::before{content:'';position:absolute;inset:16px;border:1px solid #ffffff09;border-radius:10px;pointer-events:none;z-index:-1}
+.kg-farbenchaos .kg-piles .kc{--w:110px;opacity:1}.kg-farbenchaos .kg-piles .kc-back{background:repeating-linear-gradient(135deg,#293646 0 7px,#202c3a 7px 14px);border:1px solid #b5bdc9;color:#e6d4ad;box-shadow:0 4px 0 -1px #4b5360,0 7px 0 -2px #252e39,0 10px 18px #0004;font-size:20px}
+.kg-farbenchaos .kg-pile{gap:14px}.kg-farbenchaos .kg-pile>small{font-size:11px;color:#bdc9d7;letter-spacing:.05em}.kg-farbenchaos .kg-chip{font-size:12px;background:#ffffff07;border:1px solid #b6c4d629;color:#e2e7ec}.kg-farbenchaos .kg-chip.warn{background:#c8745420;border-color:#d69b6b66;color:#ffd4b0}.kg-farbenchaos .kg-chips:empty{display:none}
+.kg-farbenchaos .kc-fc{border:1px solid #f4ecd8d4;border-radius:10px;box-shadow:inset 0 0 0 calc(var(--w)*.055) #f4efdf,0 4px 7px #0005}.kg-farbenchaos .kc-fc .oval{width:76%;height:55%;border-radius:9px;background:#fffaf0;box-shadow:0 1px 3px #0003}.kg-farbenchaos .kc-fc .v{-webkit-text-stroke:0;font-weight:800}.kg-farbenchaos .kc-fc.fc-w .oval{background:#1c2531;box-shadow:inset 0 0 0 1px #ffffff89}
+.kg-farbenchaos .kg-hand{gap:8px;padding-top:12px}.kg-farbenchaos .kg-hand .kc-fc{--w:65px}.kg-farbenchaos .kg-hand .kc.can{outline-color:#f1c88c;box-shadow:0 0 0 3px #edbc6a33,0 6px 12px #0004}.kg-farbenchaos .kg-hand .kc:not(.can):not(:disabled){opacity:.8}
+.kg-farbenchaos .kg-wishes{padding:8px;gap:12px;max-width:100%;flex-wrap:wrap}.kg-farbenchaos .wish-circle{width:66px;height:66px;min-height:66px;border-width:2px;font-size:12px;box-shadow:0 4px 14px #0003}.kg-farbenchaos .kg-targets{max-width:100%;flex-wrap:wrap}
+.kg-farbenchaos .uno-backs{gap:10px;align-items:start;padding:12px;border:1px solid var(--cw-edge);border-radius:8px;background:#ffffff03}.kg-farbenchaos .uno-backs:empty{display:none}.kg-farbenchaos .uno-backs>div{display:grid;gap:8px;max-width:100%;font-size:11px;color:#c6ccda}.kg-farbenchaos .uno-backs>div>div{gap:4px}.kg-farbenchaos .uno-drawback{gap:9px;font-size:11px;color:#bbc8d5}.kg-farbenchaos .kg-table>details{width:100%;padding:12px;border:1px solid var(--cw-edge);border-radius:7px;font-size:12px;color:#c5d0d8}.kg-farbenchaos .kg-table>details>summary{cursor:pointer;min-height:30px}
+.fc-colour-orbit{width:370px;height:370px;border-radius:50%;background:conic-gradient(from -30deg,#d85f4e66,#dfbf5866,#59a58066,#528acc66,#d85f4e66);mask:radial-gradient(circle,transparent 61%,#000 62% 64%,transparent 65%)}
+.fc-lobby-art>span[style]{position:absolute;top:47%;left:calc(50% + (var(--fan) - 1.5)*64px);transform:translate(-50%,-50%) rotate(calc((var(--fan) - 1.5)*13deg))}.fc-lobby-art .kc-fc{--w:126px;box-shadow:inset 0 0 0 7px #f4eddd,0 16px 28px #0005}
+.fc-result{background:radial-gradient(ellipse at 50% 100%,#667aa315,transparent 70%)}
+@media(max-width:600px){.kg-farbenchaos .kg-table{gap:12px}.kg-farbenchaos .kg-piles{min-height:195px;gap:32px;padding:25px 12px;border-radius:10px}.kg-farbenchaos .kg-piles .kc{--w:80px}.fc-state-strip{padding:9px 10px;gap:7px 10px;font-size:10px}.fc-current-colour{font-size:10px}.fc-state-strip>strong{font-size:11px}.kg-farbenchaos .kg-hand .kc-fc{--w:50px}.kg-farbenchaos .kg-hand{gap:6px}.kg-farbenchaos .wish-circle{width:60px;height:60px;min-height:60px}.fc-colour-orbit{width:220px;height:220px}.fc-lobby-art>span[style]{left:calc(50% + (var(--fan) - 1.5)*43px);top:46%}.fc-lobby-art .kc-fc{--w:78px;box-shadow:inset 0 0 0 4px #f4eddd,0 10px 17px #0004}.kg-farbenchaos .uno-backs{padding:9px;gap:9px}.kg-farbenchaos .uno-backs .kc{--w:35px}}
+@media(max-height:560px) and (min-width:641px) and (orientation:landscape){.kg-farbenchaos .kg-table{gap:10px}.kg-farbenchaos .kg-piles{min-height:170px;padding:20px;gap:30px}.kg-farbenchaos .kg-piles .kc{--w:76px}.kg-farbenchaos .kg-hand .kc-fc{--w:50px}.fc-lobby-art .kc-fc{--w:96px}.fc-lobby-art>span[style]{left:calc(50% + (var(--fan) - 1.5)*43px)}.fc-colour-orbit{width:260px;height:260px}}
+
+/* Long hands retain full touch targets; the existing loupe and peek action remain. */
+.kg-farbenchaos .kg-hand{flex-wrap:nowrap;overflow-x:auto;justify-content:safe center;overscroll-behavior-x:contain;scrollbar-width:thin}
+.kg-farbenchaos .kg-hand.overlap{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;gap:7px;overscroll-behavior-x:contain;scrollbar-width:thin;padding-inline:10px}
+.kg-farbenchaos .kg-hand.overlap>*+*{margin-left:0}
+/* Keep colour choices circular and retain dark-side colours on hover. */
+.kg-farbenchaos .wish-circle{min-width:66px;flex:0 0 66px;background:var(--fc-wish)}
+.kg-farbenchaos .wish-circle.fc-r{--fc-wish:#d32f2f}.kg-farbenchaos .wish-circle.fc-y{--fc-wish:#f2c200}.kg-farbenchaos .wish-circle.fc-g{--fc-wish:#2e9e4f}.kg-farbenchaos .wish-circle.fc-b{--fc-wish:#1f63c6}.kg-farbenchaos .wish-circle.fc-p{--fc-wish:#bd3978}.kg-farbenchaos .wish-circle.fc-t{--fc-wish:#168d90}.kg-farbenchaos .wish-circle.fc-o{--fc-wish:#d87722}.kg-farbenchaos .wish-circle.fc-v{--fc-wish:#8046b4}
+.kg-farbenchaos .btn.wish-circle:hover:not(:disabled){background:var(--fc-wish)}
+@media(max-width:600px){.kg-farbenchaos .wish-circle{min-width:60px;flex-basis:60px}}
