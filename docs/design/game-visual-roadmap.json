@@ -3,9 +3,9 @@
   "updated_at": "2026-10-31",
   "audited_source_commit": "ef6511d76f78689fc525a63f6e3637c3f14f1252",
   "audit_hash_format": "SHA-256 of UTF-8 source with LF line endings at package.source_audit_commit, falling back to audited_source_commit",
-  "authority": "Expliziter zweiphasiger Nutzerauftrag vom 31.10.2026; kein V2-Implementierungsauftrag. Ausdrücklicher Folgeauftrag für UNO, Skip-Bo und Phase 10 vom 31.10.2026.",
+  "authority": "Expliziter zweiphasiger Nutzerauftrag vom 31.10.2026; kein V2-Implementierungsauftrag. Ausdrücklicher Folgeauftrag für UNO, Skip-Bo und Phase 10 vom 31.10.2026. Ausdrücklicher UNO-Ultimate-/Spuknacht-Folgeauftrag vom 31.10.2026; keine Freigabe anderer Spiele.",
   "id_policy": "VIS-IDs sind dauerhafte Design-IDs. Bestehende IDs niemals neu nummerieren; spätere Einträge mit nächster freier Nummer ergänzen. Unabhängig von V2-XX und technischen Spiel-IDs.",
-  "scope_policy": "VIS-001 sowie die anschließend ausdrücklich freigegebenen VIS-004, VIS-009 und VIS-008 sind abgeschlossen. Alle anderen Pakete bleiben Planung und erfordern eigene ausdrückliche Freigabe. Kein V2-Implementierungsauftrag.",
+  "scope_policy": "VIS-001 sowie die anschließend ausdrücklich freigegebenen VIS-004, VIS-009 und VIS-008 sind abgeschlossen. Alle anderen Pakete bleiben Planung und erfordern eigene ausdrückliche Freigabe. Kein V2-Implementierungsauftrag. VIS-004 wurde anschließend allein für UNO Ultimate und die dauerhaft verfügbare Spuknacht-Variante erweitert; keine weiteren Pakete freigegeben.",
   "assessment_scope": "Alle registrierten Frontend-Ordner, direkte gemeinsame Komponenten und der Backlog sind inventarisiert. Manuelle Vorher-/Nachher-Abnahme für Scotland Yard, UNO, Skip-Bo und Phase 10. Für die übrigen Spiele stehen spätere individuelle Sichtprüfungen aus.",
   "references": [
     "AGENTS.md",
@@ -15,7 +15,9 @@
     "games/index.js",
     "games/planned.js",
     "docs/design/CARD_WORLDS_REDESIGN.md",
-    "docs/design/card-worlds-screenshots.json"
+    "docs/design/card-worlds-screenshots.json",
+    "docs/design/UNO_ULTIMATE_REDESIGN.md",
+    "docs/design/uno-ultimate-screenshots.json"
   ],
   "inventory": {
     "playable_count": 49,
@@ -500,6 +502,82 @@
         "log": "artifacts/cards-final-plan.log"
       },
       "unchanged_other_package_entries": 92
+    },
+    "uno_ultimate": {
+      "implementation_commit": "dc2079a5862ba549cdcc9359c4a67157436ff1d9",
+      "node_full": {
+        "passed": 892,
+        "failed": 0,
+        "duration_seconds": 46.322,
+        "log": "artifacts/uno-ultimate-full-node.log"
+      },
+      "browser_regression": {
+        "passed": 189,
+        "failed": 0,
+        "skipped": 1,
+        "duration_seconds": 630,
+        "log": "artifacts/uno-ultimate-regression.log"
+      },
+      "browser_final": {
+        "passed": 10,
+        "failed": 0,
+        "skipped": 0,
+        "duration_seconds": 55,
+        "log": "artifacts/uno-ultimate-final-capture.log"
+      },
+      "browser_contrast": {
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0,
+        "duration_seconds": 14.6,
+        "log": "artifacts/uno-ultimate-contrast.log"
+      },
+      "renderer_follow_up": {
+        "passed": 24,
+        "failed": 0,
+        "log": "artifacts/uno-ultimate-render-final.log"
+      },
+      "coverage": [
+        "Five selectable real variants",
+        "All five on six viewport sizes",
+        "Host, guest, spectator, pause, reconnect, result",
+        "Separate Ghost Night leaderboard via real API",
+        "Classic house rules and 60 complete bot rounds",
+        "Private-card invariance and permitted Flip faces",
+        "Reduced motion, calm preference and shared gamePaused state",
+        "Light Flip contrast >= 4.5 for wildcard values"
+      ],
+      "browser_ghost_final": {
+        "passed": 2,
+        "failed": 0,
+        "duration_seconds": 12.3,
+        "log": "artifacts/uno-ultimate-ghost-final.log",
+        "coverage": "Portrait result captures, reconnect, real Ghost Night leaderboard and independent Classic statistics"
+      },
+      "permanent_screenshots": 42,
+      "unchanged_other_package_entries": 94,
+      "gameplay_engines_changed": [],
+      "variant_registration_changed": [
+        "games/farbenchaos/index.js",
+        "games/farbenchaos/art.js",
+        "games/variants.js"
+      ],
+      "post_metadata_node_full": {
+        "passed": 892,
+        "failed": 0,
+        "duration_seconds": 46.368,
+        "log": "artifacts/uno-ultimate-final-node.log"
+      },
+      "final_planning_checks": {
+        "passed": 6,
+        "failed": 0,
+        "log": "artifacts/uno-ultimate-plan-final.log"
+      },
+      "room_transition_checks": {
+        "passed": 12,
+        "failed": 0,
+        "log": "artifacts/uno-ultimate-room-effects.log"
+      }
     }
   },
   "packages": [
@@ -907,13 +985,17 @@
         "evidence": [
           "public/games/farbenchaos/farbenchaos.css",
           "public/games/farbenchaos/farbenchaos.js",
-          "public/games/card-worlds.css"
+          "public/games/farbenchaos/haunted-manor.svg",
+          "public/games/farbenchaos/investigation-tools.svg",
+          "games/farbenchaos/art.js"
         ],
-        "assessment": "Nach ausdrücklicher Freigabe als individuelles VIS-Paket umgesetzt und auf Desktop/Handy geprüft."
+        "assessment": "Fünf ausdrücklich freigegebene, geprüfte UNO-Welten einschließlich dauerhaft verfügbarer Spuknacht; vorhandene Engines weiterverwendet."
       },
       "current_frontend_files": [
         "public/games/farbenchaos/farbenchaos.css",
-        "public/games/farbenchaos/farbenchaos.js"
+        "public/games/farbenchaos/farbenchaos.js",
+        "public/games/farbenchaos/haunted-manor.svg",
+        "public/games/farbenchaos/investigation-tools.svg"
       ],
       "shared_frontend_files": [
         "public/core.js",
@@ -922,60 +1004,74 @@
         "public/ui-theme.css",
         "public/style.css",
         "public/games/kit.js",
-        "public/games/card-worlds.css"
+        "public/games/card-worlds.css",
+        "public/hub.js",
+        "public/variants.js",
+        "public/variants.css",
+        "public/i18n-en.js"
       ],
       "source_audit": [
         {
           "path": "public/games/farbenchaos/farbenchaos.css",
-          "sha256": "66209d350bf3fb0e602ee09ff8d522011dae31eaa0fa776198e0e3b6571eddc2",
-          "css_classes": [
-            "kc-fc",
-            "oval",
-            "ul",
-            "sym",
-            "cr",
-            "tl",
-            "br",
-            "cm",
-            "fc-r",
-            "fc-y",
-            "fc-g",
-            "fc-b",
-            "fc-w",
-            "fc-p",
-            "fc-t",
-            "fc-o",
-            "fc-v",
-            "ring-p",
-            "ring-t",
-            "ring-o"
-          ]
+          "sha256": "2ed83d17fd7f23c2d22b91d39b4fc843da0ce7563073b8e103ea0dc5c03fca8e"
         },
         {
           "path": "public/games/farbenchaos/farbenchaos.js",
-          "sha256": "3ccd368ff6239033c3cbadcbf8cf47bb6c7f033f8b08ab6f20ab32139f4c85c3"
+          "sha256": "aef2897ec7656b1ee1c218840409ae2c575474bbeee13e919d6a49a6ef617565"
         },
         {
-          "path": "public/games/card-worlds.css",
-          "sha256": "6cf15ffedbcd8aeb8f3ff7b597907a4c953c3f6b2633fef8ec7f2bd4b215cea6"
+          "path": "public/games/farbenchaos/haunted-manor.svg",
+          "sha256": "051bb76367a59d0b7dd4e8dfb9528db86e1c01def08a5c2af304ab9fdb658eb0"
+        },
+        {
+          "path": "public/games/farbenchaos/investigation-tools.svg",
+          "sha256": "c4da530445f007db8c576b518a3d5e02410b6d5199fb112b3ea10e1f4a4753b1"
+        },
+        {
+          "path": "games/farbenchaos/index.js",
+          "sha256": "2b3389e625f026bd39a8f2c47f1e89076efeb19117cbcd45f19157792bc1c515"
+        },
+        {
+          "path": "games/farbenchaos/art.js",
+          "sha256": "91caa2fe50176e80b3a53099906cd0101194f83716d2c9c80019ab2d33e5d598"
+        },
+        {
+          "path": "games/variants.js",
+          "sha256": "03b646228104e2056e3a565775efb573b11795a0d426d713528317abff68ff32"
         },
         {
           "path": "public/games/kit.js",
-          "sha256": "33ebcb36e65c1edb0d0e082675641a3fa5af734736f1756ecd43bc1c2b5d9cd0"
+          "sha256": "e80a56c33a8199871db0afc907350d2d0891e0a5e929790a6871cd4351a76eb2"
+        },
+        {
+          "path": "public/hub.js",
+          "sha256": "febdc108770ca47a772ed09677eaa0c0fd3f4aed8c9002ad6ccbb636ea29036a"
+        },
+        {
+          "path": "public/variants.js",
+          "sha256": "6f1c8d9e03f72733ac55bec19df959b3f8bbe309363ed5bd856b99db490f8e30"
+        },
+        {
+          "path": "public/variants.css",
+          "sha256": "a8b82f7b901bb77bcdd1ecc332bbfbc1335a0cb028e9f15f8cbfd583f7f8c7cb"
+        },
+        {
+          "path": "public/i18n-en.js",
+          "sha256": "597078cef76db0b48b31d6d92ec900c878f0db89a415cfb875d15f280ac4ac3b"
         }
       ],
-      "current_design": "Geprüfte eigene Farbarena mit Kartenbriefing, großem Ablagebereich, Farb-/Richtungsleiste und aktiver Flip-Seite; vorhandene Karten und Variantenaktionen erhalten.",
+      "current_design": "Geprüftes gemeinsames Kartensystem mit fünf eigenen Themen: Modern Card Table, Dual World, Extreme Edition, Wild Card Universe und Haunted Investigation; echte Spuknacht-Variante mit unveränderter Classic-Engine.",
       "known_visual_weaknesses": [
-        "Die frühere kleine Ablage und generische Lobby wurden ersetzt. Lange Hände scrollen bewusst horizontal mit voller Kartenfläche; öffentliche Flip-Rückseiten und Details liegen in der vertikal verschiebbaren Arbeitsfläche."
+        "Lange Hände und öffentliche Flip-Rückseiten bleiben bewusst intern verschiebbar. Kleine Zusatzbeschriftungen ergänzen die großen Werte/Symbole; die vorhandene English-Beta-Abdeckung bleibt bestehen."
       ],
       "assessment_method": "Quellcode, persönliche Ansichten echter isolierter Räume, Geheimhaltungs-/HTML-Prüfungen, Varianten, sechs Größen, Desktop-/Mobilaufnahmen und manuelle Sichtprüfung.",
       "gameplay_summary": "Farbe oder Zahl ablegen, Aussetzen, Richtungswechsel, +2 und Farbwahl. Der Gewinner kassiert die Punkte.",
-      "planned_style": "Lebendige grafische Farbarena mit kräftigen Flächen und ruhigen dunklen Rändern.",
-      "background_concept": "Abstrakte lokale Farbformen außerhalb des Kartenbereichs.",
-      "board_concept": "Aktive Seite, Ablage und Ziehstapel klar gliedern; Flip-Rückseiten korrekt zeigen.",
-      "objects_concept": "Eigene Kartenmotive behalten; Farbe zusätzlich über Symbol/Markierung, Aktionskarten verständlich.",
-      "status_and_actions": "Stapelschuld, Farbwahl, gezieltes Ziehen und Handtausch getrennt gruppieren.",
-      "mobile_concept": "Lange Hände mit Lupe; Flip-/No-Mercy-Aktionsdialoge ohne schmale mehrspaltige Zwänge.",
+      "planned_style": "Fünf individuelle UNO-Welten von modernem Grün über helle/dunkle Dualität und dunkles Spektrum bis zur paranormalen Ermittlungsnacht.",
+      "background_concept": "Ruhige lokale Themenflächen; Spuknacht mit eigenem statischem Anwesen und selbst gezeichneten Ermittlungsutensilien am Rand.",
+      "board_concept": "Große Zieh-/Ablagestapel mit thematischen Rücken, öffentlicher Flip-Seite, Strafkette und getrennten Varianteninformationen.",
+      "objects_concept": "Ein skalierbarer Renderer für sämtliche vorhandenen Werte/Aktionszeichen; Spuknacht gestaltet alle Classic-Kartentypen als eigene Ermittlungs-/Geisterkarten.",
+      "status_and_actions": "Öffentlicher Zug, Richtung, Farbwahl und Ziehschuld; No-Mercy-Ausscheiden und Spuknacht-Ermittlungsstatus mit kurzen steuerbaren Effekten.",
+      "mobile_concept": "Alle fünf Varianten auf sechs Größen mit lesbaren scrollbaren Händen, runder Farbwahl, nativer/visueller Hostwahl und erreichbaren Dialogen.",
       "individual_complex_board": false,
       "required_states": [
         "lobby",
@@ -987,7 +1083,7 @@
         "end"
       ],
       "technical_constraints": [
-        "Classic, Flip, No Mercy und All Wild weder vermischen noch Regeln/Kartensätze ändern.",
+        "Alle vier bisherigen Varianten unverändert spielbar halten; Spuknacht verwendet unmittelbar die bestehende Classic-Room-Klasse samt sämtlichen Hausregeln. Keine Engine duplizieren.",
         "Keine Spiellogik, RNG oder persistierten Daten ändern. Bestehende Varianten und Bedienwege erhalten.",
         "Weitere gemeinsame Grenzen: GAME_VISUAL_GUIDELINES.md, G01–G10."
       ],
@@ -995,7 +1091,8 @@
         "classic",
         "flip",
         "no-mercy",
-        "all-wild"
+        "all-wild",
+        "halloween-ghosthunt"
       ],
       "effort": {
         "min_hours": 12,
@@ -1006,8 +1103,9 @@
       "priority": "P3",
       "priority_reason": "Aufwandsklasse und Wiederverwendung bestimmen die Reihenfolge; aufwendige Spielfelder folgen nach kompakten Verbesserungen.",
       "acceptance_criteria": [
-        "Alle vier Varianten einschließlich Flip-Wechsel darstellen.",
-        "Aktionssymbole bleiben ohne Farbwahrnehmung unterscheidbar."
+        "Alle fünf Varianten regulär im Host-Menü erstellen, starten, wiederverbinden und auswerten; Spuknacht führt Classic-Regeln aus.",
+        "Vorder-/Rückseiten und sämtliche tatsächlich vorhandenen Aktionsarten bleiben ohne bloße Farbe unterscheidbar; Flip animiert ausschließlich neu freigegebene Ansichten.",
+        "Kurze Effekte respektieren reduzierte Bewegung, persönliche Ruhe und gemeinsame Pause; sechs Größen und getrennte Variantenwertung geprüft."
       ],
       "common_acceptance_ids": [
         "G01",
@@ -1026,44 +1124,156 @@
       ],
       "gameplay_prerequisite": null,
       "screenshots": [
-        "docs/design/screenshots/farbenchaos/before-lobby-desktop.png",
-        "docs/design/screenshots/farbenchaos/after-lobby-desktop.png",
-        "docs/design/screenshots/farbenchaos/before-table-desktop.png",
-        "docs/design/screenshots/farbenchaos/after-table-desktop.png",
-        "docs/design/screenshots/farbenchaos/before-table-mobile.png",
-        "docs/design/screenshots/farbenchaos/after-table-mobile.png",
-        "docs/design/screenshots/farbenchaos/after-long-hand-mobile.png"
+        "docs/design/screenshots/uno-ultimate/classic-before-table-desktop.png",
+        "docs/design/screenshots/uno-ultimate/classic-after-table-desktop.png",
+        "docs/design/screenshots/uno-ultimate/classic-before-table-mobile.png",
+        "docs/design/screenshots/uno-ultimate/classic-after-table-mobile.png",
+        "docs/design/screenshots/uno-ultimate/classic-before-lobby-desktop.png",
+        "docs/design/screenshots/uno-ultimate/classic-after-lobby-desktop.png",
+        "docs/design/screenshots/uno-ultimate/classic-material-0.png",
+        "docs/design/screenshots/uno-ultimate/flip-before-table-desktop.png",
+        "docs/design/screenshots/uno-ultimate/flip-after-table-desktop.png",
+        "docs/design/screenshots/uno-ultimate/flip-before-table-mobile.png",
+        "docs/design/screenshots/uno-ultimate/flip-after-table-mobile.png",
+        "docs/design/screenshots/uno-ultimate/flip-before-lobby-desktop.png",
+        "docs/design/screenshots/uno-ultimate/flip-after-lobby-desktop.png",
+        "docs/design/screenshots/uno-ultimate/flip-material-0.png",
+        "docs/design/screenshots/uno-ultimate/flip-material-1.png",
+        "docs/design/screenshots/uno-ultimate/no-mercy-before-table-desktop.png",
+        "docs/design/screenshots/uno-ultimate/no-mercy-after-table-desktop.png",
+        "docs/design/screenshots/uno-ultimate/no-mercy-before-table-mobile.png",
+        "docs/design/screenshots/uno-ultimate/no-mercy-after-table-mobile.png",
+        "docs/design/screenshots/uno-ultimate/no-mercy-before-lobby-desktop.png",
+        "docs/design/screenshots/uno-ultimate/no-mercy-after-lobby-desktop.png",
+        "docs/design/screenshots/uno-ultimate/no-mercy-material-0.png",
+        "docs/design/screenshots/uno-ultimate/all-wild-before-table-desktop.png",
+        "docs/design/screenshots/uno-ultimate/all-wild-after-table-desktop.png",
+        "docs/design/screenshots/uno-ultimate/all-wild-before-table-mobile.png",
+        "docs/design/screenshots/uno-ultimate/all-wild-after-table-mobile.png",
+        "docs/design/screenshots/uno-ultimate/all-wild-before-lobby-desktop.png",
+        "docs/design/screenshots/uno-ultimate/all-wild-after-lobby-desktop.png",
+        "docs/design/screenshots/uno-ultimate/all-wild-material-0.png",
+        "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-after-table-desktop.png",
+        "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-after-table-mobile.png",
+        "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-after-lobby-desktop.png",
+        "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-material-0.png",
+        "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-host-menu-desktop.png",
+        "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-host-menu-mobile.png",
+        "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-landscape.png",
+        "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-paused.png",
+        "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-english.png",
+        "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-result.png",
+        "docs/design/screenshots/uno-ultimate/classic-host-switch.png",
+        "docs/design/screenshots/uno-ultimate/no-mercy-penalty-elimination.png",
+        "docs/design/screenshots/uno-ultimate/flip-dark-colour-choice.png"
       ],
       "test_results": [
         {
           "suite": "npm test",
-          "passed": 879,
+          "passed": 892,
           "failed": 0,
-          "evidence": "docs/design/CARD_WORLDS_REDESIGN.md"
+          "duration_seconds": 46.368,
+          "log": "artifacts/uno-ultimate-final-node.log",
+          "evidence": "docs/design/UNO_ULTIMATE_REDESIGN.md"
         },
         {
-          "suite": "All 10 card variants, Phase 10 groups and DE/EN roadmap after final CSS refinement",
-          "passed": 26,
-          "failed": 0,
-          "evidence": "docs/design/CARD_WORLDS_REDESIGN.md"
-        },
-        {
-          "suite": "Full UI regression suite, followed by final scoped CSS checks",
-          "passed": 347,
+          "suite": "Relevant browser regression across shared UNO, variant, hub and game components",
+          "passed": 189,
           "failed": 0,
           "skipped": 1,
-          "duration_seconds": 1032,
-          "log": "artifacts/cards-full-ui.log",
-          "evidence": "docs/design/CARD_WORLDS_REDESIGN.md"
+          "duration_seconds": 630,
+          "log": "artifacts/uno-ultimate-regression.log",
+          "evidence": "docs/design/UNO_ULTIMATE_REDESIGN.md"
+        },
+        {
+          "suite": "Final five-variant six-size material, controls, privacy, reconnect and scoring capture",
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0,
+          "duration_seconds": 55,
+          "log": "artifacts/uno-ultimate-final-capture.log",
+          "evidence": "docs/design/UNO_ULTIMATE_REDESIGN.md"
+        },
+        {
+          "suite": "Final light Flip wildcard contrast and controls",
+          "passed": 2,
+          "failed": 0,
+          "skipped": 0,
+          "duration_seconds": 14.6,
+          "log": "artifacts/uno-ultimate-contrast.log",
+          "evidence": "docs/design/UNO_ULTIMATE_REDESIGN.md"
         }
       ],
       "commits": [
-        "84cccbc5795ac9b0a28c5a6723526d8d7affc2e6"
+        "84cccbc5795ac9b0a28c5a6723526d8d7affc2e6",
+        "852d2e1112281dc3cc6f0ee3826955c997b4df64",
+        "dc2079a5862ba549cdcc9359c4a67157436ff1d9"
       ],
-      "implementation_commit": "84cccbc5795ac9b0a28c5a6723526d8d7affc2e6",
+      "implementation_commit": "dc2079a5862ba549cdcc9359c4a67157436ff1d9",
       "completed_at": "2026-10-31",
-      "completed_in_order": "2026-10-31-card-worlds",
-      "source_audit_commit": "84cccbc5795ac9b0a28c5a6723526d8d7affc2e6"
+      "completed_in_order": "2026-10-31-uno-ultimate",
+      "source_audit_commit": "dc2079a5862ba549cdcc9359c4a67157436ff1d9",
+      "visual_history": [
+        {
+          "implementation_commit": "84cccbc5795ac9b0a28c5a6723526d8d7affc2e6",
+          "order": "2026-10-31-card-worlds",
+          "report": "docs/design/CARD_WORLDS_REDESIGN.md",
+          "variants": [
+            "classic",
+            "flip",
+            "no-mercy",
+            "all-wild"
+          ],
+          "screenshots": [
+            "docs/design/screenshots/farbenchaos/before-lobby-desktop.png",
+            "docs/design/screenshots/farbenchaos/after-lobby-desktop.png",
+            "docs/design/screenshots/farbenchaos/before-table-desktop.png",
+            "docs/design/screenshots/farbenchaos/after-table-desktop.png",
+            "docs/design/screenshots/farbenchaos/before-table-mobile.png",
+            "docs/design/screenshots/farbenchaos/after-table-mobile.png",
+            "docs/design/screenshots/farbenchaos/after-long-hand-mobile.png"
+          ]
+        }
+      ],
+      "registration_files": [
+        "games/farbenchaos/index.js",
+        "games/farbenchaos/art.js",
+        "games/variants.js"
+      ],
+      "variant_designs": [
+        {
+          "id": "classic",
+          "visual_status": "done",
+          "rules_source": "games/farbenchaos/room.js",
+          "material_evidence": "docs/design/screenshots/uno-ultimate/classic-material-0.png"
+        },
+        {
+          "id": "flip",
+          "visual_status": "done",
+          "rules_source": "games/farbenchaos/variants.js",
+          "material_evidence": "docs/design/screenshots/uno-ultimate/flip-material-0.png"
+        },
+        {
+          "id": "no-mercy",
+          "visual_status": "done",
+          "rules_source": "games/farbenchaos/variants.js",
+          "material_evidence": "docs/design/screenshots/uno-ultimate/no-mercy-material-0.png"
+        },
+        {
+          "id": "all-wild",
+          "visual_status": "done",
+          "rules_source": "games/farbenchaos/variants.js",
+          "material_evidence": "docs/design/screenshots/uno-ultimate/all-wild-material-0.png"
+        },
+        {
+          "id": "halloween-ghosthunt",
+          "visual_status": "done",
+          "rules_source": "games/farbenchaos/room.js",
+          "material_evidence": "docs/design/screenshots/uno-ultimate/halloween-ghosthunt-material-0.png",
+          "gameplay_reused_from": "classic",
+          "permanently_available": true
+        }
+      ]
     },
     {
       "id": "VIS-005",
@@ -10557,6 +10767,13 @@
         "VIS-009"
       ],
       "implementation_commit": "84cccbc5795ac9b0a28c5a6723526d8d7affc2e6"
+    },
+    {
+      "id": "2026-10-31-uno-ultimate",
+      "implemented": [
+        "VIS-004"
+      ],
+      "implementation_commit": "dc2079a5862ba549cdcc9359c4a67157436ff1d9"
     }
   ]
 }

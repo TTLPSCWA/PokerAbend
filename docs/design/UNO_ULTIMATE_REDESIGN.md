@@ -1,6 +1,6 @@
 # UNO Ultimate und Spuknacht
 
-Stand: 31.10.2026. Expliziter UNO-Folgeauftrag; Spiel-ID **`farbenchaos`**, bestehendes Designpaket **VIS-004**. Vorher-Basis: `cb1e3a460b2303a760862b87ea1c10699d695673`. Implementierungscommit und abschließende Prüfergebnisse werden nach Abschluss der laufenden Prüfung ergänzt.
+Stand: 31.10.2026. Expliziter UNO-Folgeauftrag; Spiel-ID **`farbenchaos`**, bestehendes Designpaket **VIS-004**. Vorher-Basis: `cb1e3a460b2303a760862b87ea1c10699d695673`. Implementierungscommit: `dc2079a5862ba549cdcc9359c4a67157436ff1d9`. Aktuelle Status- und Nachweisdaten stehen in [VIS-004](game-visual-roadmap.json).
 
 ## Fünf dauerhaft auswählbare Varianten
 
@@ -34,7 +34,7 @@ Alle Symbole sind eigene Inline-Vektoren. Die beiden neuen lokalen Dateien `haun
 
 ## Bewegung, Sound und Bedienung
 
-Tatsächliche öffentliche Zustandswechsel können kurze einmalige Effekte auslösen: Flip wechselt per zweidimensionaler Einblendung/Skalierung für **380 ms**; Kartenaktion, Rundenstart/-ende, Sieg und Ausscheiden verwenden einen thematischen Akzent für **440 ms**. Der Effekt hat nur den Namen des öffentlichen Ereignisses als lokalen Zustand. Ein frischer Reconnect löst keinen nachträglichen Flip aus. Bestehende Animationen werden bei neuer Darstellung oder Pause abgebrochen.
+Tatsächliche öffentliche Zustandswechsel können kurze einmalige Effekte auslösen: Flip wechselt per zweidimensionaler Einblendung/Skalierung für **380 ms**; Kartenaktion, Rundenstart/-ende, Sieg und Ausscheiden verwenden einen thematischen Akzent für **440 ms**. Der Effekt hat nur den Namen des öffentlichen Ereignisses als lokalen Zustand. Ein frischer Reconnect oder das Betreten eines anderen Raums löst keinen nachträglichen Flip aus. Bestehende Animationen werden bei neuer Darstellung oder Pause abgebrochen.
 
 `prefers-reduced-motion`, die persönliche Einstellung `prefs.calm` und der tatsächliche gemeinsame Status `gamePaused` unterdrücken diese Effekte. Es gibt keine dauernden Animationen, Flackerfolgen oder Jumpscares. Die vorhandenen abschaltbaren Spielsounds werden weiterverwendet; keine neuen Geräuschdateien, Audiozugriffe oder erhöhten Pegel. Kein Kamera- oder Mikrofonzugriff.
 
@@ -71,6 +71,10 @@ Die **42** ausgewählten dauerhaften Bilder liegen unter `docs/design/screenshot
 Weitere Nachweise: [Host-Auswahl](screenshots/uno-ultimate/halloween-ghosthunt-host-menu-desktop.png), [Strafkette/Ausscheiden](screenshots/uno-ultimate/no-mercy-penalty-elimination.png), [dunkle Farbwahl](screenshots/uno-ultimate/flip-dark-colour-choice.png), [Pause](screenshots/uno-ultimate/halloween-ghosthunt-paused.png), [Englisch](screenshots/uno-ultimate/halloween-ghosthunt-english.png), [Ergebnis](screenshots/uno-ultimate/halloween-ghosthunt-result.png). Mobile Vorher-/Nachher- und Lobbybilder sind ebenfalls im Manifest enthalten.
 
 Betroffene Produktdateien: `games/farbenchaos/index.js`, `games/farbenchaos/art.js`, `games/variants.js`, `public/games/farbenchaos/farbenchaos.js/.css`, die beiden neuen SVGs, `public/games/kit.js`, `public/hub.js`, `public/variants.js/.css`, `public/i18n-en.js`. Dazu gehören die neuen Engine-/Browserprüfungen und die aktualisierten VIS-004-Nachweise.
+
+## Abschließender Code- und Nachweisstand
+
+Hauptimplementierung: `852d2e1112281dc3cc6f0ee3826955c997b4df64`. Letzte Absicherung gegen Übergangseffekte zwischen unterschiedlichen Räumen: `dc2079a5862ba549cdcc9359c4a67157436ff1d9`, gezielt mit **12 Tests** geprüft. Nach dem finalen Code und der Roadmap-Pflege erneut **892 Node-Tests bestanden, 0 fehlgeschlagen**, 46,4 Sekunden; `artifacts/uno-ultimate-final-node.log`. **6 Planungstests** einschließlich aller dauerhaften Bildprüfsummen sind erfolgreich. Die übrigen **94 Paketeinträge** sind unverändert zur Vorher-Basis.
 
 ## Abschluss und Grenzen
 

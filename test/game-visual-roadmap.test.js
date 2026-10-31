@@ -27,6 +27,7 @@ test('Visual roadmap: every registered and unimplemented game has exactly one in
   }
   assert.equal(byGame.get('scotland-yard').id, 'VIS-001');
   assert.equal(byGame.get('schiffe').id, 'VIS-013');
+  assert.deepEqual(byGame.get('farbenchaos').existing_variants, GAMES.farbenchaos.variants.map((v) => v.id));
 });
 
 test('Visual roadmap: individual concepts and real frontend files are complete, including Omaha alias and shared renderers', () => {
@@ -63,7 +64,7 @@ test('Visual roadmap: completion requires real evidence; planned packages contai
     }
     if (p.implementation_status === 'not_implemented') assert.equal(p.visual_status, 'planned');
   }
-  for (const file of ['docs/design/scotland-yard-screenshots.json', 'docs/design/card-worlds-screenshots.json']) {
+  for (const file of ['docs/design/scotland-yard-screenshots.json', 'docs/design/card-worlds-screenshots.json', 'docs/design/uno-ultimate-screenshots.json']) {
     const manifest = JSON.parse(read(file));
     for (const { path, sha256 } of manifest.comparisons) assert.equal(createHash('sha256').update(readFileSync(new URL(path, root))).digest('hex'), sha256, path);
   }

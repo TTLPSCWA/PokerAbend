@@ -76,3 +76,7 @@ Zusätzlich: [UNO mit 24 Karten auf dem Handy](screenshots/farbenchaos/after-lon
 Die drei VIS-Pakete sind nach den tatsächlichen Prüfungen samt Implementierungscommit als `done` dokumentiert. Die übrigen **91 VIS-Pakete** bleiben geplant: 45 weitere spielbare Spiele und 46 Backlog-Konzepte. Die öffentliche Roadmap bündelt diese drei Kartenwelten in einem erledigten Punkt; die noch ausstehenden allgemeinen Verbesserungen bleiben offen. V2-Statusangaben bleiben unverändert.
 
 Der bekannte Workflow `.github/workflows/docker.yml` führt bei einem Push auf `main` Tests mit Node 22 aus und baut/veröffentlicht das GHCR-Image. Die geprüften Compose-/Workflowdateien enthalten keinen automatischen Produktivdeploy. Es ist keine zusätzliche externe Deploymentautomatik bekannt. Kein manueller Produktivdeploy und keine Änderung von Produktivdaten.
+
+## Späterer UNO-Folgeauftrag
+
+Dieser Bericht und seine Bilder dokumentieren den historischen Kartenwelten-Stand `84cccbc`. UNO wurde anschließend ausdrücklich allein mit fünf Themen und der Spuknacht-Variante weiterentwickelt: [UNO Ultimate / Spuknacht](UNO_ULTIMATE_REDESIGN.md). Die hier dokumentierten Skip-Bo- und Phase-10-Oberflächen wurden dabei nicht verändert.

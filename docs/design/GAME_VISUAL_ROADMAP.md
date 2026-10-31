@@ -215,28 +215,29 @@ Diese Reihenfolge gilt erst nach separater Gameplay-Freigabe und tatsächlicher 
 - **Spiel-ID/Kategorie:** `farbenchaos` / Kartenspiele.
 - **Implementierung / Design:** playable / **done**.
 - **Priorität / Aufwand:** P3; 12–18 h; kompakte bis mittlere Spieloberfläche. Historische Schätzung; freigegebener Umfang abgeschlossen.
-- **Frontend:** [public/games/farbenchaos/farbenchaos.css](../../public/games/farbenchaos/farbenchaos.css), [public/games/farbenchaos/farbenchaos.js](../../public/games/farbenchaos/farbenchaos.js)
+- **Frontend:** [public/games/farbenchaos/farbenchaos.css](../../public/games/farbenchaos/farbenchaos.css), [public/games/farbenchaos/farbenchaos.js](../../public/games/farbenchaos/farbenchaos.js), [public/games/farbenchaos/haunted-manor.svg](../../public/games/farbenchaos/haunted-manor.svg), [public/games/farbenchaos/investigation-tools.svg](../../public/games/farbenchaos/investigation-tools.svg)
 - **Gemeinsame Komponenten:** [public/core.js](../../public/core.js), [public/game-design.js](../../public/game-design.js), [public/game-design.css](../../public/game-design.css), [public/ui-theme.css](../../public/ui-theme.css), [public/style.css](../../public/style.css), [public/games/kit.js](../../public/games/kit.js)
 - **Zusätzliche gemeinsame Präsentation:** [card-worlds.css](../../public/games/card-worlds.css), ausschließlich von diesen drei Spielstyles importiert.
-- **Aktueller Stand:** Geprüfte eigene Farbarena mit Kartenbriefing, großem Ablagebereich, Farb-/Richtungsleiste und aktiver Flip-Seite; vorhandene Karten und Variantenaktionen erhalten.
-- **Abnahme / Darstellungsgrenzen:** Die frühere kleine Ablage und generische Lobby wurden ersetzt. Lange Hände scrollen bewusst horizontal mit voller Kartenfläche; öffentliche Flip-Rückseiten und Details liegen in der vertikal verschiebbaren Arbeitsfläche.
-- **Stil:** Lebendige grafische Farbarena mit kräftigen Flächen und ruhigen dunklen Rändern.
-- **Hintergrund:** Abstrakte lokale Farbformen außerhalb des Kartenbereichs.
-- **Spielfeld:** Aktive Seite, Ablage und Ziehstapel klar gliedern; Flip-Rückseiten korrekt zeigen.
-- **Figuren/Karten/Objekte:** Eigene Kartenmotive behalten; Farbe zusätzlich über Symbol/Markierung, Aktionskarten verständlich.
-- **Status und Aktionen:** Stapelschuld, Farbwahl, gezieltes Ziehen und Handtausch getrennt gruppieren.
-- **Mobil:** Lange Hände mit Lupe; Flip-/No-Mercy-Aktionsdialoge ohne schmale mehrspaltige Zwänge.
-- **Technische Grenzen:** Classic, Flip, No Mercy und All Wild weder vermischen noch Regeln/Kartensätze ändern. Keine Spiellogik, RNG oder persistierten Daten ändern. Bestehende Varianten und Bedienwege erhalten. Weitere gemeinsame Grenzen: GAME_VISUAL_GUIDELINES.md, G01–G10.
-- **Varianten:** classic, flip, no-mercy, all-wild
+- **Aktueller Stand:** Geprüftes gemeinsames Kartensystem mit fünf eigenen Themen: Modern Card Table, Dual World, Extreme Edition, Wild Card Universe und Haunted Investigation; echte Spuknacht-Variante mit unveränderter Classic-Engine.
+- **Abnahme / Darstellungsgrenzen:** Lange Hände und öffentliche Flip-Rückseiten bleiben bewusst intern verschiebbar. Kleine Zusatzbeschriftungen ergänzen die großen Werte/Symbole; die vorhandene English-Beta-Abdeckung bleibt bestehen.
+- **Stil:** Fünf individuelle UNO-Welten von modernem Grün über helle/dunkle Dualität und dunkles Spektrum bis zur paranormalen Ermittlungsnacht.
+- **Hintergrund:** Ruhige lokale Themenflächen; Spuknacht mit eigenem statischem Anwesen und selbst gezeichneten Ermittlungsutensilien am Rand.
+- **Spielfeld:** Große Zieh-/Ablagestapel mit thematischen Rücken, öffentlicher Flip-Seite, Strafkette und getrennten Varianteninformationen.
+- **Figuren/Karten/Objekte:** Ein skalierbarer Renderer für sämtliche vorhandenen Werte/Aktionszeichen; Spuknacht gestaltet alle Classic-Kartentypen als eigene Ermittlungs-/Geisterkarten.
+- **Status und Aktionen:** Öffentlicher Zug, Richtung, Farbwahl und Ziehschuld; No-Mercy-Ausscheiden und Spuknacht-Ermittlungsstatus mit kurzen steuerbaren Effekten.
+- **Mobil:** Alle fünf Varianten auf sechs Größen mit lesbaren scrollbaren Händen, runder Farbwahl, nativer/visueller Hostwahl und erreichbaren Dialogen.
+- **Technische Grenzen:** Alle vier bisherigen Varianten unverändert spielbar halten; Spuknacht verwendet unmittelbar die bestehende Classic-Room-Klasse samt sämtlichen Hausregeln. Keine Engine duplizieren. Keine Spiellogik, RNG oder persistierten Daten ändern. Bestehende Varianten und Bedienwege erhalten. Weitere gemeinsame Grenzen: GAME_VISUAL_GUIDELINES.md, G01–G10.
+- **Varianten:** classic, flip, no-mercy, all-wild, halloween-ghosthunt
 - **Abhängigkeiten:** VIS-001.
 
 **Individuelle Akzeptanz:**
 
-- Alle vier Varianten einschließlich Flip-Wechsel darstellen.
-- Aktionssymbole bleiben ohne Farbwahrnehmung unterscheidbar.
-- Zusätzlich gelten G01–G10 aus dem Designstandard und die erforderlichen Zustands-/Größenprüfungen.
+- Alle fünf Varianten regulär im Host-Menü erstellen, starten, wiederverbinden und auswerten; Spuknacht führt Classic-Regeln aus.
+- Vorder-/Rückseiten und sämtliche tatsächlich vorhandenen Aktionsarten bleiben ohne bloße Farbe unterscheidbar; Flip animiert ausschließlich neu freigegebene Ansichten.
+- Kurze Effekte respektieren reduzierte Bewegung, persönliche Ruhe und gemeinsame Pause; sechs Größen und getrennte Variantenwertung geprüft.
+- Zusätzlich gelten G01–G10.
 
-**Nachweise:** Implementierungscommit `84cccbc5795ac9b0a28c5a6723526d8d7affc2e6`, [Kartenwelten-Abnahme](CARD_WORLDS_REDESIGN.md), [dauerhafte Bildvergleiche](card-worlds-screenshots.json). 7 versionierte Screenshots; 879 Node-Tests und 26 abschließende gezielte Browserfälle erfolgreich. Vollständige Browserergebnisse einschließlich Nachprüfungen stehen im Abnahmebericht.
+**Nachweise:** Implementierungscommit `dc2079a5862ba549cdcc9359c4a67157436ff1d9`; [UNO Ultimate / Spuknacht](UNO_ULTIMATE_REDESIGN.md), [42 dauerhafte Bilder und Manifest](uno-ultimate-screenshots.json). 892 Node-Tests, 189 relevante Browserregressionen und 10 abschließende Variantenfälle erfolgreich. Historischer Vier-Varianten-Stand: `84cccbc`.
 
 <a id="vis-005"></a>
 ### VIS-005 – Mäxchen
@@ -2762,3 +2763,7 @@ Die nächsten kleinen Kandidaten sind **VIS-027 Chicago**, **VIS-035 Tickendes P
 ## Abgeschlossener Folgeauftrag: UNO, Skip-Bo und Phase 10
 
 VIS-004, VIS-009 und VIS-008 wurden anschließend ausdrücklich gemeinsam freigegeben. Implementierungscommit: `84cccbc5795ac9b0a28c5a6723526d8d7affc2e6`. Aktueller Gesamtstand: **4 done, 91 planned** (45 weitere spielbare Spiele, 46 bedingte Konzepte). [Änderungen, tatsächliche Testergebnisse und Vorher-/Nachher-Bilder](CARD_WORLDS_REDESIGN.md). Die übrigen Pakete bleiben unverändert geplant; aus der Reihenfolge folgt keine Freigabe.
+
+## UNO Ultimate und Spuknacht als weiterer UNO-Folgeauftrag
+
+VIS-004 wurde anschließend allein für UNO und seine fünf Varianten überarbeitet. Spuknacht ist dauerhaft verfügbar und verwendet die Classic-Engine; Spiel-ID und Gesamtinventur bleiben unverändert. Commit: `dc2079a5862ba549cdcc9359c4a67157436ff1d9`. [Konzept, Tests, betroffene Dateien und Bilder](UNO_ULTIMATE_REDESIGN.md). Die übrigen 94 Paketeinträge sind unverändert; weiterhin 4 done und 91 planned.
