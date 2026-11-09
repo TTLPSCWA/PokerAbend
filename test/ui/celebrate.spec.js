@@ -56,6 +56,8 @@ test('EXP-F4 poker helper handles a real confirmed hand end',async({page,app,bro
  const code=await page.evaluate(()=>lastState.code),context=await browser.newContext({...info.project.use,viewport:page.viewportSize()}),other=await context.newPage();
  try{await login(other,app,'Ben');await other.evaluate(code=>joinAndEnter(code,'watch'),code);await other.locator('[data-sit]').first().click();await expect.poll(()=>page.evaluate(()=>lastState.seats.filter(Boolean).length)).toBe(2);expect((await page.evaluate(()=>send('start'))).ok).toBe(true);await expect.poll(()=>page.evaluate(()=>!!lastState.hand&&!lastState.hand.done)).toBe(true);
  const actor=await page.evaluate(()=>lastState.hand.toAct===lastState.you.seat)?page:other;expect((await actor.evaluate(()=>send('action',{type:'fold'}))).ok).toBe(true);await expect(page.locator('#game > [data-winner-level="1"]')).toBeVisible();
+ // Panel darf weder unter dem Dock stecken noch den eigenen Platz unten verdecken.
+ await expect.poll(()=>page.evaluate(()=>{const R=s=>{const e=document.querySelector(s),r=e?.getBoundingClientRect();return r&&r.width>0?r:null};const st=R('#game > [data-result-stage]'),dock=R('#dock'),me=R(`[data-seat="${lastState.you.seat}"]`),hit=(a,b)=>!!a&&!!b&&a.bottom>b.top+1&&a.top<b.bottom-1&&a.right>b.left+1&&a.left<b.right-1;return {inView:st.top>=0&&st.bottom<=innerHeight+1,dock:hit(st,dock),seat:hit(st,me)};})).toEqual({inView:true,dock:false,seat:false});
  }finally{await context.close();}
 });
 test('EXP-F4 confetti rAF budget, desktop with 4x CPU',async({page,app},info)=>{

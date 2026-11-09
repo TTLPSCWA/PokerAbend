@@ -7,6 +7,18 @@ const VIEWPORTS = [[1920, 1080], [1440, 900], [768, 1024], [390, 844], [360, 800
 const send = (page, event, data = {}) => page.evaluate(([e, d]) => send(e, d), [event, data]);
 const state = (page) => page.evaluate(() => ({ phase: lastState.phase ?? (lastState.started ? 'playing' : 'lobby'), turn: lastState.turnId, me: lastState.you.id, g: lastState.g, players: lastState.players }));
 const overflow = (page) => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1);
+// Ergebnisfenster muss vollständig im Bild liegen und darf nicht hinter/unter der Aktionsleiste stecken.
+const resultClear = (page) => page.evaluate(() => {
+  const vis = (e) => { const r = e.getBoundingClientRect(), cs = getComputedStyle(e); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none' ? r : null; };
+  const cards = [...document.querySelectorAll('.kg-over-card, #game > [data-result-stage]')].map(vis).filter(Boolean);
+  const docks = [...document.querySelectorAll('#kg-dock, #dock')].map(vis).filter(Boolean);
+  const problems = [];
+  for (const c of cards) {
+    if (c.top < -1 || c.bottom > innerHeight + 1 || c.left < -1 || c.right > innerWidth + 1) problems.push(`außerhalb ${JSON.stringify([c.left, c.top, c.right, c.bottom].map(Math.round))}`);
+    for (const d of docks) if (c.bottom > d.top + 1 && c.top < d.bottom - 1 && c.right > d.left && c.left < d.right) problems.push(`überlappt Leiste ${Math.round(c.bottom - d.top)}px`);
+  }
+  return { cards: cards.length, problems };
+});
 // Je Spiel: Bots (zusätzlich zum Menschen), Einstellungen, eine eigene Aktion für „nach dem Zug“ und – wo schnell erreichbar – der Weg bis zum Ergebnis
 const GAMES = {
   chicago: {
@@ -243,6 +255,8 @@ for (const id of only) {
     // Englisch: Kurzregeln im Hilfedialog (vor dem Ergebnis, solange der Tisch läuft)
     await page.evaluate(() => I18n.select('en')); await page.locator(cfg.help || '[data-kit=help]').first().click();
     await expect(page.locator('#help-dlg')).toBeVisible(); await shot(page, 'english-rules'); await page.keyboard.press('Escape');
-    if (cfg.finish) { await page.setViewportSize(info.project.name === 'desktop' ? { width: 1440, height: 900 } : page.viewportSize()); await cfg.finish(page); await expect.poll(() => state(page).then((s) => s.phase), { timeout: 60000 }).toBe('over'); await shot(page, 'result'); }
+    if (cfg.finish) { await page.setViewportSize(info.project.name === 'desktop' ? { width: 1440, height: 900 } : page.viewportSize()); await cfg.finish(page); await expect.poll(() => state(page).then((s) => s.phase), { timeout: 60000 }).toBe('over'); await shot(page, 'result');
+      await expect.poll(() => resultClear(page).then((r) => r.cards)).toBeGreaterThan(0);
+      const clear = await resultClear(page); expect(clear.problems, `${id} Ergebnisfenster`).toEqual([]); }
   });
 }
