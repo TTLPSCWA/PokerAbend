@@ -78,23 +78,17 @@ Das [UI-Redesign-Protokoll](docs/ui-redesign.md) beschreibt Gestaltung, tatsäch
 
 > **Vollständige Betriebsanleitung: [docs/betrieb.md](docs/betrieb.md)** – Server von null einrichten, Update vom alten Stand mit Migration, Sicherung und Wiederherstellung, Fehlersuche, Hinweise für Traefik und alle `.env`-Einstellungen mit Beispiel. Was sich seit Version 2.0.0 geändert hat, steht in der [CHANGELOG.md](CHANGELOG.md). Vor dem Aufspielen prüft `scripts/release-check.sh` die Einstellungen, das Image und die Sicherung (nur lesend).
 
-//1. **Image bauen und pushen**  
+**Kurzfassung** (verbindlich ist [docs/betrieb.md](docs/betrieb.md)): Das Image baut GitHub bei jedem Push auf `main` automatisch (`.github/workflows/docker.yml` → `ghcr.io/ttlpscwa/pokerabend`). Aufgespielt wird vom eigenen Rechner über den Docker-Kontext `projekt`, ohne Login auf dem Server und ohne lokales Bauen:
 
-   ```bash
-   docker build -t ghcr.io/DEIN-NAME/pokerabend:latest . 
-   docker push ghcr.io/DEIN-NAME/pokerabend:latest
-   ```
+```bash
+cp .env.example .env            # DOMAIN=poker.scwagaming.com, IMAGE, SITE_PASSWORD, PUBLIC_URL … setzen
+docker context use projekt
+docker compose -f ./docker-compose.yml -f ./docker-compose.prod.yml --env-file .env pull
+docker compose -f ./docker-compose.yml -f ./docker-compose.prod.yml --env-file .env up -d
+docker context use default      # danach wieder auf den eigenen Rechner zurückschalten
+```
 
-   Alternativ das Repo auf GitHub legen (z. B. [https://github.com/TTLPSCWA/PokerAbend](https://github.com/TTLPSCWA/PokerAbend)): Der Workflow in `.github/workflows/docker.yml` testet bei jedem Push auf `main` und schiebt das Image automatisch nach `ghcr.io`.
-   Voraussetzung auf dem Server: ein zentraler Traefik-Proxy mit dem externen Docker-Netz `proxy` (Entrypoint `websecure`, certresolver `letsencrypt`). Das Netz muss existieren, sonst startet der Tisch nicht (`docker network create proxy`).
-   Die Dateien `docker-compose.yml`, `docker-compose.prod.yml` und `.env.example` hochladen.
-
-   ```bash
-   cp .env.example .env            # DOMAIN=poker.scwagaming.com, IMAGE und SITE_PASSWORD setzen
-   docker context use projekt
-   docker compose -f ./docker-compose.yml -f ./docker-compose.prod.yml --env-file .env up -d
-   ```
-   Die Domain muss per DNS-A-Record auf den Server zeigen. Traefik erkennt den Container an seinen Labels (`Host(DOMAIN)`, Port 3000) und holt das HTTPS-Zertifikat automatisch; die App selbst ist nicht direkt von außen erreichbar (nur `expose`, kein `ports`).
+HTTPS und Zertifikat kommen vom zentralen Traefik auf dem Server (externes Netz `proxy`); die App selbst ist von außen nicht direkt erreichbar.
 
 **Kompression (gzip über Traefik):** Die Labels in `docker-compose.prod.yml` hängen die Middleware `poker-gzip` (`compress=true`) an den Router `poker`. Die App selbst komprimiert nicht. Traefik komprimiert nur Antworten, die der Browser mit `Accept-Encoding` erlaubt, und lässt WebSocket-Verbindungen (Socket.IO-Upgrade) sowie bereits komprimierte Dateien (PNG, WOFF2) unverändert. Nach dem Deployment prüfen:
 

@@ -57,8 +57,11 @@ Voraussetzungen: ein Linux-Server mit Docker (Compose v2), ein zentraler Traefik
    ```bash
    docker context use projekt
    docker context show
+   docker compose -f ./docker-compose.yml -f ./docker-compose.prod.yml --env-file .env pull
    docker compose -f ./docker-compose.yml -f ./docker-compose.prod.yml --env-file .env up -d
    ```
+
+   `pull` holt das aktuelle Image (bei `IMAGE=…:latest` sonst nicht garantiert). Danach mit `docker context use default` wieder auf den eigenen Rechner zurückschalten, damit lokale Tests nicht auf dem Server landen.
 
    Die `.env` muss `DOMAIN=poker.scwagaming.com` und die erforderlichen Image- und Passwortwerte enthalten. Ohne `SITE_PASSWORD` oder `DOMAIN` bricht Compose mit einer verständlichen Meldung ab. Das ist Absicht: Auf dem Server soll nie etwas ohne Gruppenpasswort laufen.
 
