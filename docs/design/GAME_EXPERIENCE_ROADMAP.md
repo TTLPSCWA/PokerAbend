@@ -376,6 +376,10 @@ Die Priorität richtet sich danach, wie oft ein Spiel am Abend gespielt wird:
 - **Sound:** Holzpöppel tocken Feld für Feld, Rauswurf als „Plopp!“ und kurzes Ärgern-Grummeln.
 - **Animation:** Figuren hüpfen Feld für Feld, geschlagene fliegen im Bogen zurück ins Haus.
 - **Highlight:** Dreimal Sechs: Konfetti nur am eigenen Haus, „Glückspilz“-Plakette.
+- **Status:** done
+- **Implementierungscommit:** `4e2efb5df63ee4d5db1c1e2f844476f1eac5e774`
+- **Nachweise:** `docs/design/experience/EXP-007/README.md`, `test/ui/exp-huetchen.spec.js`, `test/experience-huetchen.test.js`, `public/games/huetchen/experience.js`
+- **Umsetzung:** Palette `huetchen`, Hüpfen über transform, Rauswurf im Bogen, Glückspilz-Plakette. Sechser-Brett vorerst ohne Hüpfweg.
 
 #### EXP-017 · Mühle (`muehle`) · P2
 - **Welt:** Schieferbrett im Klostergarten.
