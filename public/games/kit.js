@@ -737,7 +737,7 @@ function kitGame(def) {
       def.onState?.(st, prev);
       xp?.onState(st, prev);
       render();
-      if (cue && !['win','end'].includes(cue)) GameDesign.pulse($('#kg'), cue);
+      if (cue && !['win','end'].includes(cue) && !xp) GameDesign.pulse($('#kg'), cue); // Spiele mit Erlebnis-Modul zeigen die Aktion selbst
       // Neues Rundenende: Fokus ins Ergebnisfenster (Tastatur, Bildschirmleser)
       if (st.phase === 'over' && prev?.phase === 'playing') $('#kg .kg-over .btn-brass, #kg .kg-over .btn')?.focus();
     },

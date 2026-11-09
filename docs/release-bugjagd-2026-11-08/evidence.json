@@ -131,11 +131,11 @@
     },
     {
       "path": "public/games/huetchen/huetchen.js",
-      "lf_sha256": "3239cd4cfd33239df85559df156dcb94fc38debfbcf7712d4a80e1daf3692d49"
+      "lf_sha256": "55c65607519c920e94794a7237a9ecaf05d909b40f9ab245f1fa119b14b38d3d"
     },
     {
       "path": "public/games/kit.js",
-      "lf_sha256": "0cc47f1cf5f587c68df031afd6a519978e8fec145f82b08d4bce7857fe4b4370"
+      "lf_sha256": "c39f6a3e84aaeb6bda5a82a8a3f0c07903cfaacbc03ec29ef19e53b0089e8f88"
     },
     {
       "path": "public/games/kniffel/kniffel.js",

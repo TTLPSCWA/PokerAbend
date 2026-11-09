@@ -1,0 +1,4 @@
+/* EXP-007 Mensch ärgere Dich nicht: Würfel freut sich bei drei Sechsen. Bewegung nur über transform/opacity. */
+[data-scene='huetchen'] .hb-board[data-xp='glueckspilz'] .hb-dice .die{animation:xp-hb-lucky .5s ease-in-out 3}
+@keyframes xp-hb-lucky{50%{transform:scale(1.14) rotate(6deg)}}
+@media(prefers-reduced-motion:reduce){[data-scene='huetchen'] .hb-board[data-xp] .hb-dice .die{animation:none}}

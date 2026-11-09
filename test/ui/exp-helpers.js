@@ -85,3 +85,12 @@ export async function smoothReplay(page, id, { times = 3, gap = 420, attempts = 
   }
   throw failure;
 }
+
+/** FPS-Messwerte als Nachweis ablegen (nur mit EXP_CAPTURE=1). */
+export async function fpsEvidence(info, id, metrics) {
+  if (process.env.EXP_CAPTURE !== '1') return metrics;
+  const { writeFileSync } = await import('node:fs');
+  mkdirSync(`docs/design/experience/${id}`, { recursive: true });
+  writeFileSync(`docs/design/experience/${id}/fps-${info.project.name}.json`, JSON.stringify(metrics, null, 2) + '\n');
+  return metrics;
+}

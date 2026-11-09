@@ -44,8 +44,16 @@ export function createExperience(id, def, host = globalThis) {
     timers.clear();
     holdUntil = 0; holdView = null; holdFresh = false;
     const r = root();
-    if (r) { r.classList.remove('xp-hold'); delete r.dataset.xp; }
+    if (r) { r.classList.remove('xp-hold'); delete r.dataset.xp; r.querySelector(':scope > .xp-layer')?.remove(); }
   }
+  // Ebene über dem Tisch für kurzlebige Zutaten (Plakette, Konfetti). Sie verschwindet mit dem nächsten Zustand.
+  const layer = () => {
+    const r = root(); if (!r) return null;
+    let el = r.querySelector(':scope > .xp-layer');
+    if (!el) { el = host.document.createElement('div'); el.className = 'xp-layer'; el.setAttribute('aria-hidden', 'true'); r.append(el); }
+    return el;
+  };
+  const place = (el, anchor) => { const c = centre(anchor) || { x: host.innerWidth / 2, y: host.innerHeight / 2 }; el.style.left = c.x + 'px'; el.style.top = c.y + 'px'; };
   const table = () => {
     if (!motion || motion.disposed) motion = Motion.table('xp:' + id + ':' + code, { root: root() || host.document.body });
     return motion;
@@ -70,6 +78,23 @@ export function createExperience(id, def, host = globalThis) {
         return { el, final: base.inline, frames, duration, delay };
       };
     },
+    // Würfel kippt in seine bestätigte Augenzahl; die Augen selbst ändern sich dabei nicht.
+    tumble(el, { duration = 480, delay = 0 } = {}) {
+      return plans.frames(el, [{ transform: 'rotate(-160deg) scale(.85)' }, { transform: 'rotate(18deg) scale(1.06)', offset: 0.75 }, { transform: 'none' }], { duration, delay });
+    },
+    // Figur hüpft über Zwischenpunkte (Viewport-Punkte oder Elemente) bis zu ihrem bestätigten Platz.
+    hop(el, path, { step = 150, height = 9, delay = 0 } = {}) {
+      return (m) => {
+        const base = m.base(el), end = centre(el), points = path.map(centre), n = Math.max(1, points.length - 1), frames = [];
+        const at = (p, lift = 0, scale = 1) => `translate(${p.x - end.x}px, ${p.y - end.y - lift}px) ${base.transform}${scale === 1 ? '' : ` scale(${scale})`}`.trim();
+        points.forEach((p, k) => {
+          frames.push({ transform: at(p), offset: k / n });
+          if (k < n) { const q = points[k + 1]; frames.push({ transform: at({ x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 }, height, 1.06), offset: (k + 0.5) / n }); }
+        });
+        if (points.length < 2) frames.push({ transform: base.transform || 'none', offset: 1 });
+        return { el, final: base.inline, frames, duration: Math.min(1500, n * step), delay };
+      };
+    },
     // Frei wählbare Schlüsselbilder relativ zum fertigen Zustand; `final` bleibt immer der bestätigte Zustand.
     frames(el, list, { duration = 360, delay = 0 } = {}) {
       return (m) => {
@@ -89,8 +114,38 @@ export function createExperience(id, def, host = globalThis) {
     on.dataset.xp = name;
     later(() => { if (on.dataset.xp === name) delete on.dataset.xp; }, ms);
   };
+  // Plakette über dem Tisch (z. B. „Glückspilz“): eigenes Material aus EXP-F3 mit Text, erscheint kurz und verschwindet von selbst.
+  const plaque = (text, { anchor, ms = 2200, material = 'plakette', cls = '' } = {}) => {
+    const box = layer(); if (!box) return null;
+    const el = host.document.createElement('div');
+    el.className = `xp-plaque ${cls}`.trim(); place(el, anchor);
+    const label = host.document.createElement('b'); label.textContent = text; el.append(label);
+    box.append(el);
+    if (material) import('/material/index.js').then((m) => m.createMaterial(material, { label: text })).then((svg) => { if (el.isConnected) el.prepend(svg); }).catch(() => {});
+    run(plans.frames(el, [{ transform: 'scale(.6)', opacity: 0 }, { transform: 'scale(1.08)', opacity: 1, offset: 0.6 }, { transform: 'none', opacity: 1 }], { duration: 420 }));
+    later(() => el.remove(), ms);
+    return el;
+  };
+  // Kleines Konfetti an einer Stelle (z. B. am eigenen Haus), höchstens 16 Teile, nur transform/opacity.
+  const confetti = (anchor, { count = 12, colors = ['#e3bd72', '#76ac99', '#f2e8c8'], spread = 70 } = {}) => {
+    const box = layer(); if (!box || !animated(latest)) return;
+    const items = Array.from({ length: Math.min(16, count) }, (_, i) => {
+      const el = host.document.createElement('i');
+      el.className = 'xp-confetti'; el.style.background = colors[i % colors.length]; place(el, anchor);
+      box.append(el);
+      const angle = (i / count) * Math.PI * 2, dx = Math.cos(angle) * spread * (0.6 + (i % 3) * 0.2), dy = Math.sin(angle) * spread * 0.6 - spread * 0.5;
+      return plans.frames(el, [{ transform: 'translate(0,0) scale(.4)', opacity: 0 }, { transform: `translate(${dx * 0.7}px, ${dy}px) rotate(${i * 40}deg)`, opacity: 1, offset: 0.35 }, { transform: `translate(${dx}px, ${dy + spread * 1.3}px) rotate(${180 + i * 50}deg)`, opacity: 0 }], { duration: 1100, delay: (i % 4) * 30 });
+    });
+    run(items).then(() => { for (const el of box.querySelectorAll('.xp-confetti')) el.remove(); });
+  };
+  // Neue Sprechblasen-Aktionen seit dem vorigen Zustand (kit: acts[id] = { text, n }).
+  const newActs = (view, prev) => {
+    const seen = Math.max(0, ...Object.values(prev?.acts || {}).map((a) => a.n));
+    return Object.entries(view?.acts || {}).filter(([, a]) => a.n > seen).sort((a, b) => a[1].n - b[1].n).map(([id, a]) => ({ id, text: a.text, n: a.n }));
+  };
   const api = (view, prev = null) => ({
-    id, view, prev, fresh: !!prev, root: root(), plans, run, play, highlight, later,
+    id, view, prev, fresh: !!prev, root: root(), plans, run, play, highlight, later, plaque, confetti,
+    acts: prev ? newActs(view, prev) : [],
     get motion() { return table(); },
     get animated() { return animated(view); },
     get reduced() { return reduced(); },
@@ -124,10 +179,20 @@ export function createExperience(id, def, host = globalThis) {
 
   return {
     ownsSound: !!def.palette,
+    // Für Tests und Nachweise: zeigt einen Wechsel prev → view auf dem aktuellen Tisch (nur Darstellung, mit Ton).
+    // Der Tisch selbst bleibt beim bestätigten Serverzustand.
+    present(prev, view = latest) {
+      if (!view || !prev) return false;
+      const m = table();
+      m.finish();
+      m.update(view, () => { def.change?.(view, prev, api(view, prev)); }, { spectator: false, paused: false });
+      shown = { prev, view, at: host.performance.now() };
+      return true;
+    },
     // Für Messungen: die zuletzt gezeigte Änderung ohne Ton noch einmal abspielen (nur Darstellung).
     replay() {
       if (!shown || !latest) return false;
-      const m = table(), view = latest, from = shown.prev;
+      const m = table(), view = shown.view || latest, from = shown.prev;
       m.finish();
       m.update(view, () => { def.still?.(view, api(view)); muted = true; try { def.change?.(view, from, api(view, from)); } finally { muted = false; } }, { spectator: false, paused: !!view.gamePaused });
       return true;

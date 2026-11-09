@@ -2,4 +2,5 @@
 // Pro Paket genau eine Zeile ergänzen, nichts umsortieren.
 export const EXPERIENCES = Object.freeze([
   'schach',
+  'huetchen',
 ]);

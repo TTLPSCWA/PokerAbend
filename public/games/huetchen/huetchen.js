@@ -19,6 +19,7 @@
 
   const where = (color, progress, i) => (progress < 0 ? HOUSES[color][i] : progress >= 40 ? GOALS[color][progress - 40] : PATH[(color * 10 + progress) % 40]);
   const absField = (color, progress) => (color * 10 + progress) % 40;
+  globalThis.HuetchenBoard = { where }; // Feldkoordinaten für das Erlebnis-Modul (nur Darstellung)
   const target = (p, d) => (p === -1 ? 0 : p + d);
   // Wen schlägt ein Zug? → Spieler-ID oder null
   function victim(g, me, piece) {
@@ -124,6 +125,7 @@
       if (!g?.pieces) return;
       const before = prevPieces;
       prevPieces = JSON.parse(JSON.stringify(g.pieces));
+      if (globalThis.__experiences?.huetchen) return; // EXP-007: Bewegung und Klang übernimmt /games/huetchen/experience.js
       if (!before || anim || motionOff()) return;
       const moves = [];
       for (const [id, list] of Object.entries(g.pieces)) {

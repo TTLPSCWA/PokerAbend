@@ -58,7 +58,9 @@ test('Aufnahmen: jede Palette ordnet ihren Ereignissen vorhandene Gruppen zu, Ef
       assert.ok(SAMPLE_SETS[set], `${name}.${event} → ${set}`);
       if (!LONG_EVENTS.has(event)) assert.ok(SAMPLE_SETS[set].max <= 0.6, `${name}.${event} darf höchstens 0,6 s dauern`);
     }
-    for (const event of Object.keys(palette.events)) if (event !== 'splash') assert.ok(palette.samples[event], `${name}.${event} ohne Aufnahme`);
+    // Spielpaletten dürfen einzelne Ereignisse ausdrücklich als erzeugten Ton führen (`synth`), wenn keine Aufnahme passt.
+    for (const event of palette.synth || []) assert.ok(palette.events[event]?.length && !palette.samples[event], `${name}.${event} ist als erzeugt markiert`);
+    for (const event of Object.keys(palette.events)) if (event !== 'splash' && !(palette.synth || []).includes(event)) assert.ok(palette.samples[event], `${name}.${event} ohne Aufnahme`);
   }
 });
 
