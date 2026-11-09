@@ -1,5 +1,11 @@
 // Own synthetic brass, chips and felt; no recordings.
-export default { id: 'casino', ambient: 'salon', events: {
+// Aufnahmen (Kenney, CC0) je Ereignis; die Töne in `events` bleiben als Ersatz, solange Dateien laden oder fehlen.
+const SAMPLES = {
+  select: 'ui-click', confirm: 'ui-confirm', deny: 'ui-error', turn: 'ui-turn', win: 'win-sax', lose: 'lose-sax',
+  card: 'card-place', deal: 'card-deal', draw: 'card-draw', shuffle: 'card-shuffle', chip: 'chip-lay', chips: 'chip-lay',
+  dice: 'dice-throw', piece: 'chip-handle', capture: 'chip-collide',
+};
+export default { samples: SAMPLES, id: 'casino', ambient: 'salon', events: {
   select: [{ kind: 'bell', freq: 1600, ms: 90, vol: 0.025, ratio: 2.6, index: 1.5 }],
   confirm: [{ kind: 'bell', freq: 980, ms: 260, vol: 0.04 }],
   deny: [{ kind: 'bass', freq: 110, ms: 180, vol: 0.06 }],

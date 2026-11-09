@@ -2,11 +2,15 @@
 import standard from './palettes/standard.js';
 import { SCENES, SCENE_RATE, sceneBuffer } from './ambient/scenes.js';
 import { worldAmbient } from './ambient/worlds.js';
+import { SAMPLE_BASE, SAMPLE_SETS } from './samples/catalog.js';
 export const REQUIRED_EVENTS = Object.freeze(['select', 'confirm', 'deny', 'turn', 'win', 'lose']);
 export const PALETTES = Object.freeze(['standard', 'casino', 'holz', 'kneipe', 'party']);
 export { SCENES } from './ambient/scenes.js';
 // EXP-F5: an ambient scene is scaled by this gain on top of the atmosphere slider and fades in gently.
 export const AMBIENT_LEVEL = 0.35, AMBIENT_FADE_IN = 1.5;
+// Recorded CC0 samples (Kenney) per palette event; files are loudness-matched, so only the category sets the level.
+export const SAMPLE_LEVEL = Object.freeze({ foley: 0.9, ui: 0.8, jingle: 0.75 });
+const ALIASES = Object.freeze({ draw: 'deal', chips: 'chip', hit: 'capture', end: 'lose' });
 export const MIXER_DEFAULTS = Object.freeze({ enabled: true, master: 1, effects: 1, atmosphere: 0, speech: 1, mutedGames: Object.freeze([]) });
 const clamp = (n, fallback = 1) => Number.isFinite(n) ? Math.min(1, Math.max(0, n)) : fallback;
 export function normalizeMixer(value = {}) {
@@ -25,12 +29,15 @@ export function loadPalette(name) {
 
 export function createSoundEngine({ settings = () => MIXER_DEFAULTS, game = () => null, host = globalThis,
   paused = () => false, defaultAmbient = worldAmbient,
+  // Samples load over fetch; without fetch (Node tests, very old browsers) every event uses its synthesized fallback.
+  fetchSample = host.fetch ? (url) => host.fetch(url).then(r => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(r.status)))) : null,
   contextFactory = () => new (host.AudioContext || host.webkitAudioContext)() } = {}) {
   let context, master, effects, atmosphere, palette = standard, selection = 0, loading = null, activeGame = game();
   // ambientName: the atmosphere this table wants (world default or set by the game); ambientVoice: what is audible now.
   let ambientName = null, ambientExplicit = false, ambientVoice = null, disposed = false;
   ambientName = defaultAmbient(activeGame) || null;
   const voices = new Set();
+  const sampleRaw = new Map(), sampleBuffers = new Map(), sampleDecoding = new Map(), lastSample = new Map();
   const mixer = () => normalizeMixer(settings());
   const hidden = () => !!host.document?.hidden;
   const logging = () => Array.isArray(host.__soundLog);
@@ -57,6 +64,7 @@ export function createSoundEngine({ settings = () => MIXER_DEFAULTS, game = () =
         context = contextFactory();
         master = context.createGain(); effects = context.createGain(); atmosphere = context.createGain();
         effects.connect(master); atmosphere.connect(master); master.connect(context.destination);
+        decodeSamples();
       }
       const m = mixer();
       master.gain.value = m.enabled && !m.mutedGames.includes(game()) ? m.master : 0;
@@ -132,14 +140,69 @@ export function createSoundEngine({ settings = () => MIXER_DEFAULTS, game = () =
     try { for (const note of safe) render(note, 'effects', opts.volume); } catch { return false; }
     return !!context && context.state !== 'suspended';
   }
+  const sampleUrl = (file) => SAMPLE_BASE + file;
+  function sampleSetFor(event, from = palette) {
+    const map = from.samples || {}, std = standard.samples || {};
+    return map[event] || map[ALIASES[event]] || (from.events?.[event] ? null : std[event] || std[ALIASES[event]]) || null;
+  }
+  function prefetchSamples(pal) {
+    if (!fetchSample || disposed) return;
+    for (const set of new Set(Object.values(pal.samples || {}))) for (const file of SAMPLE_SETS[set]?.files || []) {
+      const url = sampleUrl(file);
+      if (!sampleRaw.has(url)) sampleRaw.set(url, fetchSample(url).catch(() => null));
+    }
+    decodeSamples();
+  }
+  function decodeSamples() {
+    if (!context?.decodeAudioData) return;
+    for (const [url, raw] of sampleRaw) {
+      if (sampleBuffers.has(url) || sampleDecoding.has(url)) continue;
+      sampleDecoding.set(url, raw.then(data => data && new Promise((resolve, reject) => {
+        // decodeAudioData detaches its input; keep the fetched bytes for a later context.
+        const p = context.decodeAudioData(data.slice(0), resolve, reject); if (p?.then) p.then(resolve, reject);
+      })).then(buffer => { if (buffer) sampleBuffers.set(url, buffer); }).catch(() => {}).finally(() => sampleDecoding.delete(url)));
+    }
+  }
+  function pickSample(setName) {
+    const files = (SAMPLE_SETS[setName]?.files || []).map(sampleUrl).filter(url => sampleBuffers.has(url));
+    if (!files.length) return null;
+    const last = lastSample.get(setName), choices = files.length > 1 ? files.filter(url => url !== last) : files;
+    const url = choices[Math.floor(Math.random() * choices.length)];
+    lastSample.set(setName, url);
+    return sampleBuffers.get(url);
+  }
+  function playSample(event, setName, opts = {}) {
+    const id = opts.game ?? game();
+    if (!allowed('effects', id)) return false;
+    if (log(event, 'effects', id)) return true;
+    const ctx = ensureContext(), buffer = ctx && pickSample(setName);
+    if (!ctx || ctx.state === 'suspended' || !buffer) return null;
+    try {
+      const set = SAMPLE_SETS[setName], source = ctx.createBufferSource(), gain = ctx.createGain(), now = ctx.currentTime;
+      source.buffer = buffer;
+      // Small pitch variation keeps repeated foley (cards, dice, pieces) from sounding mechanical.
+      if (set.category === 'foley' && source.playbackRate) source.playbackRate.value = 0.96 + Math.random() * 0.08;
+      gain.gain.value = (SAMPLE_LEVEL[set.category] ?? 0.8) * clamp(opts.volume);
+      source.connect(gain); gain.connect(effects);
+      reserve([source], [source, gain], now + buffer.duration);
+      source.start(now);
+      return true;
+    } catch { return null; }
+  }
   function play(event, opts = {}) {
     syncGame();
     if (loading) {
       const pending = loading, requested = Date.now(), id = game();
       return pending.then(() => Date.now() - requested < 600 && game() === id ? play(event, opts) : false, () => false);
     }
-    const aliases = { draw: 'deal', chips: 'chip', hit: 'capture', end: 'lose' };
-    return playNotes(event, palette.events[event] || palette.events[aliases[event]] || standard.events[event], opts);
+    const setName = sampleSetFor(event);
+    if (setName) {
+      const played = playSample(event, setName, opts);
+      if (played !== null) return played;
+      prefetchSamples(palette);
+    }
+    // Synthesized fallback: palette notes, then the standard palette (also while samples are still loading).
+    return playNotes(event, palette.events[event] || palette.events[ALIASES[event]] || standard.events[event], opts);
   }
   function use(name) {
     syncGame();
@@ -147,7 +210,7 @@ export function createSoundEngine({ settings = () => MIXER_DEFAULTS, game = () =
     loading = loadPalette(name).then(next => {
       if (request !== selection || disposed) return false;
       if (palette !== next) {
-        stopAll(); palette = next;
+        stopAll(); palette = next; prefetchSamples(next);
         // A palette may bring its world's atmosphere; an atmosphere the game chose itself wins.
         if (!ambientExplicit && next.ambient) ambientName = next.ambient;
         startAmbient();
@@ -208,6 +271,8 @@ export function createSoundEngine({ settings = () => MIXER_DEFAULTS, game = () =
   host.document?.addEventListener('visibilitychange', onVisibility);
   host.document?.addEventListener('pointerdown', unlock);
   host.document?.addEventListener('keydown', unlock);
+  // Fetch the standard samples shortly after start, outside the critical page load.
+  if (fetchSample && host.setTimeout) host.setTimeout(() => prefetchSamples(standard), 1200);
   return {
     use, play, ambient, refresh,
     beep: (freq = 660, ms = 120, vol = 0.05, type = 'sine') => playNotes('beep', [{ kind: 'tone', freq, ms, vol, type }]),
@@ -216,6 +281,8 @@ export function createSoundEngine({ settings = () => MIXER_DEFAULTS, game = () =
     get ambientScene() { return ambientName; },
     get ambientPlaying() { return !!ambientVoice; },
     get voiceCount() { return voices.size; },
+    get samplesReady() { return sampleBuffers.size; },
+    sampleSetFor: (event) => sampleSetFor(event),
     dispose() {
       disposed = true; selection++; loading = null; stopAll(); observer?.disconnect();
       host.removeEventListener?.('hashchange', refresh);

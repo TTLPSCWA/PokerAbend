@@ -213,6 +213,8 @@ window.Sound = {
   ambient: (name) => soundCall('ambient', name),
   // Nur lesend, für Tests und Einstellungen: welche Atmosphäre der Tisch will und ob sie gerade läuft.
   state: () => ({ ambient: soundEngine?.ambientScene ?? null, playing: !!soundEngine?.ambientPlaying }),
+  // Wie viele Aufnahmen (Kenney, CC0) schon dekodiert bereitliegen – für Tests und die Hörprobe.
+  samplesReady: () => soundEngine?.samplesReady ?? 0,
 };
 function beep(freq = 660, ms = 120, vol = 0.05, type = 'sine') { return soundCall('beep', freq, ms, vol, type); }
 function noise(sec, freq, vol, type = 'bandpass', q = 1) { return soundCall('noise', sec, freq, vol, type, q); }

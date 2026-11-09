@@ -1,5 +1,11 @@
 // Dry dice on the counter, cup thumps and a small bar bell.
-export default { id: 'kneipe', ambient: 'kneipe', events: {
+// Aufnahmen (Kenney, CC0) je Ereignis; die Töne in `events` bleiben als Ersatz, solange Dateien laden oder fehlen.
+const SAMPLES = {
+  select: 'ui-click', confirm: 'ui-confirm', deny: 'ui-error', turn: 'ui-turn', win: 'win-steel', lose: 'lose-steel',
+  dice: 'dice-throw', cup: 'dice-shake', piece: 'glass-light', capture: 'glass-medium', card: 'card-place', deal: 'card-deal',
+  draw: 'card-draw', chip: 'coins', chips: 'coins',
+};
+export default { samples: SAMPLES, id: 'kneipe', ambient: 'kneipe', events: {
   select: [{ kind: 'tock', freq: 430, ms: 70, vol: 0.05 }],
   confirm: [{ kind: 'bell', freq: 820, ms: 220, vol: 0.04, ratio: 2.4 }],
   deny: [{ kind: 'bass', freq: 95, ms: 160, vol: 0.07 }],

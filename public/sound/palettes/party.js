@@ -1,5 +1,11 @@
 // Bouncy plops, bright FM bells and a soft celebratory chord.
-export default { id: 'party', ambient: 'jahrmarkt', events: {
+// Aufnahmen (Kenney, CC0) je Ereignis; die Töne in `events` bleiben als Ersatz, solange Dateien laden oder fehlen.
+const SAMPLES = {
+  select: 'arcade-select', confirm: 'arcade-confirm', deny: 'arcade-deny', turn: 'arcade-turn', win: 'win-nes', lose: 'lose-nes',
+  highlight: 'arcade-power', card: 'card-place', deal: 'card-deal', draw: 'card-draw', chip: 'chip-lay', chips: 'chip-lay',
+  dice: 'dice-throw', piece: 'wood-light', capture: 'punch',
+};
+export default { samples: SAMPLES, id: 'party', ambient: 'jahrmarkt', events: {
   select: [{ kind: 'plop', freq: 720, ms: 85, vol: 0.045 }],
   confirm: [{ kind: 'plop', freq: 850, ms: 140, vol: 0.055 }],
   deny: [{ kind: 'plop', freq: 170, ms: 220, vol: 0.06 }],

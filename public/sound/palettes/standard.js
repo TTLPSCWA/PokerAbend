@@ -29,4 +29,12 @@ events.capture = events.hit;
 // EXP-F5 Lobby-Leben: Stuhl rücken beim Hinsetzen, kurzes Aufstehen beim Gehen.
 events.seat = [{ kind: 'noise', ms: 260, freq: 380, vol: 0.12, type: 'bandpass', q: 2.5 }, { kind: 'tock', freq: 150, ms: 90, vol: 0.05, at: 210 }];
 events.stand = [{ kind: 'tock', freq: 210, ms: 70, vol: 0.045 }, { kind: 'noise', ms: 200, freq: 520, vol: 0.09, type: 'bandpass', q: 2, at: 40 }];
-export default { id: 'standard', events };
+// Aufnahmen (Kenney, CC0) je Ereignis; die Töne in `events` bleiben als Ersatz, solange Dateien laden oder fehlen.
+const SAMPLES = {
+  card: 'card-place', draw: 'card-draw', deal: 'card-deal', shuffle: 'card-shuffle', dice: 'dice-throw',
+  chips: 'chip-lay', chip: 'chip-lay', call: 'stinger-up', catch: 'stinger-down', hit: 'punch', skip: 'ui-back',
+  drum: 'wood-knock', done: 'paper', win: 'win-hit', end: 'stinger-down', lose: 'lose-hit',
+  select: 'ui-click', confirm: 'ui-confirm', deny: 'ui-error', turn: 'ui-turn', piece: 'wood-light', capture: 'wood-medium',
+  seat: 'chair', stand: 'cloth',
+};
+export default { samples: SAMPLES, id: 'standard', events };

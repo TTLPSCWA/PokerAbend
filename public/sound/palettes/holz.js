@@ -1,5 +1,11 @@
 // Warm wooden board and piece transients.
-export default { id: 'holz', ambient: 'kamin', events: {
+// Aufnahmen (Kenney, CC0) je Ereignis; die Töne in `events` bleiben als Ersatz, solange Dateien laden oder fehlen.
+const SAMPLES = {
+  select: 'ui-click', confirm: 'ui-confirm', deny: 'ui-error', turn: 'ui-pluck', win: 'win-pizzi', lose: 'lose-pizzi',
+  piece: 'wood-light', capture: 'wood-medium', card: 'card-place', deal: 'card-deal', draw: 'card-draw', shuffle: 'card-shuffle',
+  chip: 'chip-lay', chips: 'chip-lay', dice: 'dice-throw',
+};
+export default { samples: SAMPLES, id: 'holz', ambient: 'kamin', events: {
   select: [{ kind: 'tock', freq: 620, ms: 65, vol: 0.045 }],
   confirm: [{ kind: 'plop', freq: 480, ms: 100, vol: 0.06 }],
   deny: [{ kind: 'tock', freq: 170, ms: 130, vol: 0.05 }],
