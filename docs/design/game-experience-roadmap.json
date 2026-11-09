@@ -638,13 +638,20 @@
       "game_name": "Schach",
       "priority": "P1",
       "vis_id": "VIS-088",
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "09d2f9ddedab2239a82a3409dd8c0fbe0228c7c6",
       "world": "Turnierbrett im Schachcafé, leichte Kaffeehausatmosphäre.",
       "pieces_and_material": "Eigener 2D-Figurensatz „Café“ mit klaren Silhouetten. Schachuhr als Messinguhr mit zwei Knöpfen.",
       "sound": "Holzfigur setzen, Schlagen mit kurzem Doppelklack, Schach als leiser Glockenton, Uhr-Ticken in den letzten 10 Sekunden.",
       "animation": "Figuren gleiten, Rochade bewegt König und Turm gleichzeitig. Matt: Der König kippt langsam um.",
-      "highlight": "Schachmatt: König fällt, das Brett dimmt bis auf das Mattbild."
+      "highlight": "Schachmatt: König fällt, das Brett dimmt bis auf das Mattbild.",
+      "evidence": [
+        "docs/design/experience/EXP-088/README.md",
+        "test/ui/exp-schach.spec.js",
+        "test/experience-schach.test.js",
+        "public/games/schach/experience.js"
+      ],
+      "implementation_note": "Palette `schach`, gleitende Figuren, gemeinsame Rochade, Mattbild mit wartendem Ergebnisfenster. Kein neuer Figurensatz, Atmosphäre über die vorhandene Szene „Kamin“. Bringt den gemeinsamen Anschluss `public/games/experience-kit.js` mit."
     },
     {
       "id": "EXP-048",

@@ -404,6 +404,10 @@ Die Priorität richtet sich danach, wie oft ein Spiel am Abend gespielt wird:
 - **Sound:** Holzfigur setzen, Schlagen mit kurzem Doppelklack, Schach als leiser Glockenton, Uhr-Ticken in den letzten 10 Sekunden.
 - **Animation:** Figuren gleiten, Rochade bewegt König und Turm gleichzeitig. Matt: Der König kippt langsam um.
 - **Highlight:** Schachmatt: König fällt, das Brett dimmt bis auf das Mattbild.
+- **Status:** done
+- **Implementierungscommit:** `09d2f9ddedab2239a82a3409dd8c0fbe0228c7c6`
+- **Nachweise:** `docs/design/experience/EXP-088/README.md`, `test/ui/exp-schach.spec.js`, `test/experience-schach.test.js`, `public/games/schach/experience.js`
+- **Umsetzung:** Palette `schach`, gleitende Figuren, gemeinsame Rochade, Mattbild mit wartendem Ergebnisfenster. Kein neuer Figurensatz, Atmosphäre über die vorhandene Szene „Kamin“. Bringt den gemeinsamen Anschluss `public/games/experience-kit.js` mit.
 
 #### EXP-048 · Hex (`hex`) · P3
 - **Welt:** Bienenwabe aus Glas auf Steinplatte.
