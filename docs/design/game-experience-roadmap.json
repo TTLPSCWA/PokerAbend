@@ -2,7 +2,7 @@
   "schema_version": 1,
   "source": "docs/design/GAME_EXPERIENCE_ROADMAP.md",
   "generator": "scripts/build-experience-roadmap.mjs",
-  "status_policy": "Nur Planung. Ein Paket wird erst nach ausdrücklicher Freigabe seiner ID umgesetzt; danach status, implementation_commit und Nachweise eintragen.",
+  "status_policy": "Ein Paket wird erst nach ausdrücklicher Freigabe seiner ID umgesetzt; danach status, implementation_commit und Nachweise eintragen. Alle übrigen Pakete sind nur geplant.",
   "foundation": [
     {
       "id": "EXP-F1",

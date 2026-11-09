@@ -44,3 +44,25 @@ test('Abgeschlossene EXP-Fundamente tragen einen dokumentierten Commit und vorha
     assert.ok(p.evidence.some(path => path.endsWith('.md') && readFileSync(path, 'utf8').includes(p.implementation_commit)), p.id + ': Implementierungscommit fehlt im Nachweis');
   }
 });
+
+test('Abgeschlossene EXP-Spielpakete: Commit, vorhandene Nachweise, Erlebnis-Modul und Palette sind eingetragen', async () => {
+  const { EXPERIENCES } = await import('../public/games/experience-index.js');
+  const { PALETTES } = await import('../public/sound/engine.js');
+  const done = json('docs/design/game-experience-roadmap.json').packages.filter(p => p.status === 'done');
+  for (const p of done) {
+    assert.match(p.implementation_commit, /^[a-f0-9]{40}$/, p.id);
+    assert.ok(p.evidence.length, p.id);
+    for (const path of p.evidence) assert.ok(existsSync(path), path);
+    assert.ok(p.evidence.some(path => path.endsWith('.md') && readFileSync(path, 'utf8').includes(p.implementation_commit)), p.id + ': Implementierungscommit fehlt im Nachweis');
+  }
+  // Jedes eingetragene Erlebnis-Modul liegt vor und nutzt eine bekannte Palette.
+  for (const id of EXPERIENCES) {
+    const file = `public/games/${id}/experience.js`;
+    assert.ok(existsSync(file), file);
+    const source = readFileSync(file, 'utf8'), palette = source.match(/palette: '([a-z0-9-]+)'/)?.[1];
+    assert.ok(palette && PALETTES.includes(palette), `${id}: Palette ${palette}`);
+    if (!/css: false/.test(source)) assert.ok(existsSync(`public/games/${id}/experience.css`), id + ': experience.css');
+    assert.ok(!/games\/[a-z0-9-]+\/(room|rules|index)\.js/.test(source), id + ': Erlebnis-Module greifen nicht auf Spiellogik zu');
+  }
+});
+

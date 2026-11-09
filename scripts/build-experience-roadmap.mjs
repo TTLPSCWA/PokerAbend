@@ -19,11 +19,21 @@ const packages = md.split('\n#### ').slice(1).map((block) => {
   if (!m) throw new Error('Unlesbarer Eintrag: ' + head);
   const entry = { id: m[1], game_id: m[3], game_name: m[2], priority: m[4], vis_id: visId[m[3]] || null, status: 'planned', implementation_commit: null };
   for (const line of lines) { const f = line.match(/^- \*\*(.+?):\*\* (.+)$/); if (f && keys[f[1]]) entry[keys[f[1]]] = f[2]; }
+  // Umgesetzte Spielpakete tragen wie das Fundament Status, Commit und Nachweise.
+  const body = lines.join('\n').split(/\n###? /, 1)[0];
+  if (/^- \*\*Status:\*\* done$/m.test(body)) {
+    entry.status = 'done';
+    entry.implementation_commit = body.match(/^- \*\*Implementierungscommit:\*\* `([a-f0-9]{40})`$/m)?.[1];
+    entry.evidence = [...(body.match(/^- \*\*Nachweise:\*\* (.+)$/m)?.[1] || '').matchAll(/`([^`]+)`/g)].map(m => m[1]);
+    const note = body.match(/^- \*\*Umsetzung:\*\* (.+)$/m)?.[1];
+    if (note) entry.implementation_note = note;
+    if (!entry.implementation_commit || !entry.evidence.length) throw new Error(entry.id + ': done braucht Commit und Nachweise');
+  }
   return entry;
 });
 writeFileSync('docs/design/game-experience-roadmap.json', JSON.stringify({
   schema_version: 1, source: 'docs/design/GAME_EXPERIENCE_ROADMAP.md', generator: 'scripts/build-experience-roadmap.mjs',
-  status_policy: 'Nur Planung. Ein Paket wird erst nach ausdrücklicher Freigabe seiner ID umgesetzt; danach status, implementation_commit und Nachweise eintragen.',
+  status_policy: 'Ein Paket wird erst nach ausdrücklicher Freigabe seiner ID umgesetzt; danach status, implementation_commit und Nachweise eintragen. Alle übrigen Pakete sind nur geplant.',
   foundation, packages,
 }, null, 2) + '\n');
 console.log(`${foundation.length} Fundament-Pakete, ${packages.length} Spielpakete`);

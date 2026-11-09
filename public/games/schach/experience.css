@@ -1,0 +1,17 @@
+/* EXP-088 Schach: Messinguhr, Schach-Markierung und Mattbild. Bewegung nur über transform/opacity. */
+[data-scene='schach'] .ch-clock{position:relative;border:2px solid #b8924a;box-shadow:inset 0 0 0 1px #5d4520,0 3px 0 #5d4520;border-radius:9px}
+[data-scene='schach'] .ch-clock::before{content:'';position:absolute;left:50%;top:-9px;width:26px;height:8px;margin-left:-13px;border-radius:5px 5px 0 0;background:#b8924a;box-shadow:inset 0 -2px 0 #7a5c28;transform:translateY(3px);transition:transform .12s ease}
+[data-scene='schach'] .ch-clock.running::before{transform:translateY(0);background:#e3c078}
+[data-scene='schach'] .ch-clock.xp-low{animation:xp-ch-low 1s steps(2,jump-none) infinite}
+@keyframes xp-ch-low{from{opacity:1}to{opacity:.62}}
+[data-scene='schach'] .ch-cell.xp-check::before{content:'';position:absolute;inset:6%;border-radius:50%;border:3px solid #c0392b;opacity:.85;pointer-events:none}
+[data-scene='schach'] .ch-board[data-xp='schach'] .ch-cell.xp-check::before{animation:xp-ch-check .45s ease-out 2}
+@keyframes xp-ch-check{from{transform:scale(.7);opacity:.2}to{transform:scale(1);opacity:.85}}
+/* Mattbild: alles außer dem gefallenen König und der mattsetzenden Figur tritt zurück. */
+[data-scene='schach'] .ch-board.xp-matt .ch-cell:not(.xp-mated):not(.xp-mating){opacity:.36}
+[data-scene='schach'] .ch-cell.xp-mated .ch-piece{transform:translate(10%,8%) rotate(82deg)}
+[data-scene='schach'] .ch-cell.xp-mated{box-shadow:inset 0 0 0 4px #c0392b}
+[data-scene='schach'] .ch-cell.xp-mating{box-shadow:inset 0 0 0 4px #e8b44c}
+[data-scene='schach'] .ch-board[data-xp='matt'] .ch-cell:not(.xp-mated):not(.xp-mating){animation:xp-ch-dim .9s ease-out both}
+@keyframes xp-ch-dim{from{opacity:1}to{opacity:.36}}
+@media(prefers-reduced-motion:reduce){[data-scene='schach'] .ch-clock.xp-low,[data-scene='schach'] .ch-board[data-xp] .ch-cell,[data-scene='schach'] .ch-board[data-xp] .ch-cell::before{animation:none!important}[data-scene='schach'] .ch-clock::before{transition:none}}

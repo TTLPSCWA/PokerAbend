@@ -33,6 +33,8 @@ if (typeof HTMLLinkElement !== 'undefined' && document.head?.appendChild) {
 
 // EXP-F4: shared result component; also callable by non-kit games.
 const winnerStageModule = import('/motion/celebrate.js');
+// EXP-Spielpakete: optionales Erlebnis-Modul je Spiel (Klang, Bewegung, Highlight), siehe /games/experience-kit.js
+const experienceKit = import('/games/experience-kit.js').catch(() => null);
 let winnerStageGeneration = 0;
 let winnerStageReconnecting = false;
 window.configureWinnerWorld = (game, options) => winnerStageModule.then(m => m.configureWorld(game, options));
@@ -144,6 +146,8 @@ const deckPrefHTML = () => I18n.html`<label class="toggle"><span>Kartenblatt<sma
   // Welcher Ton passt zu einer Aktion („legt Herz König“, „UNO!“, „würfelt 5“ …)? Wichtigeres zuerst.
 const ACT_SOUNDS = [[/^(UNO|Mau|31|Feuer|Kniffel)!/, 'call'], [/^Box zu!/, 'call'], [/^alle sechs!/, 'call'], [/^Mühle!/, 'call'], [/^setzt$/, 'chips'], [/^Niete/, 'end'], [/^schreibt/, 'done'], [/^\+\d/, 'chips'], [/^schließt/, 'chips'], [/^klopft/, 'drum'], [/versenkt!$/, 'drum'], [/^Blackjack!/, 'call'], [/über 21/, 'end'], [/ Treffer$/, 'hit'], [/ Wasser$/, 'splash'], [/^Erwischt/, 'catch'], [/schlägt/, 'hit'], [/zweifelt/, 'drum'], [/^Phase \d+ ✓/, 'done'],
   [/setzt aus/, 'skip'], [/würfelt/, 'dice'], [/^(zieht|nimmt Ablage|erwischt)/, 'draw'], [/^(legt|wirft ab|ungesehen|tauscht|Karte:|verdoppelt|teilt)/, 'card'], [/^(setzt \d|versichert|kauft)/, 'chips']];
+// Kennung eines Ergebnisses: gleiches Ergebnis in gleicher Sprache und Pausenlage = dieselbe Siegerbühne.
+const resultKey = (S) => S?.phase === 'over' ? JSON.stringify([S.code, S.roundNo, S.result, S.partyProgram?.status, S.partyProgram?.index, !!S.gamePaused, !!S.you?.inRound, I18n.language]) : '';
 function actSound(acts, prev) {
   const seen = Math.max(0, ...Object.values(prev || {}).map((a) => a.n));
   const fresh = Object.values(acts || {}).filter((a) => a.n > seen).map((a) => a.text);
@@ -229,6 +233,8 @@ function kitGame(def) {
   const FINE = matchMedia('(pointer: fine)');
   let dockKeyPrev = null; // Schlüssel der zuletzt gezeichneten Aktionsleiste (dockKey)
   let resultFresh = false;
+  let xp = null; // Erlebnis-Modul dieses Spiels (EXP-Paket), falls vorhanden
+  experienceKit.then(m => m?.attach(def.id)).then(x => { xp = x || null; if (xp && isMine()) { xp.enter(); xp.onState(S, null); render(); } }).catch(() => {});
   let resultClosed = 0; // Rundennummer, deren Ergebnisfenster weggeklickt wurde
   let peekKey = null;   // Handy: vergrößerte Karte in einer überlappenden Hand
 
@@ -318,6 +324,7 @@ function kitGame(def) {
   function render() {
     RW = I18n.t(def.roundWord || 'Runde');
     if (!isMine() || !$('#kg')) return;
+    const stageBefore = $('#kg [data-result-stage]'); // läuft dort schon die Feier zu diesem Ergebnis, bleibt sie beim Neuzeichnen erhalten
     GameDesign.apply($('#kg'), def.id);
     document.documentElement.style.setProperty('--topbar', $('#kg .topbar').offsetHeight + 'px');
     document.body.classList.toggle('calm', !!prefs.calm);
@@ -367,9 +374,18 @@ function kitGame(def) {
     document.documentElement.style.setProperty('--dock-h', $('#kg-dock').offsetHeight + 'px');
     if (panel) renderPanel();
     const stage = $('#kg [data-result-stage]');
-    if (stage) window.showWinnerStage(stage, S, { fresh: resultFresh, roundWord: def.roundWord, category: account.games.find(g => g.id === def.id)?.category });
+    const stageKey = stage && resultKey(S);
+    if (stage && stageBefore && stageBefore !== stage && stageBefore.childElementCount && stageBefore.dataset.resultKey === stageKey) stage.replaceWith(stageBefore);
+    else if (stage) {
+      stage.dataset.resultKey = stageKey;
+      // Ein Highlight am Spielende (z. B. Schachmatt) darf zuerst zu sehen sein; die Feier folgt direkt danach.
+      const held = xp?.hold(S, resultFresh), view = S, options = { fresh: held ? held.fresh : resultFresh, roundWord: def.roundWord, category: account.games.find(g => g.id === def.id)?.category };
+      if (held?.wait > 0) setTimeout(() => { if (stage.isConnected && S === view) window.showWinnerStage(stage, view, options); }, held.wait);
+      else window.showWinnerStage(stage, S, options);
+    }
     resultFresh = false;
     def.afterRender?.(S);
+    xp?.afterRender(S);
     renderGamePause(S);
     GameDesign.fit($('#kg'));
     GameDesign.watch($('#kg'), () => {
@@ -695,19 +711,20 @@ function kitGame(def) {
 
   Object.assign(mod, {
     show() {
-      mount(); render();
+      mount(); xp?.enter(); render();
       if (def.intro) setTimeout(() => { if (isMine() && !$('#dlg').open) showIntro(def.id, def.name, def.intro); }, 400);
     },
     onState(st) {
       const prev = S;
-      window.finishWinnerStages();
+      // Der Server schickt das Rundenende mehrfach (Ergebnis, Rundenabschluss). Nur ein anderes Ergebnis beendet die laufende Feier.
+      if (!prev || resultKey(prev) !== resultKey(st)) window.finishWinnerStages();
       resultFresh = prev?.phase === 'playing' && st.phase === 'over' && socket.connected && !winnerStageReconnecting;
       winnerStageReconnecting = false;
       S = st;
       // Bin ich gerade drangekommen? Ton und Hinweis im Tab
       const now = st.turnId && st.turnId === st.you?.id;
       const before = prev && prev.turnId === prev.you?.id && prev.roundNo === st.roundNo;
-      if (now && !before) { beep(740, 140, 0.06); setTimeout(() => beep(988, 160, 0.05), 140); if (document.hidden) document.title = I18n.t('● Du bist dran – Spieleabend'); }
+      if (now && !before) { if (!xp?.turn(st, prev)) { beep(740, 140, 0.06); setTimeout(() => beep(988, 160, 0.05), 140); } if (document.hidden) document.title = I18n.t('● Du bist dran – Spieleabend'); }
       if (!now) document.title = 'Spieleabend';
       if (!now || !before) peekKey = null;
       // Spiel-Töne: neue Runde = mischen, Rundenende = Sieg oder Schluss, sonst passend zur letzten Aktion
@@ -715,9 +732,10 @@ function kitGame(def) {
       if (prev && prev.roundNo !== st.roundNo && st.phase === 'playing') cue = 'shuffle';
       else if (prev?.phase === 'playing' && st.phase === 'over') cue = st.result?.winners?.includes(st.you?.id) ? 'win' : 'end';
       else if (prev && prev.roundNo === st.roundNo) cue = def.sounds?.(st, prev) || actSound(st.acts, prev.acts);
-      if (cue && !['win','end'].includes(cue)) GameDesign.sound(def.id, cue);
+      if (cue && !['win','end'].includes(cue) && !xp?.ownsSound) GameDesign.sound(def.id, cue);
       if(def.cardUX){cardTracker.update(st);reconnecting=!socket.connected;if(prev&&CardInteraction.context(prev)!==CardInteraction.context(st))clearDrag();}else sortHand(st);
       def.onState?.(st, prev);
+      xp?.onState(st, prev);
       render();
       if (cue && !['win','end'].includes(cue)) GameDesign.pulse($('#kg'), cue);
       // Neues Rundenende: Fokus ins Ergebnisfenster (Tastatur, Bildschirmleser)

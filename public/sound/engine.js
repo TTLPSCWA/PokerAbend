@@ -4,7 +4,10 @@ import { SCENES, SCENE_RATE, sceneBuffer } from './ambient/scenes.js';
 import { worldAmbient } from './ambient/worlds.js';
 import { SAMPLE_BASE, SAMPLE_SETS } from './samples/catalog.js';
 export const REQUIRED_EVENTS = Object.freeze(['select', 'confirm', 'deny', 'turn', 'win', 'lose']);
-export const PALETTES = Object.freeze(['standard', 'casino', 'holz', 'kneipe', 'party']);
+export const PALETTES = Object.freeze(['standard', 'casino', 'holz', 'kneipe', 'party',
+  // EXP-Spielpakete: je Palette eine Zeile hier und eine in `loaders`.
+  'schach',
+]);
 export { SCENES } from './ambient/scenes.js';
 // EXP-F5: an ambient scene is scaled by this gain on top of the atmosphere slider and fades in gently.
 export const AMBIENT_LEVEL = 0.35, AMBIENT_FADE_IN = 1.5;
@@ -19,6 +22,7 @@ export function normalizeMixer(value = {}) {
 const loaders = {
   casino: () => import('./palettes/casino.js'), holz: () => import('./palettes/holz.js'),
   kneipe: () => import('./palettes/kneipe.js'), party: () => import('./palettes/party.js'),
+  schach: () => import('./palettes/schach.js'),
 };
 const paletteCache = new Map([['standard', Promise.resolve(standard)]]);
 export function loadPalette(name) {

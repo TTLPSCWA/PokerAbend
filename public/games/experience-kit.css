@@ -1,0 +1,5 @@
+/* EXP-Spielpakete: gemeinsame Regeln. Bewegung nur über transform/opacity. */
+#kg[data-xp-kit] .kg-over { transition: opacity .28s ease; }
+/* Während eines Highlights am Spielende bleibt das Ergebnisfenster im Dokument (Fokus, Bildschirmleser), ist aber kurz unsichtbar. */
+#kg.xp-hold .kg-over { opacity: 0; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { #kg[data-xp-kit] .kg-over { transition: none; } }
