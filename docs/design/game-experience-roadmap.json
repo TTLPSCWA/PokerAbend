@@ -204,13 +204,20 @@
       "game_name": "Mau-Mau",
       "priority": "P1",
       "vis_id": "VIS-003",
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "68220eeb97e16fed3cf54d28db68b6767336c4b0",
       "world": "Gemütlicher Küchentisch mit Wachstuch, Kaffeetasse und Brotkorb am Rand.",
       "pieces_and_material": "Eigenes deutsches Blatt (Kreuz, Pik, Herz, Karo) mit warmen Farben. Bube mit Wunschfahne.",
       "sound": "Lockeres Kartenschnippen, Löffel klirrt an der Tasse bei „Mau“, Doppelklirr bei „Mau-Mau“.",
       "animation": "Die 7er-Kette zählt sichtbar hoch, die 8 lässt den nächsten Platz kurz grau „einschlafen“.",
-      "highlight": "„Mau-Mau!“: Die Tasse hüpft, Kaffee schwappt, der Gewinner bekommt einen Herz-Stempel."
+      "highlight": "„Mau-Mau!“: Die Tasse hüpft, Kaffee schwappt, der Gewinner bekommt einen Herz-Stempel.",
+      "evidence": [
+        "docs/design/experience/EXP-003/README.md",
+        "test/ui/exp-maumau.spec.js",
+        "test/experience-shedding.test.js",
+        "public/games/maumau/experience.js"
+      ],
+      "implementation_note": "Palette `maumau`, Küchentisch mit Wachstuch, Tasse und Brotkorb, 7er-Zähler, Einschlafen bei der 8, Löffelklirren bei „Mau“, Herz-Stempel bei „Mau-Mau!“."
     },
     {
       "id": "EXP-021",

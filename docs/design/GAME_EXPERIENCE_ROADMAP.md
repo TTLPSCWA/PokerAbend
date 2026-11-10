@@ -184,6 +184,10 @@ Die Priorität richtet sich danach, wie oft ein Spiel am Abend gespielt wird:
 - **Sound:** Lockeres Kartenschnippen, Löffel klirrt an der Tasse bei „Mau“, Doppelklirr bei „Mau-Mau“.
 - **Animation:** Die 7er-Kette zählt sichtbar hoch, die 8 lässt den nächsten Platz kurz grau „einschlafen“.
 - **Highlight:** „Mau-Mau!“: Die Tasse hüpft, Kaffee schwappt, der Gewinner bekommt einen Herz-Stempel.
+- **Status:** done
+- **Implementierungscommit:** `68220eeb97e16fed3cf54d28db68b6767336c4b0`
+- **Nachweise:** `docs/design/experience/EXP-003/README.md`, `test/ui/exp-maumau.spec.js`, `test/experience-shedding.test.js`, `public/games/maumau/experience.js`
+- **Umsetzung:** Palette `maumau`, Küchentisch mit Wachstuch, Tasse und Brotkorb, 7er-Zähler, Einschlafen bei der 8, Löffelklirren bei „Mau“, Herz-Stempel bei „Mau-Mau!“.
 
 #### EXP-021 · Mogeln (`mogeln`) · P2
 - **Welt:** Geheimes Hinterzimmer mit Bordeaux-Vorhang, Kerzenlicht.
