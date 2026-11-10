@@ -115,6 +115,7 @@
 
   const kit = kitGame({
     id: 'zehnetappen',
+    afterRender() { document.querySelector('.kg-zehnetappen')?.setAttribute('data-art-phase10', ''); }, // ART-008 (art.css)
     cardUX: true,
     onClear: clearSelection,
     ring: false,

@@ -2175,7 +2175,7 @@
       "source_audit": [
         {
           "path": "public/games/zehnetappen/zehnetappen.css",
-          "sha256": "c000049eee69cf56b0961bf5d457db676bd527590efc1830cf7cde56fcec9579",
+          "sha256": "9b73962e4b445b4981da07ee5af5435271ae07db13cd8af46af3c915f937e72b",
           "css_classes": [
             "kc-ze",
             "cr",
@@ -2396,7 +2396,7 @@
         "source_audit": [
           {
             "path": "public/games/zehnetappen/zehnetappen.js",
-            "sha256": "2eb2dc4b2b7337008b746beb69d2f10075891745572e7406859c7cd7fa6f21f2"
+            "sha256": "f37db0f0644426cbc9e3c0ed9a1b52acff77a63a95ec9d9496eb589c44575462"
           },
           {
             "path": "public/games/kit.js",

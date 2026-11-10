@@ -417,7 +417,7 @@
       "source_audit": [
         {
           "path": "public/games/zehnetappen/zehnetappen.js",
-          "sha256": "2eb2dc4b2b7337008b746beb69d2f10075891745572e7406859c7cd7fa6f21f2"
+          "sha256": "f37db0f0644426cbc9e3c0ed9a1b52acff77a63a95ec9d9496eb589c44575462"
         },
         {
           "path": "public/games/kit.js",
@@ -437,7 +437,7 @@
         "source_audit": [
           {
             "path": "public/games/zehnetappen/zehnetappen.js",
-            "sha256": "2eb2dc4b2b7337008b746beb69d2f10075891745572e7406859c7cd7fa6f21f2"
+            "sha256": "f37db0f0644426cbc9e3c0ed9a1b52acff77a63a95ec9d9496eb589c44575462"
           },
           {
             "path": "public/games/kit.js",

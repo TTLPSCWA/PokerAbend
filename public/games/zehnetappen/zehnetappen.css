@@ -1,4 +1,5 @@
 @import url('/games/card-worlds.css');
+@import url('/games/zehnetappen/art.css'); /* ART-008: Karten, Auslagen, Phasensteine, Tisch */
 /* Phase 10: Karten in vier Farben im bekannten Aufbau (große Zahl, kleine Zahlen in den Ecken), Joker „J“, Aussetzen mit eigenem Zeichen */
 .kc-ze { color: #fff; border: 2px solid #1A1A1A; box-shadow: inset 0 0 0 calc(var(--w) * .07) #F8F4EA, 0 2px 6px rgba(0,0,0,.4); overflow: hidden; }
 .kc-ze .v { display: grid; justify-items: center; line-height: 1; }
