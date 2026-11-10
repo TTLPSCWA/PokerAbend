@@ -5,4 +5,5 @@ export const EXPERIENCES = Object.freeze([
   'huetchen',
   'scotland-yard',
   'werwolf',
+  'doppelagent',
 ]);

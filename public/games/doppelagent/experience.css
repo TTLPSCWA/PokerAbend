@@ -1,0 +1,20 @@
+/* EXP-081 Doppelagent: Umschlag mit Siegel, Postkarten, Sonnenbrille, Mission-erfüllt-Postkarte. Bewegung nur über transform/opacity. */
+/* Eigene Ortsakte als Umschlag mit Wachssiegel. */
+[data-scene='doppelagent'] .da-secret{position:relative;border:1px solid #b89a63;border-radius:5px;background:linear-gradient(175deg,#e6d3a6,#cdb681);color:#2a2418;box-shadow:0 4px 0 #0c2026}
+[data-scene='doppelagent'] .da-secret::before{content:'';position:absolute;left:0;right:0;top:0;height:26px;background:linear-gradient(#bfa56f,#d5bf8d);clip-path:polygon(0 0,100% 0,50% 100%);opacity:.75;pointer-events:none}
+[data-scene='doppelagent'] .da-secret::after{content:'';position:absolute;left:50%;top:14px;width:22px;height:22px;margin-left:-11px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#d0564c,#8a231d);box-shadow:0 1px 2px #0006,inset 0 0 0 3px #a5352e;pointer-events:none}
+[data-scene='doppelagent'] .da-secret summary{position:relative;z-index:1;color:#4a3f28;padding-top:26px}
+[data-scene='doppelagent'] .da-secret strong{color:#1f2a2c}
+[data-scene='doppelagent'] .da-secret p{color:#3a3324}
+/* Orte als Postkarten mit Briefmarke. */
+[data-scene='doppelagent'] .da-location-grid button{position:relative;padding:9px 30px 9px 12px;border:1px solid #b9ae8f;border-radius:3px;background:linear-gradient(175deg,#f1e9d2,#ddd2b3);color:#26302f;box-shadow:1px 2px 0 #0c2026}
+[data-scene='doppelagent'] .da-location-grid button::after{content:'';position:absolute;right:6px;top:6px;width:14px;height:17px;border:1px dashed #7d745a;background:#2f6f73}
+[data-scene='doppelagent'] .da-location-grid button.chosen{outline:2px solid #d5af72;outline-offset:1px}
+/* Der enttarnte Agent: Sonnenbrille hochgeschoben. */
+.xp-da-agent{position:relative;width:64px;height:64px;margin:6px 0 12px;display:grid;place-items:center;border-radius:50%;border:2px solid #d5af72;background:#142a2c;color:#f1e9d2;font:700 26px/1 Georgia,serif}
+.xp-da-shades{position:absolute;left:6px;top:20px;width:52px;height:20px;transform:translateY(-17px) rotate(-14deg)}
+/* Highlight: Postkarte „Mission erfüllt“. */
+.xp-da-postcard{position:absolute;left:50%;top:38%;width:min(300px,82vw);margin-left:calc(min(300px,82vw)/-2);padding:26px 18px 20px;display:grid;gap:14px;justify-items:center;text-align:center;border:1px solid #b9ae8f;border-radius:4px;background:linear-gradient(175deg,#f6eed8,#e2d6b6);color:#1f2a2c;box-shadow:0 14px 30px #000a;opacity:0}
+.xp-da-postcard::before{content:'';position:absolute;right:12px;top:12px;width:30px;height:36px;border:2px dashed #7d745a;background:#2f6f73}
+.xp-da-postcard>b{font:700 24px/1.15 Georgia,serif;max-width:78%;overflow-wrap:break-word}
+.xp-da-postcard>span{padding:4px 12px;border:3px double #2f6f73;color:#2f6f73;font:800 15px/1.1 monospace;letter-spacing:.12em;text-transform:uppercase;transform:rotate(-5deg)}
