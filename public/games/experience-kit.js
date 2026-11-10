@@ -147,6 +147,7 @@ export function createExperience(id, def, host = globalThis) {
     id, view, prev, fresh: !!prev, root: root(), plans, run, play, highlight, later, plaque, confetti,
     acts: prev ? newActs(view, prev) : [],
     get motion() { return table(); },
+    get layer() { return layer(); }, // Ebene für eigene kurzlebige Zutaten eines Spiels
     get animated() { return animated(view); },
     get reduced() { return reduced(); },
     $: (selector) => root()?.querySelector(selector) || null,

@@ -4,4 +4,5 @@ export const EXPERIENCES = Object.freeze([
   'schach',
   'huetchen',
   'scotland-yard',
+  'werwolf',
 ]);

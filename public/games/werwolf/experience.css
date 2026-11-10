@@ -1,0 +1,27 @@
+/* EXP-036 Werwolf: Himmel und Gestirn, Holztafeln, Schlussbild. Bewegung nur über transform/opacity. */
+[data-scene='werwolf'] .ww-village{position:relative;isolation:isolate}
+[data-scene='werwolf'] .ww-village[data-xp-sky='tag']{--wk-bg:linear-gradient(170deg,#6b5a3a,#2f2a22)}
+.xp-ww-sky{position:absolute;inset:0;z-index:-1;overflow:hidden;border-radius:inherit;pointer-events:none}
+.xp-ww-veil{position:absolute;inset:0;opacity:0}
+.xp-ww-veil[data-from='nacht']{background:linear-gradient(170deg,#1d2a3f,#0d1220)}
+.xp-ww-veil[data-from='tag']{background:linear-gradient(170deg,#6b5a3a,#2f2a22)}
+.xp-ww-orb{position:absolute;right:22px;top:14px;width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f6f1dc,#c9cfe0 70%);box-shadow:0 0 0 6px #c9cfe01f,0 0 0 14px #c9cfe010;opacity:.9}
+[data-xp-sky='tag'] .xp-ww-orb{background:radial-gradient(circle at 40% 40%,#fff3c4,#f0b84a 70%);box-shadow:0 0 0 6px #f0b84a2e,0 0 0 14px #f0b84a17}
+/* Rollenkarte als Holztafel mit eigenem Zeichen. */
+[data-scene='werwolf'] .ww-village .ww-role{border:3px solid #4a3018;border-radius:10px;background:repeating-linear-gradient(92deg,#0000 0 11px,#0000001c 11px 12px),linear-gradient(175deg,#8a6238,#5f4022);box-shadow:inset 0 0 0 1px #c69a5c66,0 4px 0 #2e1d0d;color:#fbeed3}
+[data-scene='werwolf'] .ww-village .ww-role small,[data-scene='werwolf'] .ww-village .ww-role span{color:#f3e2c2}
+[data-scene='werwolf'] .ww-village .ww-role b{color:#ffe7a8;text-shadow:0 1px 0 #2e1d0d}
+[data-scene='werwolf'] .ww-village .ww-role.wolf{border-color:#7a1f1b}
+.xp-ww-glyph{width:38px;height:38px;color:#ffe7a8}
+/* Tafel, die sich beim Ausscheiden umdreht. */
+.xp-ww-card{--step:132px;position:absolute;top:34%;left:calc(50% + var(--n,0)*var(--step));width:120px;min-height:120px;margin-left:-60px;padding:10px 8px;display:grid;gap:4px;place-items:center;align-content:center;text-align:center;border:3px solid #4a3018;border-radius:10px;background:repeating-linear-gradient(92deg,#0000 0 11px,#0000001c 11px 12px),linear-gradient(175deg,#8a6238,#5f4022);box-shadow:0 8px 18px #0008;color:#fbeed3;font:700 13px/1.2 system-ui,sans-serif;overflow-wrap:break-word;hyphens:auto;opacity:0}
+.xp-ww-card.is-turned{background:linear-gradient(175deg,#3a2a2a,#1d1414);border-color:#8a2f2b}
+.xp-ww-card small{font-weight:500;font-size:12px;color:#e7cfcf}
+/* Schlussbild: Vollmond oder Sonne mit Schriftzug. */
+.xp-plaque.xp-ww-finale{width:260px;margin:-150px 0 0 -130px}
+.xp-plaque.xp-ww-finale>b{margin-top:14px;font-size:18px;padding:7px 18px}
+.xp-ww-big{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 36% 34%,#fbf7e6,#cfd5e6 68%,#9aa3bd);box-shadow:0 0 0 14px #cfd5e622,0 0 0 34px #cfd5e611}
+.is-sun .xp-ww-big{background:radial-gradient(circle at 40% 38%,#fff6cf,#f4bf4c 66%,#d98a24);box-shadow:0 0 0 14px #f4bf4c33,0 0 0 34px #f4bf4c18}
+#kg[data-xp='vollmond']>.xp-layer{background:linear-gradient(#0a1024cc,#0a102400 70%)}
+#kg[data-xp='sonne']>.xp-layer{background:linear-gradient(#f4bf4c33,#f4bf4c00 70%)}
+@media(max-width:520px){.xp-ww-card{--step:104px;width:96px;min-height:100px;margin-left:-48px;font-size:11px}.xp-ww-big{width:110px;height:110px}}
