@@ -862,13 +862,20 @@
       "game_name": "Doppelagent",
       "priority": "P1",
       "vis_id": "VIS-081",
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "ba81929cc69ea599c08c34651f9368d3834d4d0c",
       "world": "Geheimdienst-Lounge mit Kartenwand, Orte als Postkarten.",
       "pieces_and_material": "Persönliche Ortsakte als Umschlag mit Siegel, Agent mit Sonnenbrille als Accessoire.",
       "sound": "Schreibmaschinen-Tick bei Fragen, Akte öffnen, Enthüllung mit Spionage-Akkord.",
       "animation": "Bei Anklage drehen sich alle Akten um, der Agent zieht die Sonnenbrille ab.",
-      "highlight": "Agent errät den Ort: Postkarte fliegt ins Bild, „Mission erfüllt“."
+      "highlight": "Agent errät den Ort: Postkarte fliegt ins Bild, „Mission erfüllt“.",
+      "evidence": [
+        "docs/design/experience/EXP-081/README.md",
+        "test/ui/exp-doppelagent.spec.js",
+        "test/experience-doppelagent.test.js",
+        "public/games/doppelagent/experience.js"
+      ],
+      "implementation_note": "Palette `doppelagent`, Umschlag mit Siegel, Postkarten, Anklage dreht die Akten um, Agent schiebt die Sonnenbrille hoch, Postkarte „Mission erfüllt“. Alles hängt an öffentlichen Ereignissen."
     },
     {
       "id": "EXP-082",

@@ -520,6 +520,10 @@ Die Priorität richtet sich danach, wie oft ein Spiel am Abend gespielt wird:
 - **Sound:** Schreibmaschinen-Tick bei Fragen, Akte öffnen, Enthüllung mit Spionage-Akkord.
 - **Animation:** Bei Anklage drehen sich alle Akten um, der Agent zieht die Sonnenbrille ab.
 - **Highlight:** Agent errät den Ort: Postkarte fliegt ins Bild, „Mission erfüllt“.
+- **Status:** done
+- **Implementierungscommit:** `ba81929cc69ea599c08c34651f9368d3834d4d0c`
+- **Nachweise:** `docs/design/experience/EXP-081/README.md`, `test/ui/exp-doppelagent.spec.js`, `test/experience-doppelagent.test.js`, `public/games/doppelagent/experience.js`
+- **Umsetzung:** Palette `doppelagent`, Umschlag mit Siegel, Postkarten, Anklage dreht die Akten um, Agent schiebt die Sonnenbrille hoch, Postkarte „Mission erfüllt“. Alles hängt an öffentlichen Ereignissen.
 
 #### EXP-082 · Lügenbaron (`luegenbaron`) · P2
 - **Welt:** Plüschsalon des Barons mit Ohrensessel und Globus.
