@@ -785,6 +785,10 @@ Die Priorität richtet sich danach, wie oft ein Spiel am Abend gespielt wird:
 - **Sound:** Stoß-Wumms, Rutschen auf Eis, Platsch beim Rausfallen.
 - **Animation:** Eis bricht vom Rand, Geschubste rutschen und fallen ins Wasser.
 - **Highlight:** Doppel-Rauswurf mit einem Stoß: „Doppelschubser!“.
+- **Status:** done
+- **Implementierungscommit:** `da59a7f7f2fcdcc0810f35d0d018ed9a201667c9`
+- **Nachweise:** `docs/design/experience/EXP-079/README.md`, `test/ui/exp-schubsarena.spec.js`, `test/experience-schubsarena.test.js`, `public/games/schubsarena/experience.js`
+- **Umsetzung:** Palette `schubsarena`, Eisscholle im Wasser, Sumo-Gürtel, abbrechende Eisstücke, Platsch, Highlight „Doppelschubser!“. Canvas-Budget als Vergleich mit/ohne Paket (≥ 0,9).
 
 #### EXP-075 · Stillgestanden! (`stillgestanden`) · P2
 - **Welt:** Schulhof mit Ampelfigur.

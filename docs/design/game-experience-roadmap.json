@@ -1380,13 +1380,20 @@
       "game_name": "Schubsarena",
       "priority": "P1",
       "vis_id": "VIS-079",
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "da59a7f7f2fcdcc0810f35d0d018ed9a201667c9",
       "world": "Sumo-Ring auf einer Eisscholle, die schrumpft.",
       "pieces_and_material": "Avatare mit Sumo-Gürtel-Accessoire.",
       "sound": "Stoß-Wumms, Rutschen auf Eis, Platsch beim Rausfallen.",
       "animation": "Eis bricht vom Rand, Geschubste rutschen und fallen ins Wasser.",
-      "highlight": "Doppel-Rauswurf mit einem Stoß: „Doppelschubser!“."
+      "highlight": "Doppel-Rauswurf mit einem Stoß: „Doppelschubser!“.",
+      "evidence": [
+        "docs/design/experience/EXP-079/README.md",
+        "test/ui/exp-schubsarena.spec.js",
+        "test/experience-schubsarena.test.js",
+        "public/games/schubsarena/experience.js"
+      ],
+      "implementation_note": "Palette `schubsarena`, Eisscholle im Wasser, Sumo-Gürtel, abbrechende Eisstücke, Platsch, Highlight „Doppelschubser!“. Canvas-Budget als Vergleich mit/ohne Paket (≥ 0,9)."
     },
     {
       "id": "EXP-075",
