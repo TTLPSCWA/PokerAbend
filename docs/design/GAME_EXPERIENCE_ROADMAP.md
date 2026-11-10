@@ -120,6 +120,10 @@ Die Priorität richtet sich danach, wie oft ein Spiel am Abend gespielt wird:
 - **Sound:** Chips klackern beim Setzen, Stapelrauschen beim Pot-Einsammeln, weiches Filz-Wischen bei Karten, gedämpftes Klopfen beim Check, tiefer Ton beim All-in.
 - **Animation:** Karten werden vom Dealerplatz ausgeteilt, Flop/Turn/River drehen sich einzeln um. Chips gleiten in die Mitte, der Pot fliegt zum Gewinner. Bei Side Pots teilen sich die Stapel sichtbar auf.
 - **Highlight:** All-in-Showdown: Das Licht wird kurz dunkler, die restlichen Karten werden langsam aufgedeckt, die Gewinnhand leuchtet in Messing.
+- **Status:** done
+- **Implementierungscommit:** `19d0c5526099acd50e635078c80eee1ebd8d0738`
+- **Nachweise:** `docs/design/experience/EXP-002/README.md`, `test/ui/exp-poker.spec.js`, `test/experience-poker.test.js`, `public/games/poker/experience.js`
+- **Umsetzung:** Palette `poker`, Austeilen vom Dealer-Button, gestaffeltes Board, All-in-Showdown mit Lichtkegel und Messing-Leuchten, Salon-Kartenrücken, Messing-Button, Chips mit Kantenmuster. Die Wertung am Handende verdeckt Board und Plätze nicht mehr.
 
 #### EXP-024 · Omaha (`omaha`) · P2
 - **Welt:** Gleicher Salon wie Poker, aber Bordeaux-Filz und ein kleines Omaha-Schild an der Lampe.

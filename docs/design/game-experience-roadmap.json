@@ -78,13 +78,20 @@
       "game_name": "Texas Hold'em",
       "priority": "P1",
       "vis_id": "VIS-002",
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "19d0c5526099acd50e635078c80eee1ebd8d0738",
       "world": "Privater Salon hinter einer Bibliothekstür. Ovaler Tisch mit tannengrünem Filz und gebogener Holzkante. Darüber eine tief hängende Messinglampe, deren Lichtkegel den Pot betont.",
       "pieces_and_material": "Eigene Chips in sechs Werten mit Kantenmuster, damit sie auch ohne Farbe unterscheidbar sind. Dealer-Button aus Messing, eigener Kartenrücken „Salon“ (Tannengrün mit Bibliotheksornament).",
       "sound": "Chips klackern beim Setzen, Stapelrauschen beim Pot-Einsammeln, weiches Filz-Wischen bei Karten, gedämpftes Klopfen beim Check, tiefer Ton beim All-in.",
       "animation": "Karten werden vom Dealerplatz ausgeteilt, Flop/Turn/River drehen sich einzeln um. Chips gleiten in die Mitte, der Pot fliegt zum Gewinner. Bei Side Pots teilen sich die Stapel sichtbar auf.",
-      "highlight": "All-in-Showdown: Das Licht wird kurz dunkler, die restlichen Karten werden langsam aufgedeckt, die Gewinnhand leuchtet in Messing."
+      "highlight": "All-in-Showdown: Das Licht wird kurz dunkler, die restlichen Karten werden langsam aufgedeckt, die Gewinnhand leuchtet in Messing.",
+      "evidence": [
+        "docs/design/experience/EXP-002/README.md",
+        "test/ui/exp-poker.spec.js",
+        "test/experience-poker.test.js",
+        "public/games/poker/experience.js"
+      ],
+      "implementation_note": "Palette `poker`, Austeilen vom Dealer-Button, gestaffeltes Board, All-in-Showdown mit Lichtkegel und Messing-Leuchten, Salon-Kartenrücken, Messing-Button, Chips mit Kantenmuster. Die Wertung am Handende verdeckt Board und Plätze nicht mehr."
     },
     {
       "id": "EXP-024",
