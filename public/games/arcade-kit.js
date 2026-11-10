@@ -12,6 +12,8 @@ function arcadeGame(def) {
   const active = () => mine() && !kit.S.gamePaused && !document.hidden && $('#kg-panel')?.hidden !== false && !document.querySelector('dialog[open]');
   const me = () => frame?.bodies.find((p) => p.id === kit.S?.you?.id);
   const person = (id) => kit.S.players.find((p) => p.id === id);
+  // Erlebnis-Paket des Spiels (EXP): darf Server-Frames hören, Töne übernehmen und im Canvas mitzeichnen. Ohne Paket bleibt alles wie bisher.
+  const xp = () => globalThis.__experiences?.[def.id];
   // Geschätzte Serverzeit jetzt: bei Pause und Countdown wie im letzten Frame.
   const serverTime = (now) => frame ? frame.elapsed + (kit.S?.gamePaused ? 0 : Math.min(250, Math.max(0, now - received))) : 0;
 
@@ -24,7 +26,8 @@ function arcadeGame(def) {
       if (next.kind === 'freeze') name = b.hitAt > a.hitAt ? 'hit' : next.signal !== old.signal && next.signal !== 'green' ? 'warn' : null;
       if (next.kind === 'bomb') name = a.alive && !b.alive ? 'hit' : next.bombs.length > old.bombs.length ? 'warn' : null;
     }
-    if (name) { GameDesign.sound(def.id, name); if (name === 'hit') GameDesign.pulse($('#kg'), 'hit'); }
+    const owned = xp()?.frame?.(next, old, kit.S, name);
+    if (name) { if (!owned) GameDesign.sound(def.id, name); if (name === 'hit') GameDesign.pulse($('#kg'), 'hit'); }
   }
   function accept(next) {
     if (!next || next.game !== def.id || next.runId !== kit.S?.g?.runId) return;
@@ -107,13 +110,15 @@ function arcadeGame(def) {
   function draw(now) {
     if (!canvas?.isConnected || !frame) return;
     const t0 = performance.now(), ctx = canvas.getContext('2d'), a = frame.arena;
-    if (!bg || bgRun !== def.id) {
-      bg = document.createElement('canvas'); bg.width = a.width; bg.height = a.height; bgRun = def.id;
-      def.background(bg.getContext('2d'));
+    const X = xp(), bgKey = def.id + (X?.backdrop ? ':xp' : '');
+    if (!bg || bgRun !== bgKey) {
+      bg = document.createElement('canvas'); bg.width = a.width; bg.height = a.height; bgRun = bgKey;
+      if (!X?.backdrop?.(bg.getContext('2d'), frame, kit.S)) def.background(bg.getContext('2d'));
     }
     ctx.drawImage(bg, 0, 0);
     const v = view(now);
     def.paint(ctx, v);
+    X?.paint?.(ctx, { frame, previous, bodies: v.bodies, now, S: kit.S, view: v });
     if (frame.elapsed < 0) {
       ctx.fillStyle = '#081a16ad'; ctx.fillRect(0, 0, a.width, a.height);
       ctx.textAlign = 'center'; ctx.fillStyle = '#ffe0a0'; ctx.font = 'bold 120px system-ui'; ctx.fillText(String(Math.ceil(-frame.elapsed / 1000)), a.width / 2, a.height / 2 + 40);
