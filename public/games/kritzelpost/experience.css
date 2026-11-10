@@ -1,0 +1,11 @@
+/* EXP-038 Kritzelpost: Poststempel, Eulen-Briefmarke, „Zugestellt!“. Bewegung nur über transform/opacity. */
+/* Poststempel mit der Schrittnummer auf dem Umschlag. */
+.kg-kritzelpost .pk-q[data-xp-mark]::after{content:attr(data-xp-mark);position:absolute;left:10px;top:-14px;display:grid;place-items:center;width:46px;height:46px;border-radius:50%;border:2px solid #8a2f3a;box-shadow:inset 0 0 0 3px #f3e7cc,inset 0 0 0 4px #8a2f3a;background:#f3e7cc;color:#8a2f3a;font:800 11px/1 monospace;letter-spacing:.02em;transform:rotate(-12deg)}
+.kg-kritzelpost .pk-q[data-xp-mark]{padding-left:64px}
+/* Jeder Beitrag trägt eine Briefmarke mit eigener Eule. */
+.kg-kritzelpost .draw-chains li>b{display:inline-flex;align-items:center;gap:8px}
+.kg-kritzelpost .draw-chains li>b::before{content:'';width:26px;height:30px;flex:none;border:2px dotted #f3e7cc;border-radius:2px;background:#8a2f3a url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f3e7cc' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 4l3 3h6l3-3v10a6 6 0 0 1-12 0z'/%3E%3Ccircle cx='9.500' cy='11' r='1.800'/%3E%3Ccircle cx='14.500' cy='11' r='1.800'/%3E%3Cpath d='M11 14.500l1 1.500 1-1.500M9 20v2m6-2v2'/%3E%3C/svg%3E") center/20px no-repeat}
+/* Zugestellt: Kette mit Stempel. */
+.kg-kritzelpost .draw-chains details.xp-delivered{border-left-color:#3d8a5a}
+.xp-kp-delivered{display:inline-block;margin-left:10px;padding:2px 9px;border:2px solid #3d8a5a;border-radius:4px;color:#8fd4a6;font:800 12px/1.2 monospace;letter-spacing:.08em;text-transform:uppercase;transform:rotate(-4deg)}
+.xp-plaque.xp-kp-stamp>b{margin-top:20px;padding:6px 16px;border:3px double #2f7a4c;border-radius:6px;background:#f3e7cce6;color:#2f7a4c;font:900 17px/1.1 Georgia,serif;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;transform:rotate(-8deg);box-shadow:none}
