@@ -33,7 +33,10 @@ Die IDs folgen den VIS-Nummern: **ART-002 gehört zu VIS-002 (Texas Hold'em)** u
 #### ART-002 · Texas Hold'em (`poker`) · P1
 - **Ziel:** Tisch mit gepolsterter Lederkante, Holzring, Filz mit Struktur und Lampenlicht; Chips scharf und nicht gequetscht, im Stapel mit sichtbarer Kante.
 - **Material:** eigene SVG-Chips (Draufsicht und Seitenansicht, fünf Farben), eigene Filzstruktur (WebP-Kachel). Keine fremden Dateien nötig.
-- **Status:** planned
+- **Status:** done
+- **Implementierungscommit:** `7790b354c73f207d8c444e25526118d379e5a5f8`
+- **Umsetzung:** Ledertisch mit Holzring und Filz, SVG-Chips mit echter Stapelhöhe, nur Hold'em; dazu behoben: Startseiten-Filter und Pokerchips teilten sich die Klasse .chip.
+- **Nachweise:** `test/ui/art-poker.spec.js`, `test/art-roadmap.test.js`, `docs/design/art/ART-002/README.md`, `docs/design/art/ART-002/table-desktop.png`, `docs/design/art/ART-002/table-mobil.png`, `docs/design/art/ART-002/fps-desktop.json`
 
 #### ART-004 · UNO (`farbenchaos`) · P1
 - **Ziel:** Kartenfronten und -rücken mit mehr Tiefe, Ablagestapel mit echtem Kartenstapel-Rand, Spieltisch mit Struktur.

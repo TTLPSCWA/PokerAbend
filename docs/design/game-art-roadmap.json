@@ -11,10 +11,19 @@
       "game_name": "Texas Hold'em",
       "priority": "P1",
       "vis_id": "VIS-002",
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "7790b354c73f207d8c444e25526118d379e5a5f8",
       "goal": "Tisch mit gepolsterter Lederkante, Holzring, Filz mit Struktur und Lampenlicht; Chips scharf und nicht gequetscht, im Stapel mit sichtbarer Kante.",
-      "material": "eigene SVG-Chips (Draufsicht und Seitenansicht, fünf Farben), eigene Filzstruktur (WebP-Kachel). Keine fremden Dateien nötig."
+      "material": "eigene SVG-Chips (Draufsicht und Seitenansicht, fünf Farben), eigene Filzstruktur (WebP-Kachel). Keine fremden Dateien nötig.",
+      "implementation_note": "Ledertisch mit Holzring und Filz, SVG-Chips mit echter Stapelhöhe, nur Hold'em; dazu behoben: Startseiten-Filter und Pokerchips teilten sich die Klasse .chip.",
+      "evidence": [
+        "test/ui/art-poker.spec.js",
+        "test/art-roadmap.test.js",
+        "docs/design/art/ART-002/README.md",
+        "docs/design/art/ART-002/table-desktop.png",
+        "docs/design/art/ART-002/table-mobil.png",
+        "docs/design/art/ART-002/fps-desktop.json"
+      ]
     },
     {
       "id": "ART-004",
