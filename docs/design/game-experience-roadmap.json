@@ -1338,13 +1338,20 @@
       "game_name": "Reaktor-Notfall",
       "priority": "P1",
       "vis_id": "VIS-094",
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "ed319a141a1b471defe843faa5d48877a83a9480",
       "world": "Retro-Kontrollraum mit Knöpfen, Zeigerinstrumenten und Kühlrohren (fiktive Anlage).",
       "pieces_and_material": "Instrumente pro Spieler, Temperaturanzeige als Säule.",
       "sound": "Alarmton steigt mit Temperatur (nicht schrill), Kühlung als Zischen, Erfolg als Entwarnung.",
       "animation": "Säule steigt, Rohre glühen rot, bei Lösung Dampfwolke.",
-      "highlight": "Gerettet bei 99 %: Alle Instrumente fallen auf Grün, Seufzer der Anlage."
+      "highlight": "Gerettet bei 99 %: Alle Instrumente fallen auf Grün, Seufzer der Anlage.",
+      "evidence": [
+        "docs/design/experience/EXP-094/README.md",
+        "test/ui/exp-reaktor-notfall.spec.js",
+        "test/experience-reaktor-notfall.test.js",
+        "public/games/reaktor-notfall/experience.js"
+      ],
+      "implementation_note": "Palette `reaktor-notfall`, Kontrollraum mit Kühlrohren, Temperatursäule, Zeigerinstrumente je Person, weicher Alarm ab 60 %, Dampf bei Erfolg, „Gerettet – in letzter Sekunde!“ bei 99 %."
     },
     {
       "id": "EXP-072",

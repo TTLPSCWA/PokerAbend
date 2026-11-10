@@ -765,6 +765,10 @@ Die Priorität richtet sich danach, wie oft ein Spiel am Abend gespielt wird:
 - **Sound:** Alarmton steigt mit Temperatur (nicht schrill), Kühlung als Zischen, Erfolg als Entwarnung.
 - **Animation:** Säule steigt, Rohre glühen rot, bei Lösung Dampfwolke.
 - **Highlight:** Gerettet bei 99 %: Alle Instrumente fallen auf Grün, Seufzer der Anlage.
+- **Status:** done
+- **Implementierungscommit:** `ed319a141a1b471defe843faa5d48877a83a9480`
+- **Nachweise:** `docs/design/experience/EXP-094/README.md`, `test/ui/exp-reaktor-notfall.spec.js`, `test/experience-reaktor-notfall.test.js`, `public/games/reaktor-notfall/experience.js`
+- **Umsetzung:** Palette `reaktor-notfall`, Kontrollraum mit Kühlrohren, Temperatursäule, Zeigerinstrumente je Person, weicher Alarm ab 60 %, Dampf bei Erfolg, „Gerettet – in letzter Sekunde!“ bei 99 %.
 
 #### EXP-072 · Rhythmus-Rausch (`rhythmus-rausch`) · P1
 - **Welt:** Konzertbühne mit Lautsprecherwand.
