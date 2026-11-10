@@ -57,7 +57,10 @@ Die IDs folgen den VIS-Nummern: **ART-002 gehört zu VIS-002 (Texas Hold'em)** u
 #### ART-008 · Phase 10 (`zehnetappen`) · P2
 - **Ziel:** Karten mit mehr Tiefe, ausgelegte Phasen als echte Kartenreihen, Phasenanzeige als Material.
 - **Material:** eigene SVG-Karten, ggf. Tischtextur (CC0).
-- **Status:** planned
+- **Status:** done
+- **Implementierungscommit:** `52092b9aed4fa210c3446efc588c0e47fc1c266f`
+- **Umsetzung:** Papierkante und Glanz auf allen Karten, ausgelegte Phasen als Kartenreihen auf Spielmatten, Phasensteine, Stapel mit Höhe, Tischtuchstruktur.
+- **Nachweise:** `test/ui/art-zehnetappen.spec.js`, `docs/design/art/ART-008/README.md`, `docs/design/art/ART-008/table-classic-laid-desktop.png`, `docs/design/art/ART-008/table-classic-laid-mobil.png`, `docs/design/art/ART-008/fps-desktop.json`
 
 #### ART-044 · 6 nimmt! (`sechs-nimmt`) · P2
 - **Ziel:** Reihen als Kartenauslage auf Tischtuch, Hornochsen-Symbole als eigene Figur, Kartenstapel mit Kante.

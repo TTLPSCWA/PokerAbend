@@ -69,10 +69,18 @@
       "game_name": "Phase 10",
       "priority": "P2",
       "vis_id": "VIS-008",
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "52092b9aed4fa210c3446efc588c0e47fc1c266f",
       "goal": "Karten mit mehr Tiefe, ausgelegte Phasen als echte Kartenreihen, Phasenanzeige als Material.",
-      "material": "eigene SVG-Karten, ggf. Tischtextur (CC0)."
+      "material": "eigene SVG-Karten, ggf. Tischtextur (CC0).",
+      "implementation_note": "Papierkante und Glanz auf allen Karten, ausgelegte Phasen als Kartenreihen auf Spielmatten, Phasensteine, Stapel mit Höhe, Tischtuchstruktur.",
+      "evidence": [
+        "test/ui/art-zehnetappen.spec.js",
+        "docs/design/art/ART-008/README.md",
+        "docs/design/art/ART-008/table-classic-laid-desktop.png",
+        "docs/design/art/ART-008/table-classic-laid-mobil.png",
+        "docs/design/art/ART-008/fps-desktop.json"
+      ]
     },
     {
       "id": "ART-044",
