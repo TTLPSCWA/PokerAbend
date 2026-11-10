@@ -9,4 +9,5 @@ export const EXPERIENCES = Object.freeze([
   'malen-raten',
   'kritzelpost',
   'farbenchaos',
+  'maumau',
 ]);

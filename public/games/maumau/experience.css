@@ -1,0 +1,25 @@
+/* EXP-003 Mau-Mau: Wachstuch, Tasse und Brotkorb, 7er-Zähler, Einschlafen, Herz-Stempel. Bewegung nur über transform/opacity. */
+/* Küchentisch: Wachstuch-Karo über dem vorhandenen Salbeigrün. */
+.kg-maumau .kg-main{background:repeating-linear-gradient(0deg,#ffffff12 0 24px,#0000 24px 48px),repeating-linear-gradient(90deg,#ffffff12 0 24px,#0000 24px 48px),radial-gradient(120% 90% at 50% 25%,#5f7f68,#2f4a3b)}
+.kg-maumau .kg-table{position:relative}
+.xp-mm-props{position:absolute;right:10px;bottom:6px;display:flex;align-items:flex-end;gap:10px;pointer-events:none}
+.xp-mm-cup{display:block;width:62px;transform-origin:50% 90%}
+.xp-mm-basket{display:block;width:84px}
+.xp-mm-props svg{display:block;width:100%;height:auto}
+.xp-mm-drop{opacity:0}
+/* Bube mit Wunschfahne. */
+.kg-maumau .kg-hand [data-card^="J"]::after{content:'⚑'}
+/* fliegende Kartenrücken in Tischfarben */
+.xp-fly.xp-mm-back{border-color:#f1e6c4;background:repeating-linear-gradient(45deg,#0000 0 5px,#f1e6c433 5px 6px),linear-gradient(160deg,#7a2f2a,#4a1c19)}
+/* 7er-Kette: Zähler über der Ablage; gestapelt größer. */
+.xp-plaque.xp-mm-count>b{margin-top:-78px;padding:4px 14px;border:2px solid #f1e6c4;border-radius:999px;background:#7a2f2a;color:#fff7e0;font:900 22px/1.1 Georgia,serif;box-shadow:0 3px 0 #3a1512}
+.xp-plaque.xp-mm-count.is-stacked>b{font-size:30px;transform:rotate(-5deg)}
+/* Die 8: Platz schläft kurz ein. */
+.kg-maumau [data-xp='schlaf']{animation:xp-mm-sleep 1.5s ease-in-out}
+@keyframes xp-mm-sleep{25%,75%{opacity:.4}}
+.xp-plaque.xp-mm-sleep>b{margin-top:30px;padding:2px 10px;border-radius:999px;background:#2f4a3bd9;color:#d9e2d6;font:italic 700 14px/1.2 Georgia,serif;letter-spacing:.2em;box-shadow:none}
+/* Mau-Mau!: Herz-Stempel. */
+.xp-plaque.xp-mm-stamp>b{padding:8px 18px;border:3px double #c0392b;border-radius:8px;background:#fff7e0f2;color:#c0392b;font:900 22px/1.15 Georgia,serif;transform:rotate(-6deg);box-shadow:none}
+.xp-plaque.xp-mm-stamp{width:280px;margin-left:-140px}
+@media(max-width:600px){.xp-mm-basket{display:none}.xp-mm-cup{width:44px}.xp-mm-props{right:6px;bottom:2px}.xp-plaque.xp-mm-stamp>b{font-size:17px}}
+@media(prefers-reduced-motion:reduce){.kg-maumau [data-xp]{animation:none!important}}

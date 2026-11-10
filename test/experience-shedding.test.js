@@ -34,3 +34,8 @@ test('EXP-004: Palette uno kennt Klatschen, Ziehen, Stopp, Wusch, Ruf und Stapel
   for (const event of ['card', 'draw', 'skip', 'reverse', 'call', 'stack', 'wish', 'highlight', 'deal', 'turn', 'win', 'lose']) assert.ok(palette.events[event]?.length || palette.samples[event], event);
   assert.deepEqual(palette.synth, ['skip', 'reverse', 'call', 'stack']);
 });
+test('EXP-003: Palette maumau kennt Schnippen, Klirren, 7er-Zähler und Einschlafen', async () => {
+  const palette = await loadPalette('maumau');
+  for (const event of ['card', 'draw', 'deal', 'mau', 'maumau', 'seven', 'sleep', 'wish', 'highlight', 'turn', 'win', 'lose']) assert.ok(palette.events[event]?.length || palette.samples[event], event);
+  assert.deepEqual(palette.synth, ['sleep']);
+});
