@@ -7,6 +7,8 @@ function realtimeGame(def) {
   const mine = () => session?.game === def.id && kit.S?.phase === 'playing';
   const active = () => mine() && !kit.S.gamePaused && !document.hidden && $('#kg-panel')?.hidden !== false && !document.querySelector('dialog[open]');
   const me = () => frame?.bodies.find((p) => p.id === kit.S?.you?.id);
+  // Erlebnis-Paket des Spiels (EXP): darf Server-Frames hören und im Canvas mitzeichnen. Ohne Paket bleibt alles wie bisher.
+  const xp = () => globalThis.__experiences?.[def.id];
   function accept(next) {
     if (!next || next.game !== def.id || next.runId !== kit.S?.g?.runId) return;
     if (frame?.runId === next.runId && next.tick < frame.tick) return;
@@ -20,8 +22,9 @@ function realtimeGame(def) {
         : next.crown?.holder && next.crown.holder !== previous.crown?.holder ? 'crown'
         : newMe && oldMe && newMe.jumpUntil > oldMe.jumpUntil ? 'jump'
         : next.elapsed < 0 && Math.ceil(-next.elapsed / 1000) < Math.ceil(-previous.elapsed / 1000) ? 'countdown' : null;
+      const owned = xp()?.frame?.(next, previous, kit.S, cue);
       if (cue) {
-        GameDesign.sound(def.id, cue);
+        if (!owned) GameDesign.sound(def.id, cue);
         if (cue === 'hit' || cue === 'warn') GameDesign.pulse($('#kg'), cue);
       }
     }
@@ -81,7 +84,9 @@ function realtimeGame(def) {
     const alpha = kit.S?.gamePaused ? 1 : Math.min(1, Math.max(0, (now - received) / 100));
     ctx.clearRect(0, 0, a.width, a.height);
     ctx.fillStyle = frame.kind === 'floor' ? '#291d22' : frame.kind === 'crown' ? '#231c3d' : '#0e2430'; ctx.fillRect(0, 0, a.width, a.height);
+    const X = xp();
     if (def.paint) def.paint(ctx,frame,kit.S);
+    else if (X?.backdrop?.(ctx, frame, kit.S)) { /* Kulisse aus dem Erlebnis-Paket */ }
     else if (frame.kind === 'floor') {
       frame.tiles.forEach((time, i) => {
         const x = i % a.cols * a.tile, y = Math.floor(i / a.cols) * a.tile;
@@ -108,7 +113,7 @@ function realtimeGame(def) {
       const old = previous?.bodies.find((b) => b.id === p.id) || p;
       return { ...p, x: old.x + (p.x - old.x) * alpha, y: old.y + (p.y - old.y) * alpha };
     });
-    if (frame.crown && !frame.crown.holder) { ctx.fillStyle = '#ffdb74'; ctx.font = '48px system-ui'; ctx.textAlign = 'center'; ctx.fillText('♛', frame.crown.x, frame.crown.y + 16); }
+    if (frame.crown && !frame.crown.holder && !X?.paints?.crown) { ctx.fillStyle = '#ffdb74'; ctx.font = '48px system-ui'; ctx.textAlign = 'center'; ctx.fillText('♛', frame.crown.x, frame.crown.y + 16); }
     bodies.forEach((p, i) => {
       if (!p.alive) return;
       const person = kit.S.players.find((player) => player.id === p.id);
@@ -120,9 +125,10 @@ function realtimeGame(def) {
       ctx.beginPath(); ctx.arc(p.x, p.y - height, 22, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
       ctx.textAlign = 'center'; ctx.font = '28px system-ui'; ctx.fillStyle = '#152523'; ctx.fillText(person?.avatar || String(i + 1), p.x, p.y + 10 - height);
       ctx.font = 'bold 25px system-ui'; ctx.lineWidth = 7; ctx.strokeStyle = '#13201c'; ctx.strokeText(person?.name || '?', p.x, Math.max(26, p.y - 34 - height)); ctx.fillStyle = '#fff'; ctx.fillText(person?.name || '?', p.x, Math.max(26, p.y - 34 - height));
-      if (frame.crown?.holder === p.id) { ctx.font = '44px system-ui'; ctx.fillStyle = '#ffdb74'; ctx.fillText('♛', p.x, p.y - 58); }
+      if (frame.crown?.holder === p.id && !X?.paints?.crown) { ctx.font = '44px system-ui'; ctx.fillStyle = '#ffdb74'; ctx.fillText('♛', p.x, p.y - 58); }
       ctx.restore();
     });
+    X?.paint?.(ctx, { frame, previous, bodies, now, S: kit.S });
     if (frame.elapsed < 0) {
       ctx.fillStyle = '#081a16ad'; ctx.fillRect(0, 0, a.width, a.height);
       ctx.textAlign = 'center'; ctx.fillStyle = '#ffe0a0'; ctx.font = 'bold 120px system-ui'; ctx.fillText(String(Math.ceil(-frame.elapsed / 1000)), a.width / 2, a.height / 2 + 40);

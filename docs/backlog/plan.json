@@ -1175,7 +1175,7 @@
         },
         {
           "path": "public/games/realtime-kit.js",
-          "sha256": "98182551929711c30218a65d0e0869b472a325178be0ab0c4d73cc09fce63a6e"
+          "sha256": "72e351ca56bc6e291f8b5be3b2792d46846b778d68eb37856d11f94478cfa71f"
         },
         {
           "path": "public/i18n-en.js",
@@ -1348,7 +1348,7 @@
           },
           {
             "path": "public/games/realtime-kit.js",
-            "sha256": "98182551929711c30218a65d0e0869b472a325178be0ab0c4d73cc09fce63a6e"
+            "sha256": "72e351ca56bc6e291f8b5be3b2792d46846b778d68eb37856d11f94478cfa71f"
           },
           {
             "path": "public/i18n-en.js",
@@ -1397,7 +1397,7 @@
           },
           {
             "path": "public/games/realtime-kit.js",
-            "sha256": "98182551929711c30218a65d0e0869b472a325178be0ab0c4d73cc09fce63a6e"
+            "sha256": "72e351ca56bc6e291f8b5be3b2792d46846b778d68eb37856d11f94478cfa71f"
           },
           {
             "path": "public/i18n-en.js",
@@ -1581,7 +1581,7 @@
         },
         {
           "path": "public/games/realtime-kit.js",
-          "sha256": "98182551929711c30218a65d0e0869b472a325178be0ab0c4d73cc09fce63a6e"
+          "sha256": "72e351ca56bc6e291f8b5be3b2792d46846b778d68eb37856d11f94478cfa71f"
         },
         {
           "path": "public/games/expedition-kit.js",
@@ -1651,7 +1651,7 @@
           },
           {
             "path": "public/games/realtime-kit.js",
-            "sha256": "98182551929711c30218a65d0e0869b472a325178be0ab0c4d73cc09fce63a6e"
+            "sha256": "72e351ca56bc6e291f8b5be3b2792d46846b778d68eb37856d11f94478cfa71f"
           },
           {
             "path": "public/games/expedition-kit.js",
@@ -1692,7 +1692,7 @@
           },
           {
             "path": "public/games/realtime-kit.js",
-            "sha256": "98182551929711c30218a65d0e0869b472a325178be0ab0c4d73cc09fce63a6e"
+            "sha256": "72e351ca56bc6e291f8b5be3b2792d46846b778d68eb37856d11f94478cfa71f"
           },
           {
             "path": "public/games/expedition-kit.js",
@@ -1796,7 +1796,7 @@
         },
         {
           "path": "public/games/realtime-kit.js",
-          "sha256": "98182551929711c30218a65d0e0869b472a325178be0ab0c4d73cc09fce63a6e"
+          "sha256": "72e351ca56bc6e291f8b5be3b2792d46846b778d68eb37856d11f94478cfa71f"
         },
         {
           "path": "public/game-design.js",
@@ -1830,7 +1830,7 @@
           },
           {
             "path": "public/games/realtime-kit.js",
-            "sha256": "98182551929711c30218a65d0e0869b472a325178be0ab0c4d73cc09fce63a6e"
+            "sha256": "72e351ca56bc6e291f8b5be3b2792d46846b778d68eb37856d11f94478cfa71f"
           },
           {
             "path": "public/game-design.js",
@@ -1936,7 +1936,7 @@
         },
         {
           "path": "public/games/realtime-kit.js",
-          "sha256": "98182551929711c30218a65d0e0869b472a325178be0ab0c4d73cc09fce63a6e"
+          "sha256": "72e351ca56bc6e291f8b5be3b2792d46846b778d68eb37856d11f94478cfa71f"
         },
         {
           "path": "public/game-design.js",
@@ -2002,7 +2002,7 @@
         },
         {
           "path": "public/games/realtime-kit.js",
-          "sha256": "98182551929711c30218a65d0e0869b472a325178be0ab0c4d73cc09fce63a6e"
+          "sha256": "72e351ca56bc6e291f8b5be3b2792d46846b778d68eb37856d11f94478cfa71f"
         },
         {
           "path": "public/games/workshop.css",

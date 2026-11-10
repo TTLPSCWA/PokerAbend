@@ -11,4 +11,5 @@ export const EXPERIENCES = Object.freeze([
   'farbenchaos',
   'maumau',
   'schlagfertig',
+  'kronenjagd',
 ]);

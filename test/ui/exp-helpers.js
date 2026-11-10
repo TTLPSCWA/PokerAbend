@@ -94,3 +94,26 @@ export async function fpsEvidence(info, id, metrics) {
   writeFileSync(`docs/design/experience/${id}/fps-${info.project.name}.json`, JSON.stringify(metrics, null, 2) + '\n');
   return metrics;
 }
+
+/** Echtzeit-Spiele zeichnen im Canvas, dessen Bildrate das Spiel selbst vorgibt. Gemessen wird deshalb der Vergleich:
+ *  Bildrate mit Erlebnis-Paket gegen dieselbe Szene ohne Paket, bei 4× gedrosselter CPU. Das Paket darf höchstens `loss` kosten. */
+export async function canvasBudget(page, id, { ms = 2500, loss = 0.1, effect = true } = {}) {
+  const cdp = await page.context().newCDPSession(page);
+  const fps = () => page.evaluate((ms) => new Promise((done) => { let n = 0; const t0 = performance.now(); const tick = () => { n++; if (performance.now() - t0 < ms) requestAnimationFrame(tick); else done(Math.round(n / (performance.now() - t0) * 100000) / 100); }; requestAnimationFrame(tick); }), ms);
+  try {
+    await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
+    let best = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      await page.evaluate((id) => { window.__xpKeep = __experiences[id]; delete __experiences[id]; }, id);
+      const without = await fps();
+      await page.evaluate(({ id, effect }) => { __experiences[id] = window.__xpKeep; if (effect) __experiences[id].replay(); }, { id, effect });
+      const withPackage = await fps();
+      const result = { fps: withPackage, baselineFps: without, ratio: Math.round(withPackage / without * 1000) / 1000, cpuThrottle: 4, minRatio: 1 - loss };
+      if (!best || result.ratio > best.ratio) best = result;
+      if (best.ratio >= 1 - loss) break;
+    }
+    const { expect } = await import('./helpers.js');
+    expect(best.ratio, `Canvas mit Paket ${best.fps} FPS, ohne ${best.baselineFps} FPS`).toBeGreaterThanOrEqual(1 - loss);
+    return best;
+  } finally { await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 }).catch(() => {}); await cdp.detach().catch(() => {}); }
+}

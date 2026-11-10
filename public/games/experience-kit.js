@@ -192,6 +192,7 @@ export function createExperience(id, def, host = globalThis) {
     },
     // Für Messungen: die zuletzt gezeigte Änderung ohne Ton noch einmal abspielen (nur Darstellung).
     replay() {
+      if (!shown && latest && def.replay) { def.replay(api(latest)); return true; } // Echtzeit-Spiele: Canvas-Effekt neu starten
       if (!shown || !latest) return false;
       const m = table(), view = shown.view || latest, from = shown.prev;
       m.finish();
@@ -199,6 +200,16 @@ export function createExperience(id, def, host = globalThis) {
       return true;
     },
     enter,
+    // Echtzeit-Spiele (realtime-kit): Server-Frames kommen ohne vollen Zustand. Das Paket hört sie und zeichnet im Canvas mit.
+    // `frame` liefert true, wenn das Paket die Töne übernimmt.
+    paints: def.paints || {},
+    frame(next, before, view, cue) {
+      if (!def.frame) return false;
+      if (view && view.code === code && view.phase === 'playing' && !quiet && io()?.connected !== false) { latest = view; def.frame(next, before, api(view), cue); }
+      return !!def.palette;
+    },
+    backdrop: def.backdrop ? (ctx, frame, view) => def.backdrop(ctx, frame, view) !== false : null,
+    paint: def.paint ? (ctx, scene) => def.paint(ctx, scene, { animated: animated(latest || scene.S) }) : null,
     // „Du bist dran“ kommt aus der Palette statt aus dem alten Piepton.
     turn() { if (!def.palette) return false; host.Sound?.play('turn'); return true; },
     onState(view, prev) {
