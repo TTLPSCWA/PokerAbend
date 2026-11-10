@@ -85,8 +85,8 @@ function realtimeGame(def) {
     ctx.clearRect(0, 0, a.width, a.height);
     ctx.fillStyle = frame.kind === 'floor' ? '#291d22' : frame.kind === 'crown' ? '#231c3d' : '#0e2430'; ctx.fillRect(0, 0, a.width, a.height);
     const X = xp();
-    if (def.paint) def.paint(ctx,frame,kit.S);
-    else if (X?.backdrop?.(ctx, frame, kit.S)) { /* Kulisse aus dem Erlebnis-Paket */ }
+    if (X?.backdrop?.(ctx, frame, kit.S)) { /* Kulisse aus dem Erlebnis-Paket */ }
+    else if (def.paint) def.paint(ctx,frame,kit.S);
     else if (frame.kind === 'floor') {
       frame.tiles.forEach((time, i) => {
         const x = i % a.cols * a.tile, y = Math.floor(i / a.cols) * a.tile;

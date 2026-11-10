@@ -18,6 +18,7 @@ export const PALETTES = Object.freeze(['standard', 'casino', 'holz', 'kneipe', '
   'maumau',
   'schlagfertig',
   'kronenjagd',
+  'schubsarena',
 ]);
 export { SCENES } from './ambient/scenes.js';
 // EXP-F5: an ambient scene is scaled by this gain on top of the atmosphere slider and fades in gently.
@@ -45,6 +46,7 @@ const loaders = {
   maumau: () => import('./palettes/maumau.js'),
   schlagfertig: () => import('./palettes/schlagfertig.js'),
   kronenjagd: () => import('./palettes/kronenjagd.js'),
+  schubsarena: () => import('./palettes/schubsarena.js'),
 };
 const paletteCache = new Map([['standard', Promise.resolve(standard)]]);
 export function loadPalette(name) {
