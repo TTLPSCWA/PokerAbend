@@ -258,6 +258,10 @@ Die Priorität richtet sich danach, wie oft ein Spiel am Abend gespielt wird:
 - **Sound:** Fester Knöchelklopfer beim Ausspielen von Trumpf, Bleistiftkratzen beim Reizen, Rascheln beim Skat-Aufnehmen.
 - **Animation:** Skat wird umgedreht, der Spieler drückt zwei Karten zurück in die Kiste. Stiche werden zum Gewinnerplatz geschoben.
 - **Highlight:** Grand Hand: Der Reizblock schreibt sich groß „Grand Hand“, der Stammtisch klopft dreimal.
+- **Status:** done
+- **Implementierungscommit:** `c75be3754ec5ab219e5fa6b8417aedbeffa95705`
+- **Nachweise:** `docs/design/experience/EXP-086/README.md`, `test/ui/exp-skat.spec.js`, `test/experience-skat.test.js`, `public/games/skat/experience.js`
+- **Umsetzung:** Palette `skat`, Gute Stube mit Stammtisch-Schild, Zigarrenkiste, Reizblock mit Bleistift, Stich gleitet zum Gewinner, Grand Hand mit dreimaligem Klopfen. Gemeinsames Kartenblatt bleibt.
 
 #### EXP-087 · Doppelkopf (`doppelkopf`) · P1
 - **Welt:** Vereinsheim-Tisch für vier mit Rundenzettel und Re-/Kontra-Schildern.

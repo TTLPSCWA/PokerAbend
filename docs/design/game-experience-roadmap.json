@@ -351,13 +351,20 @@
       "game_name": "Skat",
       "priority": "P1",
       "vis_id": "VIS-086",
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "c75be3754ec5ab219e5fa6b8417aedbeffa95705",
       "world": "Gute Stube mit Eckbank, Stammtisch-Schild, Zigarrenkiste als Skat-Ablage (ohne Zigarren).",
       "pieces_and_material": "Eigenes französisches Blatt im Turnierstil (deutsche Farben als Option). Reizblock aus Papier, Bleistift.",
       "sound": "Fester Knöchelklopfer beim Ausspielen von Trumpf, Bleistiftkratzen beim Reizen, Rascheln beim Skat-Aufnehmen.",
       "animation": "Skat wird umgedreht, der Spieler drückt zwei Karten zurück in die Kiste. Stiche werden zum Gewinnerplatz geschoben.",
-      "highlight": "Grand Hand: Der Reizblock schreibt sich groß „Grand Hand“, der Stammtisch klopft dreimal."
+      "highlight": "Grand Hand: Der Reizblock schreibt sich groß „Grand Hand“, der Stammtisch klopft dreimal.",
+      "evidence": [
+        "docs/design/experience/EXP-086/README.md",
+        "test/ui/exp-skat.spec.js",
+        "test/experience-skat.test.js",
+        "public/games/skat/experience.js"
+      ],
+      "implementation_note": "Palette `skat`, Gute Stube mit Stammtisch-Schild, Zigarrenkiste, Reizblock mit Bleistift, Stich gleitet zum Gewinner, Grand Hand mit dreimaligem Klopfen. Gemeinsames Kartenblatt bleibt."
     },
     {
       "id": "EXP-087",
