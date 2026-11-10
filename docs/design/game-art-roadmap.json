@@ -50,10 +50,18 @@
       "game_name": "Skip-Bo",
       "priority": "P2",
       "vis_id": "VIS-009",
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "1646b30ad16ca342e97a3a8112404ff223dc0d81",
       "goal": "Karten und Aufbaustapel mit Stapelhöhe, Spielertisch mit Struktur.",
-      "material": "eigene SVG-Karten, ggf. Tischtextur (CC0)."
+      "material": "eigene SVG-Karten, ggf. Tischtextur (CC0).",
+      "implementation_note": "Papierkante und Glanz auf allen Karten, sichtbare Stapelhöhe bei Baureihen, Ablagen und Spielstapel, Werkbank mit eigener Struktur.",
+      "evidence": [
+        "test/ui/art-stapelrennen.spec.js",
+        "docs/design/art/ART-009/README.md",
+        "docs/design/art/ART-009/table-classic-desktop.png",
+        "docs/design/art/ART-009/table-classic-mobil.png",
+        "docs/design/art/ART-009/fps-desktop.json"
+      ]
     },
     {
       "id": "ART-008",

@@ -49,7 +49,10 @@ Die IDs folgen den VIS-Nummern: **ART-002 gehört zu VIS-002 (Texas Hold'em)** u
 #### ART-009 · Skip-Bo (`stapelrennen`) · P2
 - **Ziel:** Karten und Aufbaustapel mit Stapelhöhe, Spielertisch mit Struktur.
 - **Material:** eigene SVG-Karten, ggf. Tischtextur (CC0).
-- **Status:** planned
+- **Status:** done
+- **Implementierungscommit:** `1646b30ad16ca342e97a3a8112404ff223dc0d81`
+- **Umsetzung:** Papierkante und Glanz auf allen Karten, sichtbare Stapelhöhe bei Baureihen, Ablagen und Spielstapel, Werkbank mit eigener Struktur.
+- **Nachweise:** `test/ui/art-stapelrennen.spec.js`, `docs/design/art/ART-009/README.md`, `docs/design/art/ART-009/table-classic-desktop.png`, `docs/design/art/ART-009/table-classic-mobil.png`, `docs/design/art/ART-009/fps-desktop.json`
 
 #### ART-008 · Phase 10 (`zehnetappen`) · P2
 - **Ziel:** Karten mit mehr Tiefe, ausgelegte Phasen als echte Kartenreihen, Phasenanzeige als Material.
