@@ -509,6 +509,10 @@ Die Priorität richtet sich danach, wie oft ein Spiel am Abend gespielt wird:
 - **Sound:** Nachts Grillen und ferne Eule, Morgens Hahn, Abstimmung als Murmeln, Hinrichtung als dumpfer Gong.
 - **Animation:** Dämmerungsübergang, Rollenkarte dreht sich beim Ausscheiden um.
 - **Highlight:** Dorf gewinnt oder Werwölfe gewinnen: Vollmond geht auf oder Sonne siegt, mit eigenem Schluss-Akkord.
+- **Status:** done
+- **Implementierungscommit:** `8a80abdf62eb1a3476bc7bb7871cc240fbede143`
+- **Nachweise:** `docs/design/experience/EXP-036/README.md`, `test/ui/exp-werwolf.spec.js`, `test/experience-werwolf.test.js`, `public/games/werwolf/experience.js`
+- **Umsetzung:** Palette `werwolf`, Himmel und Gestirn je Phase, Holztafel mit eigenen Rollenzeichen, umdrehende Tafel beim Ausscheiden, Vollmond oder Sonne am Ende. Nur öffentliche Ereignisse lösen Ton und Bewegung aus.
 
 #### EXP-081 · Doppelagent (`doppelagent`) · P1
 - **Welt:** Geheimdienst-Lounge mit Kartenwand, Orte als Postkarten.

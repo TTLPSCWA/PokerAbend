@@ -841,13 +841,20 @@
       "game_name": "Werwolf",
       "priority": "P1",
       "vis_id": "VIS-036",
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "8a80abdf62eb1a3476bc7bb7871cc240fbede143",
       "world": "Dorfplatz mit Brunnen, Tag und Nacht wechseln mit Himmelsfarbe.",
       "pieces_and_material": "Rollenkarten als Holztafeln (Seherin, Hexe, Jäger …) mit eigenen Illustrationen.",
       "sound": "Nachts Grillen und ferne Eule, Morgens Hahn, Abstimmung als Murmeln, Hinrichtung als dumpfer Gong.",
       "animation": "Dämmerungsübergang, Rollenkarte dreht sich beim Ausscheiden um.",
-      "highlight": "Dorf gewinnt oder Werwölfe gewinnen: Vollmond geht auf oder Sonne siegt, mit eigenem Schluss-Akkord."
+      "highlight": "Dorf gewinnt oder Werwölfe gewinnen: Vollmond geht auf oder Sonne siegt, mit eigenem Schluss-Akkord.",
+      "evidence": [
+        "docs/design/experience/EXP-036/README.md",
+        "test/ui/exp-werwolf.spec.js",
+        "test/experience-werwolf.test.js",
+        "public/games/werwolf/experience.js"
+      ],
+      "implementation_note": "Palette `werwolf`, Himmel und Gestirn je Phase, Holztafel mit eigenen Rollenzeichen, umdrehende Tafel beim Ausscheiden, Vollmond oder Sonne am Ende. Nur öffentliche Ereignisse lösen Ton und Bewegung aus."
     },
     {
       "id": "EXP-081",
