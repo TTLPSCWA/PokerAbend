@@ -76,3 +76,51 @@ Die IDs folgen den VIS-Nummern: **ART-002 gehört zu VIS-002 (Texas Hold'em)** u
 - **Ziel:** Spielfiguren als Püppchen, die Feld für Feld über das Brett laufen; Häuser und Hotels als kleine Modelle; Brett mit Struktur.
 - **Material:** Kenney „Board Game Pack“ (Figuren, CC0) bzw. vorgerenderte 3D-Figuren (CC0). ZIPs liefert Tobi.
 - **Status:** planned
+
+---
+
+## Kartenwelten (ART-T)
+
+Der Host wählt für **UNO (Classic), Skip-Bo und Phase 10** eine Kartenwelt; sie gilt für alle am Tisch, nur als Aussehen. 40 Welten nach bekannten Spielwelten (10 je Spiel plus 10 Winterwelten für alle drei), Auswahl aus den Entwürfen der Runde 5. Die Vorbilder stehen nur in `docs/design/CARD_WORLDS.md`, nie in der Oberfläche; alle Motive sind eigene Zeichnungen. Leitplanken wie oben, dazu: Spielfarben behalten ihren Farbton (Rot bleibt rötlich), damit Farbnamen und Farbwahl stimmen. Ohne gewählte Welt bleibt alles wie bisher.
+
+#### ART-T1 · Kartenwelten-Fundament · P1
+- **Spiele:** `farbenchaos`, `stapelrennen`, `zehnetappen`
+- **Ziel:** Host-Auswahl im Raum (für alle, auch mitten in der Runde), Welten als Daten, eine gemeinsame Kartenvorlage für alle drei Spiele, Weltton für Tisch und Flächen, selbst gehostete Schriften, automatischer Bild- und Leistungstest über alle Welten.
+- **Material:** eigene SVG-Motive (per Skript erzeugt), Schriften unter SIL OFL (Cinzel, Orbitron, Press Start 2P, Bangers, Lilita One, Black Ops One, Righteous, Fredoka).
+- **Status:** planned
+
+#### ART-T2a · Pilotwelten UNO · P1
+- **Spiele:** `farbenchaos`
+- **Ziel:** Feinschliff für U-04 Blockwelt, U-01 Zaubersaal und U-02 Hexerpfad: eigene Rahmendetails, Aktionskarten, Rückseite, Tisch, Handy-Lesbarkeit.
+- **Material:** eigene SVG-Grafiken.
+- **Status:** planned
+
+#### ART-T2b · Pilotwelten Skip-Bo · P1
+- **Spiele:** `stapelrennen`
+- **Ziel:** Feinschliff für SB-09 Burgenbau, SB-01 Montagewerk 12 und SB-04 Orbitalstation: Baureihen als Bauplätze der Welt, Joker, Rückseite, Tisch.
+- **Material:** eigene SVG-Grafiken.
+- **Status:** planned
+
+#### ART-T2c · Pilotwelten Phase 10 · P1
+- **Spiele:** `zehnetappen`
+- **Ziel:** Feinschliff für P-03 Testkammer X, P-06 Kart-Grand-Prix und P-10 Rhythmus-Tour: Phasenanzeige als Reise der Welt, Joker und Aussetzen, Rückseite, Tisch.
+- **Material:** eigene SVG-Grafiken.
+- **Status:** planned
+
+#### ART-T3 · Weitere Welten UNO · P2
+- **Spiele:** `farbenchaos`
+- **Ziel:** Feinschliff der übrigen sieben UNO-Welten (U-03, U-05 bis U-10).
+- **Material:** eigene SVG-Grafiken.
+- **Status:** planned
+
+#### ART-T4 · Weitere Welten Skip-Bo und Phase 10 · P2
+- **Spiele:** `stapelrennen`, `zehnetappen`
+- **Ziel:** Feinschliff der übrigen sieben Skip-Bo- und sieben Phase-10-Welten.
+- **Material:** eigene SVG-Grafiken.
+- **Status:** planned
+
+#### ART-T5 · Winterwelten · P2
+- **Spiele:** `farbenchaos`, `stapelrennen`, `zehnetappen`
+- **Ziel:** Feinschliff der zehn Winterwelten in allen drei Spielen, inklusive Schneefall als ruhige Hintergrundbewegung (abschaltbar).
+- **Material:** eigene SVG-Grafiken.
+- **Status:** planned

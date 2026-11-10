@@ -42,6 +42,7 @@ import { createAchievements } from './achievements.js';
 import { createProfiles, createProfileAPI } from './profile.js';
 import { createMeAPI } from './settings-api.js';
 import { variantOf, variantName, scoreKey } from '../games/variants.js';
+import { worldOf } from '../public/games/card-worlds/worlds.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -387,7 +388,7 @@ function save() {
     try {
       mkdirSync(DATA_DIR, { recursive: true });
       // Nur Räume ohne laufende Runde haben einen sauberen Stand – alle anderen bleiben beim letzten Stand
-      for (const r of rooms.values()) { if (!r.busy || r.persistMidGame) r.lastSnapshot = snapshotOf(r); else if (r.lastSnapshot) r.lastSnapshot.unlisted = !!r.unlisted; } // Privat-Schalter gilt auch mitten in der Runde
+      for (const r of rooms.values()) { if (!r.busy || r.persistMidGame) r.lastSnapshot = snapshotOf(r); else if (r.lastSnapshot) { r.lastSnapshot.unlisted = !!r.unlisted; r.lastSnapshot.cardWorld = r.cardWorld || null; } } // Privat-Schalter und Kartenwelt gelten auch mitten in der Runde
       const data = [...rooms.values()].map((r) => r.lastSnapshot).filter(Boolean);
       writeFileSync(SAVE_FILE + '.tmp', JSON.stringify(data));
       renameSync(SAVE_FILE + '.tmp', SAVE_FILE);
@@ -409,6 +410,7 @@ function load() {
       const r = game.restore(d, (kind, data) => onRoomChange(r, kind, data));
       r.game = game.id;
       r.unlisted = d.unlisted === true;
+      r.cardWorld = worldOf(r.game, d.cardWorld)?.id || null; // ART-T1: nur Darstellung
       for (const [pid, accountId] of Object.entries(d.playerAccounts && typeof d.playerAccounts === 'object' ? d.playerAccounts : {})) {
         const p = r.players.get(pid), resolved = accounts.resolve(accountId);
         if (p && !p.bot && resolved) p.accountId = resolved;
@@ -489,7 +491,7 @@ function onRoomChange(room, kind, data) {
 // ---------- Ranked-Wertung (V2-03): Logik in server/ranked.js ----------
 const ranked = createRanked({ accounts, leaderboard, enabled: () => features.enabled('ranked'), lowWins: (room) => GAME_INFO[scoreKey(room.game, room.variant || 'classic')]?.lowWins, newId: () => randomBytes(8).toString('hex') });
 const accountsOf = (r) => Object.fromEntries([...r.players.values()].filter((p) => p.accountId && !p.bot).map((p) => [p.id, p.accountId]));
-const snapshotOf = (r) => ({ ...r.snapshot(), game: r.game, code: r.code, unlisted: !!r.unlisted, playerAccounts: accountsOf(r), ...(r.partyProgram ? { partyProgram: r.partyProgram } : {}) });
+const snapshotOf = (r) => ({ ...r.snapshot(), game: r.game, code: r.code, unlisted: !!r.unlisted, cardWorld: r.cardWorld || null, playerAccounts: accountsOf(r), ...(r.partyProgram ? { partyProgram: r.partyProgram } : {}) });
 
 function broadcastFrame(room) {
   if (!room.frame || rooms.get(room.code) !== room) return;
@@ -514,6 +516,7 @@ function switchRoom(old, game, settings = {}, prepare = null) {
   }
   next.hostId = next.players.has(old.hostId) ? old.hostId : [...next.players.keys()][0];
   next.unlisted = !!old.unlisted;
+  next.cardWorld = worldOf(game.id, old.cardWorld)?.id || null; // Winterwelten gelten in allen drei Kartenspielen
   next.openedAt = old.openedAt || Date.now();
   next.say(`Jetzt: ${variantName(game.id, game.name, next.variant)} (vorher ${before}${summary ? ` – ${summary}` : ''})`, 'summary');
   // Menschen zuerst hinsetzen; Bots, für die kein Platz mehr ist, verlassen den Raum (zuschauen bringt ihnen nichts)
@@ -588,7 +591,7 @@ function broadcast(room) {
   bots.sync(room);
   const botPlayers = [...room.players.values()].filter((p) => p.bot && !p.kicked).map((p) => botMetadata(room,p));
   for (const p of room.players.values()) {
-    if (p.socketId) io.to(p.socketId).emit('state', { ...room.view(p.id), game: room.game, bots: botPlayers, ranked: ranked.state(room), unlisted: !!room.unlisted, ...(room.partyProgram ? { partyProgram: publicProgram(room) } : {}) });
+    if (p.socketId) io.to(p.socketId).emit('state', { ...room.view(p.id), game: room.game, bots: botPlayers, ranked: ranked.state(room), unlisted: !!room.unlisted, cardWorld: room.cardWorld || null, ...(room.partyProgram ? { partyProgram: publicProgram(room) } : {}) });
   }
   scheduleLobby();
 }
@@ -744,7 +747,7 @@ io.on('connection', (socket) => {
           if (!room || !player) throw new Error('Du bist an keinem Tisch');
         }
         // Auch direkte Socket-Aufrufe dürfen die gemeinsame Pause nicht umgehen.
-        if (room?.gamePaused && !['gamePause', 'freeze', 'park', 'leave', 'closeTable', 'abortRound', 'makeHost', 'unlisted'].includes(event)) throw new Error('Das Spiel ist angehalten – der Host setzt es fort');
+        if (room?.gamePaused && !['gamePause', 'freeze', 'park', 'leave', 'closeTable', 'abortRound', 'makeHost', 'unlisted', 'setCardWorld'].includes(event)) throw new Error('Das Spiel ist angehalten – der Host setzt es fort');
         // Nur Objekte sind gültige Nutzdaten; alles andere (Zahlen, Text, Listen, null) wird zu einem leeren Objekt
         const data = payload && typeof payload === 'object' && !Array.isArray(payload) ? payload : {};
         const res = fn(data, room, player);
@@ -835,6 +838,16 @@ io.on('connection', (socket) => {
 
   // Host: Tisch privat machen (nicht in der Liste der offenen Tische)
   on('unlisted', ({ value }, room, p) => { room.requireHost(p.id); room.unlisted = !!value; archiveReview(room); save(); });
+
+  // ART-T1: Host wählt die Kartenwelt (nur Darstellung, für alle am Tisch, auch mitten in der Runde)
+  on('setCardWorld', ({ world }, room, p) => {
+    room.requireHost(p.id);
+    if (world === '' || world === null || world === undefined) { if (room.cardWorld) room.say('Kartenwelt: Standard'); room.cardWorld = null; save(); return; }
+    const w = worldOf(room.game, world);
+    if (!w) throw new Error('Diese Kartenwelt gibt es für dieses Spiel nicht');
+    if (room.cardWorld !== w.id) room.say(`Kartenwelt: ${w.name}`);
+    room.cardWorld = w.id; save();
+  });
 
   on('gamePause', ({ paused }, room, p) => { room.setGamePaused(p.id, paused); });
 
@@ -990,7 +1003,7 @@ process.on('unhandledRejection', (e) => console.error('Unerwarteter Fehler:', e)
 const NEW_ROUND_EVENTS = ['start', 'nextHand'];
 
 // Ein Spiel darf keine Plattform-Ereignisse überschreiben
-const RESERVED = ['create', 'join', 'kick', 'makeHost', 'history', 'react', 'switchGame', 'setVariant', 'disconnect', 'addBot', 'removeBot', 'setBotDifficulty', 'lobby', 'peek', 'unlisted', 'park', 'leave', 'abortRound', 'closeTable', 'look', 'presence', 'programSave', 'programStart', 'programNext', 'programStop', 'programBoardItem', 'clientError'];
+const RESERVED = ['create', 'join', 'kick', 'makeHost', 'history', 'react', 'switchGame', 'setVariant', 'disconnect', 'addBot', 'removeBot', 'setBotDifficulty', 'lobby', 'peek', 'unlisted', 'park', 'leave', 'abortRound', 'closeTable', 'look', 'presence', 'programSave', 'programStart', 'programNext', 'programStop', 'programBoardItem', 'clientError', 'setCardWorld'];
 for (const g of Object.values(GAMES)) {
   const clash = Object.keys(g.events).filter((e) => RESERVED.includes(e));
   if (clash.length) throw new Error(`Spiel ${g.id}: Ereignisse ${clash.join(', ')} gehören der Plattform`);
@@ -1050,7 +1063,7 @@ setInterval(() => {
 }, 2000).unref();
 
 function saveNow() {
-  for (const r of rooms.values()) { if (!r.busy || r.persistMidGame) r.lastSnapshot = snapshotOf(r); else if (r.lastSnapshot) r.lastSnapshot.unlisted = !!r.unlisted; } // Privat-Schalter gilt auch mitten in der Runde
+  for (const r of rooms.values()) { if (!r.busy || r.persistMidGame) r.lastSnapshot = snapshotOf(r); else if (r.lastSnapshot) { r.lastSnapshot.unlisted = !!r.unlisted; r.lastSnapshot.cardWorld = r.cardWorld || null; } } // Privat-Schalter und Kartenwelt gelten auch mitten in der Runde
   try {
     mkdirSync(DATA_DIR, { recursive: true });
     writeFileSync(SAVE_FILE + '.tmp', JSON.stringify([...rooms.values()].map((r) => r.lastSnapshot).filter(Boolean)));

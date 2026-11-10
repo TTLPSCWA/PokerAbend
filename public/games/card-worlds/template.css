@@ -1,0 +1,99 @@
+/* ART-T1 Kartenwelten: eine gemeinsame Kartenvorlage für UNO (Classic), Skip-Bo und Phase 10.
+   Aktiv nur mit body[data-card-world] (vom Host gewählt, card-worlds.js setzt das Attribut); ohne Welt bleibt alles wie bisher.
+   Aufbau ohne zusätzliche Elemente: Weltfarbe als Kartenfläche, das Bild der Welt als Hintergrundschicht der Karte,
+   der Wert als Medaillon unten. Glanz ist eine Verlaufsschicht (kein Pseudo-Element, siehe ART-004 Bildrate).
+   Welt-Variablen (--cw-c*, --cw-a*, --cwt-*) stehen in worlds.css (erzeugt), Rahmenformen über data-cw-frame. */
+
+/* ---------- Tisch und Flächen der Welt ---------- */
+body[data-card-world] :is(.kg-farbenchaos,.kg-stapelrennen,.kg-zehnetappen){--cw-bg:var(--cwt-bg);--cw-panel:var(--cwt-panel);--cw-accent:var(--cwt-accent);--cw-edge:var(--cwt-edge);--fc-table:var(--cwt-table)}
+body[data-card-world] :is(.kg-farbenchaos,.kg-stapelrennen,.kg-zehnetappen) .kg-main{background:radial-gradient(ellipse at 50% 0%,color-mix(in srgb,var(--cwt-sky) 70%,transparent),transparent 62%),var(--cwt-bg)}
+body[data-card-world] .kg-farbenchaos[data-art-uno] .kg-piles,
+body[data-card-world] .kg-stapelrennen[data-art-skipbo] :is(.st-shared,.st-mine),
+body[data-card-world] .kg-zehnetappen[data-art-phase10] :is(.ze-phase,.ze-top .kg-piles,.ze-public){
+  background:radial-gradient(ellipse 70% 60% at 50% 0%,#ffffff1f,transparent 70%),repeating-linear-gradient(45deg,#ffffff06 0 2px,transparent 2px 7px),radial-gradient(ellipse at 50% 30%,var(--cwt-table-hi),var(--cwt-table) 55%,var(--cwt-table-lo));
+  box-shadow:inset 0 0 0 6px color-mix(in srgb,var(--cwt-table-lo) 80%,#000),inset 0 0 0 7px #ffffff1c,0 10px 28px #0005}
+body[data-card-world] .kg-stapelrennen[data-art-skipbo] .st-shared{color:#f4efe6}
+body[data-card-world] .kg-zehnetappen[data-art-phase10] .ze-laid{background:color-mix(in srgb,var(--cwt-table-lo) 85%,#000)}
+/* Farbanzeige und Farbwahl in UNO nutzen die Weltfarben */
+body[data-card-world] .kg-farbenchaos .fc-r{--fc-colour:var(--cw-cr);--ring:var(--cw-cr)}
+body[data-card-world] .kg-farbenchaos .fc-y{--fc-colour:var(--cw-cy);--ring:var(--cw-cy)}
+body[data-card-world] .kg-farbenchaos .fc-g{--fc-colour:var(--cw-cg);--ring:var(--cw-cg)}
+body[data-card-world] .kg-farbenchaos .fc-b{--fc-colour:var(--cw-cb);--ring:var(--cw-cb)}
+
+/* ---------- Farbe je Karte ---------- */
+body[data-card-world] :is(.kc-fc.fc-r,.kc-ze.ze-r){--cw:var(--cw-cr);--cwa:var(--cw-ar);--cwi:var(--cw-ir)}
+body[data-card-world] :is(.kc-fc.fc-y,.kc-ze.ze-y){--cw:var(--cw-cy);--cwa:var(--cw-ay);--cwi:var(--cw-iy)}
+body[data-card-world] :is(.kc-fc.fc-g,.kc-ze.ze-g){--cw:var(--cw-cg);--cwa:var(--cw-ag);--cwi:var(--cw-ig)}
+body[data-card-world] :is(.kc-fc.fc-b,.kc-ze.ze-b){--cw:var(--cw-cb);--cwa:var(--cw-ab);--cwi:var(--cw-ib)}
+body[data-card-world] .kc-st.st-1{--cw:var(--cw-c0);--cwa:var(--cw-a0);--cwi:var(--cw-i0)}
+body[data-card-world] .kc-st.st-2{--cw:var(--cw-c1);--cwa:var(--cw-a1);--cwi:var(--cw-i1)}
+body[data-card-world] .kc-st.st-3{--cw:var(--cw-c2);--cwa:var(--cw-a2);--cwi:var(--cw-i2)}
+body[data-card-world] .kc-st.joker{--cw:var(--cw-c3);--cwa:var(--cw-a3);--cwi:var(--cw-i3)}
+/* Farbwahl, Joker und Aussetzen: dunkle Karte, Rückseitenmotiv mit Vier-Farben-Ring */
+body[data-card-world] :is(.kc-fc.fc-w,.kc-ze.ze-j,.kc-ze.ze-s){--cw:#262b3a;--cwa:var(--cw-aw);--cwi:#ffffff}
+
+/* ---------- Karte ---------- */
+body[data-card-world] :is(.kc-fc,.kc-st,.kc-ze){--cw-mat:linear-gradient(160deg,color-mix(in srgb,var(--cw) 68%,#fff),var(--cw) 42%,color-mix(in srgb,var(--cw) 58%,#000));--cw-rim:#ffffffd9}
+body[data-card-world] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze):not(.kc-empty){
+  background:linear-gradient(118deg,#ffffff45 0 12%,#ffffff0f 28%,transparent 42%,transparent 80%,#0000001f),var(--cwa) 50% 38%/82% auto no-repeat,var(--cw-mat);
+  color:var(--cwi);border:0;border-radius:calc(var(--w)*.12);font-family:var(--cw-font),system-ui,sans-serif;overflow:visible}
+body[data-card-world] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze):not(.kc-empty):not(.sel):not(.can):not(.drop):not(.cix-selected){
+  box-shadow:inset 0 0 0 calc(var(--w)*.035) var(--cw-rim),0 1px 0 #ffffff66,0 2px 0 color-mix(in srgb,var(--cw) 62%,#000),0 3px 0 color-mix(in srgb,var(--cw) 45%,#000),0 6px 10px #0006}
+/* Bisherige Verzierungen der Spiele ausblenden (bleiben ohne Welt unverändert) */
+body[data-card-world] .kg-farbenchaos .kc-fc::before{display:none}
+body[data-card-world] .kg-farbenchaos .kc-fc :is(.fc-card-border,.fc-card-art,.fc-card-name){display:none}
+body[data-card-world] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze) .cr.br{display:none}
+/* Kleine Ecke oben links, Farbsymbol oben rechts */
+body[data-card-world] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze) .cr.tl{position:absolute;top:2.5%;left:7%;font-size:calc(var(--w)*.15);font-weight:700;line-height:1;color:var(--cwi);text-shadow:0 1px 0 #0006;transform:none;z-index:2}
+body[data-card-world] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze) .cm{left:auto;right:6%;top:2.5%;width:calc(var(--w)*.13);height:calc(var(--w)*.13);fill:var(--cwi)}
+/* Wert als Medaillon unten */
+body[data-card-world] .kg-farbenchaos .kc-fc .oval{display:contents}
+body[data-card-world] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze) .v{
+  position:absolute;left:50%;bottom:4%;transform:translateX(-50%);z-index:3;display:flex;align-items:center;justify-content:center;
+  min-width:calc(var(--w)*.5);height:calc(var(--w)*.32);padding:0 calc(var(--w)*.07);border-radius:999px;white-space:nowrap;
+  font-family:var(--cw-font),system-ui,sans-serif;font-size:calc(var(--w)*.21);font-weight:700;line-height:1;color:var(--cwi);
+  background:var(--cw);box-shadow:0 0 0 calc(var(--w)*.03) var(--cw-rim),0 2px 0 #0006;text-shadow:0 1px 0 #0005;-webkit-text-stroke:0}
+body[data-card-world] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze) .v :is(b,.ze-j){font:inherit;color:inherit;text-shadow:inherit}
+body[data-card-world] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze) .v small{display:none}
+body[data-card-world] .kg-farbenchaos .kc-fc .v>.fc-symbol{width:calc(var(--w)*.2);height:calc(var(--w)*.2)}
+body[data-card-world] :is(.kc-fc.fc-w,.kc-ze.ze-j,.kc-ze.ze-s) .v{background:conic-gradient(var(--cw-cr) 0 25%,var(--cw-cy) 0 50%,var(--cw-cg) 0 75%,var(--cw-cb) 0);text-shadow:0 1px 2px #000,0 0 1px #000}
+body[data-card-world] .kc-st.joker .v{text-shadow:0 1px 0 #0005}
+
+/* ---------- Rückseiten (Nachziehstapel) ---------- */
+body[data-card-world] :is(.kg-farbenchaos,.kg-stapelrennen,.kg-zehnetappen) .kc-back{background:var(--cw-back) center/cover no-repeat,var(--cwt-table);border:0;border-radius:calc(var(--w,56px)*.12);color:#fff;text-shadow:0 1px 2px #000}
+body[data-card-world] .kg-farbenchaos .fc-back :is(.fc-back-grid,.fc-back-emblem,.fc-back-title){display:none}
+
+/* ---------- Rahmen ---------- */
+body[data-card-world][data-cw-frame=gilded] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze):not(.kc-empty){--cw-rim:#f6d77a}
+body[data-card-world][data-cw-frame=leather] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze):not(.kc-empty){--cw-rim:#d9cfb0;outline:1px dashed #f1e6c8b0;outline-offset:calc(var(--w)*-.075)}
+body[data-card-world][data-cw-frame=steel] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze):not(.kc-empty){--cw-rim:#f2b51e;
+  background:linear-gradient(118deg,#ffffff38 0 12%,transparent 34%),var(--cwa) 50% 38%/82% auto no-repeat,repeating-linear-gradient(135deg,#f2b51e 0 5px,#151515 5px 10px) 0 100%/100% 6% no-repeat,var(--cw-mat)}
+body[data-card-world][data-cw-frame=neon] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze):not(.kc-empty){--cw-rim:var(--cw);--cw-mat:linear-gradient(170deg,#1c1238,#0b0820)}
+body[data-card-world][data-cw-frame=neon] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze):not(.kc-empty):not(.sel):not(.can):not(.drop):not(.cix-selected){box-shadow:inset 0 0 0 calc(var(--w)*.035) var(--cw),0 0 calc(var(--w)*.12) color-mix(in srgb,var(--cw) 70%,transparent),0 3px 0 #120c24,0 6px 10px #0008}
+body[data-card-world][data-cw-frame=neon] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze) .cr.tl{color:var(--cw)}
+body[data-card-world][data-cw-frame=voxel] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze):not(.kc-empty){border-radius:2px}
+body[data-card-world][data-cw-frame=voxel] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze) .v{border-radius:2px;font-size:calc(var(--w)*.15)}
+body[data-card-world][data-cw-frame=voxel] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze) .cr.tl{font-size:calc(var(--w)*.11)}
+body[data-card-world][data-cw-frame=parchment] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze):not(.kc-empty){--cw-rim:var(--cw);--cw-mat:radial-gradient(circle at 30% 20%,#fbf3dc,#e3cf9f 80%)}
+body[data-card-world][data-cw-frame=parchment] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze) .cr.tl{color:#3b2a14;text-shadow:none}
+body[data-card-world][data-cw-frame=holo] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze):not(.kc-empty){--cw-mat:linear-gradient(135deg,#ff6b9e55,#ffd16655,#6bffb555,#6bc7ff55,#c26bff55),linear-gradient(160deg,color-mix(in srgb,var(--cw) 80%,#fff),color-mix(in srgb,var(--cw) 60%,#000))}
+body[data-card-world][data-cw-frame=crystal] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze):not(.kc-empty){border-radius:calc(var(--w)*.04)}
+body[data-card-world][data-cw-frame=blueprint] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze):not(.kc-empty){--cw-rim:var(--cw);--cw-mat:linear-gradient(#ffffff1f 1px,transparent 1px) 0 0/7px 7px,linear-gradient(90deg,#ffffff1f 1px,transparent 1px) 0 0/7px 7px,#1f5fa8}
+body[data-card-world][data-cw-frame=storybook] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze):not(.kc-empty){--cw-rim:var(--cw);--cw-mat:radial-gradient(circle at 30% 20%,#fffaf0,#efdcb8);border-radius:calc(var(--w)*.2)}
+body[data-card-world][data-cw-frame=storybook] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze) .cr.tl{color:#5a3a18;text-shadow:none}
+body[data-card-world][data-cw-frame=cartoon] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze):not(.kc-empty){--cw-rim:#111;outline:2px solid #111;outline-offset:-1px}
+body[data-card-world][data-cw-frame=cartoon] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze) .v{box-shadow:0 0 0 2px #111;-webkit-text-stroke:calc(var(--w)*.025) #111;paint-order:stroke}
+body[data-card-world][data-cw-frame=stone] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze):not(.kc-empty){--cw-rim:var(--cw);--cw-mat:radial-gradient(circle at 70% 80%,#ffffff12,transparent 40%),linear-gradient(160deg,#6b6660,#3a3632)}
+body[data-card-world][data-cw-frame=frost] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze):not(.kc-empty){--cw-rim:var(--cw);--cw-mat:linear-gradient(160deg,#ffffff,#d6e6f6)}
+body[data-card-world][data-cw-frame=frost] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze) .cr.tl{color:#24406a;text-shadow:none}
+/* Helle Flächen: Farbsymbol dunkel, damit es lesbar bleibt */
+body[data-card-world]:is([data-cw-frame=parchment],[data-cw-frame=storybook],[data-cw-frame=frost]) :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze) .cm{fill:#2a2a2a}
+/* Dicker farbiger Rand bei hellen und dunklen Flächen, damit die Spielfarbe auch in der Hand sofort erkennbar ist */
+body[data-card-world]:is([data-cw-frame=parchment],[data-cw-frame=storybook],[data-cw-frame=frost],[data-cw-frame=stone],[data-cw-frame=blueprint]) :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze):not(.kc-empty):not(.sel):not(.can):not(.drop):not(.cix-selected){
+  box-shadow:inset 0 0 0 calc(var(--w)*.07) var(--cw),0 1px 0 #ffffff66,0 2px 0 color-mix(in srgb,var(--cw) 62%,#000),0 3px 0 color-mix(in srgb,var(--cw) 45%,#000),0 6px 10px #0006}
+
+/* ---------- Skip-Bo: Baureihen und leere Plätze im Weltton ---------- */
+body[data-card-world] .kg-stapelrennen .st-build{background:color-mix(in srgb,var(--cwt-table-lo) 70%,transparent);border-color:#ffffff2e;color:#f4efe6}
+body[data-card-world] .kg-stapelrennen .st-build-index{color:var(--cwt-accent)}
+body[data-card-world] .kg-stapelrennen .kc-empty{background:#ffffff10;border:1px dashed #ffffff4d;color:#ffffffa0}
+body[data-card-world] .kg-stapelrennen .st-seed{color:#ffffffa0}

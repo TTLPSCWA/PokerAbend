@@ -1,0 +1,39 @@
+'use strict';
+// ART-T1 Kartenwelten: Der Host wählt für UNO (Classic), Skip-Bo und Phase 10 eine Welt; sie gilt für alle am Tisch.
+// Nur Darstellung. Diese Datei setzt body[data-card-world] und body[data-cw-frame] aus dem Raumstand und
+// liefert die Auswahl im Host-Menü (kit.js). Daten: /games/card-worlds/worlds.js (auch vom Server geprüft).
+const CardWorlds = (() => {
+  let mod = null, last = null;
+  const ready = import('/games/card-worlds/worlds.js').then((m) => { mod = m; apply(last); return m; }).catch(() => null);
+  const t = (de, en) => (I18n.language === 'en' ? en : de);
+  // UNO-Varianten mit eigener Gestaltung (Flip, No Mercy, All Wild, Spuknacht) behalten ihr Aussehen
+  const applies = (S) => !!S && (S.game !== 'farbenchaos' || (S.variant || 'classic') === 'classic');
+  const current = (S) => (mod && S && applies(S) ? mod.worldOf(S.game, S.cardWorld) : null);
+  function apply(S) {
+    last = S;
+    const w = current(S), b = document.body;
+    if (w) { b.dataset.cardWorld = w.id; b.dataset.cwFrame = w.frame; }
+    else { delete b.dataset.cardWorld; delete b.dataset.cwFrame; }
+  }
+  socket.on('state', apply);
+
+  const swatch = (w) => `<span class="cwp-card" style="--c:${w.cols[0][1]};background-image:url('/games/card-worlds/art/${esc(w.id)}/0.svg')"></span>`;
+  const pick = (w, selected) => `<button type="button" class="cwp-pick" data-card-world-pick="${esc(w.id)}" aria-pressed="${selected}">${swatch(w)}<span class="cwp-txt"><b>${esc(w.name)}</b><small>${esc(w.world)}</small></span></button>`;
+  function controlsHTML(S) {
+    if (!mod || !S?.you?.isHost || !mod.CARD_WORLD_GAMES.includes(S.game)) return '';
+    const list = mod.worldsFor(S.game), own = list.filter((w) => w.game !== 'all'), winter = list.filter((w) => w.game === 'all');
+    const sel = S.cardWorld || '';
+    const off = !applies(S) ? `<p class="hint">${t('Kartenwelten gelten nur für die Classic-Variante. Diese Variante behält ihr eigenes Aussehen.', 'Card worlds apply to the Classic variant only. This variant keeps its own look.')}</p>` : '';
+    return `<section class="cwp"><h3>${t('Kartenwelt', 'Card world')}</h3><p class="hint">${t('Nur Aussehen, für alle am Tisch. Geht auch mitten in der Runde.', 'Looks only, for everyone at the table. Works mid-round too.')}</p>${off}
+      <div class="cwp-grid"><button type="button" class="cwp-pick cwp-std" data-card-world-pick="" aria-pressed="${!sel}"><span class="cwp-card cwp-none"></span><span class="cwp-txt"><b>${t('Standard', 'Standard')}</b><small>${t('Bisheriges Aussehen', 'Current look')}</small></span></button>${own.map((w) => pick(w, w.id === sel)).join('')}</div>
+      <h4 class="cwp-sub">${t('Winter (alle drei Spiele)', 'Winter (all three games)')}</h4><div class="cwp-grid">${winter.map((w) => pick(w, w.id === sel)).join('')}</div></section>`;
+  }
+  document.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-card-world-pick]');
+    if (!b || b.disabled) return;
+    const id = b.dataset.cardWorldPick;
+    const r = await send('setCardWorld', { world: id });
+    if (r?.ok) b.closest('.cwp')?.querySelectorAll('[data-card-world-pick]').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.cardWorldPick === id)));
+  });
+  return { controlsHTML, ready, current: () => current(last) };
+})();

@@ -115,5 +115,96 @@
       "goal": "Spielfiguren als Püppchen, die Feld für Feld über das Brett laufen; Häuser und Hotels als kleine Modelle; Brett mit Struktur.",
       "material": "Kenney „Board Game Pack“ (Figuren, CC0) bzw. vorgerenderte 3D-Figuren (CC0). ZIPs liefert Tobi."
     }
+  ],
+  "world_packages": [
+    {
+      "id": "ART-T1",
+      "name": "Kartenwelten-Fundament",
+      "priority": "P1",
+      "games": [
+        "farbenchaos",
+        "stapelrennen",
+        "zehnetappen"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "goal": "Host-Auswahl im Raum (für alle, auch mitten in der Runde), Welten als Daten, eine gemeinsame Kartenvorlage für alle drei Spiele, Weltton für Tisch und Flächen, selbst gehostete Schriften, automatischer Bild- und Leistungstest über alle Welten.",
+      "material": "eigene SVG-Motive (per Skript erzeugt), Schriften unter SIL OFL (Cinzel, Orbitron, Press Start 2P, Bangers, Lilita One, Black Ops One, Righteous, Fredoka)."
+    },
+    {
+      "id": "ART-T2a",
+      "name": "Pilotwelten UNO",
+      "priority": "P1",
+      "games": [
+        "farbenchaos"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "goal": "Feinschliff für U-04 Blockwelt, U-01 Zaubersaal und U-02 Hexerpfad: eigene Rahmendetails, Aktionskarten, Rückseite, Tisch, Handy-Lesbarkeit.",
+      "material": "eigene SVG-Grafiken."
+    },
+    {
+      "id": "ART-T2b",
+      "name": "Pilotwelten Skip-Bo",
+      "priority": "P1",
+      "games": [
+        "stapelrennen"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "goal": "Feinschliff für SB-09 Burgenbau, SB-01 Montagewerk 12 und SB-04 Orbitalstation: Baureihen als Bauplätze der Welt, Joker, Rückseite, Tisch.",
+      "material": "eigene SVG-Grafiken."
+    },
+    {
+      "id": "ART-T2c",
+      "name": "Pilotwelten Phase 10",
+      "priority": "P1",
+      "games": [
+        "zehnetappen"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "goal": "Feinschliff für P-03 Testkammer X, P-06 Kart-Grand-Prix und P-10 Rhythmus-Tour: Phasenanzeige als Reise der Welt, Joker und Aussetzen, Rückseite, Tisch.",
+      "material": "eigene SVG-Grafiken."
+    },
+    {
+      "id": "ART-T3",
+      "name": "Weitere Welten UNO",
+      "priority": "P2",
+      "games": [
+        "farbenchaos"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "goal": "Feinschliff der übrigen sieben UNO-Welten (U-03, U-05 bis U-10).",
+      "material": "eigene SVG-Grafiken."
+    },
+    {
+      "id": "ART-T4",
+      "name": "Weitere Welten Skip-Bo und Phase 10",
+      "priority": "P2",
+      "games": [
+        "stapelrennen",
+        "zehnetappen"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "goal": "Feinschliff der übrigen sieben Skip-Bo- und sieben Phase-10-Welten.",
+      "material": "eigene SVG-Grafiken."
+    },
+    {
+      "id": "ART-T5",
+      "name": "Winterwelten",
+      "priority": "P2",
+      "games": [
+        "farbenchaos",
+        "stapelrennen",
+        "zehnetappen"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "goal": "Feinschliff der zehn Winterwelten in allen drei Spielen, inklusive Schneefall als ruhige Hintergrundbewegung (abschaltbar).",
+      "material": "eigene SVG-Grafiken."
+    }
   ]
 }

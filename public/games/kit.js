@@ -576,6 +576,7 @@ function kitGame(def) {
         </div>
         ${programControlsHTML(S)}
         ${variantControlsHTML(S)}
+        ${typeof CardWorlds !== 'undefined' ? CardWorlds.controlsHTML(S) : ''}
         ${def.noBots ? '' : botControlsHTML(S, S.phase === 'playing' || programRunning(S))}
         ${unlistedSwitchHTML(S)}
         ${fields ? I18n.html`<h3>Regeln an diesem Tisch</h3>${fields}<p class="hint" style="margin:0">Änderungen gehen nur zwischen den Runden. Die Standardwerte sind unsere üblichen Hausregeln – alle sehen die aktiven Regeln unter „?“.</p>` : ''}

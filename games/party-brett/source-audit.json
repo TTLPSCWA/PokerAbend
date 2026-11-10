@@ -72,7 +72,7 @@
     },
     {
       "path": "public/index.html",
-      "sha256": "e1df7c136f466b0632419fab39b8929dd9c7c9a67a28616cfdd9024376dfef33"
+      "sha256": "91ac0370408bc1b94ea943a30643eb1d1914977b70ab875c2f53f39c836e86c4"
     },
     {
       "path": "public/party-program.js",
@@ -80,7 +80,7 @@
     },
     {
       "path": "server/index.js",
-      "sha256": "dcc6ad6e3bec33af131fa305da1258b8086e698d2cd1ae988867ee58ec606c23"
+      "sha256": "ac2f087596ba739a5ba15379a88a3dea82bbe863a16e075e03c94ae63d528611"
     },
     {
       "path": "server/party-program.js",
