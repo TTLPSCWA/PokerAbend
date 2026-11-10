@@ -764,6 +764,10 @@ Die Priorität richtet sich danach, wie oft ein Spiel am Abend gespielt wird:
 - **Sound:** Eigener synthetischer Beat pro Lied (prozedural, 3 Tempi), Treffer erzeugen Töne der Melodie.
 - **Animation:** Perfekte Treffer lassen die Spur aufleuchten, Combo-Zähler wächst.
 - **Highlight:** 50er-Combo: Lichtshow (sanft, kein Stroboskop) und Publikumsjubel.
+- **Status:** done
+- **Implementierungscommit:** `c1aec8cf8bd93176b8e7578a8d746a491b78bd7e`
+- **Nachweise:** `docs/design/experience/EXP-072/README.md`, `test/ui/exp-rhythmus-rausch.spec.js`, `test/experience-rhythmus-rausch.test.js`, `public/games/rhythmus-rausch/experience.js`
+- **Umsetzung:** Palette `rhythmus-rausch`, Konzertbühne mit Lautsprecherwand, Beat im Grundschlag des Lieds (ruhig, schnell, Rausch), Melodietöne, leuchtende Spur, wachsender Zähler, Lichtshow zur 50er-Serie.
 
 #### EXP-076 · Schatzgräber (`schatzgraeber`) · P2
 - **Welt:** Strandbucht mit Sandburgen.

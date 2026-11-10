@@ -1338,13 +1338,20 @@
       "game_name": "Rhythmus-Rausch",
       "priority": "P1",
       "vis_id": "VIS-072",
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "c1aec8cf8bd93176b8e7578a8d746a491b78bd7e",
       "world": "Konzertbühne mit Lautsprecherwand.",
       "pieces_and_material": "Noten als fallende Plättchen auf Spuren.",
       "sound": "Eigener synthetischer Beat pro Lied (prozedural, 3 Tempi), Treffer erzeugen Töne der Melodie.",
       "animation": "Perfekte Treffer lassen die Spur aufleuchten, Combo-Zähler wächst.",
-      "highlight": "50er-Combo: Lichtshow (sanft, kein Stroboskop) und Publikumsjubel."
+      "highlight": "50er-Combo: Lichtshow (sanft, kein Stroboskop) und Publikumsjubel.",
+      "evidence": [
+        "docs/design/experience/EXP-072/README.md",
+        "test/ui/exp-rhythmus-rausch.spec.js",
+        "test/experience-rhythmus-rausch.test.js",
+        "public/games/rhythmus-rausch/experience.js"
+      ],
+      "implementation_note": "Palette `rhythmus-rausch`, Konzertbühne mit Lautsprecherwand, Beat im Grundschlag des Lieds (ruhig, schnell, Rausch), Melodietöne, leuchtende Spur, wachsender Zähler, Lichtshow zur 50er-Serie."
     },
     {
       "id": "EXP-076",
