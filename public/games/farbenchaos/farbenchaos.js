@@ -66,6 +66,7 @@
   function applyPresentation(S) {
     const root = document.querySelector('.kg-farbenchaos'); if (!root) return;
     root.dataset.unoVariant = themeOf(S); root.dataset.unoSide = S.g?.side ? 'dark' : 'light';
+    root.dataset.artUno = ''; // ART-004: Karten, Stapel und Tisch (art.css)
     activeEffect?.cancel(); activeEffect = null;
     const effect = pendingEffect; pendingEffect = null; delete root.dataset.unoEffect;
     if (!effect || prefs.calm || matchMedia('(prefers-reduced-motion: reduce)').matches || S.gamePaused) return;

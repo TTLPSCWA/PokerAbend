@@ -1,4 +1,5 @@
 @import url('/games/card-worlds.css');
+@import url('/games/farbenchaos/art.css'); /* ART-004: Karten, Stapel, Tisch */
 /* Original UNO material system: one face renderer, five scoped visual identities. */
 .kg-farbenchaos{--cw-bg:#102421;--cw-panel:#18332e;--cw-text:#f4f0e4;--cw-muted:#bccdc5;--cw-edge:#b4c6af38;--cw-accent:#e5c994;--fc-table:#23493c;--fc-line:#b5c79a40;--fc-glow:#d4c19570;--fc-stage-ink:#c1d3ba}
 .kg-farbenchaos .kg-main{background:radial-gradient(ellipse at 0 0,#a3965826,transparent 60%),repeating-linear-gradient(120deg,#adc3b403 0 2px,transparent 2px 7px),var(--cw-bg)}

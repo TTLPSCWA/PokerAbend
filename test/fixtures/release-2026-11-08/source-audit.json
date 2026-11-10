@@ -6,7 +6,7 @@
       "path": "public/games/farbenchaos/farbenchaos.js",
       "archive": "test/fixtures/release-2026-11-08/baseline/public/games/farbenchaos/farbenchaos.js",
       "baseline_sha256": "90139e335b0d75d83d7165e7c2724d7349c7395edc77b21aba1892d2264f7b30",
-      "current_sha256": "d9bc5bba4964ff9345a48a8219b26efe9f9c42f97920a88bfdc91bbcfd5cc5da"
+      "current_sha256": "ec66a307a45aa1ca1fc43b12ef2ea0de20c25e408ee03ac4c3b8e5fafb4c17c4"
     },
     {
       "path": "public/games/kit.js",

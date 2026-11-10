@@ -123,11 +123,11 @@
     },
     {
       "path": "public/games/farbenchaos/farbenchaos.css",
-      "lf_sha256": "6ad3014d353bcd10d7876e48f3315abe9d23d1c2427beee5e5d6c4ab6ad86086"
+      "lf_sha256": "0f14c3bd55fa70c8bc84afb366d56fe5070ffa0006dde2b923c1f7fe8b301841"
     },
     {
       "path": "public/games/farbenchaos/farbenchaos.js",
-      "lf_sha256": "d9bc5bba4964ff9345a48a8219b26efe9f9c42f97920a88bfdc91bbcfd5cc5da"
+      "lf_sha256": "ec66a307a45aa1ca1fc43b12ef2ea0de20c25e408ee03ac4c3b8e5fafb4c17c4"
     },
     {
       "path": "public/games/huetchen/huetchen.js",
