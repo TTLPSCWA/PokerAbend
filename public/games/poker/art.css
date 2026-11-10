@@ -1,0 +1,88 @@
+/* ART-002 Texas Hold'em: gepolsterte Lederkante mit Holzring, Filz mit Struktur und Lampenlicht,
+   eigene SVG-Chips (Draufsicht einzeln, Seitenansicht im Stapel), die bei jeder Größe scharf bleiben.
+   Gilt nur für Hold'em: #game[data-art-poker] für den Tisch, body.art-poker für Chips (fliegende Chips und
+   der Chip-Regen hängen am <body>). Omaha lädt dieselben Dateien und bleibt unverändert.
+   Nur statische Hintergründe, keine neuen Animationen und keine Filter. */
+
+/* ---------- Tisch ---------- */
+#game[data-art-poker] .table::before { background: radial-gradient(closest-side, rgba(0,0,0,.72), transparent); }
+/* Außen: gepolsterte Armauflage aus dunklem Leder */
+#game[data-art-poker] .rail {
+  background:
+    radial-gradient(120% 55% at 50% 0%, rgba(255,240,220,.13), transparent 46%),
+    radial-gradient(120% 70% at 50% 100%, rgba(0,0,0,.4), transparent 52%),
+    linear-gradient(180deg, #3B2A1F, #20160F);
+  box-shadow: 0 24px 54px rgba(0,0,0,.62), 0 4px 10px rgba(0,0,0,.45),
+    inset 0 2px 1px rgba(255,236,210,.14), inset 0 -3px 2px rgba(0,0,0,.55), inset 0 0 0 1px rgba(0,0,0,.65);
+}
+/* Innen: schmaler Holzring mit Maserung und Messingkante */
+#game[data-art-poker] .rail::after {
+  content: ''; position: absolute; inset: 13px; border-radius: inherit; pointer-events: none;
+  background:
+    repeating-linear-gradient(96deg, rgba(0,0,0,.07) 0 2px, transparent 2px 6px, rgba(255,220,170,.04) 6px 7px, transparent 7px 11px),
+    linear-gradient(90deg, #4E321D, #8A5A34 22%, #A26C3E 50%, #8A5A34 78%, #4E321D);
+  box-shadow: inset 0 1px 0 rgba(255,222,170,.3), inset 0 -1px 0 rgba(0,0,0,.45), 0 0 0 1px rgba(0,0,0,.55);
+}
+/* Der Filz wird auf der leeren Kante (.rail::before) gemalt, nicht auf .felt: Karten, Pot und Einsätze im Filz
+   ändern sich ständig, der Hintergrund darunter bleibt dabei unberührt. */
+#game[data-art-poker] .rail::before {
+  content: ''; position: absolute; inset: 23px; border-radius: inherit; z-index: 1; pointer-events: none;
+  background:
+    radial-gradient(52% 48% at 50% 40%, rgba(255,236,190,.14), transparent 72%),
+    url('/games/poker/art/felt.webp'),
+    radial-gradient(80% 92% at 50% 44%, #217150, #10432F 72%, #0A2D20);
+  background-size: auto, 128px 128px, auto;
+  box-shadow: inset 0 0 0 1px rgba(201,154,69,.4), inset 0 0 0 2px rgba(0,0,0,.35),
+    inset 0 8px 20px rgba(0,0,0,.5), inset 0 0 70px rgba(0,0,0,.42);
+}
+#game[data-art-poker] .felt { inset: 23px; background: none; box-shadow: none; }
+/* Aufgedruckte Einsatzlinie und Schriftzug auf dem Filz */
+#game[data-art-poker] .felt::after { border: 1.5px solid rgba(224,188,116,.24); box-shadow: 0 0 0 5px rgba(224,188,116,.05); }
+#game[data-art-poker] .felt::before {
+  content: 'SPIELEABEND'; position: absolute; left: 0; right: 0; top: 12.5%; text-align: center; pointer-events: none;
+  font-size: clamp(10px, 1.35cqw, 15px); font-weight: 700; letter-spacing: .5em; text-indent: .5em; color: rgba(224,188,116,.24);
+}
+#game[data-art-poker] .slot {
+  background: rgba(0,0,0,.13);
+  box-shadow: inset 0 0 0 1px rgba(224,188,116,.2), inset 0 2px 6px rgba(0,0,0,.35);
+}
+#game[data-art-poker] .pot-box { background: rgba(6,18,13,.62); }
+#game[data-art-poker] .bet {
+  align-items: flex-end; gap: 7px; padding: 3px 11px 4px 6px;
+  background: rgba(12,30,22,.55); box-shadow: inset 0 0 0 1px rgba(224,188,116,.3), 0 1px 3px rgba(0,0,0,.35);
+}
+
+/* ---------- Chips ---------- */
+/* :is(#game, *) hebt die Regeln über die Kantenmuster aus EXP-002, ohne dessen Datei anzufassen. */
+/* Draufsicht (einzelner Chip neben Stack, Chip-Regen) */
+/* Die Startseite hat eigene Filter-„Chips“ (min-height, padding). Das war der Grund für die gequetschten Pokerchips. */
+body.art-poker :is(#game, *) span.chip { min-height: 0; padding: 0; border: 0; border-radius: 50%; box-shadow: 0 1px 2px rgba(0,0,0,.5); }
+body.art-poker :is(#game, *) span.chip::after { content: none; }
+body.art-poker :is(#game, *) span.chip.c1 { background: url('/games/poker/art/chip-top-c1.svg') center / 100% 100% no-repeat; }
+body.art-poker :is(#game, *) span.chip.c2 { background: url('/games/poker/art/chip-top-c2.svg') center / 100% 100% no-repeat; }
+body.art-poker :is(#game, *) span.chip.c3 { background: url('/games/poker/art/chip-top-c3.svg') center / 100% 100% no-repeat; }
+body.art-poker :is(#game, *) span.chip.c4 { background: url('/games/poker/art/chip-top-c4.svg') center / 100% 100% no-repeat; }
+body.art-poker :is(#game, *) span.chip.c5 { background: url('/games/poker/art/chip-top-c5.svg') center / 100% 100% no-repeat; }
+body.art-poker :is(#game, *) .p-stack span.chip { width: 16px; height: 16px; }
+body.art-poker :is(#game, *) .me-chips span.chip { width: 18px; height: 18px; }
+/* Seitenansicht im Stapel: jeder Chip zeigt seine Kante, der nächste liegt sichtbar obenauf */
+body.art-poker :is(#game, *) .stack { --cw: 26px; align-items: center; padding-top: 1px; }
+body.art-poker :is(#game, *) .stack span.chip { width: var(--cw); height: calc(var(--cw) * .53125); border-radius: 0; box-shadow: none; flex: none; }
+body.art-poker :is(#game, *) .stack span.chip.c1 { background: url('/games/poker/art/chip-side-c1.svg') center / 100% 100% no-repeat; }
+body.art-poker :is(#game, *) .stack span.chip.c2 { background: url('/games/poker/art/chip-side-c2.svg') center / 100% 100% no-repeat; }
+body.art-poker :is(#game, *) .stack span.chip.c3 { background: url('/games/poker/art/chip-side-c3.svg') center / 100% 100% no-repeat; }
+body.art-poker :is(#game, *) .stack span.chip.c4 { background: url('/games/poker/art/chip-side-c4.svg') center / 100% 100% no-repeat; }
+body.art-poker :is(#game, *) .stack span.chip.c5 { background: url('/games/poker/art/chip-side-c5.svg') center / 100% 100% no-repeat; }
+body.art-poker :is(#game, *) .stack span.chip + span.chip { margin-bottom: calc(var(--cw) * -.37); }
+body.art-poker :is(#game, *) .pot-box.main .stack { --cw: 32px; }
+body.art-poker :is(#game, *) .pot-box.side .stack { --cw: 22px; }
+body.art-poker .chip-rain span.chip { width: 22px; height: 22px; }
+body.art-poker .chip-rain.big span.chip { width: 26px; height: 26px; }
+
+@media (max-width: 640px) {
+  #game[data-art-poker] .felt, #game[data-art-poker] .rail::before { inset: 12px; }
+  #game[data-art-poker] .rail::after { inset: 6px; }
+  #game[data-art-poker] .felt::before { display: none; }
+  body.art-poker :is(#game, *) .stack { --cw: 18px; }
+  body.art-poker :is(#game, *) .pot-box.main .stack { --cw: 22px; }
+}

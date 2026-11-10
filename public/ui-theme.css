@@ -80,8 +80,8 @@
 .games-tools { display: block; margin: 0 0 16px; }
 .toolbar { justify-content: space-between; gap: 8px; }
 .chips { gap: 5px; }
-.chip { min-height: 36px; padding-inline: 10px; font-size: 11px; font-weight: 400; }
-.chip[aria-pressed='true'] { background: #335e40aa; border-color: #a5bf9066; color: #f3eee2; }
+.chip:where(button) { min-height: 36px; padding-inline: 10px; font-size: 11px; font-weight: 400; }
+.chip:where(button)[aria-pressed='true'] { background: #335e40aa; border-color: #a5bf9066; color: #f3eee2; }
 .view-toggle { padding: 2px; border: 1px solid var(--hub-edge); background: #0002; }
 .view-toggle button { min-height: 36px; padding-inline: 10px; font-size: 11px; }
 .view-toggle button[aria-pressed='true'] { background: #54614b55; color: var(--text); }
@@ -260,7 +260,7 @@
   .toolbar, .chips { min-width: 0; }
   .games-tools { margin-bottom: 16px; }
   .chips { overflow-x: auto; padding-bottom: 6px; }
-  .chip, .view-toggle button { min-height: 44px; }
+  .chip:where(button), .view-toggle button { min-height: 44px; }
   .view-toggle { margin-left: auto; }
   .hub-tabbar { background: #111913f2; border-color: var(--hub-edge); backdrop-filter: none; }
   .tab-item { min-height: 64px; font-size: 9px; }

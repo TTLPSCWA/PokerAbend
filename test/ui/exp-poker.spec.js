@@ -1,9 +1,10 @@
 // EXP-002 Texas Hold'em: Chips, Check, Fold, All-in, Karten vom Dealer-Button, gestaffeltes Board, All-in-Showdown.
-import { test, expect, login, selectGame, expectSound, expectNoLeak } from './helpers.js';
+import { test, expect, login, selectGame, expectSound, expectNoLeak, observeServerView } from './helpers.js';
 import { soundLog, sounds, evidence, recordAnimations, animations, expectOnlyTransformOpacity, smoothReplay, fpsEvidence, calm } from './exp-helpers.js';
 
 // Zwei Menschen am Tisch (Heads-up); liefert beide Seiten.
 async function table(page, app, browser, info, { reduced = false, game = 'poker' } = {}) {
+  observeServerView(page); // expectNoLeak vergleicht mit der zuletzt vom Server gesendeten Sicht
   await login(page, app); if (reduced) await calm(page); await selectGame(page, game);
   await page.locator('#host-form button[type=submit]').click(); await page.locator('[data-sit]').first().click();
   const code = await page.evaluate(() => lastState.code), context = await browser.newContext({ ...info.project.use, viewport: page.viewportSize() }), other = await context.newPage();

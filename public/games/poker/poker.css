@@ -1,4 +1,5 @@
 @import url('/games/five-card-draw/poker-chips.css');
+@import url('/games/poker/art.css'); /* ART-002: Tisch und Chips nur für Hold'em */
 /* Texas Hold'em: Tisch, Karten, Plätze, Chips, Aktionsleiste. Baut auf /style.css auf (Tokens, Buttons, Leisten, Dialoge). */
 
 /* ---------- Tisch ---------- */

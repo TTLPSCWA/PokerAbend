@@ -35,3 +35,7 @@ Andere Spiele bleiben unverändert; gemeinsame Komponenten nur unmittelbar notwe
 ## Erlebnis-Pakete (EXP): Sound, Animation, Figuren
 
 Stufe 2 nach den VIS-Paketen steht in [docs/design/GAME_EXPERIENCE_ROADMAP.md](docs/design/GAME_EXPERIENCE_ROADMAP.md) (Quelle) und [docs/design/game-experience-roadmap.json](docs/design/game-experience-roadmap.json) (erzeugt mit `node scripts/build-experience-roadmap.mjs`). EXP-Nummern entsprechen den VIS-Nummern (EXP-001 ↔ VIS-001); das gemeinsame Fundament heißt EXP-F1 bis EXP-F6 und kommt vor den Spielpaketen. Wie bei VIS: nur ausdrücklich freigegebene IDs umsetzen, Spiellogik nicht ändern, eigene Grafiken und Klänge, Leitplanken und Abnahme aus der Roadmap einhalten, danach Status, Commit und Nachweise eintragen und stoppen.
+
+## Grafik-Pakete (ART): Tische, Chips, Figuren, freie Grafiken
+
+Stufe 3 steht in [docs/design/GAME_ART_ROADMAP.md](docs/design/GAME_ART_ROADMAP.md) (Quelle) und [docs/design/game-art-roadmap.json](docs/design/game-art-roadmap.json) (erzeugt mit `node scripts/build-art-roadmap.mjs`). ART-Nummern entsprechen den VIS-Nummern (ART-002 ↔ VIS-002). Anders als bei VIS/EXP sind freie Fremdgrafiken erlaubt (CC0 bevorzugt; MIT/ISC/OFL; CC BY nur mit Namensnennung), jede Datei mit Herkunft in [docs/design/ART_LICENSES.md](docs/design/ART_LICENSES.md). 3D nur als vorgerenderte Bilder, keine WebGL-Szene ohne gesonderten Auftrag. Nur ausdrücklich freigegebene IDs umsetzen, Spiellogik unverändert, danach Status, Commit und Nachweise eintragen und stoppen.

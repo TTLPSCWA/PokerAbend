@@ -123,9 +123,10 @@ body.calm .host-dlg[open] { animation: none; }
 .games-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 20px 0 16px; }
 .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,.04); color: var(--text-2); font-weight: 600; }
-.chip:hover { color: var(--text); border-color: var(--gold-line); }
-.chip[aria-pressed='true'] { background: var(--gold); border-color: var(--gold); color: #2A1B08; }
+/* Filterknöpfe nur als <button>: Pokerchips heißen ebenfalls .chip (:where hält die Spezifität). */
+.chip:where(button) { min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,.04); color: var(--text-2); font-weight: 600; }
+.chip:where(button):hover { color: var(--text); border-color: var(--gold-line); }
+.chip:where(button)[aria-pressed='true'] { background: var(--gold); border-color: var(--gold); color: #2A1B08; }
 .view-toggle { display: inline-flex; padding: 3px; border-radius: 12px; background: rgba(0,0,0,.3); }
 .view-toggle button { min-height: 44px; padding: 0 16px; border: 0; border-radius: 9px; background: none; color: var(--text-2); font-weight: 600; }
 .view-toggle button[aria-pressed='true'] { background: var(--paper); color: var(--ink); }
@@ -171,7 +172,7 @@ li.cat-party .ga { background: linear-gradient(160deg, #5A468F, #382B66); }
   .game-row .gr-actions { grid-column: 1 / -1; justify-content: space-between; }
   .toolbar, .chips { width: 100%; }
   .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
-  .chip { flex: none; }
+  .chip:where(button) { flex: none; }
 }
 
 /* Hosten-Panel: großes Spielbild */

@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "source": "docs/design/GAME_ART_ROADMAP.md",
+  "generator": "scripts/build-art-roadmap.mjs",
+  "status_policy": "Ein Paket wird erst nach ausdrücklicher Freigabe seiner ID umgesetzt; danach status, implementation_commit und Nachweise eintragen. Alle übrigen Pakete sind nur geplant.",
+  "licenses": "docs/design/ART_LICENSES.md",
+  "packages": [
+    {
+      "id": "ART-002",
+      "game_id": "poker",
+      "game_name": "Texas Hold'em",
+      "priority": "P1",
+      "vis_id": "VIS-002",
+      "status": "planned",
+      "implementation_commit": null,
+      "goal": "Tisch mit gepolsterter Lederkante, Holzring, Filz mit Struktur und Lampenlicht; Chips scharf und nicht gequetscht, im Stapel mit sichtbarer Kante.",
+      "material": "eigene SVG-Chips (Draufsicht und Seitenansicht, fünf Farben), eigene Filzstruktur (WebP-Kachel). Keine fremden Dateien nötig."
+    },
+    {
+      "id": "ART-004",
+      "game_id": "farbenchaos",
+      "game_name": "UNO",
+      "priority": "P1",
+      "vis_id": "VIS-004",
+      "status": "planned",
+      "implementation_commit": null,
+      "goal": "Kartenfronten und -rücken mit mehr Tiefe, Ablagestapel mit echtem Kartenstapel-Rand, Spieltisch mit Struktur.",
+      "material": "eigene SVG-Karten, ggf. Tischtextur (CC0, z. B. ShareTextures/ambientCG)."
+    },
+    {
+      "id": "ART-009",
+      "game_id": "stapelrennen",
+      "game_name": "Skip-Bo",
+      "priority": "P2",
+      "vis_id": "VIS-009",
+      "status": "planned",
+      "implementation_commit": null,
+      "goal": "Karten und Aufbaustapel mit Stapelhöhe, Spielertisch mit Struktur.",
+      "material": "eigene SVG-Karten, ggf. Tischtextur (CC0)."
+    },
+    {
+      "id": "ART-008",
+      "game_id": "zehnetappen",
+      "game_name": "Phase 10",
+      "priority": "P2",
+      "vis_id": "VIS-008",
+      "status": "planned",
+      "implementation_commit": null,
+      "goal": "Karten mit mehr Tiefe, ausgelegte Phasen als echte Kartenreihen, Phasenanzeige als Material.",
+      "material": "eigene SVG-Karten, ggf. Tischtextur (CC0)."
+    },
+    {
+      "id": "ART-044",
+      "game_id": "sechs-nimmt",
+      "game_name": "6 nimmt!",
+      "priority": "P2",
+      "vis_id": "VIS-044",
+      "status": "planned",
+      "implementation_commit": null,
+      "goal": "Reihen als Kartenauslage auf Tischtuch, Hornochsen-Symbole als eigene Figur, Kartenstapel mit Kante.",
+      "material": "eigene SVG-Grafiken, ggf. Tischtextur (CC0)."
+    },
+    {
+      "id": "ART-013",
+      "game_id": "schiffe",
+      "game_name": "Schiffe versenken",
+      "priority": "P2",
+      "vis_id": "VIS-013",
+      "status": "planned",
+      "implementation_commit": null,
+      "goal": "echte Schiffe statt Blöcken (von oben gesehen), Wasser mit Struktur, Treffer und Versenken mit Bewegung (Schiff kippt und sinkt).",
+      "material": "Kenney „Pirate Pack“ (2D von oben, CC0) bzw. „Watercraft Kit“ (3D, CC0, vorgerendert). ZIPs liefert Tobi."
+    },
+    {
+      "id": "ART-046",
+      "game_id": "monopoly",
+      "game_name": "Monopoly",
+      "priority": "P2",
+      "vis_id": "VIS-046",
+      "status": "planned",
+      "implementation_commit": null,
+      "goal": "Spielfiguren als Püppchen, die Feld für Feld über das Brett laufen; Häuser und Hotels als kleine Modelle; Brett mit Struktur.",
+      "material": "Kenney „Board Game Pack“ (Figuren, CC0) bzw. vorgerenderte 3D-Figuren (CC0). ZIPs liefert Tobi."
+    }
+  ]
+}

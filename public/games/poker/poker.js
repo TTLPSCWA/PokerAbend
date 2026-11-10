@@ -140,6 +140,12 @@ const sounds = {
 };
 
 // EXP-002: Erlebnis-Modul für Texas Hold'em (Klang, Bewegung, Highlight); die übrigen Varianten behalten die Töne unten.
+// ART-002: neue Tisch- und Chip-Optik nur für Texas Hold'em; Omaha nutzt dieselben Dateien und bleibt wie bisher.
+function artPoker() {
+  const on = S?.game !== 'omaha' && S?.settings?.variant !== 'omaha';
+  $('#game')?.toggleAttribute('data-art-poker', on);
+  document.body.classList.toggle('art-poker', on);
+}
 let pokerXp = null;
 import('/games/poker/experience.js').then((m) => { pokerXp = window.__pokerXp = m.default; if (S) pokerXp.enter(S); }).catch(() => {});
 
@@ -293,6 +299,7 @@ function render() {
   fb.title = S.frozen ? 'Weiterspielen' : 'Spiel für alle sofort anhalten';
   fb.setAttribute('aria-label', fb.title);
   document.body.classList.toggle('frozen', !!S.frozen);
+  artPoker();
   renderTable();
   renderDock();
   document.documentElement.style.setProperty('--dock-h', $('#dock').offsetHeight + 'px');

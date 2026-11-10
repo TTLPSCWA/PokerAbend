@@ -41,3 +41,7 @@ Diese Regel ersetzt frühere Feature-Branch-Anweisungen. Wenn direkte Änderunge
 ## Erlebnis-Pakete (EXP): Sound, Animation, Figuren
 
 Stufe 2 nach den VIS-Paketen: `docs/design/GAME_EXPERIENCE_ROADMAP.md` (Quelle) und `docs/design/game-experience-roadmap.json` (erzeugt mit `node scripts/build-experience-roadmap.mjs`). EXP-Nummern entsprechen den VIS-Nummern; Fundament EXP-F1 bis EXP-F6 kommt zuerst. Nur ausdrücklich freigegebene IDs umsetzen, Spiellogik unverändert, eigene Grafiken und Klänge, Leitplanken und Abnahme der Roadmap einhalten, danach Status, Commit und Nachweise eintragen und stoppen.
+
+## Grafik-Pakete (ART): Tische, Chips, Figuren, freie Grafiken
+
+Stufe 3: `docs/design/GAME_ART_ROADMAP.md` (Quelle) und `docs/design/game-art-roadmap.json` (erzeugt mit `node scripts/build-art-roadmap.mjs`). ART-Nummern entsprechen den VIS-Nummern. Freie Fremdgrafiken erlaubt (CC0 bevorzugt; MIT/ISC/OFL; CC BY nur mit Namensnennung), jede Datei in `docs/design/ART_LICENSES.md`. 3D nur vorgerendert, keine WebGL-Szene ohne gesonderten Auftrag. Nur ausdrücklich freigegebene IDs umsetzen, Spiellogik unverändert, danach Status, Commit und Nachweise eintragen und stoppen.
