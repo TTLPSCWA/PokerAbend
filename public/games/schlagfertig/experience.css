@@ -1,0 +1,24 @@
+/* EXP-019 Schlagfertig: Backsteinwand, Mikrofon, Karteikarten, Spot, Lach-Symbole, Standing Ovation. Bewegung nur über transform/opacity. */
+/* Comedy-Club: Backsteinwand hinter der Bühne. */
+.kg-schlagfertig .kg-main{position:relative;background:
+  repeating-linear-gradient(0deg,#0000 0 26px,#0000003d 26px 28px),
+  repeating-linear-gradient(90deg,#0000 0 62px,#0000002e 62px 64px),
+  radial-gradient(120% 90% at 50% 10%,#7a3f33,#3a1d22 55%,#1c1220)}
+.xp-sl-mic{position:absolute;right:12px;bottom:0;width:34px;opacity:.85;pointer-events:none}
+.xp-sl-mic svg{display:block;width:100%;height:auto}
+/* Karteikarten: rote Kopflinie, blaue Schreiblinien. */
+.kg-schlagfertig .sl-ans,.kg-schlagfertig .sl-card{position:relative;border-radius:6px;background:linear-gradient(#0000 0 30px,#c0392b66 30px 32px,#0000 32px),repeating-linear-gradient(#0000 0 27px,#2f6fd033 27px 28px),#fbf6e6}
+.kg-schlagfertig .sl-ans.mine{background:linear-gradient(#0000 0 30px,#c0392b66 30px 32px,#0000 32px),repeating-linear-gradient(#0000 0 27px,#2f6fd033 27px 28px),#e9e2f2}
+.kg-schlagfertig .sl-ans .sl-text,.kg-schlagfertig .sl-card .sl-text{padding-top:22px}
+/* Spot auf der besseren Antwort, die andere abgedunkelt. */
+.kg-schlagfertig .sl-card.xp-spot{box-shadow:0 0 0 3px #ffd98a,0 10px 26px #0008}
+.kg-schlagfertig .sl-card.xp-spot.hit{box-shadow:0 0 0 4px var(--gold),0 10px 26px #0008}
+.kg-schlagfertig .sl-card.xp-dim{animation:none;opacity:.55}
+.xp-sl-cone{position:absolute;left:8%;right:8%;bottom:100%;height:120px;pointer-events:none;opacity:.55;transform-origin:50% 100%;background:linear-gradient(#ffe9b000,#ffe9b066);clip-path:polygon(42% 0,58% 0,100% 100%,0 100%)}
+/* Stimmen als Lach-Symbole. */
+.xp-sl-laughs{display:inline-flex;gap:2px}
+.xp-sl-ha{width:20px;height:20px;display:block}
+/* Standing Ovation. */
+.xp-plaque.xp-sl-ovation{width:260px;margin:-150px 0 0 -130px}
+.xp-plaque.xp-sl-ovation>b{padding:7px 18px;border:2px solid #7a1f1b;border-radius:999px;background:#c0392b;color:#fff7e0;font:900 20px/1.15 Georgia,serif;box-shadow:0 4px 0 #5a1512}
+@media(max-width:640px){.xp-sl-mic{display:none}.xp-sl-cone{height:60px}}
