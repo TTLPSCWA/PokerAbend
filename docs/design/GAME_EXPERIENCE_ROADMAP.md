@@ -269,6 +269,10 @@ Die Priorität richtet sich danach, wie oft ein Spiel am Abend gespielt wird:
 - **Sound:** Ansage „Re!“ als kurzer Messington, „Kontra!“ als tieferer Gegenton. Fuchs gefangen klingt nach Jagdhorn (synthetisch, kurz).
 - **Animation:** Bei geklärter Partei drehen sich die Aufsteller um. Gefangene Füchse springen zum Stich-Gewinner.
 - **Highlight:** Doppelkopf (40 Augen im Stich): Der Stich leuchtet und bekommt die Plakette „Doko!“.
+- **Status:** done
+- **Implementierungscommit:** `2bd9fc71f8ca21b463e31a184c19e4353e729126`
+- **Nachweise:** `docs/design/experience/EXP-087/README.md`, `test/ui/exp-doppelkopf.spec.js`, `test/experience-doppelkopf.test.js`, `public/games/doppelkopf/experience.js`
+- **Umsetzung:** Palette `doppelkopf`, Vereinsheim mit Rundenzettel, Re-/Kontra-Aufsteller (nur öffentliche Parteien), Fuchs-Plakette mit Jagdhorn, Stich zum Gewinner, „Doko!“ bei 40 Augen.
 
 #### EXP-053 · Stichmeister (`stichmeister`) · P2
 - **Welt:** Wahrsagezelt mit Sternenhimmel. Ansagen werden in eine Glaskugel geschrieben.
