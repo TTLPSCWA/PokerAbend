@@ -1,0 +1,11 @@
+{
+  "fps": 45.637,
+  "baselineFps": 46.204,
+  "workSeconds": 1.599,
+  "baselineWorkSeconds": 1.515,
+  "ratio": 0.947,
+  "fpsRatio": 0.988,
+  "cpuThrottle": 4,
+  "minRatio": 0.9,
+  "method": "Hauptthread-Rechenzeit ohne/mit neuer Optik (Median aus 5 Läufen, Reihenfolge wechselnd); ratio = Rechenzeit ohne / mit"
+}

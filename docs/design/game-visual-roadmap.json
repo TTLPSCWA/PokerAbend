@@ -2451,7 +2451,7 @@
       "source_audit": [
         {
           "path": "public/games/stapelrennen/stapelrennen.css",
-          "sha256": "acc1e04b29fa38743332ee6b0932ec1c211981800661aade40c8accf7f88f9fe",
+          "sha256": "a6194f4f233f9ed39ba5091dc98829e5168841348a5731d852e24699ab2fb46d",
           "css_classes": [
             "kc-st",
             "cr",

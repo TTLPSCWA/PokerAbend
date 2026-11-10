@@ -9,6 +9,7 @@ Jede Grafik in `public/games/<spiel>/art/` steht hier mit Herkunft und Lizenz. F
 | ART-002 | `public/games/poker/art/chip-top-c1…c5.svg`, `public/games/poker/art/chip-side-c1…c5.svg` | eigene Zeichnung (per Skript erzeugt) |
 | ART-002 | `public/games/poker/art/felt.webp` | eigene Filzstruktur (erzeugtes Rauschen, 128 × 128, kachelbar) |
 | ART-004 | `public/games/farbenchaos/art/table.webp` | eigene Leinenstruktur (erzeugt, 96 × 96, kachelbar) |
+| ART-009 | `public/games/stapelrennen/art/table.webp` | eigene Leinen-/Papierstruktur (erzeugt, 96 × 96, kachelbar) |
 
 ## Fremde Grafiken
 
