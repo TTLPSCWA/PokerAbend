@@ -1233,13 +1233,20 @@
       "game_name": "Kronenjagd",
       "priority": "P1",
       "vis_id": "VIS-042",
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "677d9c8126b2d1c47158eb6f5dd552e5b2924a55",
       "world": "Burghof mit Teppich und Thron in der Mitte.",
       "pieces_and_material": "Krone als goldenes Objekt, das von Kopf zu Kopf springt.",
       "sound": "Fanfare beim Kronengewinn, Trompeten-Abfall bei Verlust.",
       "animation": "Krone springt im Bogen zum Fänger, Krönchen-Zähler läuft hoch.",
-      "highlight": "30 Sekunden durchgehend gekrönt: Thronsaal-Banner wehen."
+      "highlight": "30 Sekunden durchgehend gekrönt: Thronsaal-Banner wehen.",
+      "evidence": [
+        "docs/design/experience/EXP-042/README.md",
+        "test/ui/exp-kronenjagd.spec.js",
+        "test/experience-kronenjagd.test.js",
+        "public/games/kronenjagd/experience.js"
+      ],
+      "implementation_note": "Palette `kronenjagd`, Burghof im Canvas, eigene Krone mit Sprungbogen, Krönchen-Zähler, Thronsaal-Banner nach 30 Sekunden. Bewegung läuft im Canvas; Budget als Vergleich mit/ohne Paket (≥ 0,9)."
     },
     {
       "id": "EXP-078",

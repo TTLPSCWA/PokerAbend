@@ -711,6 +711,10 @@ Die Priorität richtet sich danach, wie oft ein Spiel am Abend gespielt wird:
 - **Sound:** Fanfare beim Kronengewinn, Trompeten-Abfall bei Verlust.
 - **Animation:** Krone springt im Bogen zum Fänger, Krönchen-Zähler läuft hoch.
 - **Highlight:** 30 Sekunden durchgehend gekrönt: Thronsaal-Banner wehen.
+- **Status:** done
+- **Implementierungscommit:** `677d9c8126b2d1c47158eb6f5dd552e5b2924a55`
+- **Nachweise:** `docs/design/experience/EXP-042/README.md`, `test/ui/exp-kronenjagd.spec.js`, `test/experience-kronenjagd.test.js`, `public/games/kronenjagd/experience.js`
+- **Umsetzung:** Palette `kronenjagd`, Burghof im Canvas, eigene Krone mit Sprungbogen, Krönchen-Zähler, Thronsaal-Banner nach 30 Sekunden. Bewegung läuft im Canvas; Budget als Vergleich mit/ohne Paket (≥ 0,9).
 
 #### EXP-078 · Labyrinth-Chaos (`labyrinth-chaos`) · P2
 - **Welt:** Heckenlabyrinth, Wände wachsen und schrumpfen als Hecken.
