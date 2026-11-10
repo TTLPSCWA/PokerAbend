@@ -918,13 +918,20 @@
       "game_name": "Kritzelpost",
       "priority": "P1",
       "vis_id": "VIS-038",
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "69193fce1614ff09ebf9dc59e95aec6089358a2a",
       "world": "Postamt mit Sortierfächern, Umschläge wandern von Fach zu Fach.",
       "pieces_and_material": "Briefmarken mit Avatar-Eule, Poststempel mit Rundennummer.",
       "sound": "Stempel-Klatsch beim Abgeben, Umschlag-Rascheln, Postsirene bei der Auflösung.",
       "animation": "Am Ende spult die Kette wie ein Postbote ab: Umschlag öffnet, nächstes Bild, nächster Satz.",
-      "highlight": "Kette erreicht wieder den Anfangsbegriff: „Zugestellt!“-Stempel mit Konfetti."
+      "highlight": "Kette erreicht wieder den Anfangsbegriff: „Zugestellt!“-Stempel mit Konfetti.",
+      "evidence": [
+        "docs/design/experience/EXP-038/README.md",
+        "test/ui/exp-kritzelpost.spec.js",
+        "test/experience-kritzelpost.test.js",
+        "public/games/kritzelpost/experience.js"
+      ],
+      "implementation_note": "Palette `kritzelpost`, Poststempel mit Schrittnummer, Eulen-Briefmarken, abspulende Ketten, Stempel „Zugestellt!“ mit Konfetti. Fremde Beiträge bleiben bis zur Auflösung verdeckt."
     },
     {
       "id": "EXP-039",

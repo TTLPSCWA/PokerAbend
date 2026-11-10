@@ -549,6 +549,10 @@ Die Priorität richtet sich danach, wie oft ein Spiel am Abend gespielt wird:
 - **Sound:** Stempel-Klatsch beim Abgeben, Umschlag-Rascheln, Postsirene bei der Auflösung.
 - **Animation:** Am Ende spult die Kette wie ein Postbote ab: Umschlag öffnet, nächstes Bild, nächster Satz.
 - **Highlight:** Kette erreicht wieder den Anfangsbegriff: „Zugestellt!“-Stempel mit Konfetti.
+- **Status:** done
+- **Implementierungscommit:** `69193fce1614ff09ebf9dc59e95aec6089358a2a`
+- **Nachweise:** `docs/design/experience/EXP-038/README.md`, `test/ui/exp-kritzelpost.spec.js`, `test/experience-kritzelpost.test.js`, `public/games/kritzelpost/experience.js`
+- **Umsetzung:** Palette `kritzelpost`, Poststempel mit Schrittnummer, Eulen-Briefmarken, abspulende Ketten, Stempel „Zugestellt!“ mit Konfetti. Fremde Beiträge bleiben bis zur Auflösung verdeckt.
 
 #### EXP-039 · Bildunterschrift (`bildunterschrift`) · P2
 - **Welt:** Kleine Galerie mit Bilderrahmen und Messingschildern.
