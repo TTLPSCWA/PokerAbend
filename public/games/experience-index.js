@@ -16,4 +16,5 @@ export const EXPERIENCES = Object.freeze([
   'rhythmus-rausch',
   'skat',
   'doppelkopf',
+  'reaktor-notfall',
 ]);
