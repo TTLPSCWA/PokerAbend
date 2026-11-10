@@ -1,0 +1,21 @@
+/* EXP-001 Scotland Yard: Tageszeit, Hüte, Nebel beim Auftauchen, Festnahme-Stempel. Bewegung nur über transform/opacity. */
+/* Tageszeit: getönte Ebene unter Linien und Haltestellen, damit Nummern und Farben lesbar bleiben. */
+[data-scene='scotland-yard'] .sy-map::before{content:'';position:absolute;inset:0;pointer-events:none;opacity:0}
+[data-scene='scotland-yard'] .sy-map[data-xp-time='daemmerung']::before{background:linear-gradient(180deg,#d9733f,#6a4a8c);opacity:.2}
+[data-scene='scotland-yard'] .sy-map[data-xp-time='nacht']::before{background:linear-gradient(180deg,#16233f,#0d1526);opacity:.36}
+[data-scene='scotland-yard'] .sy-map[data-xp-time='morgen']::before{background:linear-gradient(180deg,#f3d58a,#e9a36c);opacity:.16}
+[data-scene='scotland-yard'] .sy-map[data-xp='zeitwechsel']::before{animation:xp-sy-shift 1.3s ease-out both}
+@keyframes xp-sy-shift{from{opacity:0}}
+/* Detektive tragen einen Hut mit Band in ihrer Ermittlerfarbe, Mr. X einen tief gezogenen Schattenhut mit Mantelkragen. */
+[data-scene='scotland-yard'] .sy-stop.detective .sy-piece::before,[data-scene='scotland-yard'] .sy-stop.mister .sy-piece::before{content:'';position:absolute;left:50%;top:-8px;width:25px;height:11px;margin-left:-12.5px;background:linear-gradient(#1d262e 0 58%,var(--agent,#bf9b55) 58% 76%,#1d262e 76%);clip-path:polygon(24% 0,76% 0,82% 68%,100% 74%,100% 100%,0 100%,0 74%,18% 68%);pointer-events:none}
+[data-scene='scotland-yard'] .sy-stop.mister .sy-piece{background:linear-gradient(#2b3540,#10161c);border-color:#bf9b55}
+[data-scene='scotland-yard'] .sy-stop.mister .sy-piece::before{width:29px;margin-left:-14.5px;transform:rotate(-7deg);background:#0b1015}
+[data-scene='scotland-yard'] .sy-stop.mister .sy-piece::after{content:'';position:absolute;left:50%;bottom:-6px;width:23px;height:9px;margin-left:-11.5px;background:#10161c;clip-path:polygon(0 0,38% 55%,50% 0,62% 55%,100% 0,86% 100%,14% 100%);pointer-events:none}
+/* Auftauchen: Nebelschwaden als Verlauf (kein Weichzeichner). */
+.xp-sy-fog{position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;pointer-events:none;opacity:0;background:radial-gradient(closest-side,#e9edf0e6,#c9d2d899 45%,#aeb9c200 100%)}
+[data-scene='scotland-yard'] .sy-map[data-xp='auftauchen'] .sy-stop.mister{animation:xp-sy-seen .5s ease-out 2}
+@keyframes xp-sy-seen{50%{transform:translate(-50%,-50%) scale(1.14)}}
+/* Festnahme: Feld von Mr. X bleibt markiert (auch nach Neuladen), der Stempel erscheint über dem Feld. */
+[data-scene='scotland-yard'] .sy-stop.xp-caught{box-shadow:0 0 0 4px #b3261e,0 0 0 9px #b3261e44,0 5px 10px #0005}
+.xp-plaque.xp-sy-stamp>b{margin-top:44px;padding:5px 14px;border:3px double #b3261e;border-radius:6px;background:#fbf3e2e6;color:#b3261e;font:900 19px/1.1 Georgia,serif;letter-spacing:.14em;transform:rotate(-9deg);box-shadow:none}
+@media(prefers-reduced-motion:reduce){[data-scene='scotland-yard'] .sy-map[data-xp]::before,[data-scene='scotland-yard'] .sy-map[data-xp] .sy-stop{animation:none!important}}

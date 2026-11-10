@@ -8,6 +8,7 @@ export const PALETTES = Object.freeze(['standard', 'casino', 'holz', 'kneipe', '
   // EXP-Spielpakete: je Palette eine Zeile hier und eine in `loaders`.
   'schach',
   'huetchen',
+  'scotland-yard',
 ]);
 export { SCENES } from './ambient/scenes.js';
 // EXP-F5: an ambient scene is scaled by this gain on top of the atmosphere slider and fades in gently.
@@ -25,6 +26,7 @@ const loaders = {
   kneipe: () => import('./palettes/kneipe.js'), party: () => import('./palettes/party.js'),
   schach: () => import('./palettes/schach.js'),
   huetchen: () => import('./palettes/huetchen.js'),
+  'scotland-yard': () => import('./palettes/scotland-yard.js'),
 };
 const paletteCache = new Map([['standard', Promise.resolve(standard)]]);
 export function loadPalette(name) {
