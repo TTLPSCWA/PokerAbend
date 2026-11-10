@@ -173,6 +173,10 @@ Die Priorität richtet sich danach, wie oft ein Spiel am Abend gespielt wird:
 - **Sound:** Knackiges Kartenklatschen, „Zieh“-Rascheln mit Stapeleffekt bei +2/+4. Aussetzen ist ein Stopp-Ton, Richtungswechsel ein Wusch, der Ruf eine kurze Fanfare.
 - **Animation:** Gezogene Karten fächern in die Hand. Bei +4 fliegen vier Karten nacheinander zum Opfer, beim Richtungswechsel dreht sich der Pfeilring sichtbar.
 - **Highlight:** Stapel-Schlacht: Wird +2 auf +2 gestapelt, wächst ein Zähler über dem Ablagestapel („+6!“). Der Verlierer bekommt den ganzen Schwall.
+- **Status:** done
+- **Implementierungscommit:** `f0052c85679b9b6c719d5d6db949d42e1e36fd11`
+- **Nachweise:** `docs/design/experience/EXP-004/README.md`, `test/ui/exp-farbenchaos.spec.js`, `test/experience-shedding.test.js`, `public/games/farbenchaos/experience.js`
+- **Umsetzung:** Palette `uno`, Fächer beim Ziehen, fliegende Kartenrücken, Pfeilring, Wunsch-Drehscheibe, Stapel-Schlacht mit Zähler und Schwall. Gilt in allen fünf Farbwelten; fremde Karten bleiben Kartenrücken.
 
 #### EXP-003 · Mau-Mau (`maumau`) · P1
 - **Welt:** Gemütlicher Küchentisch mit Wachstuch, Kaffeetasse und Brotkorb am Rand.

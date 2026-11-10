@@ -183,13 +183,20 @@
       "game_name": "UNO",
       "priority": "P1",
       "vis_id": "VIS-004",
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "f0052c85679b9b6c719d5d6db949d42e1e36fd11",
       "world": "Die fünf bestehenden Farbwelten behalten. Neu: Jede Welt bekommt eine Bühne mit Kulisse, die auf Aktionen reagiert, z. B. dreht sich bei „Richtungswechsel“ der ganze Tischring.",
       "pieces_and_material": "Eigene Kartenrücken pro Welt, große Ecksymbole (6/9 unterstrichen). Wunschfarben-Rad als Drehscheibe.",
       "sound": "Knackiges Kartenklatschen, „Zieh“-Rascheln mit Stapeleffekt bei +2/+4. Aussetzen ist ein Stopp-Ton, Richtungswechsel ein Wusch, der Ruf eine kurze Fanfare.",
       "animation": "Gezogene Karten fächern in die Hand. Bei +4 fliegen vier Karten nacheinander zum Opfer, beim Richtungswechsel dreht sich der Pfeilring sichtbar.",
-      "highlight": "Stapel-Schlacht: Wird +2 auf +2 gestapelt, wächst ein Zähler über dem Ablagestapel („+6!“). Der Verlierer bekommt den ganzen Schwall."
+      "highlight": "Stapel-Schlacht: Wird +2 auf +2 gestapelt, wächst ein Zähler über dem Ablagestapel („+6!“). Der Verlierer bekommt den ganzen Schwall.",
+      "evidence": [
+        "docs/design/experience/EXP-004/README.md",
+        "test/ui/exp-farbenchaos.spec.js",
+        "test/experience-shedding.test.js",
+        "public/games/farbenchaos/experience.js"
+      ],
+      "implementation_note": "Palette `uno`, Fächer beim Ziehen, fliegende Kartenrücken, Pfeilring, Wunsch-Drehscheibe, Stapel-Schlacht mit Zähler und Schwall. Gilt in allen fünf Farbwelten; fremde Karten bleiben Kartenrücken."
     },
     {
       "id": "EXP-003",
