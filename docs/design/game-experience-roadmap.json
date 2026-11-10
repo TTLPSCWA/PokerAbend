@@ -897,13 +897,20 @@
       "game_name": "Malen & Raten",
       "priority": "P1",
       "vis_id": "VIS-040",
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "4d22bc28100959d0194ca9f597b2124c7f0837f5",
       "world": "Atelier mit Staffelei, Farbtöpfen und Pinselbecher.",
       "pieces_and_material": "Pinselspitzen-Auswahl, Farbpalette als Holzpalette.",
       "sound": "Pinselstrich-Rauschen (leise, nur beim Zeichner), Treffer-Glocke beim richtigen Raten, Zeit läuft ab als Eieruhr-Klingeln.",
       "animation": "Erste richtige Lösung lässt das Bild golden einrahmen.",
-      "highlight": "Alle erraten es: Das Bild hängt sich an eine „Galerie des Abends“-Wand."
+      "highlight": "Alle erraten es: Das Bild hängt sich an eine „Galerie des Abends“-Wand.",
+      "evidence": [
+        "docs/design/experience/EXP-040/README.md",
+        "test/ui/exp-malen-raten.spec.js",
+        "test/experience-malen-raten.test.js",
+        "public/games/malen-raten/experience.js"
+      ],
+      "implementation_note": "Palette `malen-raten`, Holzpalette, goldener Rahmen nach der ersten Lösung, Galerie des Abends, Eieruhr bei zehn Sekunden. Pinselspitzen bleiben die vorhandene Stiftstärken-Auswahl (geteiltes Zeichenwerkzeug)."
     },
     {
       "id": "EXP-038",

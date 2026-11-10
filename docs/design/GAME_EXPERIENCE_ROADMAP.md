@@ -538,6 +538,10 @@ Die Priorität richtet sich danach, wie oft ein Spiel am Abend gespielt wird:
 - **Sound:** Pinselstrich-Rauschen (leise, nur beim Zeichner), Treffer-Glocke beim richtigen Raten, Zeit läuft ab als Eieruhr-Klingeln.
 - **Animation:** Erste richtige Lösung lässt das Bild golden einrahmen.
 - **Highlight:** Alle erraten es: Das Bild hängt sich an eine „Galerie des Abends“-Wand.
+- **Status:** done
+- **Implementierungscommit:** `4d22bc28100959d0194ca9f597b2124c7f0837f5`
+- **Nachweise:** `docs/design/experience/EXP-040/README.md`, `test/ui/exp-malen-raten.spec.js`, `test/experience-malen-raten.test.js`, `public/games/malen-raten/experience.js`
+- **Umsetzung:** Palette `malen-raten`, Holzpalette, goldener Rahmen nach der ersten Lösung, Galerie des Abends, Eieruhr bei zehn Sekunden. Pinselspitzen bleiben die vorhandene Stiftstärken-Auswahl (geteiltes Zeichenwerkzeug).
 
 #### EXP-038 · Kritzelpost (`kritzelpost`) · P1
 - **Welt:** Postamt mit Sortierfächern, Umschläge wandern von Fach zu Fach.
