@@ -87,7 +87,10 @@ Der Host wählt für **UNO (Classic), Skip-Bo und Phase 10** eine Kartenwelt; si
 - **Spiele:** `farbenchaos`, `stapelrennen`, `zehnetappen`
 - **Ziel:** Host-Auswahl im Raum (für alle, auch mitten in der Runde), Welten als Daten, eine gemeinsame Kartenvorlage für alle drei Spiele, Weltton für Tisch und Flächen, selbst gehostete Schriften, automatischer Bild- und Leistungstest über alle Welten.
 - **Material:** eigene SVG-Motive (per Skript erzeugt), Schriften unter SIL OFL (Cinzel, Orbitron, Press Start 2P, Bangers, Lilita One, Black Ops One, Righteous, Fredoka).
-- **Status:** planned
+- **Status:** done
+- **Implementierungscommit:** `361294f68aa1b99de6999cf69ad83a778db21ff5`
+- **Umsetzung:** Host-Auswahl (setCardWorld) für alle am Tisch, 40 Welten mit gemeinsamer Kartenvorlage und 13 Rahmenarten, Weltton für Tisch, Spielfarben behalten ihren Farbton, UNO-Varianten mit eigener Gestaltung unverändert.
+- **Nachweise:** `test/card-worlds.test.js`, `test/ui/art-card-worlds.spec.js`, `docs/design/CARD_WORLDS.md`, `docs/design/art/ART-T1/README.md`, `docs/design/art/ART-T1/farbenchaos-desktop.webp`, `docs/design/art/ART-T1/stapelrennen-desktop.webp`, `docs/design/art/ART-T1/zehnetappen-desktop.webp`, `docs/design/art/ART-T1/farbenchaos-mobil.webp`, `docs/design/art/ART-T1/host-menu-mobil.webp`, `docs/design/art/ART-T1/fps-desktop.json`
 
 #### ART-T2a · Pilotwelten UNO · P1
 - **Spiele:** `farbenchaos`

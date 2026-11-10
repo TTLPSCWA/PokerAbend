@@ -1,0 +1,11 @@
+{
+  "fps": 50.497,
+  "baselineFps": 47.292,
+  "workSeconds": 1.793,
+  "baselineWorkSeconds": 1.832,
+  "cpuThrottle": 4,
+  "minRatio": 0.9,
+  "method": "Hauptthread-Rechenzeit ohne/mit Kartenwelt U-01 (Median aus 5 Läufen, Reihenfolge wechselnd); ratio = Rechenzeit ohne / mit",
+  "ratio": 1.022,
+  "fpsRatio": 1.068
+}
