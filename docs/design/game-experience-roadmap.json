@@ -974,13 +974,20 @@
       "game_name": "Schlagfertig",
       "priority": "P1",
       "vis_id": "VIS-019",
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "71c647ad2e39a2b37154c82face6465a74010a9d",
       "world": "Comedy-Club mit Backsteinwand, Mikrofonständer und Spotlicht.",
       "pieces_and_material": "Antwortkarten als Karteikarten, Stimmen als Lachen-Symbole.",
       "sound": "Publikumslachen (synthetisch, kurz, Stärke nach Stimmen), Rimshot bei Gleichstand.",
       "animation": "Die bessere Antwort wird vom Spot angestrahlt, die andere wird abgedunkelt.",
-      "highlight": "Alle Stimmen für eine Antwort: Standing Ovation (Applaus und Rosen)."
+      "highlight": "Alle Stimmen für eine Antwort: Standing Ovation (Applaus und Rosen).",
+      "evidence": [
+        "docs/design/experience/EXP-019/README.md",
+        "test/ui/exp-schlagfertig.spec.js",
+        "test/experience-schlagfertig.test.js",
+        "public/games/schlagfertig/experience.js"
+      ],
+      "implementation_note": "Palette `schlagfertig`, Backsteinwand und Mikrofon, Karteikarten, Lach-Symbole, Spot auf der besseren Antwort, Rimshot bei Gleichstand, Standing Ovation beim Volltreffer."
     },
     {
       "id": "EXP-020",

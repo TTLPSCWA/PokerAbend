@@ -579,6 +579,10 @@ Die Priorität richtet sich danach, wie oft ein Spiel am Abend gespielt wird:
 - **Sound:** Publikumslachen (synthetisch, kurz, Stärke nach Stimmen), Rimshot bei Gleichstand.
 - **Animation:** Die bessere Antwort wird vom Spot angestrahlt, die andere wird abgedunkelt.
 - **Highlight:** Alle Stimmen für eine Antwort: Standing Ovation (Applaus und Rosen).
+- **Status:** done
+- **Implementierungscommit:** `71c647ad2e39a2b37154c82face6465a74010a9d`
+- **Nachweise:** `docs/design/experience/EXP-019/README.md`, `test/ui/exp-schlagfertig.spec.js`, `test/experience-schlagfertig.test.js`, `public/games/schlagfertig/experience.js`
+- **Umsetzung:** Palette `schlagfertig`, Backsteinwand und Mikrofon, Karteikarten, Lach-Symbole, Spot auf der besseren Antwort, Rimshot bei Gleichstand, Standing Ovation beim Volltreffer.
 
 #### EXP-020 · Wer hat das gesagt? (`werhatdasgesagt`) · P2
 - **Welt:** Lagerfeuerkreis mit Baumstämmen.
