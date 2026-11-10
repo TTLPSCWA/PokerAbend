@@ -41,7 +41,10 @@ Die IDs folgen den VIS-Nummern: **ART-002 gehört zu VIS-002 (Texas Hold'em)** u
 #### ART-004 · UNO (`farbenchaos`) · P1
 - **Ziel:** Kartenfronten und -rücken mit mehr Tiefe, Ablagestapel mit echtem Kartenstapel-Rand, Spieltisch mit Struktur.
 - **Material:** eigene SVG-Karten, ggf. Tischtextur (CC0, z. B. ShareTextures/ambientCG).
-- **Status:** planned
+- **Status:** done
+- **Implementierungscommit:** `887bf79d08bbf0c76ca2aa6ebaaa831b0a2fa70b`
+- **Umsetzung:** Papierkante und Glanz auf allen Karten, Stapelhöhe bei Nachzieh- und Ablagestapel, eigene Leinenstruktur auf dem Tisch; alle fünf Welten.
+- **Nachweise:** `test/ui/art-farbenchaos.spec.js`, `docs/design/art/ART-004/README.md`, `docs/design/art/ART-004/table-classic-desktop.png`, `docs/design/art/ART-004/table-classic-mobil.png`, `docs/design/art/ART-004/fps-desktop.json`
 
 #### ART-009 · Skip-Bo (`stapelrennen`) · P2
 - **Ziel:** Karten und Aufbaustapel mit Stapelhöhe, Spielertisch mit Struktur.

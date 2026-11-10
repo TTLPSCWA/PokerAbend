@@ -31,10 +31,18 @@
       "game_name": "UNO",
       "priority": "P1",
       "vis_id": "VIS-004",
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "887bf79d08bbf0c76ca2aa6ebaaa831b0a2fa70b",
       "goal": "Kartenfronten und -rücken mit mehr Tiefe, Ablagestapel mit echtem Kartenstapel-Rand, Spieltisch mit Struktur.",
-      "material": "eigene SVG-Karten, ggf. Tischtextur (CC0, z. B. ShareTextures/ambientCG)."
+      "material": "eigene SVG-Karten, ggf. Tischtextur (CC0, z. B. ShareTextures/ambientCG).",
+      "implementation_note": "Papierkante und Glanz auf allen Karten, Stapelhöhe bei Nachzieh- und Ablagestapel, eigene Leinenstruktur auf dem Tisch; alle fünf Welten.",
+      "evidence": [
+        "test/ui/art-farbenchaos.spec.js",
+        "docs/design/art/ART-004/README.md",
+        "docs/design/art/ART-004/table-classic-desktop.png",
+        "docs/design/art/ART-004/table-classic-mobil.png",
+        "docs/design/art/ART-004/fps-desktop.json"
+      ]
     },
     {
       "id": "ART-009",
