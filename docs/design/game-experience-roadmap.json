@@ -568,13 +568,20 @@
       "game_name": "Scotland Yard",
       "priority": "P1",
       "vis_id": "VIS-001",
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "b50d72a77e9b23c0dd2ae907e16fe9d1006d4935",
       "world": "Bleibt die geprüfte Stadt Aure. Neu: Tageszeit wechselt alle 6 Züge (Dämmerung, Nacht, Morgen).",
       "pieces_and_material": "Detektive als Figuren mit Hüten in Ermittlerfarben, Mr. X als Schatten mit Mantel.",
       "sound": "Taxi-Hupe, Bus-Bremse, U-Bahn-Rauschen und Fährhorn je nach Ticket. Spannungston bei Auftauchzügen.",
       "animation": "Figuren fahren ihre Linie entlang. Beim Auftauchen von Mr. X erscheint seine Silhouette mit Nebel-Effekt (CSS-Gradient, kein Blur).",
-      "highlight": "Festnahme: Alle Detektiv-Figuren springen auf das Feld, Handschellen-Klick, Akte wird gestempelt „Gefasst“."
+      "highlight": "Festnahme: Alle Detektiv-Figuren springen auf das Feld, Handschellen-Klick, Akte wird gestempelt „Gefasst“.",
+      "evidence": [
+        "docs/design/experience/EXP-001/README.md",
+        "test/ui/exp-scotland-yard.spec.js",
+        "test/experience-scotland-yard.test.js",
+        "public/games/scotland-yard/experience.js"
+      ],
+      "implementation_note": "Palette `scotland-yard`, Fahrt entlang der Linie, Tageszeit, Nebel beim Auftauchen, Festnahme mit Stempel. Hüte als CSS-Formen; das Fährhorn hört nur Mr. X selbst, damit ein Black-Ticket nichts verrät."
     },
     {
       "id": "EXP-007",

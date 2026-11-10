@@ -369,6 +369,10 @@ Die Priorität richtet sich danach, wie oft ein Spiel am Abend gespielt wird:
 - **Sound:** Taxi-Hupe, Bus-Bremse, U-Bahn-Rauschen und Fährhorn je nach Ticket. Spannungston bei Auftauchzügen.
 - **Animation:** Figuren fahren ihre Linie entlang. Beim Auftauchen von Mr. X erscheint seine Silhouette mit Nebel-Effekt (CSS-Gradient, kein Blur).
 - **Highlight:** Festnahme: Alle Detektiv-Figuren springen auf das Feld, Handschellen-Klick, Akte wird gestempelt „Gefasst“.
+- **Status:** done
+- **Implementierungscommit:** `b50d72a77e9b23c0dd2ae907e16fe9d1006d4935`
+- **Nachweise:** `docs/design/experience/EXP-001/README.md`, `test/ui/exp-scotland-yard.spec.js`, `test/experience-scotland-yard.test.js`, `public/games/scotland-yard/experience.js`
+- **Umsetzung:** Palette `scotland-yard`, Fahrt entlang der Linie, Tageszeit, Nebel beim Auftauchen, Festnahme mit Stempel. Hüte als CSS-Formen; das Fährhorn hört nur Mr. X selbst, damit ein Black-Ticket nichts verrät.
 
 #### EXP-007 · Mensch ärgere Dich nicht (`huetchen`) · P1
 - **Welt:** Gartentisch im Sommer, Brett aus Holz mit gemalten Feldern.
