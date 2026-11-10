@@ -7,7 +7,7 @@ const t = (de, en) => (globalThis.I18n?.language === 'en' ? en : de);
 const SIGN = '<svg class="xp-sk-sign" viewBox="0 0 180 64" aria-hidden="true"><path d="M30 4v10M150 4v10" stroke="#3a2614" stroke-width="3"/><rect x="6" y="14" width="168" height="46" rx="6" fill="#6b4320" stroke="#3a2614" stroke-width="3"/><rect x="12" y="20" width="156" height="34" rx="4" fill="none" stroke="#d9b87588" stroke-width="1.500"/><text x="90" y="44" text-anchor="middle" font-family="Georgia,serif" font-size="20" font-weight="700" fill="#f3dfae">Stammtisch</text></svg>';
 const PENCIL = '<svg class="xp-sk-pencil" viewBox="0 0 120 16" aria-hidden="true"><path d="M2 8 18 2h86v12H18z" fill="#e9b949" stroke="#5a3d10" stroke-width="1.500"/><path d="M2 8 18 2v12z" fill="#f2d9a8"/><path d="M2 8l6-2.200v4.400z" fill="#333"/><rect x="104" y="2" width="14" height="12" rx="2" fill="#d98c8c" stroke="#5a3d10" stroke-width="1.500"/></svg>';
 const JACKS = ['Jc', 'Js', 'Jh', 'Jd'];
-/** Trumpf nach Skatregeln (wie games/skat/rules.js): Buben immer, bei Farbspiel auch die Trumpffarbe. */
+/** Trumpf nach Skatregeln (wie in den Spielregeln des Servers): Buben immer, bei Farbspiel auch die Trumpffarbe. */
 export const isTrump = (c, g) => !!g && (g.type === 'suit' ? c[0] === 'J' || c[1] === g.suit : g.type === 'grand' || g.type === 'ramsch' ? c[0] === 'J' : false);
 /** Was ist zwischen zwei bestätigten Zuständen öffentlich passiert? */
 export function events(a, b) {
