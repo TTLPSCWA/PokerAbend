@@ -1,0 +1,16 @@
+/* EXP-087 Doppelkopf: Vereinsheim, Re-/Kontra-Aufsteller, Rundenzettel, Fuchs-Plakette, „Doko!“. Bewegung nur über transform/opacity. */
+/* Vereinsheim: getäfelte Wand mit Wimpel-Leiste. */
+.kg-doppelkopf .kg-main{background:linear-gradient(#0000 0 26px,#8a2f3a 26px 30px,#0000 30px),repeating-linear-gradient(90deg,#0000 0 70px,#00000026 70px 72px),linear-gradient(180deg,#4a3826,#2c2016)}
+/* Aufsteller an jedem Platz. */
+.xp-dk-plate{display:inline-block;min-width:44px;margin-top:3px;padding:1px 7px;border-radius:3px 3px 0 0;border:1px solid #0006;border-bottom-width:3px;font:800 11px/1.4 system-ui,sans-serif;text-align:center;letter-spacing:.04em;background:#3a3a3a;color:#ddd}
+.xp-dk-plate[data-party='re']{background:#f3dfae;color:#5a2a0c;border-color:#8a5a2a}
+.xp-dk-plate[data-party='kontra']{background:#2f4f6f;color:#e6f0fa;border-color:#18283a}
+/* Rundenzettel. */
+.xp-dk-sheet{display:inline-block;margin-top:6px;padding:3px 12px;border-radius:2px;background:repeating-linear-gradient(#0000 0 15px,#2f6fd033 15px 16px),#fbf6e6;color:#2a2418;font:700 13px/1.3 Georgia,serif;transform:rotate(-1.5deg);box-shadow:0 3px 8px #0006}
+/* Fuchs-Plakette. */
+.xp-dk-fox{position:absolute;width:46px;height:46px;padding:4px;border-radius:50%;background:#fff3e0;border:2px solid #d9772e;box-shadow:0 4px 10px #0007;opacity:0;transform:translate(-50%,-50%)}
+.xp-dk-fox svg{display:block;width:100%;height:100%}
+/* Doko!: Stich leuchtet. */
+.dk-trick article.xp-dk-glow .kc{box-shadow:0 0 0 3px #ffd98a,0 0 18px 4px #ffd98a99!important}
+.xp-plaque.xp-dk-doko{width:200px;margin:-140px 0 0 -100px}
+.xp-plaque.xp-dk-doko>b{padding:7px 22px;border:3px solid #fff3e0;border-radius:999px;background:#8a2f3a;color:#ffe9a8;font:900 26px/1.1 Georgia,serif;transform:rotate(-5deg);box-shadow:0 5px 0 #4a1219}
