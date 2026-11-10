@@ -1,0 +1,27 @@
+/* EXP-002 Texas Hold'em: Salon-Kartenrücken, Messing-Dealer-Button, Chips mit Kantenmuster, All-in-Showdown.
+   Gilt nur mit #game[data-xp-poker]; die übrigen Poker-Varianten bleiben unverändert. Bewegung nur über transform/opacity. */
+/* Kartenrücken „Salon“: Tannengrün mit Bibliotheksornament (Rautengitter, Medaillon, Doppelrahmen). */
+#game[data-xp-poker] .card.back{background:
+  radial-gradient(circle at 50% 50%,#d9b875 0 9%,#0f3b2d 10% 17%,#d9b87599 18% 20%,#0000 21%),
+  radial-gradient(circle at 50% 50%,#0000 0 33%,#d9b87555 34% 36%,#0000 37%),
+  repeating-linear-gradient(45deg,#0000 0 6px,#d9b87540 6px 7px),
+  repeating-linear-gradient(-45deg,#0000 0 6px,#d9b87540 6px 7px),
+  #0f3b2d;box-shadow:inset 0 0 0 3px var(--paper),inset 0 0 0 4px #b8924a,inset 0 0 0 6px #0f3b2d,inset 0 0 0 7px #b8924a99,0 1px 2px rgba(0,0,0,.35),0 4px 10px rgba(0,0,0,.25)}
+/* Dealer-Button aus Messing. */
+#game[data-xp-poker] .dealer{background:radial-gradient(circle at 34% 28%,#f6e2ad,#c99a45 55%,#8a6424);color:#2a1d0c;box-shadow:0 2px 4px rgba(0,0,0,.5),inset 0 0 0 2px #f6e2ad66,inset 0 -2px 0 #6b4a16}
+/* Chips: jeder Wert hat ein eigenes Kantenmuster, damit er auch ohne Farbe erkennbar ist. */
+#game[data-xp-poker] .chip.c1{background:repeating-conic-gradient(var(--c) 0 40deg,#fffd 40deg 60deg)}
+#game[data-xp-poker] .chip.c2{background:repeating-conic-gradient(var(--c) 0 20deg,#fffd 20deg 30deg)}
+#game[data-xp-poker] .chip.c3{background:repeating-conic-gradient(var(--c) 0 66deg,#fffd 66deg 90deg)}
+#game[data-xp-poker] .chip.c4{background:repeating-conic-gradient(var(--c) 0 10deg,#fffd 10deg 20deg,var(--c) 20deg 50deg,#fffd 50deg 60deg)}
+#game[data-xp-poker] .chip.c5{background:repeating-conic-gradient(var(--c) 0 100deg,#fffd 100deg 120deg)}
+#game[data-xp-poker] .chip.c5::after{box-shadow:0 0 0 1px #fff8,inset 0 0 0 2px #fff6}
+/* Board: langsames Aufdecken, wenn nach einem All-in niemand mehr handeln kann. */
+#game[data-xp-poker] .board .card.deal.xp-slow{animation-duration:.6s}
+/* All-in-Showdown: Das Licht wird kurz dunkler (Lichtkegel bleibt auf der Mitte), die Gewinnhand leuchtet in Messing. */
+.xp-pk-dim{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;will-change:opacity;background:radial-gradient(ellipse 46% 40% at 50% 46%,#0000 0 55%,#05080ab8 100%)}
+#game[data-xp-poker] .card.win{position:relative}
+#game[data-xp-poker] .card.win::after{content:'';position:absolute;inset:-3px;border-radius:inherit;pointer-events:none;box-shadow:0 0 0 2px #e3c078,0 0 16px 3px #c99a45cc;opacity:.55}
+#game[data-xp='showdown'][data-xp-poker] .card.win::after{animation:xp-pk-brass 1.3s ease-in-out 2;will-change:opacity}
+@keyframes xp-pk-brass{50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){#game[data-xp-poker] .card.win::after{animation:none!important}}

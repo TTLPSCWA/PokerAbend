@@ -60,7 +60,7 @@
       "path": "public/games/poker/poker.js",
       "archive": "test/fixtures/release-2026-11-08/baseline/public/games/poker/poker.js",
       "baseline_sha256": "749a043080acb4aedba22ed4d6a8d8f54a1aa799c10c4891ea8bdef68bff34b5",
-      "current_sha256": "6e70fa0a97d4ebb0c0d5255dc51484f328bec01cab508a4c3d490c944d87f937"
+      "current_sha256": "f1614a517f56481524362f572386f4ac71caa16476767ea3b04e657038e30342"
     }
   ]
 }

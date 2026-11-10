@@ -13,8 +13,13 @@
 .winner-best { border-top: 1px solid currentColor; padding-top: 8px; }.winner-best h4 { margin: 0; font-size: 14px; }.winner-best p { margin: 4px 0; font-size: 13px; }
 .winner-confetti { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .winner-paper { position: absolute; width: 8px; height: 13px; }.winner-paper.shape-chip { width: 11px; height: 11px; border-radius: 50%; border: 1px solid currentColor; }.winner-paper.shape-leaf { border-radius: 80% 0 80% 0; }.winner-paper.shape-star { clip-path: polygon(50% 0,62% 35%,100% 38%,72% 61%,82% 100%,50% 77%,18% 100%,28% 61%,0 38%,38% 35%); }
-/* Poker: centred in the free area between top bar (~64px) and the dock, so it never hides behind the dock or covers the own seat at the bottom. */
-#game > [data-result-stage] { position: absolute; z-index: 21; left: 50%; top: calc((100% - var(--dock-h, 116px) + 64px) / 2); transform: translate(-50%, -50%); max-width: 540px; width: calc(100% - 24px); max-height: calc(100% - var(--dock-h, 116px) - 96px); overflow: auto; background: var(--panel,#19342a); }
+/* Poker: kompakte Wertung in der freien Ecke oben links (der Tisch ist oval). So bleiben Board, Gewinnhand, Gewinnmeldung und alle Plätze sichtbar,
+   und nichts steckt hinter der Aktionsleiste. Auf schmalen Bildschirmen sitzt sie als flacher Streifen direkt über der Aktionsleiste. */
+#game > [data-result-stage] { position: absolute; z-index: 21; left: 12px; top: 74px; width: min(280px, calc(100% - 24px)); max-height: calc(100% - var(--dock-h, 116px) - 96px); overflow: auto; background: var(--panel,#19342a); padding: 10px; gap: 6px; font-size: 13px; box-shadow: 0 8px 22px #0007; }
+#game > [data-result-stage] .winner-stage-title { font-size: 14px; }
+#game > [data-result-stage] .winner-score { font-size: 16px; }
+/* Schmal oder flach: nur die Gewinner, als flacher Streifen über der Aktionsleiste. */
+@media (max-width: 900px), (max-height: 520px) { #game > [data-result-stage] { top: auto; bottom: calc(var(--dock-h, 116px) + 6px); left: 8px; right: 8px; width: auto; max-height: 26dvh; padding: 8px 10px; gap: 4px; } #game > [data-result-stage] .winner-place:not(.is-winner) { display: none; } #game > [data-result-stage] .winner-stage-title { font-size: 12px; } }
 @media(max-width:500px) { .winner-stage { padding: 10px; }.winner-podium { gap: 5px; }.winner-score { font-size: 19px; } }
 
 .winner-podium .winner-place:first-child { grid-column: 2; grid-row: 1; }

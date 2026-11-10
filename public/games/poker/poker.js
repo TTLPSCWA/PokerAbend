@@ -139,6 +139,10 @@ const sounds = {
   nudge: () => { [880, 660, 880].forEach((f, i) => setTimeout(() => beep(f, 110, 0.07, 'square'), i * 150)); },
 };
 
+// EXP-002: Erlebnis-Modul für Texas Hold'em (Klang, Bewegung, Highlight); die übrigen Varianten behalten die Töne unten.
+let pokerXp = null;
+import('/games/poker/experience.js').then((m) => { pokerXp = window.__pokerXp = m.default; if (S) pokerXp.enter(S); }).catch(() => {});
+
 socket.on('reaction', ({ seat, id, text }) => showReaction(seat, id, text));
 socket.on('nudge', (n) => { if (session) showNudge(n); });
 
@@ -598,19 +602,21 @@ function cues(a, b) {
   if (!b?.hand) return;
   const mine = b.you?.seat;
   const wasMyTurn = a?.hand && !a.hand.done && a.hand.toAct === mine && a.hand.no === b.hand.no && a.hand.street === b.hand.street && a.hand.currentBet === b.hand.currentBet;
+  const xp = pokerXp?.enter(b) ? pokerXp : null;
   if (b.legal && !wasMyTurn) {
-    sounds.turn();
+    if (xp) xp.turn(); else sounds.turn();
     if (document.hidden) { blinkTitle(true); notifyTurn(); }
   }
   if (!b.legal) blinkTitle(false);
   // Neue Hand: mischen; neue Karten in der Mitte: Karten legen
-  if (a?.hand && a.hand.no !== b.hand.no) sfx('shuffle');
+  if (xp) xp.sounds(a, b, { mine, big: bigWin(b.hand) });
+  else if (a?.hand && a.hand.no !== b.hand.no) sfx('shuffle');
   else if (a?.hand?.no === b.hand.no && (b.hand.board?.length || 0) > (a.hand.board?.length || 0)) sfx('card');
   const betsBefore = a?.hand && !a.hand.done ? a.hand.bets : 0;
-  if (b.hand.bets > betsBefore) sounds.chips();
+  if (!xp && b.hand.bets > betsBefore) sounds.chips();
   if (a?.hand && b.you?.seat != null && b.hand.done && !(a.hand.done && a.hand.no === b.hand.no)) {
     const big = bigWin(b.hand);
-    if (b.hand.result?.pots.some((p) => p.winners.includes(mine))) (big ? sounds.bigWin : sounds.win)(); else sounds.chips();
+    if (xp) { /* Töne kamen aus dem Erlebnis-Modul */ } else if (b.hand.result?.pots.some((p) => p.winners.includes(mine))) (big ? sounds.bigWin : sounds.win)(); else sounds.chips();
     const winners = [...new Set(b.hand.result?.pots.flatMap((p) => p.winners) || [])];
     // Erst nachdem die Chips in der Mitte angekommen sind
     setTimeout(() => winners.forEach((w) => chipRain(w, big)), 450);
@@ -1364,6 +1370,7 @@ registerGame('poker', {
     window.finishWinnerStages?.();
     prevS = S; S = st;
     animateChips(prevS, S); syncHistory(); render(); cues(prevS, S);
+    if (pokerXp?.enter(S)) pokerXp.motion(prevS, S);
     window.showWinnerStage?.($('#game'), S, { poker: true, fresh: !!prevS?.hand && !prevS.hand.done && !!S.hand?.done });
   },
   onPrefs() { applyPrefs(); render(); if (panel) { $('#panel-title').textContent = I18n.t(PANEL_TITLES[panel]); renderPanel(true); } },
