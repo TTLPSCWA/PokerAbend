@@ -1,6 +1,6 @@
 # ART-T2b · Pilotwelten Skip-Bo (SB-09 Burgenbau, SB-01 Montagewerk 12, SB-04 Orbitalstation)
 
-Implementierungscommit: `IMPL_COMMIT`
+Implementierungscommit: `3dedf9736cb9a75f2321263ebb5cc4c55bd98b78`
 
 ## Ergebnis
 

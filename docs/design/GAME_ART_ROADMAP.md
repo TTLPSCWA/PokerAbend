@@ -105,7 +105,10 @@ Der Host wählt für **UNO (Classic), Skip-Bo und Phase 10** eine Kartenwelt; si
 - **Spiele:** `stapelrennen`
 - **Ziel:** Feinschliff für SB-09 Burgenbau, SB-01 Montagewerk 12 und SB-04 Orbitalstation: Baureihen als Bauplätze der Welt, Joker, Rückseite, Tisch.
 - **Material:** eigene SVG-Grafiken.
-- **Status:** planned
+- **Status:** done
+- **Implementierungscommit:** `3dedf9736cb9a75f2321263ebb5cc4c55bd98b78`
+- **Umsetzung:** `public/games/card-worlds/pilot-skipbo.css` nur für SB-09, SB-01, SB-04: Baureihen als Bauplätze der Welt (Steinfundament mit Zinnen, Montageplatz mit Warnstreifen, Andockring) mit Bauleiste, leerer Platz mit Weltbild, lesbare Beschriftung, dunkles Zielfeld, Joker mit Streifen und großem Symbol. Skip-Bo zeigt am Tisch keine verdeckten Karten, daher keine Rückseitenänderung.
+- **Nachweise:** `test/ui/art-t2b-skipbo-pilot.spec.js`, `docs/design/art/ART-T2b/README.md`, `docs/design/art/ART-T2b/SB-09-desktop.webp`, `docs/design/art/ART-T2b/SB-01-desktop.webp`, `docs/design/art/ART-T2b/SB-04-desktop.webp`, `docs/design/art/ART-T2b/SB-09-mobil.webp`, `docs/design/art/ART-T2b/SB-01-mobil.webp`, `docs/design/art/ART-T2b/SB-04-mobil.webp`
 
 #### ART-T2c · Pilotwelten Phase 10 · P1
 - **Spiele:** `zehnetappen`
