@@ -20,7 +20,7 @@ Diese Regel ersetzt frühere Feature-Branch-Anweisungen. Wenn direkte Änderunge
 
 ## Versionsnummer bei jeder Änderung
 
-Jeder Commit, der etwas an der Seite ändert (Fehlerbehebung, Paket, Feinschliff), zählt die Version in `package.json` und `package-lock.json` (nur die beiden Einträge des Projekts) hoch: Fehlerbehebung → letzte Stelle (3.1.0 → 3.1.1), neue Funktion oder Paket → mittlere Stelle (3.1.x → 3.2.0). Dazu ein kurzer Eintrag in `CHANGELOG.md`. Reine Doku- oder Planungs-Commits ändern die Version nicht. In der Abschlussmeldung an den Nutzer immer die neue Version nennen, damit er sie nach dem Deploy unter dem Schriftzug „Spieleabend“ prüfen kann.
+Jeder Commit, der etwas an der Seite ändert (Fehlerbehebung, Paket, Feinschliff), zählt die Version in `package.json` und `package-lock.json` (nur die beiden Einträge des Projekts) hoch: Fehlerbehebung → letzte Stelle (3.1.0 → 3.1.1), neue Funktion oder Paket → mittlere Stelle (3.1.x → 3.2.0). Dazu ein kurzer Eintrag in `CHANGELOG.md` und die Versionszeile in `README.md` („jetzt **x.y.z**“) und oben in `docs/betrieb.md` („Version **x.y.z**“) anpassen; `test/planning-consistency.test.js` prüft das. Vor dem Push `npm run test:fast` laufen lassen (wie der GitHub-Build). Reine Doku- oder Planungs-Commits ändern die Version nicht. In der Abschlussmeldung an den Nutzer immer die neue Version nennen, damit er sie nach dem Deploy unter dem Schriftzug „Spieleabend“ prüfen kann.
 
 ## Einstieg und Grenzen
 
