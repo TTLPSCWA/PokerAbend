@@ -1,0 +1,80 @@
+/* ART-T4 Feinschliff der übrigen sieben Skip-Bo-Welten SB-02, SB-03, SB-05, SB-06, SB-07, SB-08, SB-10 (gleiche Bausteine wie ART-T2b).
+   Baureihen werden zu Bauplätzen der Welt, Fortschritt als Bauleiste der Welt. Pilotwelten, Winterwelten und andere Spiele bleiben unverändert. */
+
+/* ---------- gemeinsam: lesbare Beschriftung, dunkles Zielfeld, Joker ---------- */
+body:is([data-card-world="SB-02"],[data-card-world="SB-03"],[data-card-world="SB-05"],[data-card-world="SB-06"],[data-card-world="SB-07"],[data-card-world="SB-08"],[data-card-world="SB-10"]) .kg-stapelrennen[data-art-skipbo] .st-shared :is(.cw-eyebrow,.cw-section-head,.cw-section-head span){color:#f4efe6;text-shadow:0 1px 2px #000a}
+body:is([data-card-world="SB-02"],[data-card-world="SB-03"],[data-card-world="SB-05"],[data-card-world="SB-06"],[data-card-world="SB-07"],[data-card-world="SB-08"],[data-card-world="SB-10"]) .kg-stapelrennen[data-art-skipbo] .st-shared .cw-eyebrow{color:var(--cwt-accent);font-weight:700}
+body:is([data-card-world="SB-02"],[data-card-world="SB-03"],[data-card-world="SB-05"],[data-card-world="SB-06"],[data-card-world="SB-07"],[data-card-world="SB-08"],[data-card-world="SB-10"]) .kg-stapelrennen[data-art-skipbo] .st-build{position:relative;color:#f4efe6;gap:8px;overflow:visible}
+body:is([data-card-world="SB-02"],[data-card-world="SB-03"],[data-card-world="SB-05"],[data-card-world="SB-06"],[data-card-world="SB-07"],[data-card-world="SB-08"],[data-card-world="SB-10"]) .kg-stapelrennen[data-art-skipbo] .st-build:disabled{color:#f4efe6;opacity:1}
+body:is([data-card-world="SB-02"],[data-card-world="SB-03"],[data-card-world="SB-05"],[data-card-world="SB-06"],[data-card-world="SB-07"],[data-card-world="SB-08"],[data-card-world="SB-10"]) .kg-stapelrennen[data-art-skipbo] .st-build-index{color:var(--cwt-accent);font-weight:700;letter-spacing:.14em}
+body:is([data-card-world="SB-02"],[data-card-world="SB-03"],[data-card-world="SB-05"],[data-card-world="SB-06"],[data-card-world="SB-07"],[data-card-world="SB-08"],[data-card-world="SB-10"]) .kg-stapelrennen[data-art-skipbo] .st-build small{color:#e9e3d6}
+body:is([data-card-world="SB-02"],[data-card-world="SB-03"],[data-card-world="SB-05"],[data-card-world="SB-06"],[data-card-world="SB-07"],[data-card-world="SB-08"],[data-card-world="SB-10"]) .kg-stapelrennen[data-art-skipbo] .st-need{color:var(--cwt-accent);font-weight:700}
+/* leerer Bauplatz: Weltmotiv als Schatten der ersten Karte, Zahl 1 darüber */
+body:is([data-card-world="SB-02"],[data-card-world="SB-03"],[data-card-world="SB-05"],[data-card-world="SB-06"],[data-card-world="SB-07"],[data-card-world="SB-08"],[data-card-world="SB-10"]) .kg-stapelrennen[data-art-skipbo] .st-build>.kc-empty{background:linear-gradient(#000000a8,#000000a8),var(--cw-a0) center/cover no-repeat;border:2px dashed var(--cwt-accent);box-shadow:none}
+body:is([data-card-world="SB-02"],[data-card-world="SB-03"],[data-card-world="SB-05"],[data-card-world="SB-06"],[data-card-world="SB-07"],[data-card-world="SB-08"],[data-card-world="SB-10"]) .kg-stapelrennen[data-art-skipbo] .st-seed{color:var(--cwt-accent);opacity:.95;font-family:var(--cw-font),system-ui,sans-serif;text-shadow:0 1px 3px #000}
+/* Fortschrittsleiste: Weltfarbe, etwas kräftiger */
+body:is([data-card-world="SB-02"],[data-card-world="SB-03"],[data-card-world="SB-05"],[data-card-world="SB-06"],[data-card-world="SB-07"],[data-card-world="SB-08"],[data-card-world="SB-10"]) .kg-stapelrennen[data-art-skipbo] .st-build progress{height:7px;width:82%;border-radius:2px;background:#0009;box-shadow:0 0 0 1px #ffffff40}
+body:is([data-card-world="SB-02"],[data-card-world="SB-03"],[data-card-world="SB-05"],[data-card-world="SB-06"],[data-card-world="SB-07"],[data-card-world="SB-08"],[data-card-world="SB-10"]) .kg-stapelrennen[data-art-skipbo] .st-build progress::-webkit-progress-bar{background:#0009}
+/* Dein Ziel: dunkel in der Welt statt hellem Papier */
+body:is([data-card-world="SB-02"],[data-card-world="SB-03"],[data-card-world="SB-05"],[data-card-world="SB-06"],[data-card-world="SB-07"],[data-card-world="SB-08"],[data-card-world="SB-10"]) .kg-stapelrennen[data-art-skipbo] .st-goal-stock{background:color-mix(in srgb,var(--cwt-table-lo) 82%,#000);border:2px solid var(--cwt-accent);color:#f4efe6}
+body:is([data-card-world="SB-02"],[data-card-world="SB-03"],[data-card-world="SB-05"],[data-card-world="SB-06"],[data-card-world="SB-07"],[data-card-world="SB-08"],[data-card-world="SB-10"]) .kg-stapelrennen[data-art-skipbo] .st-goal-stock .cw-eyebrow{color:var(--cwt-accent)}
+/* Joker: Streifen oben, großes Symbol, doppelter Ring (wie bei den UNO-Aktionskarten) */
+body:is([data-card-world="SB-02"],[data-card-world="SB-03"],[data-card-world="SB-05"],[data-card-world="SB-06"],[data-card-world="SB-07"],[data-card-world="SB-08"],[data-card-world="SB-10"]) .kg-stapelrennen[data-art-skipbo] .kc-st.joker:not(.kc-empty){
+  background:repeating-linear-gradient(135deg,var(--sbp-stripe) 0 calc(var(--w)*.05),transparent calc(var(--w)*.05) calc(var(--w)*.1)) 0 0/100% 11% no-repeat,
+    linear-gradient(118deg,#ffffff45 0 12%,#ffffff0f 28%,transparent 42%,transparent 80%,#0000001f),var(--cwa) 50% 38%/82% auto no-repeat,var(--cw-mat)}
+body:is([data-card-world="SB-02"],[data-card-world="SB-03"],[data-card-world="SB-05"],[data-card-world="SB-06"],[data-card-world="SB-07"],[data-card-world="SB-08"],[data-card-world="SB-10"]) .kg-stapelrennen[data-art-skipbo] .kc-st.joker .v{min-width:calc(var(--w)*.6);height:calc(var(--w)*.36);bottom:3%;font-size:calc(var(--w)*.26);
+  box-shadow:0 0 0 calc(var(--w)*.03) var(--cw-rim),0 0 0 calc(var(--w)*.06) var(--cw),0 0 0 calc(var(--w)*.075) var(--cw-rim),0 3px 0 calc(var(--w)*.075) #0006}
+body:is([data-card-world="SB-02"],[data-card-world="SB-03"],[data-card-world="SB-05"],[data-card-world="SB-06"],[data-card-world="SB-07"],[data-card-world="SB-08"],[data-card-world="SB-10"]) .kg-stapelrennen[data-art-skipbo] .kc-st.joker :is(.cr.tl,.cm){top:9%}
+
+/* ---------- SB-02 ---------- */
+body[data-card-world="SB-02"] .kg-stapelrennen{--sbp-stripe:#f2c21af0}
+body[data-card-world="SB-02"] .kg-stapelrennen[data-art-skipbo] .st-build{background:radial-gradient(circle at 50% 50%,#ffffff38 0 5px,transparent 6px) 0 0/24px 24px,linear-gradient(#c7352a,#9a241b);border:3px solid #111;border-radius:6px}
+body[data-card-world="SB-02"] .kg-stapelrennen[data-art-skipbo] .st-build.can{border-color:#f2c21a;box-shadow:0 0 0 3px #f2c21a80}
+body[data-card-world="SB-02"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-webkit-progress-value{background:repeating-linear-gradient(90deg,#f2c21a 0 10px,#b8890a 10px 11px)}
+body[data-card-world="SB-02"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-moz-progress-bar{background:repeating-linear-gradient(90deg,#f2c21a 0 10px,#b8890a 10px 11px)}
+/* ---------- SB-03 ---------- */
+body[data-card-world="SB-03"] .kg-stapelrennen{--sbp-stripe:#1f6fb0cc}
+body[data-card-world="SB-03"] .kg-stapelrennen[data-art-skipbo] .st-build{background:radial-gradient(ellipse at 30% 20%,#fbf3dc,#e3cf9f 80%);border:3px double #8a6a3a;border-radius:4px}
+body[data-card-world="SB-03"] .kg-stapelrennen[data-art-skipbo] .st-build::before{content:'';position:absolute;pointer-events:none;left:6px;top:6px;width:14px;height:14px;border-top:2px solid #8a6a3a;border-left:2px solid #8a6a3a}
+body[data-card-world="SB-03"] .kg-stapelrennen[data-art-skipbo] .st-build.can{border-color:#c0402a;box-shadow:0 0 0 3px #c0402a66}
+body[data-card-world="SB-03"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-webkit-progress-value{background:linear-gradient(90deg,#1f6fb0,#5ab8e8)}
+body[data-card-world="SB-03"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-moz-progress-bar{background:linear-gradient(90deg,#1f6fb0,#5ab8e8)}
+body[data-card-world="SB-03"] .kg-stapelrennen[data-art-skipbo] .st-build,body[data-card-world="SB-03"] .kg-stapelrennen[data-art-skipbo] .st-build:disabled,body[data-card-world="SB-03"] .kg-stapelrennen[data-art-skipbo] .st-build small{color:#3b2a14}
+body[data-card-world="SB-03"] .kg-stapelrennen[data-art-skipbo] .st-build-index,body[data-card-world="SB-03"] .kg-stapelrennen[data-art-skipbo] .st-need{color:#7a4a14}
+body[data-card-world="SB-03"] .kg-stapelrennen[data-art-skipbo] .st-build progress,body[data-card-world="SB-03"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-webkit-progress-bar{background:#0000002e}
+body[data-card-world="SB-03"] .kg-stapelrennen[data-art-skipbo] .st-seed{color:#7a4a14}
+/* ---------- SB-05 ---------- */
+body[data-card-world="SB-05"] .kg-stapelrennen{--sbp-stripe:#00d5c0cc}
+body[data-card-world="SB-05"] .kg-stapelrennen[data-art-skipbo] .st-build{background:radial-gradient(circle at 18% 82%,#00d5c038 0 7px,transparent 8px),radial-gradient(circle at 80% 70%,#00d5c030 0 5px,transparent 6px),radial-gradient(circle at 60% 90%,#ff7ab830 0 4px,transparent 5px),linear-gradient(#073c47,#04222b);border:2px solid #00d5c0;border-radius:14px;box-shadow:0 0 14px #00d5c048,inset 0 0 18px #00d5c030}
+body[data-card-world="SB-05"] .kg-stapelrennen[data-art-skipbo] .st-build.can{border-color:#8ff5e8;box-shadow:0 0 0 2px #8ff5e880,0 0 22px #00d5c0aa}
+body[data-card-world="SB-05"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-webkit-progress-value{background:linear-gradient(90deg,#00d5c0,#ff7ab8)}
+body[data-card-world="SB-05"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-moz-progress-bar{background:linear-gradient(90deg,#00d5c0,#ff7ab8)}
+/* ---------- SB-06 ---------- */
+body[data-card-world="SB-06"] .kg-stapelrennen{--sbp-stripe:#ffd23fcc}
+body[data-card-world="SB-06"] .kg-stapelrennen[data-art-skipbo] .st-build{background:linear-gradient(#ffffff22 1px,transparent 1px) 0 0/16px 16px,linear-gradient(90deg,#ffffff22 1px,transparent 1px) 0 0/16px 16px,#1b5599;border:2px dashed #ffffffcc;border-radius:2px}
+body[data-card-world="SB-06"] .kg-stapelrennen[data-art-skipbo] .st-build.can{border-style:solid;border-color:#ffd23f;box-shadow:0 0 0 3px #ffd23f66}
+body[data-card-world="SB-06"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-webkit-progress-value{background:repeating-linear-gradient(45deg,#ffd23f 0 5px,#c89f10 5px 10px)}
+body[data-card-world="SB-06"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-moz-progress-bar{background:repeating-linear-gradient(45deg,#ffd23f 0 5px,#c89f10 5px 10px)}
+/* ---------- SB-07 ---------- */
+body[data-card-world="SB-07"] .kg-stapelrennen{--sbp-stripe:#ff3d6ecc}
+body[data-card-world="SB-07"] .kg-stapelrennen[data-art-skipbo] .st-build{background:linear-gradient(#fff6e0,#ffe8b8);border:3px dashed #ff3d6e;border-radius:12px}
+body[data-card-world="SB-07"] .kg-stapelrennen[data-art-skipbo] .st-build.can{border-style:solid;box-shadow:0 0 0 3px #ff3d6e66}
+body[data-card-world="SB-07"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-webkit-progress-value{background:repeating-linear-gradient(45deg,#ff3d6e 0 6px,#fff 6px 12px)}
+body[data-card-world="SB-07"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-moz-progress-bar{background:repeating-linear-gradient(45deg,#ff3d6e 0 6px,#fff 6px 12px)}
+body[data-card-world="SB-07"] .kg-stapelrennen[data-art-skipbo] .st-build,body[data-card-world="SB-07"] .kg-stapelrennen[data-art-skipbo] .st-build:disabled,body[data-card-world="SB-07"] .kg-stapelrennen[data-art-skipbo] .st-build small{color:#3b2a14}
+body[data-card-world="SB-07"] .kg-stapelrennen[data-art-skipbo] .st-build-index,body[data-card-world="SB-07"] .kg-stapelrennen[data-art-skipbo] .st-need{color:#c2185b}
+body[data-card-world="SB-07"] .kg-stapelrennen[data-art-skipbo] .st-build progress,body[data-card-world="SB-07"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-webkit-progress-bar{background:#0000002e}
+body[data-card-world="SB-07"] .kg-stapelrennen[data-art-skipbo] .st-seed{color:#c2185b}
+/* ---------- SB-08 ---------- */
+body[data-card-world="SB-08"] .kg-stapelrennen{--sbp-stripe:#ff8a1acc}
+body[data-card-world="SB-08"] .kg-stapelrennen[data-art-skipbo] .st-build{background:linear-gradient(#1f2f55,#121c36);border:3px solid #111;border-radius:6px;padding-bottom:16px}
+body[data-card-world="SB-08"] .kg-stapelrennen[data-art-skipbo] .st-build::before{content:'';position:absolute;pointer-events:none;left:-3px;right:-3px;bottom:-3px;height:9px;background:repeating-linear-gradient(135deg,#ff8a1a 0 8px,#111 8px 16px)}
+body[data-card-world="SB-08"] .kg-stapelrennen[data-art-skipbo] .st-build.can{border-color:#ff8a1a;box-shadow:0 0 0 3px #ff8a1a66}
+body[data-card-world="SB-08"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-webkit-progress-value{background:linear-gradient(90deg,#ff8a1a,#f2c21a)}
+body[data-card-world="SB-08"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-moz-progress-bar{background:linear-gradient(90deg,#ff8a1a,#f2c21a)}
+/* ---------- SB-10 ---------- */
+body[data-card-world="SB-10"] .kg-stapelrennen{--sbp-stripe:#ff8a1acc}
+body[data-card-world="SB-10"] .kg-stapelrennen[data-art-skipbo] .st-build{background:radial-gradient(circle at 8px 8px,#c9a36a 0 2px,transparent 3px),radial-gradient(circle at calc(100% - 8px) 8px,#c9a36a 0 2px,transparent 3px),linear-gradient(#3b2418,#1f130b);border:3px solid #8a5a2a;border-radius:5px;box-shadow:inset 0 -16px 22px #ff8a1a38}
+body[data-card-world="SB-10"] .kg-stapelrennen[data-art-skipbo] .st-build.can{border-color:#ffb84a;box-shadow:0 0 0 3px #ff8a1a77,inset 0 -16px 22px #ff8a1a55}
+body[data-card-world="SB-10"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-webkit-progress-value{background:linear-gradient(90deg,#c0282e,#ff8a1a,#f2c21a)}
+body[data-card-world="SB-10"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-moz-progress-bar{background:linear-gradient(90deg,#c0282e,#ff8a1a,#f2c21a)}

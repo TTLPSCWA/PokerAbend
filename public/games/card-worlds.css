@@ -4,7 +4,9 @@
 @import url('/games/card-worlds/more-uno.css');
 @import url('/games/card-worlds/pilot-winter.css');
 @import url('/games/card-worlds/pilot-skipbo.css');
+@import url('/games/card-worlds/more-skipbo.css');
 @import url('/games/card-worlds/pilot-phase10.css');
+@import url('/games/card-worlds/more-phase10.css');
 @import url('/games/card-worlds/worlds.css');
 /* Shared presentation, loaded only by the three explicitly redesigned games.
    Card faces and all input/state logic remain in the individual game modules. */
