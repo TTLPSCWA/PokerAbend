@@ -96,7 +96,10 @@ Der Host wählt für **UNO (Classic), Skip-Bo und Phase 10** eine Kartenwelt; si
 - **Spiele:** `farbenchaos`
 - **Ziel:** Feinschliff für U-04 Blockwelt, U-01 Zaubersaal und U-02 Hexerpfad: eigene Rahmendetails, Aktionskarten, Rückseite, Tisch, Handy-Lesbarkeit.
 - **Material:** eigene SVG-Grafiken.
-- **Status:** planned
+- **Status:** done
+- **Implementierungscommit:** `a445cc8e2188577b8f1ed3827260516065e83ee4`
+- **Umsetzung:** `public/games/card-worlds/pilot-uno.css` nur für U-04, U-01, U-02: Aktionskarten mit Streifen, größerem Symbol und doppeltem Medaillon-Ring, Kartenzahl der Rückseite als Marke unten, Rahmendetails je Welt (Goldlinie, Pixelkanten, Siegel). Übrige Welten unverändert.
+- **Nachweise:** `test/ui/art-t2a-uno-pilot.spec.js`, `docs/design/art/ART-T2a/README.md`, `docs/design/art/ART-T2a/U-04-desktop.webp`, `docs/design/art/ART-T2a/U-01-desktop.webp`, `docs/design/art/ART-T2a/U-02-desktop.webp`, `docs/design/art/ART-T2a/U-04-mobil.webp`, `docs/design/art/ART-T2a/U-01-mobil.webp`, `docs/design/art/ART-T2a/U-02-mobil.webp`
 
 #### ART-T2b · Pilotwelten Skip-Bo · P1
 - **Spiele:** `stapelrennen`
