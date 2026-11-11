@@ -280,6 +280,20 @@
         "docs/design/art/ART-T5/stapelrennen-mobil.webp",
         "docs/design/art/ART-T5/zehnetappen-mobil.webp"
       ]
+    },
+    {
+      "id": "ART-T6",
+      "name": "Wintermusik",
+      "priority": "P3",
+      "games": [
+        "farbenchaos",
+        "stapelrennen",
+        "zehnetappen"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "goal": "Ruhige Winter- und Weihnachtsmusik in den zehn Winterwelten (X-01 bis X-10), Schalter neben dem Schnee-Knopf, pro Gerät gespeichert, Standard aus; leise, mit Ein- und Ausblenden, Wiedergabeliste. Nur Aussehen und Klang, Spiellogik unverändert.",
+      "material": "fremde Musik: CC0 (OpenGameArt: „Wintery loop“ von Emma M. Andersson, „Through the Snow“ von Cleyton Kauffman, „Winter Wind Loop“, „Christmas synths“ von 3xBlast) und vom Nutzer freigegebene Ausnahme Pixabay-Inhaltslizenz (pulsebox „Happy Christmas Jazz“ und „Fun Christmas Jazz“, atlasaudio „Christmas Jazz“, DPStudioMusic „Winter Wonderland Chorus“ und „Crimson Ribbon Melody“); gekürzt, eingeblendet und als kleine Dateien neu kodiert, jede Datei mit Herkunft in `ART_LICENSES.md`."
     }
   ]
 }

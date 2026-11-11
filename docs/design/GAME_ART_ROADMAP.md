@@ -145,3 +145,9 @@ Der Host wählt für **UNO (Classic), Skip-Bo und Phase 10** eine Kartenwelt; si
 - **Implementierungscommit:** `cf85bc52e3c753b68068688dea61fb64d1af8b41`
 - **Umsetzung:** `public/games/card-worlds/pilot-winter.css` für X-01 bis X-10: Schneehaube auf den Karten, Zuckerstangen-Streifen auf Aktionskarten und Jokern, UNO-Rückseite mit Kartenzahl-Marke, Schneeverwehung am Tisch. Schneefall in `public/card-worlds.js`: drei Ebenen nur mit transform, Knopf zum Abschalten pro Gerät, bei "weniger Bewegung" still.
 - **Nachweise:** `test/ui/art-t5-winter.spec.js`, `docs/design/art/ART-T5/README.md`, `docs/design/art/ART-T5/farbenchaos-desktop.webp`, `docs/design/art/ART-T5/stapelrennen-desktop.webp`, `docs/design/art/ART-T5/zehnetappen-desktop.webp`, `docs/design/art/ART-T5/farbenchaos-mobil.webp`, `docs/design/art/ART-T5/stapelrennen-mobil.webp`, `docs/design/art/ART-T5/zehnetappen-mobil.webp`
+
+#### ART-T6 · Wintermusik · P3
+- **Spiele:** `farbenchaos`, `stapelrennen`, `zehnetappen`
+- **Ziel:** Ruhige Winter- und Weihnachtsmusik in den zehn Winterwelten (X-01 bis X-10), Schalter neben dem Schnee-Knopf, pro Gerät gespeichert, Standard aus; leise, mit Ein- und Ausblenden, Wiedergabeliste. Nur Aussehen und Klang, Spiellogik unverändert.
+- **Material:** fremde Musik: CC0 (OpenGameArt: „Wintery loop“ von Emma M. Andersson, „Through the Snow“ von Cleyton Kauffman, „Winter Wind Loop“, „Christmas synths“ von 3xBlast) und vom Nutzer freigegebene Ausnahme Pixabay-Inhaltslizenz (pulsebox „Happy Christmas Jazz“ und „Fun Christmas Jazz“, atlasaudio „Christmas Jazz“, DPStudioMusic „Winter Wonderland Chorus“ und „Crimson Ribbon Melody“); gekürzt, eingeblendet und als kleine Dateien neu kodiert, jede Datei mit Herkunft in `ART_LICENSES.md`.
+- **Status:** planned
