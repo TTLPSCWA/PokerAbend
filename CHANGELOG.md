@@ -2,6 +2,13 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.1.0 – 11. November 2026
+
+* **Version unter dem Schriftzug:** Unter „Spieleabend“ steht jetzt klein die Version und der Build (z. B. `v3.1.0 · 8c1cd39`). So sieht man nach jedem Update sofort, ob der neue Stand läuft.
+* **Kartenwelten fertig:** Alle Welten für UNO, Skip-Bo und Phase 10 haben ihren Feinschliff (Aktionskarten mit Streifen, Bauplätze, Phasen-Reise), dazu zehn Winterwelten mit Schneefall (❄) und auf Wunsch leiser Wintermusik (♪, Standard aus).
+* **Behoben:** Schnee und Wintermusik liefen weiter, nachdem man den Tisch verlassen oder geschlossen hatte.
+* Ab jetzt zählt jede Fehlerbehebung die letzte Stelle hoch (3.1.1, 3.1.2 …), neue Funktionen die mittlere (3.2.0). „Was ist neu“ öffnet sich nur bei einer neuen mittleren oder vorderen Stelle von selbst.
+
 ## 3.0.0 – 8. November 2026
 
 Seit Version 2.0.0 (1. November) ist sehr viel passiert. Aus 58 Spielen sind **107** geworden, jeder Spieler hat jetzt ein eigenes Konto mit Profil, es gibt eine echte Bestenliste, und der Server lässt sich besser betreuen. **Alles, was ihr bisher gespielt habt, bleibt erhalten.**

@@ -10,6 +10,12 @@
 .hub-side { top: var(--hub-top); height: calc(100dvh - var(--hub-top) - 24px); padding: 22px 8px 12px; border: 1px solid var(--hub-edge); border-radius: 16px; background: #0e100fe8; box-shadow: 0 12px 36px #0003; }
 .hub-brand { display: flex; align-items: center; gap: 10px; padding: 0 9px 26px; color: #f0c57f; }
 .brand-spade { width: 34px; height: 38px; fill: currentColor; flex: none; }
+/* Version klein unter dem Schriftzug: Pik links über beide Zeilen, rechts Schriftzug und darunter die Version */
+.hub-brand:has(> .brand-spade) { display: grid; grid-template-columns: auto 1fr; column-gap: 10px; align-items: center; }
+.hub-brand > .brand-spade { grid-row: 1 / span 2; }
+.hub-brand > .wordmark, .hub-brand > .brand-version { grid-column: 2; }
+.hub-brand > .wordmark { align-self: end; }
+.hub-brand > .brand-version { align-self: start; color: #f0c57f; }
 .hub-brand .wordmark { font: 600 clamp(21px, 1.45vw, 26px)/1.1 var(--heading); letter-spacing: -.02em; color: #efc584; }
 .side-nav { gap: 3px; }
 .nav-item { color: #e9e6dd; font-size: 14px; font-weight: 400; padding: 10px 12px; border: 1px solid transparent; border-radius: 4px; }

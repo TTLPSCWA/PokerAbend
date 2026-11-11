@@ -487,9 +487,9 @@ Bei **SIGTERM** (`docker stop`) und **SIGINT** wird ebenfalls sofort alles gespe
 
 ### Version und „Was ist neu“
 
-Die Version steht in `package.json` (jetzt **3.0.0**), der Commit-Hash kommt als Build-Argument ins Image: Der Workflow übergibt `GIT_COMMIT` automatisch, lokal `docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) .`. Beides steht unter **Ich** und auf `/health` (`{"ok":true,"version":"2.0.0","commit":"abc1234","uptime":…}`).
+Die Version steht in `package.json` (jetzt **3.1.0**) und klein unter dem Schriftzug „Spieleabend“ (mit Build-Kürzel), der Commit-Hash kommt als Build-Argument ins Image: Der Workflow übergibt `GIT_COMMIT` automatisch, lokal `docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) .`. Beides steht unter **Ich** und auf `/health` (`{"ok":true,"version":"2.0.0","commit":"abc1234","uptime":…}`).
 
-**Was ist neu** zeigt die neuesten erledigten Einträge aus `games/roadmap.js` – automatisch, sobald dort etwas auf erledigt gesetzt wird (mit Datum). Jeder Browser sieht den Hinweis **einmal pro neuer Version** (gemerkt in `poker:seenVersion`; ein ganz neuer Browser bekommt ihn nicht), außerdem jederzeit über **Ich → Was ist neu?**.
+**Was ist neu** zeigt die neuesten erledigten Einträge aus `games/roadmap.js` – automatisch, sobald dort etwas auf erledigt gesetzt wird (mit Datum). Jeder Browser sieht den Hinweis **einmal pro neuer Haupt- oder Nebenversion** (reine Fehlerbehebungen x.y.Z öffnen ihn nicht) (gemerkt in `poker:seenVersion`; ein ganz neuer Browser bekommt ihn nicht), außerdem jederzeit über **Ich → Was ist neu?**.
 
 ### Admin-Seite (`/admin`)
 

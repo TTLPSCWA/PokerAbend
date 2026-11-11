@@ -26,6 +26,23 @@ test.describe('Browser', () => {
     await page.reload();
     await expect(page.locator('#hub')).toBeVisible();
     await expect(page.locator('#whatsnew-dlg[open]')).toHaveCount(0);
+    // Reine Fehlerbehebung (nur letzte Stelle anders): kein Hinweis, gemerkte Version wird still nachgezogen
+    const [maj, min] = VERSION.split('.');
+    await page.evaluate((old) => localStorage.setItem('poker:seenVersion', JSON.stringify(old)), `${maj}.${min}.999`);
+    await page.reload();
+    await expect(page.locator('#hub')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('poker:seenVersion')))).toBe(VERSION);
+    await expect(page.locator('#whatsnew-dlg[open]')).toHaveCount(0);
+  });
+
+  test('Version und Build stehen klein unter dem Schriftzug „Spieleabend“', async ({ page, app }) => {
+    await login(page, app);
+    const badge = page.locator('.hub-brand [data-app-version]:visible').first();
+    await expect(badge).toHaveText(new RegExp(`^v${VERSION.replace(/\./g, '\\.')}( · [0-9a-f]{7})?$`));
+    const [w, b] = await Promise.all([page.locator('.hub-brand:visible .wordmark').first().boundingBox(), badge.boundingBox()]);
+    expect(b.y).toBeGreaterThanOrEqual(w.y + w.height - 2);
+    expect(await badge.evaluate((el) => parseFloat(getComputedStyle(el).fontSize))).toBeLessThan(13);
+    if (process.env.ART_CAPTURE === '1') await page.screenshot({ path: `test-results/version-${test.info().project.name}.png` });
   });
 
   test('Update-Banner und Neustart-Hinweis erscheinen und verschwinden wieder', async ({ page, app }) => {

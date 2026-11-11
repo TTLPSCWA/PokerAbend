@@ -18,6 +18,10 @@ Dokumentation und Planungsdateien sind keine automatische Implementierungsfreiga
 
 Diese Regel ersetzt frühere Feature-Branch-Anweisungen. Wenn direkte Änderungen an `main` technisch blockiert sind, Grund melden und auf die Entscheidung des Nutzers warten; keinen Ersatzbranch erstellen und keine Schutzprüfung umgehen.
 
+## Versionsnummer bei jeder Änderung
+
+Jeder Commit, der etwas an der Seite ändert (Fehlerbehebung, Paket, Feinschliff), zählt die Version in `package.json` und `package-lock.json` (nur die beiden Einträge des Projekts) hoch: Fehlerbehebung → letzte Stelle (3.1.0 → 3.1.1), neue Funktion oder Paket → mittlere Stelle (3.1.x → 3.2.0). Dazu ein kurzer Eintrag in `CHANGELOG.md`. Reine Doku- oder Planungs-Commits ändern die Version nicht. In der Abschlussmeldung an den Nutzer immer die neue Version nennen, damit er sie nach dem Deploy unter dem Schriftzug „Spieleabend“ prüfen kann.
+
 ## Einstieg und Grenzen
 
 Zusätzlich vollständig `AGENTS.md` und `docs/roadmap/README.md` beachten. Die zentrale Planung ist `docs/roadmap/plan.json` mit 18 Paketen V2-00 bis V2-17. Ein Paket nur nach ausdrücklicher Freigabe seiner ID bearbeiten; anschließend stoppen. Konsolidierung und Dokumentation geben keine neue Implementierung frei.

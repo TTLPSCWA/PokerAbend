@@ -44,9 +44,12 @@ Object.assign(window.EN || {}, { 'Was ist neu?': 'What’s new?', 'Fehler melden
 
   // ---------- Version und „Was ist neu“ ----------
   let loaded = null, current = null;
+  const minor = (ver) => String(ver || '').split('.').slice(0, 2).join('.');
   function showVersion() {
     const el = document.getElementById('p-version');
     if (el && current) el.textContent = `${T('Version', 'Version')} ${current.version}${current.commit ? ` · ${current.commit}` : ''}`;
+    // Unter dem Schriftzug „Spieleabend“: Version und Build-Commit, damit man nach dem Deploy sieht, was läuft
+    if (current) document.querySelectorAll('[data-app-version]').forEach((b) => { b.textContent = `v${current.version}${current.commit ? ` · ${current.commit}` : ''}`; b.title = `${T('Version', 'Version')} ${current.version}${current.commit ? ` · Build ${current.commit}` : ''}`; });
   }
   const ART = { spiel: ['Spiel', 'Game'], funktion: ['Funktion', 'Feature'], design: ['Design', 'Design'], betrieb: ['Betrieb', 'Operations'], discord: ['Discord', 'Discord'], fehler: ['Fehler', 'Fix'] };
   async function whatsNew(auto) {
@@ -66,7 +69,9 @@ Object.assign(window.EN || {}, { 'Was ist neu?': 'What’s new?', 'Fehler melden
       loaded = v.version;
       const seen = store.get('poker:seenVersion', null);
       if (seen === null) store.set('poker:seenVersion', v.version);         // neuer Browser: nichts Neues für ihn
-      else if (seen !== v.version && !session && !roomCodeFromUrl()) whatsNew(true); // einmal pro neuer Version, nicht mitten im Spiel
+      // einmal pro neuer Version (Haupt- oder Nebenversion; reine Fehlerbehebungen x.y.Z zeigen nichts), nicht mitten im Spiel
+      else if (minor(seen) !== minor(v.version) && !session && !roomCodeFromUrl()) whatsNew(true);
+      else if (seen !== v.version) store.set('poker:seenVersion', v.version);
     } else if (v.version !== loaded) { newVersion = v.version; render(); }  // Server wurde aktualisiert, die Seite ist noch alt
   });
   document.addEventListener('click', (e) => {
