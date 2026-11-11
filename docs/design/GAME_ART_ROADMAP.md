@@ -123,7 +123,10 @@ Der Host wählt für **UNO (Classic), Skip-Bo und Phase 10** eine Kartenwelt; si
 - **Spiele:** `farbenchaos`
 - **Ziel:** Feinschliff der übrigen sieben UNO-Welten (U-03, U-05 bis U-10).
 - **Material:** eigene SVG-Grafiken.
-- **Status:** planned
+- **Status:** done
+- **Implementierungscommit:** `36545fee3e3e9fca4c028a2dedc1078f4c9465e1`
+- **Umsetzung:** `public/games/card-worlds/more-uno.css` nur für U-03, U-05 bis U-10: Aktionskarten mit Streifen, großem Symbol und doppeltem Medaillon-Ring, Kartenzahl der Rückseite als Marke unten, Rahmendetail je Welt. Pilotwelten, Winterwelten und andere Spiele unverändert.
+- **Nachweise:** `test/ui/art-t3-uno-worlds.spec.js`, `docs/design/art/ART-T3/README.md`, `docs/design/art/ART-T3/tisch-rueckseite-desktop.webp`, `docs/design/art/ART-T3/haende-aktionskarten-desktop.webp`, `docs/design/art/ART-T3/mobil.webp`
 
 #### ART-T4 · Weitere Welten Skip-Bo und Phase 10 · P2
 - **Spiele:** `stapelrennen`, `zehnetappen`

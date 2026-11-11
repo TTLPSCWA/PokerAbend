@@ -220,10 +220,18 @@
       "games": [
         "farbenchaos"
       ],
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "36545fee3e3e9fca4c028a2dedc1078f4c9465e1",
       "goal": "Feinschliff der übrigen sieben UNO-Welten (U-03, U-05 bis U-10).",
-      "material": "eigene SVG-Grafiken."
+      "material": "eigene SVG-Grafiken.",
+      "implementation_note": "`public/games/card-worlds/more-uno.css` nur für U-03, U-05 bis U-10: Aktionskarten mit Streifen, großem Symbol und doppeltem Medaillon-Ring, Kartenzahl der Rückseite als Marke unten, Rahmendetail je Welt. Pilotwelten, Winterwelten und andere Spiele unverändert.",
+      "evidence": [
+        "test/ui/art-t3-uno-worlds.spec.js",
+        "docs/design/art/ART-T3/README.md",
+        "docs/design/art/ART-T3/tisch-rueckseite-desktop.webp",
+        "docs/design/art/ART-T3/haende-aktionskarten-desktop.webp",
+        "docs/design/art/ART-T3/mobil.webp"
+      ]
     },
     {
       "id": "ART-T4",
