@@ -1,6 +1,6 @@
 # ART-T5 · Winterwelten
 
-Implementierungscommit: `IMPL_COMMIT`
+Implementierungscommit: `cf85bc52e3c753b68068688dea61fb64d1af8b41`
 
 ## Ergebnis
 

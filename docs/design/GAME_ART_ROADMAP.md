@@ -129,4 +129,7 @@ Der Host wählt für **UNO (Classic), Skip-Bo und Phase 10** eine Kartenwelt; si
 - **Spiele:** `farbenchaos`, `stapelrennen`, `zehnetappen`
 - **Ziel:** Feinschliff der zehn Winterwelten in allen drei Spielen, inklusive Schneefall als ruhige Hintergrundbewegung (abschaltbar).
 - **Material:** eigene SVG-Grafiken.
-- **Status:** planned
+- **Status:** done
+- **Implementierungscommit:** `cf85bc52e3c753b68068688dea61fb64d1af8b41`
+- **Umsetzung:** `public/games/card-worlds/pilot-winter.css` für X-01 bis X-10: Schneehaube auf den Karten, Zuckerstangen-Streifen auf Aktionskarten und Jokern, UNO-Rückseite mit Kartenzahl-Marke, Schneeverwehung am Tisch. Schneefall in `public/card-worlds.js`: drei Ebenen nur mit transform, Knopf zum Abschalten pro Gerät, bei "weniger Bewegung" still.
+- **Nachweise:** `test/ui/art-t5-winter.spec.js`, `docs/design/art/ART-T5/README.md`, `docs/design/art/ART-T5/farbenchaos-desktop.webp`, `docs/design/art/ART-T5/stapelrennen-desktop.webp`, `docs/design/art/ART-T5/zehnetappen-desktop.webp`, `docs/design/art/ART-T5/farbenchaos-mobil.webp`, `docs/design/art/ART-T5/stapelrennen-mobil.webp`, `docs/design/art/ART-T5/zehnetappen-mobil.webp`

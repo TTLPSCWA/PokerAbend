@@ -225,10 +225,21 @@
         "stapelrennen",
         "zehnetappen"
       ],
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "cf85bc52e3c753b68068688dea61fb64d1af8b41",
       "goal": "Feinschliff der zehn Winterwelten in allen drei Spielen, inklusive Schneefall als ruhige Hintergrundbewegung (abschaltbar).",
-      "material": "eigene SVG-Grafiken."
+      "material": "eigene SVG-Grafiken.",
+      "implementation_note": "`public/games/card-worlds/pilot-winter.css` für X-01 bis X-10: Schneehaube auf den Karten, Zuckerstangen-Streifen auf Aktionskarten und Jokern, UNO-Rückseite mit Kartenzahl-Marke, Schneeverwehung am Tisch. Schneefall in `public/card-worlds.js`: drei Ebenen nur mit transform, Knopf zum Abschalten pro Gerät, bei \"weniger Bewegung\" still.",
+      "evidence": [
+        "test/ui/art-t5-winter.spec.js",
+        "docs/design/art/ART-T5/README.md",
+        "docs/design/art/ART-T5/farbenchaos-desktop.webp",
+        "docs/design/art/ART-T5/stapelrennen-desktop.webp",
+        "docs/design/art/ART-T5/zehnetappen-desktop.webp",
+        "docs/design/art/ART-T5/farbenchaos-mobil.webp",
+        "docs/design/art/ART-T5/stapelrennen-mobil.webp",
+        "docs/design/art/ART-T5/zehnetappen-mobil.webp"
+      ]
     }
   ]
 }
