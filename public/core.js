@@ -364,6 +364,7 @@ socket.on('closed', (c) => {
 function leaveGame() {
   session = null; lastState = null; parked = false;
   $('#game-root').hidden = true;
+  if (typeof CardWorlds !== 'undefined') CardWorlds.clear();
 }
 // ---------- „Ansehen“: gemeinsame Ansicht für offene Informationen (Stapel, Züge, Blätter) ----------
 // Zeigt nur, was alle am Tisch ohnehin sehen dürfen. Am Handy als Blatt von unten, am großen Bildschirm mittig.

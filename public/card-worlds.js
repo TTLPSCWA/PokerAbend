@@ -83,7 +83,8 @@ const CardWorlds = (() => {
     snow(w);
     music(w);
   }
-  socket.on('state', apply);
+  // Platz behalten und auf der Startseite (core.js: parked): der Server schickt weiter den Raumstand, die Welt bleibt aber aus
+  socket.on('state', (S) => apply(typeof parked !== 'undefined' && parked ? null : S));
 
   const swatch = (w) => `<span class="cwp-card" style="--c:${w.cols[0][1]};background-image:url('/games/card-worlds/art/${esc(w.id)}/0.svg')"></span>`;
   const pick = (w, selected) => `<button type="button" class="cwp-pick" data-card-world-pick="${esc(w.id)}" aria-pressed="${selected}">${swatch(w)}<span class="cwp-txt"><b>${esc(w.name)}</b><small>${esc(w.world)}</small></span></button>`;
@@ -103,5 +104,7 @@ const CardWorlds = (() => {
     const r = await send('setCardWorld', { world: id });
     if (r?.ok) b.closest('.cwp')?.querySelectorAll('[data-card-world-pick]').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.cardWorldPick === id)));
   });
-  return { controlsHTML, ready, current: () => current(last), audio: () => au };
+  // Tisch verlassen, geschlossen oder Startseite: Welt, Schnee und Musik sofort entfernen (kommt kein Raumstand mehr)
+  const clear = () => apply(null);
+  return { controlsHTML, ready, clear, current: () => current(last), audio: () => au };
 })();

@@ -68,6 +68,19 @@ test('ART-T6: Musik-Schalter in Winterwelten, Standard aus, spielt und bleibt ge
     await expect(page.locator('body')).toHaveAttribute('data-cw-music', 'on');
     await emit(page, 'setCardWorld', { world: '' });
     await expect(page.locator('#cw-music-toggle')).toHaveCount(0);
+    // Tisch verlassen bzw. Startseite: Schnee, Knöpfe und Musik verschwinden, auch ohne neuen Raumstand
+    await emit(page, 'setCardWorld', { world: winter[0].id });
+    await expect(page.locator('body')).toHaveAttribute('data-cw-music', 'on');
+    await expect.poll(() => page.evaluate(() => !CardWorlds.audio().paused), { timeout: 15000 }).toBe(true);
+    await page.evaluate(() => parkRoom());
+    await expect(page.locator('#cw-snow')).toHaveCount(0);
+    await expect(page.locator('#cw-music-toggle, #cw-snow-toggle')).toHaveCount(0);
+    await expect(page.locator('body')).not.toHaveAttribute('data-card-world', /./);
+    expect(await page.evaluate(() => CardWorlds.audio().paused)).toBe(true);
+    // Gast schließt nicht, sondern verlässt den Tisch endgültig: ebenfalls alles weg
+    await expect(room.guests[0].locator('#cw-snow')).toHaveCount(1);
+    await room.guests[0].evaluate(() => leaveTable());
+    await expect(room.guests[0].locator('#cw-snow, #cw-snow-toggle, #cw-music-toggle')).toHaveCount(0);
     await page.evaluate(() => { try { localStorage.removeItem('cwMusic'); } catch {} });
   } finally { await room.close(); }
 });

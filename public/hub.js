@@ -183,6 +183,7 @@ window.addEventListener('hashchange', () => { if (hubVisible() && !roomCodeFromU
 // Startseite zeigen. keepUrl: die Adresse stimmt schon („Zurück“ aus dem Raum); sonst wird ein übrig gebliebenes ?t=CODE entfernt.
 function showHub(error = '', { keepUrl = false } = {}) {
   $('#game-root').hidden = true;
+  if (typeof CardWorlds !== 'undefined') CardWorlds.clear(); // Kartenwelt, Schnee und Wintermusik gehören nur an den Tisch
   $('#hub').hidden = false;
   if (error) toast(error, true);
   if (!keepUrl && roomCodeFromUrl()) history.replaceState(null, '', '/' + (location.hash || '#start')); // ?t=CODE gehört zum Tisch, nicht zur Startseite
