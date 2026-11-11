@@ -1,0 +1,59 @@
+/* ART-T2b Feinschliff der Skip-Bo-Pilotwelten SB-09 Burgenbau, SB-01 Montagewerk 12, SB-04 Orbitalstation.
+   Gilt nur für diese drei Welten; alle anderen Welten bleiben wie in ART-T1.
+   Baureihen werden zu Bauplätzen der Welt (Fundament, Montageplatz, Andockring), Fortschritt als Bauleiste der Welt. */
+
+/* ---------- gemeinsam: lesbare Beschriftung, dunkles Zielfeld, Joker ---------- */
+body:is([data-card-world="SB-09"],[data-card-world="SB-01"],[data-card-world="SB-04"]) .kg-stapelrennen[data-art-skipbo] .st-shared :is(.cw-eyebrow,.cw-section-head,.cw-section-head span){color:#f4efe6;text-shadow:0 1px 2px #000a}
+body:is([data-card-world="SB-09"],[data-card-world="SB-01"],[data-card-world="SB-04"]) .kg-stapelrennen[data-art-skipbo] .st-shared .cw-eyebrow{color:var(--cwt-accent);font-weight:700}
+body:is([data-card-world="SB-09"],[data-card-world="SB-01"],[data-card-world="SB-04"]) .kg-stapelrennen[data-art-skipbo] .st-build{position:relative;color:#f4efe6;gap:8px;overflow:visible}
+body:is([data-card-world="SB-09"],[data-card-world="SB-01"],[data-card-world="SB-04"]) .kg-stapelrennen[data-art-skipbo] .st-build:disabled{color:#f4efe6;opacity:1}
+body:is([data-card-world="SB-09"],[data-card-world="SB-01"],[data-card-world="SB-04"]) .kg-stapelrennen[data-art-skipbo] .st-build-index{color:var(--cwt-accent);font-weight:700;letter-spacing:.14em}
+body:is([data-card-world="SB-09"],[data-card-world="SB-01"],[data-card-world="SB-04"]) .kg-stapelrennen[data-art-skipbo] .st-build small{color:#e9e3d6}
+body:is([data-card-world="SB-09"],[data-card-world="SB-01"],[data-card-world="SB-04"]) .kg-stapelrennen[data-art-skipbo] .st-need{color:var(--cwt-accent);font-weight:700}
+/* leerer Bauplatz: Weltmotiv als Schatten der ersten Karte, Zahl 1 darüber */
+body:is([data-card-world="SB-09"],[data-card-world="SB-01"],[data-card-world="SB-04"]) .kg-stapelrennen[data-art-skipbo] .st-build>.kc-empty{background:linear-gradient(#000000a8,#000000a8),var(--cw-a0) center/cover no-repeat;border:2px dashed var(--cwt-accent);box-shadow:none}
+body:is([data-card-world="SB-09"],[data-card-world="SB-01"],[data-card-world="SB-04"]) .kg-stapelrennen[data-art-skipbo] .st-seed{color:var(--cwt-accent);opacity:.95;font-family:var(--cw-font),system-ui,sans-serif;text-shadow:0 1px 3px #000}
+/* Fortschrittsleiste: Weltfarbe, etwas kräftiger */
+body:is([data-card-world="SB-09"],[data-card-world="SB-01"],[data-card-world="SB-04"]) .kg-stapelrennen[data-art-skipbo] .st-build progress{height:7px;width:82%;border-radius:2px;background:#0009;box-shadow:0 0 0 1px #ffffff40}
+body:is([data-card-world="SB-09"],[data-card-world="SB-01"],[data-card-world="SB-04"]) .kg-stapelrennen[data-art-skipbo] .st-build progress::-webkit-progress-bar{background:#0009}
+/* Dein Ziel: dunkel in der Welt statt hellem Papier */
+body:is([data-card-world="SB-09"],[data-card-world="SB-01"],[data-card-world="SB-04"]) .kg-stapelrennen[data-art-skipbo] .st-goal-stock{background:color-mix(in srgb,var(--cwt-table-lo) 82%,#000);border:2px solid var(--cwt-accent);color:#f4efe6}
+body:is([data-card-world="SB-09"],[data-card-world="SB-01"],[data-card-world="SB-04"]) .kg-stapelrennen[data-art-skipbo] .st-goal-stock .cw-eyebrow{color:var(--cwt-accent)}
+/* Joker: Streifen oben, großes Symbol, doppelter Ring (wie bei den UNO-Aktionskarten) */
+body:is([data-card-world="SB-09"],[data-card-world="SB-01"],[data-card-world="SB-04"]) .kg-stapelrennen[data-art-skipbo] .kc-st.joker:not(.kc-empty){
+  background:repeating-linear-gradient(135deg,var(--sbp-stripe) 0 calc(var(--w)*.05),transparent calc(var(--w)*.05) calc(var(--w)*.1)) 0 0/100% 11% no-repeat,
+    linear-gradient(118deg,#ffffff45 0 12%,#ffffff0f 28%,transparent 42%,transparent 80%,#0000001f),var(--cwa) 50% 38%/82% auto no-repeat,var(--cw-mat)}
+body:is([data-card-world="SB-09"],[data-card-world="SB-01"],[data-card-world="SB-04"]) .kg-stapelrennen[data-art-skipbo] .kc-st.joker .v{min-width:calc(var(--w)*.6);height:calc(var(--w)*.36);bottom:3%;font-size:calc(var(--w)*.26);
+  box-shadow:0 0 0 calc(var(--w)*.03) var(--cw-rim),0 0 0 calc(var(--w)*.06) var(--cw),0 0 0 calc(var(--w)*.075) var(--cw-rim),0 3px 0 calc(var(--w)*.075) #0006}
+body:is([data-card-world="SB-09"],[data-card-world="SB-01"],[data-card-world="SB-04"]) .kg-stapelrennen[data-art-skipbo] .kc-st.joker :is(.cr.tl,.cm){top:9%}
+
+/* ---------- SB-09 Burgenbau: Fundament aus Steinblöcken mit Zinnen ---------- */
+body[data-card-world="SB-09"] .kg-stapelrennen{--sbp-stripe:#f6d77acc}
+body[data-card-world="SB-09"] .kg-stapelrennen[data-art-skipbo] .st-build{
+  background:repeating-linear-gradient(0deg,transparent 0 21px,#0000003d 21px 22px),repeating-linear-gradient(90deg,transparent 0 41px,#0000003d 41px 42px),linear-gradient(#76654f,#4b3d2e);
+  border:3px solid #a39078;border-radius:3px 3px 8px 8px;margin-top:10px}
+body[data-card-world="SB-09"] .kg-stapelrennen[data-art-skipbo] .st-build::before{content:'';position:absolute;left:-3px;right:-3px;top:-13px;height:10px;background:repeating-linear-gradient(90deg,#a39078 0 16px,transparent 16px 26px);pointer-events:none}
+body[data-card-world="SB-09"] .kg-stapelrennen[data-art-skipbo] .st-build.can{border-color:#f6d77a;box-shadow:0 0 0 3px #f6d77a66,0 0 16px #f6d77a66}
+body[data-card-world="SB-09"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-webkit-progress-value{background:linear-gradient(#f6d77a,#c0892a)}
+body[data-card-world="SB-09"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-moz-progress-bar{background:linear-gradient(#f6d77a,#c0892a)}
+
+/* ---------- SB-01 Montagewerk 12: Montageplatz mit Warnstreifen und Nieten ---------- */
+body[data-card-world="SB-01"] .kg-stapelrennen{--sbp-stripe:#f2b51ecc}
+body[data-card-world="SB-01"] .kg-stapelrennen[data-art-skipbo] .st-build{
+  background:radial-gradient(circle at 9px 16px,#c5ccd3 0 2.4px,transparent 3.4px),radial-gradient(circle at calc(100% - 9px) 16px,#c5ccd3 0 2.4px,transparent 3.4px),radial-gradient(circle at 9px calc(100% - 9px),#c5ccd3 0 2.4px,transparent 3.4px),radial-gradient(circle at calc(100% - 9px) calc(100% - 9px),#c5ccd3 0 2.4px,transparent 3.4px),linear-gradient(#3b4450,#272d35);
+  border:2px solid #7f8b97;border-radius:3px;padding-top:20px}
+body[data-card-world="SB-01"] .kg-stapelrennen[data-art-skipbo] .st-build::before{content:'';position:absolute;left:-2px;right:-2px;top:-2px;height:8px;background:repeating-linear-gradient(135deg,#f2b51e 0 8px,#151515 8px 16px);pointer-events:none}
+body[data-card-world="SB-01"] .kg-stapelrennen[data-art-skipbo] .st-build.can{border-color:#f2b51e;box-shadow:0 0 0 3px #f2b51e66}
+body[data-card-world="SB-01"] .kg-stapelrennen[data-art-skipbo] .st-build progress{background:repeating-linear-gradient(90deg,#1a1d22 0 6px,#3a4048 6px 12px)}
+body[data-card-world="SB-01"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-webkit-progress-bar{background:repeating-linear-gradient(90deg,#1a1d22 0 6px,#3a4048 6px 12px)}
+body[data-card-world="SB-01"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-webkit-progress-value{background:repeating-linear-gradient(135deg,#f2b51e 0 6px,#c88f0a 6px 12px)}
+body[data-card-world="SB-01"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-moz-progress-bar{background:repeating-linear-gradient(135deg,#f2b51e 0 6px,#c88f0a 6px 12px)}
+
+/* ---------- SB-04 Orbitalstation: Andockring mit Leuchtkante ---------- */
+body[data-card-world="SB-04"] .kg-stapelrennen{--sbp-stripe:#2ad0ffcc}
+body[data-card-world="SB-04"] .kg-stapelrennen[data-art-skipbo] .st-build{
+  background:radial-gradient(circle at 50% 46%,transparent 0 40%,#2ad0ff66 41% 43%,transparent 44% 52%,#2ad0ff30 53% 54%,transparent 55%),linear-gradient(#101a3e,#0a1028);
+  border:2px solid #2ad0ff99;border-radius:16px;box-shadow:0 0 14px #2ad0ff40,inset 0 0 22px #2ad0ff26}
+body[data-card-world="SB-04"] .kg-stapelrennen[data-art-skipbo] .st-build.can{border-color:#9af0ff;box-shadow:0 0 0 2px #9af0ff80,0 0 22px #2ad0ffaa,inset 0 0 22px #2ad0ff40}
+body[data-card-world="SB-04"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-webkit-progress-value{background:linear-gradient(90deg,#2ad0ff,#c24dff);box-shadow:0 0 8px #2ad0ff}
+body[data-card-world="SB-04"] .kg-stapelrennen[data-art-skipbo] .st-build progress::-moz-progress-bar{background:linear-gradient(90deg,#2ad0ff,#c24dff)}
