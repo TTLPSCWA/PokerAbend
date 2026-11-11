@@ -1,0 +1,43 @@
+/* ART-T3 Feinschliff der übrigen sieben UNO-Welten U-03, U-05 bis U-10 (gleiche Bausteine wie ART-T2a, eigene Streifenfarbe und Rahmendetails je Welt).
+   Gilt nur für diese Welten; Pilotwelten, Winterwelten und andere Spiele bleiben unverändert. */
+
+/* ---------- Rückseite: Kartenzahl als kleine Marke unten, das Weltbild bleibt frei ---------- */
+body:is([data-card-world="U-03"],[data-card-world="U-05"],[data-card-world="U-06"],[data-card-world="U-07"],[data-card-world="U-08"],[data-card-world="U-09"],[data-card-world="U-10"]) .kg-farbenchaos .fc-back{position:relative}
+body:is([data-card-world="U-03"],[data-card-world="U-05"],[data-card-world="U-06"],[data-card-world="U-07"],[data-card-world="U-08"],[data-card-world="U-09"],[data-card-world="U-10"]) .kg-farbenchaos .fc-back .fc-deck-count{
+  position:absolute;left:50%;bottom:7%;transform:translateX(-50%);display:flex;align-items:baseline;gap:.3em;white-space:nowrap;
+  padding:.12em .55em;border-radius:999px;background:color-mix(in srgb,var(--cwt-table-lo) 88%,#000);box-shadow:0 0 0 1px #ffffffb0,0 2px 3px #0008;
+  font-family:var(--cw-font),system-ui,sans-serif;font-size:calc(var(--w,56px)*.17);line-height:1.1}
+body:is([data-card-world="U-03"],[data-card-world="U-05"],[data-card-world="U-06"],[data-card-world="U-07"],[data-card-world="U-08"],[data-card-world="U-09"],[data-card-world="U-10"]) .kg-farbenchaos .fc-back .fc-deck-count>small{font-size:.55em;letter-spacing:0}
+
+/* ---------- Aktionskarten: Streifen oben, großes Symbol, doppelter Medaillon-Ring ---------- */
+body:is([data-card-world="U-03"],[data-card-world="U-05"],[data-card-world="U-06"],[data-card-world="U-07"],[data-card-world="U-08"],[data-card-world="U-09"],[data-card-world="U-10"]) .kg-farbenchaos[data-art-uno] .kc-fc:not(.kc-empty):is([data-action=S],[data-action=R],[data-action=D],[data-action=F],[data-action=W]){
+  background:repeating-linear-gradient(135deg,var(--cw-stripe) 0 calc(var(--w)*.05),transparent calc(var(--w)*.05) calc(var(--w)*.1)) 0 0/100% 11% no-repeat,
+    linear-gradient(118deg,#ffffff45 0 12%,#ffffff0f 28%,transparent 42%,transparent 80%,#0000001f),var(--cwa) 50% 38%/82% auto no-repeat,var(--cw-mat)}
+body:is([data-card-world="U-03"],[data-card-world="U-05"],[data-card-world="U-06"],[data-card-world="U-07"],[data-card-world="U-08"],[data-card-world="U-09"],[data-card-world="U-10"]) .kg-farbenchaos[data-art-uno] .kc-fc:is([data-action=S],[data-action=R],[data-action=D],[data-action=F],[data-action=W]) .v{
+  min-width:calc(var(--w)*.6);height:calc(var(--w)*.36);bottom:3%;
+  box-shadow:0 0 0 calc(var(--w)*.03) var(--cw-rim),0 0 0 calc(var(--w)*.06) var(--cw),0 0 0 calc(var(--w)*.075) var(--cw-rim),0 3px 0 calc(var(--w)*.075) #0006}
+body:is([data-card-world="U-03"],[data-card-world="U-05"],[data-card-world="U-06"],[data-card-world="U-07"],[data-card-world="U-08"],[data-card-world="U-09"],[data-card-world="U-10"]) .kg-farbenchaos[data-art-uno] .kc-fc:is([data-action=S],[data-action=R],[data-action=D],[data-action=F],[data-action=W]) .v>.fc-symbol{width:calc(var(--w)*.28);height:calc(var(--w)*.28)}
+body:is([data-card-world="U-03"],[data-card-world="U-05"],[data-card-world="U-06"],[data-card-world="U-07"],[data-card-world="U-08"],[data-card-world="U-09"],[data-card-world="U-10"]) .kg-farbenchaos[data-art-uno] .kc-fc:is([data-action=D],[data-action=F]) .v{font-size:calc(var(--w)*.26)}
+
+/* ---------- Streifenfarbe und Rahmendetails je Welt ---------- */
+body[data-card-world="U-03"] .kg-farbenchaos{--cw-stripe:#00e5ffcc}
+body[data-card-world="U-05"] .kg-farbenchaos{--cw-stripe:#d4a537cc}
+body[data-card-world="U-06"] .kg-farbenchaos{--cw-stripe:#f2b80fe6}
+body[data-card-world="U-07"] .kg-farbenchaos{--cw-stripe:#ffffffb3}
+body[data-card-world="U-08"] .kg-farbenchaos{--cw-stripe:#f2b51ecc}
+body[data-card-world="U-09"] .kg-farbenchaos{--cw-stripe:#5a3a18b3}
+body[data-card-world="U-10"] .kg-farbenchaos{--cw-stripe:#9fe6ffcc}
+/* U-03 Neonstadt: Leuchtring um das Medaillon */
+body[data-card-world="U-03"] .kg-farbenchaos[data-art-uno] .kc-fc:not(.kc-empty) .v{box-shadow:0 0 0 calc(var(--w)*.03) var(--cw),0 0 calc(var(--w)*.14) var(--cw)}
+/* U-05 Aschenreich: Runenlinie innen und Glut am unteren Rand */
+body[data-card-world="U-05"] .kg-farbenchaos[data-art-uno] .kc-fc:not(.kc-empty){outline:1px solid #d4a53766;outline-offset:calc(var(--w)*-.06)}
+/* U-06 Hüpfwelt: dicke Comic-Kante auch am Medaillon der Aktionskarten */
+body[data-card-world="U-06"] .kg-farbenchaos[data-art-uno] .kc-fc:is([data-action=S],[data-action=R],[data-action=D],[data-action=F],[data-action=W]) .v{-webkit-text-stroke:calc(var(--w)*.02) #111;paint-order:stroke}
+/* U-07 Taschenmonster: Holo-Glanz über dem Medaillon */
+body[data-card-world="U-07"] .kg-farbenchaos[data-art-uno] .kc-fc:not(.kc-empty) .v{background-image:linear-gradient(120deg,#ffffff00 20%,#ffffff66 45%,#ffffff00 70%)}
+/* U-08 Heldenarena: Nietenreihe oben am Rand der Aktionskarten bleibt durch den Streifen sichtbar */
+body[data-card-world="U-08"] .kg-farbenchaos[data-art-uno] .kc-fc:not(.kc-empty) .v{box-shadow:0 0 0 calc(var(--w)*.03) #f2b51e,0 2px 0 calc(var(--w)*.03) #0006}
+/* U-09 Lichtwald: weiche Laternenlinie innen */
+body[data-card-world="U-09"] .kg-farbenchaos[data-art-uno] .kc-fc:not(.kc-empty){outline:1px dashed #5a3a1888;outline-offset:calc(var(--w)*-.07)}
+/* U-10 Insel-Showdown: Kristallfacetten als helle Innenlinie */
+body[data-card-world="U-10"] .kg-farbenchaos[data-art-uno] .kc-fc:not(.kc-empty){outline:1px solid #ffffff99;outline-offset:calc(var(--w)*-.06)}
