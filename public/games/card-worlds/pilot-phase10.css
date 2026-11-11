@@ -1,0 +1,67 @@
+/* ART-T2c Feinschliff der Phase-10-Pilotwelten P-03 Testkammer X, P-06 Kart-Grand-Prix, P-10 Rhythmus-Tour.
+   Gilt nur für diese drei Welten; alle anderen Welten bleiben wie in ART-T1.
+   Die Phasenanzeige wird zur Reise der Welt (Testkammern, Rennstrecke, Tourstationen). */
+
+/* ---------- gemeinsam: Joker und Aussetzen, Stapelzahl, Gruppenfelder ---------- */
+body:is([data-card-world="P-03"],[data-card-world="P-06"],[data-card-world="P-10"]) .kg-zehnetappen[data-art-phase10] .kc-ze:is(.ze-j,.ze-s):not(.kc-empty){
+  background:repeating-linear-gradient(135deg,var(--zp-stripe) 0 calc(var(--w)*.05),transparent calc(var(--w)*.05) calc(var(--w)*.1)) 0 0/100% 11% no-repeat,
+    linear-gradient(118deg,#ffffff45 0 12%,#ffffff0f 28%,transparent 42%,transparent 80%,#0000001f),var(--cwa) 50% 38%/82% auto no-repeat,var(--cw-mat)}
+/* Aussetzen: roter Querstrich über dem Bild, damit es sich vom Joker unterscheidet */
+body:is([data-card-world="P-03"],[data-card-world="P-06"],[data-card-world="P-10"]) .kg-zehnetappen[data-art-phase10] .kc-ze.ze-s:not(.kc-empty){
+  background:linear-gradient(to top right,transparent 44%,#e5262dcc 45% 55%,transparent 56%) 0 6%/100% 66% no-repeat,
+    repeating-linear-gradient(135deg,var(--zp-stripe) 0 calc(var(--w)*.05),transparent calc(var(--w)*.05) calc(var(--w)*.1)) 0 0/100% 11% no-repeat,
+    linear-gradient(118deg,#ffffff45 0 12%,#ffffff0f 28%,transparent 42%,transparent 80%,#0000001f),var(--cwa) 50% 38%/82% auto no-repeat,var(--cw-mat)}
+body:is([data-card-world="P-03"],[data-card-world="P-06"],[data-card-world="P-10"]) .kg-zehnetappen[data-art-phase10] .kc-ze:is(.ze-j,.ze-s) .v{
+  min-width:calc(var(--w)*.6);height:calc(var(--w)*.36);bottom:3%;font-size:calc(var(--w)*.26);
+  box-shadow:0 0 0 calc(var(--w)*.03) var(--cw-rim),0 0 0 calc(var(--w)*.06) #262b3a,0 0 0 calc(var(--w)*.075) var(--cw-rim),0 3px 0 calc(var(--w)*.075) #0006}
+body:is([data-card-world="P-03"],[data-card-world="P-06"],[data-card-world="P-10"]) .kg-zehnetappen[data-art-phase10] .kc-ze:is(.ze-j,.ze-s) :is(.cr.tl,.cm){top:9%}
+/* Rückseite: Kartenzahl in einem dunklen Band unten, das Weltmotiv bleibt frei */
+body:is([data-card-world="P-03"],[data-card-world="P-06"],[data-card-world="P-10"]) .kg-zehnetappen[data-art-phase10] .kc-back{
+  display:flex;align-items:flex-end;justify-content:center;padding-bottom:5%;box-sizing:border-box;
+  font-family:var(--cw-font),system-ui,sans-serif;font-size:calc(var(--w,56px)*.2);font-weight:700;line-height:1.1;
+  background:linear-gradient(transparent 72%,#000000b8 72%),var(--cw-back) center/cover no-repeat,var(--cwt-table)}
+/* Phasenfelder (Planung und ausgelegte Gruppen) in der Weltfarbe statt im Standard-Blaugrün */
+body:is([data-card-world="P-03"],[data-card-world="P-06"],[data-card-world="P-10"]) .kg-zehnetappen[data-art-phase10] :is(.ze-group,.ze-slot){background:color-mix(in srgb,var(--cwt-table-lo) 86%,#000);border-color:color-mix(in srgb,var(--cwt-accent) 60%,transparent);color:#f4efe6}
+body:is([data-card-world="P-03"],[data-card-world="P-06"],[data-card-world="P-10"]) .kg-zehnetappen[data-art-phase10] .ze-group.can{border-color:var(--cwt-accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--cwt-accent) 40%,transparent),0 0 16px color-mix(in srgb,var(--cwt-accent) 50%,transparent)}
+body:is([data-card-world="P-03"],[data-card-world="P-06"],[data-card-world="P-10"]) .kg-zehnetappen[data-art-phase10] .ze-phase :is(small,b){color:#f4efe6}
+body:is([data-card-world="P-03"],[data-card-world="P-06"],[data-card-world="P-10"]) .kg-zehnetappen[data-art-phase10] .ze-phase small{color:var(--cwt-accent);font-weight:700}
+/* Reise: Strecke hinter den Stationen, Stationen als Felder der Welt */
+body:is([data-card-world="P-03"],[data-card-world="P-06"],[data-card-world="P-10"]) .kg-zehnetappen[data-art-phase10] .ze-progress{position:relative;gap:6px;padding:4px 8px;border-radius:999px;background:#0006;box-shadow:inset 0 0 0 1px #ffffff2e}
+body:is([data-card-world="P-03"],[data-card-world="P-06"],[data-card-world="P-10"]) .kg-zehnetappen[data-art-phase10] .ze-progress i{width:17px;height:17px;border:0;border-radius:50%;box-shadow:none;background:#ffffff1f;position:relative;display:grid;place-items:center;font-style:normal;font-size:11px;line-height:1;color:#fff}
+body:is([data-card-world="P-03"],[data-card-world="P-06"],[data-card-world="P-10"]) .kg-zehnetappen[data-art-phase10] .ze-progress span{color:#f4efe6;font-weight:700}
+
+/* ---------- P-03 Testkammer X: Kammern mit Prüfschildern ---------- */
+body[data-card-world="P-03"] .kg-zehnetappen{--zp-stripe:#ff8a1acc}
+body[data-card-world="P-03"] .kg-zehnetappen[data-art-phase10] .ze-phase:not(#zp){
+  background:linear-gradient(#ffffff14 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,#ffffff14 1px,transparent 1px) 0 0/28px 28px,radial-gradient(ellipse 70% 60% at 50% 0,#ffffff24,transparent 70%),radial-gradient(ellipse at 50% 30%,var(--cwt-table-hi),var(--cwt-table) 55%,var(--cwt-table-lo))}
+body[data-card-world="P-03"] .kg-zehnetappen[data-art-phase10] .ze-progress i{border-radius:3px;background:#ffffff26}
+body[data-card-world="P-03"] .kg-zehnetappen[data-art-phase10] .ze-progress i.done{background:#2a8ae0}
+body[data-card-world="P-03"] .kg-zehnetappen[data-art-phase10] .ze-progress i.done::after{content:'✓'}
+body[data-card-world="P-03"] .kg-zehnetappen[data-art-phase10] .ze-progress i.now{background:#ff8a1a;box-shadow:0 0 0 2px #fff,0 0 10px #ff8a1a}
+
+/* ---------- P-06 Kart-Grand-Prix: Rennstrecke mit Zielflagge ---------- */
+body[data-card-world="P-06"] .kg-zehnetappen{--zp-stripe:#f2b80fcc}
+body[data-card-world="P-06"] .kg-zehnetappen[data-art-phase10] .ze-phase:not(#zp){
+  background:repeating-linear-gradient(90deg,#f2b80f 0 22px,transparent 22px 44px) 0 calc(100% - 7px)/100% 3px no-repeat,linear-gradient(transparent calc(100% - 22px),#1d1d24 calc(100% - 22px)),radial-gradient(ellipse 70% 60% at 50% 0,#ffffff24,transparent 70%),radial-gradient(ellipse at 50% 30%,var(--cwt-table-hi),var(--cwt-table) 55%,var(--cwt-table-lo))}
+body[data-card-world="P-06"] .kg-zehnetappen[data-art-phase10] .ze-progress{background:#1d1d24;box-shadow:inset 0 0 0 2px #f2b80f}
+body[data-card-world="P-06"] .kg-zehnetappen[data-art-phase10] .ze-progress i{border-radius:2px;background:repeating-linear-gradient(90deg,#ffffff55 0 3px,transparent 3px 6px) center/100% 2px no-repeat}
+body[data-card-world="P-06"] .kg-zehnetappen[data-art-phase10] .ze-progress i.done{background:#f2b80f;border-radius:50%}
+body[data-card-world="P-06"] .kg-zehnetappen[data-art-phase10] .ze-progress i.now{background:#e5262d;border-radius:5px 9px 9px 5px;box-shadow:0 0 0 2px #fff}
+body[data-card-world="P-06"] .kg-zehnetappen[data-art-phase10] .ze-progress i:nth-of-type(10){background:conic-gradient(#fff 0 25%,#111 0 50%,#fff 0 75%,#111 0) 0 0/8px 8px;border-radius:2px}
+
+/* ---------- P-10 Rhythmus-Tour: Bühnenlicht und Tourstationen ---------- */
+body[data-card-world="P-10"] .kg-zehnetappen{--zp-stripe:#ff3d6ecc}
+body[data-card-world="P-10"] .kg-zehnetappen[data-art-phase10] .ze-phase:not(#zp){
+  background:conic-gradient(from 200deg at 15% -10%,transparent 0 10%,#ff3d6e40 12%,transparent 16% 28%,#2ac8ff33 30%,transparent 34%),conic-gradient(from 160deg at 85% -10%,transparent 0 10%,#ffd23f33 12%,transparent 16% 28%,#3fdf8a33 30%,transparent 34%),radial-gradient(ellipse at 50% 30%,var(--cwt-table-hi),var(--cwt-table) 55%,var(--cwt-table-lo))}
+body[data-card-world="P-10"] .kg-zehnetappen[data-art-phase10] .ze-progress i.done{background:#ff3d6e}
+body[data-card-world="P-10"] .kg-zehnetappen[data-art-phase10] .ze-progress i.done::after{content:'♪'}
+body[data-card-world="P-10"] .kg-zehnetappen[data-art-phase10] .ze-progress i.now{background:#ffd23f;color:#1a0a2a;box-shadow:0 0 0 2px #fff,0 0 12px #ffd23f}
+body[data-card-world="P-10"] .kg-zehnetappen[data-art-phase10] .ze-progress i.now::after{content:'★'}
+body:is([data-card-world="P-03"],[data-card-world="P-06"],[data-card-world="P-10"]) .kg-zehnetappen[data-art-phase10] .ze-slot{border:2px dashed color-mix(in srgb,var(--cwt-accent) 70%,transparent)}
+body:is([data-card-world="P-03"],[data-card-world="P-06"],[data-card-world="P-10"]) .kg-zehnetappen[data-art-phase10] .ze-slot.ok{border-style:solid;border-color:var(--cwt-accent)}
+body:is([data-card-world="P-03"],[data-card-world="P-06"],[data-card-world="P-10"]) .kg-zehnetappen[data-art-phase10] .ze-slot-head{color:#f4efe6}
+body:is([data-card-world="P-03"],[data-card-world="P-06"],[data-card-world="P-10"]) .kg-zehnetappen[data-art-phase10] .ze-slot-head small{color:var(--cwt-accent)}
+/* P-03 hat ein helles Labor-Panel: dunkle Schrift für Phasentext und Fortschritt */
+body[data-card-world="P-03"] .kg-zehnetappen[data-art-phase10] .ze-phase :is(b,.ze-progress span){color:#10202c}
+body[data-card-world="P-03"] .kg-zehnetappen[data-art-phase10] .ze-phase small{color:#0b4f8f}
+body[data-card-world="P-03"] .kg-zehnetappen[data-art-phase10] .ze-phase small.ze-min{color:#1d3a52;font-weight:600}
