@@ -1,0 +1,36 @@
+/* ART-T2a Feinschliff der UNO-Pilotwelten U-04 Blockwelt, U-01 Zaubersaal, U-02 Hexerpfad.
+   Gilt nur für diese drei Welten (Auswahl über data-card-world), alle anderen Welten bleiben wie in ART-T1. */
+
+/* ---------- Rückseite: Kartenzahl als kleine Marke unten, das Weltbild bleibt frei ---------- */
+body:is([data-card-world="U-04"],[data-card-world="U-01"],[data-card-world="U-02"]) .kg-farbenchaos .fc-back{position:relative}
+body:is([data-card-world="U-04"],[data-card-world="U-01"],[data-card-world="U-02"]) .kg-farbenchaos .fc-back .fc-deck-count{
+  position:absolute;left:50%;bottom:7%;transform:translateX(-50%);display:flex;align-items:baseline;gap:.3em;white-space:nowrap;
+  padding:.12em .55em;border-radius:999px;background:color-mix(in srgb,var(--cwt-table-lo) 88%,#000);box-shadow:0 0 0 1px #ffffffb0,0 2px 3px #0008;
+  font-family:var(--cw-font),system-ui,sans-serif;font-size:calc(var(--w,56px)*.17);line-height:1.1}
+body:is([data-card-world="U-04"],[data-card-world="U-01"],[data-card-world="U-02"]) .kg-farbenchaos .fc-back .fc-deck-count>small{font-size:.55em;letter-spacing:0}
+body[data-card-world="U-04"] .kg-farbenchaos .fc-back .fc-deck-count{font-size:calc(var(--w,56px)*.12);border-radius:2px}
+
+/* ---------- Aktionskarten: Streifen oben, großes Symbol, doppelter Medaillon-Ring ---------- */
+body:is([data-card-world="U-04"],[data-card-world="U-01"],[data-card-world="U-02"]) .kg-farbenchaos[data-art-uno] .kc-fc:not(.kc-empty):is([data-action=S],[data-action=R],[data-action=D],[data-action=F],[data-action=W]){
+  background:repeating-linear-gradient(135deg,var(--cw-stripe) 0 calc(var(--w)*.05),transparent calc(var(--w)*.05) calc(var(--w)*.1)) 0 0/100% 11% no-repeat,
+    linear-gradient(118deg,#ffffff45 0 12%,#ffffff0f 28%,transparent 42%,transparent 80%,#0000001f),var(--cwa) 50% 38%/82% auto no-repeat,var(--cw-mat)}
+body:is([data-card-world="U-04"],[data-card-world="U-01"],[data-card-world="U-02"]) .kg-farbenchaos[data-art-uno] .kc-fc:is([data-action=S],[data-action=R],[data-action=D],[data-action=F],[data-action=W]) .v{
+  min-width:calc(var(--w)*.6);height:calc(var(--w)*.36);bottom:3%;
+  box-shadow:0 0 0 calc(var(--w)*.03) var(--cw-rim),0 0 0 calc(var(--w)*.06) var(--cw),0 0 0 calc(var(--w)*.075) var(--cw-rim),0 3px 0 calc(var(--w)*.075) #0006}
+body:is([data-card-world="U-04"],[data-card-world="U-01"],[data-card-world="U-02"]) .kg-farbenchaos[data-art-uno] .kc-fc:is([data-action=S],[data-action=R],[data-action=D],[data-action=F],[data-action=W]) .v>.fc-symbol{width:calc(var(--w)*.28);height:calc(var(--w)*.28)}
+body:is([data-card-world="U-04"],[data-card-world="U-01"],[data-card-world="U-02"]) .kg-farbenchaos[data-art-uno] .kc-fc:is([data-action=D],[data-action=F]) .v{font-size:calc(var(--w)*.26)}
+body[data-card-world="U-01"] .kg-farbenchaos{--cw-stripe:#f6d77acc}
+body[data-card-world="U-02"] .kg-farbenchaos{--cw-stripe:#d9cfb0aa}
+body[data-card-world="U-04"] .kg-farbenchaos{--cw-stripe:#ffffff88}
+
+/* ---------- Rahmendetails je Welt ---------- */
+/* U-01 Zaubersaal: zweite feine Goldlinie innen */
+body[data-card-world="U-01"] .kg-farbenchaos[data-art-uno] .kc-fc:not(.kc-empty){outline:1px solid #f6d77a99;outline-offset:calc(var(--w)*-.065)}
+/* U-04 Blockwelt: harte Pixelkanten, Licht oben, Schatten unten */
+body[data-card-world="U-04"] .kg-farbenchaos[data-art-uno] .kc-fc:not(.kc-empty):not(.sel):not(.can):not(.drop):not(.cix-selected){
+  box-shadow:inset 0 0 0 calc(var(--w)*.03) #111,inset calc(var(--w)*.03) calc(var(--w)*.03) 0 calc(var(--w)*.03) #ffffff80,inset calc(var(--w)*-.03) calc(var(--w)*-.03) 0 calc(var(--w)*.03) #00000066,0 3px 0 #0007,0 6px 8px #0006}
+body[data-card-world="U-04"] .kg-farbenchaos[data-art-uno] .kc-fc .v{image-rendering:pixelated;box-shadow:0 0 0 2px #111,inset 0 3px 0 #ffffff55,inset 0 -3px 0 #0005}
+/* U-02 Hexerpfad: Lederprägung bleibt, Medaillon als geprägtes Siegel */
+body[data-card-world="U-02"] .kg-farbenchaos[data-art-uno] .kc-fc .v{background-image:radial-gradient(circle at 35% 30%,#ffffff40,transparent 55%)}
+/* Aktionskarten: Ecksymbole unter den Streifen schieben, damit sie lesbar bleiben */
+body:is([data-card-world="U-04"],[data-card-world="U-01"],[data-card-world="U-02"]) .kg-farbenchaos[data-art-uno] .kc-fc:is([data-action=S],[data-action=R],[data-action=D],[data-action=F],[data-action=W]) :is(.cr.tl,.cm){top:9%}
