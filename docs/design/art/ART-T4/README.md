@@ -1,6 +1,6 @@
 # ART-T4 · Restliche Skip-Bo- und Phase-10-Welten
 
-Implementierungscommit: `IMPL_COMMIT`
+Implementierungscommit: `f6cb48a9612aa02d81fe4010a14db40f84f85c2a`
 
 ## Ergebnis
 

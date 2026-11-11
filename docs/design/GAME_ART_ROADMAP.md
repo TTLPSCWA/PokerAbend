@@ -132,7 +132,10 @@ Der Host wählt für **UNO (Classic), Skip-Bo und Phase 10** eine Kartenwelt; si
 - **Spiele:** `stapelrennen`, `zehnetappen`
 - **Ziel:** Feinschliff der übrigen sieben Skip-Bo- und sieben Phase-10-Welten.
 - **Material:** eigene SVG-Grafiken.
-- **Status:** planned
+- **Status:** done
+- **Implementierungscommit:** `f6cb48a9612aa02d81fe4010a14db40f84f85c2a`
+- **Umsetzung:** `public/games/card-worlds/more-skipbo.css` (SB-02, 03, 05, 06, 07, 08, 10: Bauplätze als Weltmotiv, Fortschritt, Joker) und `more-phase10.css` (P-01, 02, 04, 05, 07, 08, 09: Reise-Phasenanzeige, Joker/Aussetzen, Rückseite, Planungsfelder). Pilot-, Winterwelten und andere Spiele unverändert.
+- **Nachweise:** `test/ui/art-t4-skipbo-worlds.spec.js`, `test/ui/art-t4-phase10-worlds.spec.js`, `docs/design/art/ART-T4/README.md`, `docs/design/art/ART-T4/skipbo-uebersicht.webp`, `docs/design/art/ART-T4/phase10-uebersicht.webp`, `docs/design/art/ART-T4/P-02-mobil.webp`, `docs/design/art/ART-T4/P-09-mobil.webp`
 
 #### ART-T5 · Winterwelten · P2
 - **Spiele:** `farbenchaos`, `stapelrennen`, `zehnetappen`
