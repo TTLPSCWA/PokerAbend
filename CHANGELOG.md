@@ -2,6 +2,11 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.1.1 – 11. November 2026
+
+* **Behoben:** Wer mit „Platz behalten“ auf die Startseite ging und über „Weiterspielen“ zurückkam, hatte Kartenwelt, Schnee und Wintermusik nicht mehr. Jetzt sind sie sofort wieder da.
+* **Behoben:** Wurde das Spiel in einem zweiten Tab übernommen, lief im alten Tab die Wintermusik weiter. Jetzt wird sie dort gestoppt.
+
 ## 3.1.0 – 11. November 2026
 
 * **Version unter dem Schriftzug:** Unter „Spieleabend“ steht jetzt klein die Version und der Build (z. B. `v3.1.0 · 8c1cd39`). So sieht man nach jedem Update sofort, ob der neue Stand läuft.

@@ -35,3 +35,9 @@ test('Alle Stücke stehen mit Urheber, Quelle und Lizenz in ART_LICENSES.md', ()
 test('Musik startet nie von allein: Standard ist aus, gespeichert wird nur "on"', () => {
   assert.match(js, /getItem\(MUSIC_KEY\) === 'on'/);
 });
+
+test('3.1.1: Weiterspielen schaltet die Kartenwelt wieder ein, ein ersetzter Tab räumt sie weg', () => {
+  const core = readFileSync('public/core.js', 'utf8');
+  assert.match(core, /parked = false;[\s\S]{0,160}CardWorlds\.reapply\(\)/);
+  assert.match(core, /socket\.on\('replaced', \(\) => \{ session = null; if \(typeof CardWorlds !== 'undefined'\) CardWorlds\.clear\(\);/);
+});

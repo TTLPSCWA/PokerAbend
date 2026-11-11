@@ -3,7 +3,7 @@
 // Nur Darstellung. Diese Datei setzt body[data-card-world] und body[data-cw-frame] aus dem Raumstand und
 // liefert die Auswahl im Host-Menü (kit.js). Daten: /games/card-worlds/worlds.js (auch vom Server geprüft).
 const CardWorlds = (() => {
-  let mod = null, last = null;
+  let mod = null, last = null, raw = null;
   const ready = import('/games/card-worlds/worlds.js').then((m) => { mod = m; apply(last); return m; }).catch(() => null);
   const t = (de, en) => (I18n.language === 'en' ? en : de);
   // UNO-Varianten mit eigener Gestaltung (Flip, No Mercy, All Wild, Spuknacht) behalten ihr Aussehen
@@ -84,7 +84,7 @@ const CardWorlds = (() => {
     music(w);
   }
   // Platz behalten und auf der Startseite (core.js: parked): der Server schickt weiter den Raumstand, die Welt bleibt aber aus
-  socket.on('state', (S) => apply(typeof parked !== 'undefined' && parked ? null : S));
+  socket.on('state', (S) => { raw = S; apply(typeof parked !== 'undefined' && parked ? null : S); });
 
   const swatch = (w) => `<span class="cwp-card" style="--c:${w.cols[0][1]};background-image:url('/games/card-worlds/art/${esc(w.id)}/0.svg')"></span>`;
   const pick = (w, selected) => `<button type="button" class="cwp-pick" data-card-world-pick="${esc(w.id)}" aria-pressed="${selected}">${swatch(w)}<span class="cwp-txt"><b>${esc(w.name)}</b><small>${esc(w.world)}</small></span></button>`;
@@ -106,5 +106,6 @@ const CardWorlds = (() => {
   });
   // Tisch verlassen, geschlossen oder Startseite: Welt, Schnee und Musik sofort entfernen (kommt kein Raumstand mehr)
   const clear = () => apply(null);
-  return { controlsHTML, ready, clear, current: () => current(last), audio: () => au };
+  const reapply = () => apply(raw);
+  return { controlsHTML, ready, clear, reapply, current: () => current(last), audio: () => au };
 })();

@@ -77,6 +77,11 @@ test('ART-T6: Musik-Schalter in Winterwelten, Standard aus, spielt und bleibt ge
     await expect(page.locator('#cw-music-toggle, #cw-snow-toggle')).toHaveCount(0);
     await expect(page.locator('body')).not.toHaveAttribute('data-card-world', /./);
     expect(await page.evaluate(() => CardWorlds.audio().paused)).toBe(true);
+    // Weiterspielen (returnToRoom): Welt, Schnee und Musik kommen sofort zurück
+    await page.evaluate(() => returnToRoom());
+    await expect(page.locator('#cw-snow')).toHaveCount(1);
+    await expect(page.locator('body')).toHaveAttribute('data-cw-music', 'on');
+    await expect.poll(() => page.evaluate(() => !CardWorlds.audio().paused), { timeout: 15000 }).toBe(true);
     // Gast schließt nicht, sondern verlässt den Tisch endgültig: ebenfalls alles weg
     await expect(room.guests[0].locator('#cw-snow')).toHaveCount(1);
     await room.guests[0].evaluate(() => leaveTable());
