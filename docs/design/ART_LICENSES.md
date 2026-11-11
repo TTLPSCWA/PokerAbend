@@ -17,6 +17,23 @@ Jede Grafik in `public/games/<spiel>/art/` steht hier mit Herkunft und Lizenz. F
 
 Noch keine.
 
+## Musik (Wintermusik, ART-T6)
+
+Fremde Musik, nur in den Winterwelten und nur auf Wunsch des Spielers (Musik-Schalter, Standard aus). Dateien in `public/games/card-worlds/music/`, aus den Originalen neu kodiert (MP3, 80 kbit/s, Lautheit angeglichen, je 1,5 s ein- und ausgeblendet, kurze Loops mehrfach aneinandergehängt); die unveränderten Originale werden nicht ausgeliefert. Die Pixabay-Stücke sind eine vom Projektinhaber ausdrücklich freigegebene Ausnahme von der Regel „CC0 bevorzugt“ (Pixabay-Inhaltslizenz: kostenlos, ohne Namensnennung, keine Weitergabe als unverändertes eigenständiges Produkt).
+
+| Datei | Titel und Urheber | Quelle | Lizenz |
+|---|---|---|---|
+| `wintery-loop.mp3` | „Wintery loop“, Emma M. Andersson (3× aneinandergehängt) | opengameart.org/content/wintery-loop | CC0, gemeinfrei seit Januar 2017 |
+| `through-the-snow.mp3` | „Through the Snow“ (Loop), Cleyton Kauffman (5× aneinandergehängt) | opengameart.org/content/snow-theme | CC0 (Readme des Autors) |
+| `through-the-snow-slow.mp3` | „Through the Snow“ (Slowed Loop), Cleyton Kauffman (4× aneinandergehängt) | opengameart.org/content/snow-theme | CC0 (Readme des Autors) |
+| `winter-wind.mp3` | „Winter Wind Loop“ | opengameart.org/node/114089 | CC0 |
+| `christmas-synths.mp3` | „Happy synths loop with slight christmas feeling“, 3xBlast | opengameart.org/content/happy-synths-loop-with-slight-christmas-feeling | CC0 |
+| `pulsebox-happy-jazz.mp3` | „Happy Christmas Jazz“, pulsebox | pixabay.com/de/music (Datei 432305) | Pixabay-Inhaltslizenz (freigegebene Ausnahme) |
+| `pulsebox-fun-jazz.mp3` | „Fun Christmas Jazz“, pulsebox | pixabay.com/de/music (Datei 432319) | Pixabay-Inhaltslizenz (freigegebene Ausnahme) |
+| `atlasaudio-jazz.mp3` | „Christmas Jazz“, atlasaudio | pixabay.com/de/music (Datei 621548) | Pixabay-Inhaltslizenz (freigegebene Ausnahme) |
+| `dpstudio-winter-wonderland.mp3` | „Winter Wonderland Chorus“, DPStudioMusic | pixabay.com/de/music (Datei 274785) | Pixabay-Inhaltslizenz (freigegebene Ausnahme) |
+| `dpstudio-crimson-ribbon.mp3` | „Crimson Ribbon Melody“, DPStudioMusic | pixabay.com/de/music (Datei 274783) | Pixabay-Inhaltslizenz (freigegebene Ausnahme) |
+
 ## Schriften (SIL Open Font License 1.1)
 
 Unverändert aus den Fontsource-Paketen (npm `@fontsource/<name>`, Ausschnitt „latin“), je mit Lizenztext daneben. Nur für die Kartenwelten (ART-T1), geladen nur von der gewählten Welt.

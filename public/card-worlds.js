@@ -28,12 +28,60 @@ const CardWorlds = (() => {
     btn.setAttribute('aria-label', on ? t('Schneefall ausschalten', 'Turn snowfall off') : t('Schneefall einschalten', 'Turn snowfall on'));
     btn.title = btn.getAttribute('aria-label');
   }
+  // ART-T6 Wintermusik: nur in Winterwelten, eigener Knopf neben dem Schnee-Knopf, pro Gerät gespeichert (Standard: aus).
+  // Wiedergabeliste aus /games/card-worlds/music/, leise, die Stücke blenden selbst ein und aus; Herkunft: docs/design/ART_LICENSES.md
+  const MUSIC_KEY = 'cwMusic', MUSIC_IDX = 'cwMusicIdx', MUSIC_VOL = 0.3;
+  const TRACKS = ['wintery-loop', 'dpstudio-crimson-ribbon', 'through-the-snow-slow', 'pulsebox-happy-jazz', 'winter-wind', 'atlasaudio-jazz', 'christmas-synths', 'dpstudio-winter-wonderland', 'through-the-snow', 'pulsebox-fun-jazz'];
+  const musicOn = () => { try { return localStorage.getItem(MUSIC_KEY) === 'on'; } catch { return false; } };
+  let au = null, musicWanted = false, musicErrors = 0, gestureWait = null;
+  const trackIdx = () => { try { return Math.max(0, Number(localStorage.getItem(MUSIC_IDX)) || 0) % TRACKS.length; } catch { return 0; } };
+  const nextIdx = () => { try { localStorage.setItem(MUSIC_IDX, String((trackIdx() + 1) % TRACKS.length)); } catch {} };
+  function musicPlay() {
+    if (!au) {
+      au = new Audio(); au.preload = 'none'; au.volume = MUSIC_VOL; au.setAttribute('aria-hidden', 'true');
+      au.addEventListener('ended', () => { musicErrors = 0; nextIdx(); if (musicWanted) musicPlay(); });
+      au.addEventListener('error', () => { if (!musicWanted || ++musicErrors >= TRACKS.length) return; nextIdx(); setTimeout(() => musicWanted && musicPlay(), 500); });
+    }
+    const src = `/games/card-worlds/music/${TRACKS[trackIdx()]}.mp3`;
+    if (!au.src.endsWith(src) || au.ended) au.src = src;
+    const p = au.play();
+    if (p?.catch) p.catch((e) => {
+      // Browser verlangt erst eine Berührung: beim nächsten Tippen oder Klick starten
+      if (e?.name !== 'NotAllowedError' || gestureWait) return;
+      gestureWait = () => { document.removeEventListener('pointerdown', gestureWait, true); document.removeEventListener('keydown', gestureWait, true); gestureWait = null; if (musicWanted && au?.paused) musicPlay(); };
+      document.addEventListener('pointerdown', gestureWait, true); document.addEventListener('keydown', gestureWait, true);
+    });
+  }
+  function musicStop() {
+    musicWanted = false;
+    if (gestureWait) { document.removeEventListener('pointerdown', gestureWait, true); document.removeEventListener('keydown', gestureWait, true); gestureWait = null; }
+    if (au) { au.pause(); au.removeAttribute('src'); au.load(); }
+  }
+  document.addEventListener('visibilitychange', () => { if (!au || !musicWanted) return; if (document.hidden) au.pause(); else musicPlay(); });
+  function music(w) {
+    const b = document.body, winter = !!w && w.game === 'all';
+    let btn = document.getElementById('cw-music-toggle');
+    if (!winter) { musicStop(); btn?.remove(); delete b.dataset.cwMusic; return; }
+    if (!btn) {
+      btn = document.createElement('button'); btn.id = 'cw-music-toggle'; btn.type = 'button'; btn.textContent = '♪';
+      btn.addEventListener('click', () => { const on = !musicOn(); try { localStorage.setItem(MUSIC_KEY, on ? 'on' : 'off'); } catch {} musicErrors = 0; music(current(last)); });
+      b.appendChild(btn);
+    }
+    const on = musicOn();
+    b.dataset.cwMusic = on ? 'on' : 'off';
+    btn.setAttribute('aria-pressed', String(on));
+    btn.setAttribute('aria-label', on ? t('Musik ausschalten', 'Turn music off') : t('Musik einschalten', 'Turn music on'));
+    btn.title = btn.getAttribute('aria-label');
+    if (on && !musicWanted) { musicWanted = true; musicPlay(); }
+    else if (!on && musicWanted) musicStop();
+  }
   function apply(S) {
     last = S;
     const w = current(S), b = document.body;
     if (w) { b.dataset.cardWorld = w.id; b.dataset.cwFrame = w.frame; }
     else { delete b.dataset.cardWorld; delete b.dataset.cwFrame; }
     snow(w);
+    music(w);
   }
   socket.on('state', apply);
 
@@ -55,5 +103,5 @@ const CardWorlds = (() => {
     const r = await send('setCardWorld', { world: id });
     if (r?.ok) b.closest('.cwp')?.querySelectorAll('[data-card-world-pick]').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.cardWorldPick === id)));
   });
-  return { controlsHTML, ready, current: () => current(last) };
+  return { controlsHTML, ready, current: () => current(last), audio: () => au };
 })();

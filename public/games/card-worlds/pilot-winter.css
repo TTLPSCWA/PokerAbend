@@ -15,6 +15,11 @@ body[data-cw-snow=off] #cw-snow{display:none}
 #cw-snow-toggle{position:fixed;z-index:3;left:8px;bottom:calc(8px + env(safe-area-inset-bottom));width:36px;height:36px;padding:0;border-radius:50%;border:1px solid #ffffff66;background:#0b1626cc;color:#fff;font-size:17px;line-height:1;cursor:pointer;display:grid;place-items:center;opacity:.8}
 #cw-snow-toggle[aria-pressed=false]{color:#ffffff80;text-decoration:line-through;opacity:.6}
 #cw-snow-toggle:focus-visible{outline:2px solid #fff;outline-offset:2px;opacity:1}
+/* ART-T6 Musik-Knopf: neben dem Schnee-Knopf, gleiche Gestalt; Zustand über aria-pressed */
+#cw-music-toggle{position:fixed;z-index:3;left:52px;bottom:calc(8px + env(safe-area-inset-bottom));width:36px;height:36px;padding:0;border-radius:50%;border:1px solid #ffffff66;background:#0b1626cc;color:#fff;font-size:19px;line-height:1;cursor:pointer;display:grid;place-items:center;opacity:.8}
+#cw-music-toggle[aria-pressed=false]{color:#ffffff80;text-decoration:line-through;opacity:.6}
+#cw-music-toggle[aria-pressed=true]{border-color:#ffe9a8;box-shadow:0 0 10px #ffe9a866}
+#cw-music-toggle:focus-visible{outline:2px solid #fff;outline-offset:2px;opacity:1}
 
 /* ---------- Karten: Schneehaube oben, Ecksymbole darunter ---------- */
 body[data-card-world^="X-"] :is(.kg-farbenchaos .kc-fc,.kg-stapelrennen .kc-st,.kg-zehnetappen .kc-ze):not(.kc-empty){
