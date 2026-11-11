@@ -114,7 +114,10 @@ Der Host wählt für **UNO (Classic), Skip-Bo und Phase 10** eine Kartenwelt; si
 - **Spiele:** `zehnetappen`
 - **Ziel:** Feinschliff für P-03 Testkammer X, P-06 Kart-Grand-Prix und P-10 Rhythmus-Tour: Phasenanzeige als Reise der Welt, Joker und Aussetzen, Rückseite, Tisch.
 - **Material:** eigene SVG-Grafiken.
-- **Status:** planned
+- **Status:** done
+- **Implementierungscommit:** `b1148ed9ce965978da4420c5b300d267a87d0fec`
+- **Umsetzung:** `public/games/card-worlds/pilot-phase10.css` nur für P-03, P-06, P-10: Phasenanzeige als Reise der Welt (Testkammern, Rennstrecke mit Zielflagge, Tourstationen), Joker und Aussetzen mit Streifen und großem Symbol (Aussetzen zusätzlich mit rotem Querstrich), Stapelzahl im Band unten, Planungsfelder und Gruppen in der Weltfarbe, dunkle Schrift auf dem hellen Laborpanel von P-03.
+- **Nachweise:** `test/ui/art-t2c-phase10-pilot.spec.js`, `docs/design/art/ART-T2c/README.md`, `docs/design/art/ART-T2c/P-03-desktop.webp`, `docs/design/art/ART-T2c/P-06-desktop.webp`, `docs/design/art/ART-T2c/P-10-desktop.webp`, `docs/design/art/ART-T2c/P-03-mobil.webp`, `docs/design/art/ART-T2c/P-06-mobil.webp`, `docs/design/art/ART-T2c/P-10-mobil.webp`
 
 #### ART-T3 · Weitere Welten UNO · P2
 - **Spiele:** `farbenchaos`

@@ -197,10 +197,21 @@
       "games": [
         "zehnetappen"
       ],
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "b1148ed9ce965978da4420c5b300d267a87d0fec",
       "goal": "Feinschliff für P-03 Testkammer X, P-06 Kart-Grand-Prix und P-10 Rhythmus-Tour: Phasenanzeige als Reise der Welt, Joker und Aussetzen, Rückseite, Tisch.",
-      "material": "eigene SVG-Grafiken."
+      "material": "eigene SVG-Grafiken.",
+      "implementation_note": "`public/games/card-worlds/pilot-phase10.css` nur für P-03, P-06, P-10: Phasenanzeige als Reise der Welt (Testkammern, Rennstrecke mit Zielflagge, Tourstationen), Joker und Aussetzen mit Streifen und großem Symbol (Aussetzen zusätzlich mit rotem Querstrich), Stapelzahl im Band unten, Planungsfelder und Gruppen in der Weltfarbe, dunkle Schrift auf dem hellen Laborpanel von P-03.",
+      "evidence": [
+        "test/ui/art-t2c-phase10-pilot.spec.js",
+        "docs/design/art/ART-T2c/README.md",
+        "docs/design/art/ART-T2c/P-03-desktop.webp",
+        "docs/design/art/ART-T2c/P-06-desktop.webp",
+        "docs/design/art/ART-T2c/P-10-desktop.webp",
+        "docs/design/art/ART-T2c/P-03-mobil.webp",
+        "docs/design/art/ART-T2c/P-06-mobil.webp",
+        "docs/design/art/ART-T2c/P-10-mobil.webp"
+      ]
     },
     {
       "id": "ART-T3",
