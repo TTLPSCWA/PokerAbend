@@ -26,7 +26,7 @@ test('EXP-088: Palette, Zug-, Schlag- und Schach-Klang; Figuren gleiten nur mit 
     await move(black, 'd7', 'd5');
     await soundLog(page);
     await move(white, 'e4', 'd5'); // schlägt
-    await expectSound(page, 'capture'); await expectSound(page, 'piece');
+    await expectSound(page, 'capture'); await expectSound(page, 'slide');
     await move(black, 'd8', 'd5');
     await move(white, 'b1', 'c3');
     await soundLog(page);
@@ -105,13 +105,14 @@ test('EXP-088: Pause – Zustand springt ohne Bewegung; Rochade bewegt König un
   const { white, black, close } = await start(page, app, browser);
   try {
     for (const [w, b] of [[['e2', 'e4'], ['e7', 'e5']], [['g1', 'f3'], ['b8', 'c6']], [['f1', 'c4'], ['f8', 'c5']]]) { await move(white, ...w); await move(black, ...b); }
+    await page.waitForTimeout(500); // Klänge des letzten Zugs (leicht verzögert) sind verklungen
     await recordAnimations(page); await soundLog(page);
     await expect.poll(() => white.evaluate(() => lastState.turnId === lastState.you.id)).toBe(true);
     const castle = await white.evaluate(() => { const m = lastState.g.legal.find((m) => m.castle); return { from: m.from, to: m.to, castle: m.castle, key: lastState.g.key, revision: lastState.g.revision }; });
     await ok(white, 'move', castle);
     await expect.poll(async () => (await animations(page)).length).toBe(2); // König und Turm
     const [a, b] = await animations(page); expect(a.delay).toBe(b.delay); expect(a.duration).toBe(b.duration);
-    expect((await sounds(page)).filter((e) => e === 'piece').length).toBe(2);
+    await expect.poll(async () => (await sounds(page)).filter((e) => e === 'piece').length).toBe(2);
     await expect(page.locator('[data-square=g1] .ch-piece')).toBeVisible(); await expect(page.locator('[data-square=f1] .ch-piece')).toBeVisible();
     // Gemeinsame Pause: kein Animationsrückstau, nichts läuft nach.
     await ok(page, 'gamePause', { paused: true }); await recordAnimations(page);
@@ -136,3 +137,31 @@ test('EXP-Kit: Siegerfeier ohne Highlight startet sofort und übersteht das dopp
   } finally { await close(); }
 });
 
+
+test('SCHACH-01: Figuren sind eingebettet (weiß hell, schwarz dunkel, kein externes <use>), Markierungen mittig, Bedenkzeit in der Lobby', async ({ page, app, browser }) => {
+  const table = await openTable(page, app, browser, 'schach', { guests: ['Ben'] });
+  try {
+    // Lobby: Host wählt die Bedenkzeit direkt dort, alle anderen sehen sie
+    const pick = page.locator('.ch-clock-pick select');
+    await expect(pick).toBeVisible();
+    await pick.selectOption('5+3');
+    await expect.poll(() => page.evaluate(() => lastState.settings.clock)).toBe('5+3');
+    await expect(table.others[0].locator('.ch-clock-pick')).toContainText('5+3');
+    await ok(page, 'start');
+    await expect(page.locator('.ch-cell')).toHaveCount(64);
+    const fills = await page.evaluate(() => ({
+      uses: document.querySelectorAll('.ch-piece use').length,
+      white: getComputedStyle(document.querySelector('.ch-cell[data-square="e1"] .ch-piece g')).fill,
+      black: getComputedStyle(document.querySelector('.ch-cell[data-square="e8"] .ch-piece g')).fill,
+    }));
+    expect(fills.uses).toBe(0);
+    expect(fills.white).toBe('rgb(247, 237, 207)');
+    expect(fills.black).toBe('rgb(51, 44, 40)');
+    // Zugmarkierung liegt in der Mitte des Feldes
+    const white = (await page.evaluate(() => lastState.turnId === lastState.you.id)) ? page : table.others[0];
+    await white.locator('[data-square="e2"]').click();
+    const dot = await white.evaluate(() => { const c = document.querySelector('.ch-cell[data-square="e4"]'), r = c.getBoundingClientRect(), a = getComputedStyle(c, '::after'); return { w: parseFloat(a.width), h: parseFloat(a.height), size: r.width, left: a.left, top: a.top }; });
+    expect(Math.abs(dot.w - dot.h)).toBeLessThan(1);
+    expect(Math.abs(dot.w - dot.size * 0.26)).toBeLessThan(2);
+  } finally { await table.close(); }
+});

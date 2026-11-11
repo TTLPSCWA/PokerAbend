@@ -179,11 +179,11 @@
     },
     {
       "path": "public/games/schach/schach.css",
-      "sha256": "f9bf650a94fbad4800fe3121e10f3194ad7437362f513423076cd1650a7afa2a"
+      "sha256": "8a2bc09e4f363151b0965108673375d8a090f9634076f0576095cb2a3506e54d"
     },
     {
       "path": "public/games/schach/schach.js",
-      "sha256": "10c0a56c3fcd9154b56a0f53bad96e831cb14b24bc925e517b22be9257b6044e"
+      "sha256": "50067ff59eeae2a7194ef1e70cc4ee9ddc53e6f7e011591d5d568d256d206d9b"
     }
   ],
   "source_audit_commit": "67bae9724c7d88f76e0432b13b954f32c996fe4b",

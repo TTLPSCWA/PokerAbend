@@ -46,8 +46,10 @@ export default {
     }
     if (g.history.length !== pg.history.length + 1 || !live(x)) return;
     const san = g.history.at(-1).san || '', moved = moves(pg.board, g.board);
-    if (san.includes('x')) { x.play('capture'); x.play('piece', { after: 90 }); }
-    else { x.play('piece'); if (moved.length > 1) x.play('piece', { after: 110 }); }
+    // Holzklang: kurz über das Brett schieben, leise aufsetzen; beim Schlagen kräftiger, ein einziger Aufsatz.
+    x.play('slide');
+    if (san.includes('x')) x.play('capture', { after: 130, volume: 0.9 });
+    else { x.play('piece', { after: 150, volume: 0.45 }); if (moved.length > 1) x.play('piece', { after: 260, volume: 0.35 }); }
     if (san.includes('=')) x.play('promote', { after: 160 });
     // Rochade: König und Turm in einer gemeinsamen Bewegung.
     x.run(moved.map(({ from, to }) => {

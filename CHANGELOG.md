@@ -2,6 +2,13 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.1.2 – 11. November 2026
+
+* **Schach, Firefox:** Die Figuren sind jetzt direkt in der Seite eingebettet. Im Firefox waren bisher alle Figuren schwarz, jetzt sind Weiß und Schwarz richtig.
+* **Schach, Markierungen:** Die Punkte für mögliche Züge, der Schlagring und der Schach-Ring liegen genau in der Feldmitte, egal wie groß das Brett ist.
+* **Schach, Klang:** Ein Zug schiebt kurz über das Brett und setzt leise auf, ein Schlag klingt kräftiger. Vorher klang es wild, weil beim Schlagen zwei Töne direkt hintereinander kamen.
+* **Schach, Uhr:** Die Bedenkzeit wählt der Host jetzt direkt in der Schach-Lobby, die anderen sehen die Einstellung dort.
+
 ## 3.1.1 – 11. November 2026
 
 * **Behoben:** Wer mit „Platz behalten“ auf die Startseite ging und über „Weiterspielen“ zurückkam, hatte Kartenwelt, Schnee und Wintermusik nicht mehr. Jetzt sind sie sofort wieder da.

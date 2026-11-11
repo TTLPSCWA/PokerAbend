@@ -4,7 +4,7 @@
 [data-scene='schach'] .ch-clock.running::before{transform:translateY(0);background:#e3c078}
 [data-scene='schach'] .ch-clock.xp-low{animation:xp-ch-low 1s steps(2,jump-none) infinite}
 @keyframes xp-ch-low{from{opacity:1}to{opacity:.62}}
-[data-scene='schach'] .ch-cell.xp-check::before{content:'';position:absolute;inset:6%;border-radius:50%;border:3px solid #c0392b;opacity:.85;pointer-events:none}
+[data-scene='schach'] .ch-cell.xp-check::before{content:'';position:absolute;left:50%;top:50%;width:88%;height:88%;margin:-44% 0 0 -44%;box-sizing:border-box;border-radius:50%;border:3px solid #c0392b;opacity:.85;pointer-events:none}
 [data-scene='schach'] .ch-board[data-xp='schach'] .ch-cell.xp-check::before{animation:xp-ch-check .45s ease-out 2}
 @keyframes xp-ch-check{from{transform:scale(.7);opacity:.2}to{transform:scale(1);opacity:.85}}
 /* Mattbild: alles außer dem gefallenen König und der mattsetzenden Figur tritt zurück. */
