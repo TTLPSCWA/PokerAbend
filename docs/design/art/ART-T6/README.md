@@ -1,6 +1,6 @@
 # ART-T6 · Wintermusik
 
-Implementierungscommit: `IMPL_COMMIT`
+Implementierungscommit: `860498945273de5b1a05ddf6d9721330939795a4`
 
 ## Ergebnis
 

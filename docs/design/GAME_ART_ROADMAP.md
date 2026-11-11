@@ -150,4 +150,7 @@ Der Host wählt für **UNO (Classic), Skip-Bo und Phase 10** eine Kartenwelt; si
 - **Spiele:** `farbenchaos`, `stapelrennen`, `zehnetappen`
 - **Ziel:** Ruhige Winter- und Weihnachtsmusik in den zehn Winterwelten (X-01 bis X-10), Schalter neben dem Schnee-Knopf, pro Gerät gespeichert, Standard aus; leise, mit Ein- und Ausblenden, Wiedergabeliste. Nur Aussehen und Klang, Spiellogik unverändert.
 - **Material:** fremde Musik: CC0 (OpenGameArt: „Wintery loop“ von Emma M. Andersson, „Through the Snow“ von Cleyton Kauffman, „Winter Wind Loop“, „Christmas synths“ von 3xBlast) und vom Nutzer freigegebene Ausnahme Pixabay-Inhaltslizenz (pulsebox „Happy Christmas Jazz“ und „Fun Christmas Jazz“, atlasaudio „Christmas Jazz“, DPStudioMusic „Winter Wonderland Chorus“ und „Crimson Ribbon Melody“); gekürzt, eingeblendet und als kleine Dateien neu kodiert, jede Datei mit Herkunft in `ART_LICENSES.md`.
-- **Status:** planned
+- **Status:** done
+- **Implementierungscommit:** `860498945273de5b1a05ddf6d9721330939795a4`
+- **Umsetzung:** `public/card-worlds.js` (Wiedergabeliste, ♪-Schalter, Standard aus, pro Gerät gespeichert, nur Winterwelten, 30 % Lautstärke, Tab verborgen = Pause, Start nach erster Berührung falls der Browser sperrt), `pilot-winter.css` (Knopf), zehn MP3 in `public/games/card-worlds/music/` (zusammen etwa 11 MB), Herkunft in `ART_LICENSES.md`.
+- **Nachweise:** `test/ui/art-t6-wintermusik.spec.js`, `test/card-worlds-music.test.js`, `docs/design/art/ART-T6/README.md`, `docs/design/art/ART-T6/musik-schalter.webp`
