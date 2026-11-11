@@ -9,11 +9,31 @@ const CardWorlds = (() => {
   // UNO-Varianten mit eigener Gestaltung (Flip, No Mercy, All Wild, Spuknacht) behalten ihr Aussehen
   const applies = (S) => !!S && (S.game !== 'farbenchaos' || (S.variant || 'classic') === 'classic');
   const current = (S) => (mod && S && applies(S) ? mod.worldOf(S.game, S.cardWorld) : null);
+  // ART-T5 Schneefall: ruhige Hintergrundbewegung nur in Winterwelten, pro Gerät abschaltbar (localStorage, Standard: an)
+  const SNOW_KEY = 'cwSnow';
+  const snowOn = () => { try { return localStorage.getItem(SNOW_KEY) !== 'off'; } catch { return true; } };
+  function snow(w) {
+    const b = document.body, winter = !!w && w.game === 'all';
+    let layer = document.getElementById('cw-snow'), btn = document.getElementById('cw-snow-toggle');
+    if (!winter) { layer?.remove(); btn?.remove(); delete b.dataset.cwSnow; return; }
+    if (!layer) { layer = document.createElement('div'); layer.id = 'cw-snow'; layer.setAttribute('aria-hidden', 'true'); layer.innerHTML = '<i></i><i></i><i></i>'; b.appendChild(layer); }
+    if (!btn) {
+      btn = document.createElement('button'); btn.id = 'cw-snow-toggle'; btn.type = 'button'; btn.textContent = '❄';
+      btn.addEventListener('click', () => { const on = !snowOn(); try { localStorage.setItem(SNOW_KEY, on ? 'on' : 'off'); } catch {} snow(current(last)); });
+      b.appendChild(btn);
+    }
+    const on = snowOn();
+    b.dataset.cwSnow = on ? 'on' : 'off';
+    btn.setAttribute('aria-pressed', String(on));
+    btn.setAttribute('aria-label', on ? t('Schneefall ausschalten', 'Turn snowfall off') : t('Schneefall einschalten', 'Turn snowfall on'));
+    btn.title = btn.getAttribute('aria-label');
+  }
   function apply(S) {
     last = S;
     const w = current(S), b = document.body;
     if (w) { b.dataset.cardWorld = w.id; b.dataset.cwFrame = w.frame; }
     else { delete b.dataset.cardWorld; delete b.dataset.cwFrame; }
+    snow(w);
   }
   socket.on('state', apply);
 
