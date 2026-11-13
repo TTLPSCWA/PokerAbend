@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.2.0 – 13. November 2026
+
+* **Design-Entwürfe:** Neue Grundregel für Entwürfe in [docs/design/DESIGN_DRAFTS.md](docs/design/DESIGN_DRAFTS.md) und ein Export-Befehl `npm run export:design`, der SVG-Entwürfe aus `docs/design/drafts/` als PNG (doppelte Breite) und PDF (Vektor) speichert. An der Seite selbst ändert sich nichts.
+
 ## 3.1.3 – 12. November 2026
 
 * **Behoben:** Wer eine laufende Runde zu zweit über „Tisch verlassen“ beendete, sah auf der Startseite wieder Kartenwelt, Schnee und Wintermusik. Der letzte Raumstand kam erst nach dem Verlassen an. Jetzt gilt die Kartenwelt nur noch für den Tisch, an dem man gerade sitzt.

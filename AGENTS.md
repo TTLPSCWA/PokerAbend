@@ -45,3 +45,7 @@ Stufe 2 nach den VIS-Paketen: `docs/design/GAME_EXPERIENCE_ROADMAP.md` (Quelle) 
 ## Grafik-Pakete (ART): Tische, Chips, Figuren, freie Grafiken
 
 Stufe 3: `docs/design/GAME_ART_ROADMAP.md` (Quelle) und `docs/design/game-art-roadmap.json` (erzeugt mit `node scripts/build-art-roadmap.mjs`). ART-Nummern entsprechen den VIS-Nummern. Freie Fremdgrafiken erlaubt (CC0 bevorzugt; MIT/ISC/OFL; CC BY nur mit Namensnennung), jede Datei in `docs/design/ART_LICENSES.md`. 3D nur vorgerendert, keine WebGL-Szene ohne gesonderten Auftrag. Nur ausdrücklich freigegebene IDs umsetzen, Spiellogik unverändert, danach Status, Commit und Nachweise eintragen und stoppen. Kartenwelten für UNO, Skip-Bo und Phase 10 laufen als eigene Pakete ART-T1 bis ART-T5 (Host wählt für den Raum, nur Aussehen); Aufbau in `docs/design/CARD_WORLDS.md`, Bilder per `node scripts/build-card-worlds.mjs`.
+
+## Design-Entwürfe (SVG)
+
+Grundregel: [docs/design/DESIGN_DRAFTS.md](docs/design/DESIGN_DRAFTS.md). Entwürfe als `docs/design/drafts/*.svg`, Export als PNG/PDF mit `npm run export:design` nach `docs/design/drafts/export/`. Vor dem Speichern auf fremde Marken und geschützte Figuren prüfen und Treffer melden; Grafiken mit Herkunft in `docs/design/ART_LICENSES.md`. Ein Entwurf gibt keine Umsetzung frei, gebaut wird nur nach Freigabe einer konkreten ID (z. B. ART-044).
