@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { mkdtempSync, readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, watch } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { setTimeout as wait } from 'node:timers/promises';
@@ -34,6 +34,26 @@ async function client(url) {
   return s;
 }
 const saved = (dir) => { try { return JSON.parse(readFileSync(join(dir, 'rooms.json'), 'utf8'))[0]; } catch { return null; } };
+// Wartet, bis der Server einen Stand in rooms.json geschrieben hat, der check erfüllt, und gibt diesen Raum zurück.
+// Die Datei wird nicht im Takt gelesen: Unter Windows scheitert sonst das atomare Umbenennen von rooms.json.tmp (EPERM),
+// der Server verwirft die Speicherung und schreibt erst beim nächsten save() wieder. Gelesen wird deshalb nur nach einem
+// Änderungsereignis der Datei selbst (nach dem Umbenennen, die .tmp-Ereignisse davor zählen nicht) und im 1-s-Notfalltakt.
+async function persisted(dir, check, ms = 8000) {
+  let dirty = true, wake = null;
+  const watcher = watch(dir, (_event, name) => { if (name === 'rooms.json') { dirty = true; wake?.(); } });
+  try {
+    const end = Date.now() + ms;
+    for (;;) {
+      dirty = false;
+      const room = saved(dir);
+      if (check(room)) return room;
+      const left = end - Date.now();
+      if (left <= 0) throw new Error('Feature integration timed out');
+      if (!dirty) await new Promise((resolve) => { wake = resolve; setTimeout(resolve, Math.min(left, 1000)); });
+      wake = null;
+    }
+  } finally { watcher.close(); }
+}
 
 for (const mode of ['party-brett', 'survival-abend']) test(`${mode}: real WebSocket station, process restart midgame/between games, tokens, privacy, idempotence`, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'party-feature-')), clients = [];
@@ -52,7 +72,7 @@ for (const mode of ['party-brett', 'survival-abend']) test(`${mode}: real WebSoc
     const id = a.state.you.id, guestId = b.state.you.id, thirdId = c.state.you.id, program = structuredClone(a.state.partyProgram);
     for (const s of [b,c,watch]) for (const secret of ['739184', created.token, joined.token, third.token]) assert.ok(!JSON.stringify(s.state).includes(secret));
     assert.equal((await watch.ask('sit')).ok, false);
-    await until(() => saved(dir)?.partyProgram?.status === 'running');
+    await persisted(dir, (room) => room?.partyProgram?.status === 'running');
     for (const s of clients) s.close(); await app.stop(); app = await server(dir);
     a = await client(app.url); b = await client(app.url); c = await client(app.url); clients.push(a,b,c);
     await a.ok('join', { code: created.code, token: created.token }); await b.ok('join', { code: created.code, token: joined.token }); await c.ok('join', { code: created.code, token: third.token });
@@ -69,8 +89,7 @@ for (const mode of ['party-brett', 'survival-abend']) test(`${mode}: real WebSoc
     if (mode === 'party-brett') {
       await b.ok('programBoardItem', { item: 'shield' }); assert.equal((await b.ask('programBoardItem', { item: 'shield' })).ok, false);
     } else { assert.equal(p.lives[thirdId], 0); assert.equal(p.lives[guestId], 1); }
-    await until(() => saved(dir)?.partyProgram?.status === 'between').catch((error) => { throw new Error(`${mode}: persisted status=${saved(dir)?.partyProgram?.status}: ${error.message}`); });
-    const stored = saved(dir).partyProgram;
+    const stored = (await persisted(dir, (room) => room?.partyProgram?.status === 'between').catch((error) => { throw new Error(`${mode}: persisted status=${saved(dir)?.partyProgram?.status}: ${error.message}`); })).partyProgram;
     for (const s of clients) s.close(); await app.stop(); app = await server(dir);
     a = await client(app.url); b = await client(app.url); c = await client(app.url); clients.push(a,b,c);
     await a.ok('join', { code: created.code, token: created.token }); await b.ok('join', { code: created.code, token: joined.token }); await c.ok('join', { code: created.code, token: third.token });
@@ -100,7 +119,7 @@ test('Modifiers: server settings, public announced chaos survives a real server 
     const preview = a.state.partyRules.rule;
     await until(() => b.state.partyRules?.rule === preview); // A's ack does not acknowledge B's state delivery.
     assert.equal(b.state.partyRules.rule, preview);
-    await until(() => saved(dir)?.partyRules?.preview === preview);
+    await persisted(dir, (room) => room?.partyRules?.preview === preview);
     a.close(); b.close(); await app.stop(); app = await server(dir);
     a = await client(app.url); b = await client(app.url); clients.push(a,b);
     await a.ok('join', { code: created.code, token: created.token }); await b.ok('join', { code: created.code, token: joined.token });
@@ -126,7 +145,7 @@ test('Chaos in an evening program: all see the rule in the lobby before confirma
     const preview = a.state.partyRules.rule;
     assert.equal(a.state.phase, 'lobby'); assert.equal(b.state.partyRules.rule, preview);
     assert.equal((await b.ask('programNext')).ok, false);
-    await until(() => saved(dir)?.partyProgram?.awaitingRule);
+    await persisted(dir, (room) => room?.partyProgram?.awaitingRule);
     a.close(); b.close(); await app.stop(); app = await server(dir);
     a = await client(app.url); b = await client(app.url); clients.push(a,b);
     await a.ok('join', { code: created.code, token: created.token }); await b.ok('join', { code: created.code, token: joined.token });
@@ -161,7 +180,7 @@ test('Survival: a long-game live snapshot resumes after restart and counts compl
     await a.ok('sit'); await b.ok('sit');
     await a.ok('programSave', { mode: 'survival-abend', entries: [{ game: 'gebietskampf', settings: { map: 'small', turnTime: 0 } }] });
     await a.ok('programStart'); const guestId = b.state.you.id;
-    await until(() => saved(dir)?.extra?.phase === 'playing');
+    await persisted(dir, (room) => room?.extra?.phase === 'playing');
     a.close(); b.close(); await app.stop(); app = await server(dir);
     a = await client(app.url); b = await client(app.url); clients.push(a,b);
     await a.ok('join', { code: created.code, token: created.token }); await b.ok('join', { code: created.code, token: joined.token });
@@ -170,7 +189,7 @@ test('Survival: a long-game live snapshot resumes after restart and counts compl
     assert.equal(a.state.partyProgram.lives[guestId], 0);
     assert.equal(a.state.partyProgram.results.length, 1);
     assert.deepEqual(a.state.partyProgram.winners, ['Anna']);
-    await until(() => saved(dir)?.partyProgram?.status === 'done');
+    await persisted(dir, (room) => room?.partyProgram?.status === 'done');
   } finally { clients.forEach((s) => s.close()); await app.stop(); }
 });
 

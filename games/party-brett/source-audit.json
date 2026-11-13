@@ -112,7 +112,7 @@
     },
     {
       "path": "test/party-features-server.test.js",
-      "sha256": "a316d27004c952c6092406a855bb35f48ad91738c74f531b88301dc47cc921e6"
+      "sha256": "2641cd6d8c5eeda5316fc52b42e2066159b8f1caca6d3077dc738654ea624a15"
     },
     {
       "path": "test/party-features.test.js",

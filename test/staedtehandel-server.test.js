@@ -87,8 +87,15 @@ test('Städtehandel: Spielstand mitten im Spiel überlebt einen Serverneustart, 
   const token = created.token;
   a.disconnect();
   await wait(300);
-  const finalDisk = saved(created.code); // letzter gespeicherter Stand vor dem Beenden
   await stopServer();
+  // Referenzstand erst lesen, wenn der Serverprozess beendet ist: Die Bots spielen bis zuletzt weiter und der Server speichert
+  // mitten im Spiel. Eine Datei, die schon vor dem Beenden gelesen wurde, kann deshalb älter sein als der Stand, den der Neustart lädt.
+  const finalDisk = saved(created.code); // letzter gespeicherter Stand: das, was der Neustart zurückbekommen muss
+  assert.ok(finalDisk, 'rooms.json ist nach dem Beenden lesbar');
+  // Nicht nur Datei gegen Ansicht vergleichen: Der Speicherstand darf nicht hinter dem zurückliegen, was vor dem Beenden schon gesichert war
+  assert.equal(finalDisk.extra.phase, 'playing');
+  assert.ok(finalDisk.extra.s.turnNo >= onDisk.extra.s.turnNo, 'der Speicherstand geht nicht zurück');
+  for (const [vertex, building] of Object.entries(onDisk.extra.s.buildings)) assert.equal(finalDisk.extra.s.buildings[vertex]?.o, building.o, 'einmal gesicherte Gebäude bleiben beim selben Besitzer');
   for (let k = 0; ; k++) { try { await start(); break; } catch (e) { if (k >= 4) throw e; await wait(300); } }
 
   const again = client();

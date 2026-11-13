@@ -81,7 +81,7 @@ test('Geschenkfänger: Bewegung kommt nur aus Richtungen, ist begrenzt und stopp
 }, 1));
 test('Geschenkfänger: Rundenende nach Spielzeit, höchste Punktzahl gewinnt, Gleichstand teilt, null Punkte = unentschieden', () => {
   let { r, players: [a, b, c] } = setup('geschenkfaenger', 3);
-  try { r.points[a] = 40; r.points[b] = 40; r.points[c] = 10; r.elapsed = r.secs * 1000 - STEP_MS; r.step(); assert.equal(r.phase, 'over'); assert.deepEqual(r.result.winners.sort(), [a, b].sort()); } finally { r.dispose(); }
+  try { r.points[a] = 40; r.points[b] = 40; r.points[c] = 10; r.items = []; r.elapsed = r.secs * 1000 - STEP_MS; r.step(); assert.equal(r.phase, 'over'); assert.deepEqual(r.result.winners.sort(), [a, b].sort()); } finally { r.dispose(); }
   ({ r } = setup('geschenkfaenger', 2));
   try { r.items = []; r.elapsed = r.secs * 1000 - STEP_MS; r.step(); assert.equal(r.phase, 'over'); assert.deepEqual(r.result.winners, []); } finally { r.dispose(); }
 });
