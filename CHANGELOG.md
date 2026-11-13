@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.1.3 – 12. November 2026
+
+* **Behoben:** Wer eine laufende Runde zu zweit über „Tisch verlassen“ beendete, sah auf der Startseite wieder Kartenwelt, Schnee und Wintermusik. Der letzte Raumstand kam erst nach dem Verlassen an. Jetzt gilt die Kartenwelt nur noch für den Tisch, an dem man gerade sitzt.
+
 ## 3.1.2 – 11. November 2026
 
 * **Schach, Firefox:** Die Figuren sind jetzt direkt in der Seite eingebettet. Im Firefox waren bisher alle Figuren schwarz, jetzt sind Weiß und Schwarz richtig.

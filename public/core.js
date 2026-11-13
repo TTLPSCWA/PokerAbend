@@ -328,6 +328,7 @@ async function enterGame(r) {
   $('#hub').hidden = true;
   $('#game-root').hidden = false;
   current.show();
+  if (typeof CardWorlds !== 'undefined') CardWorlds.reapply(); // der Raumstand kam schon vor der Join-Bestätigung, also vor session
   if (lastState && (!lastState.game || lastState.game === game)) current.onState(lastState); // nie den Stand eines anderen Spiels in dieses Modul geben
 }
 // Gemeinsamer Teil des Host-Menüs „Spiel beenden“: zwei Knöpfe mit eigenen Bestätigungsdialogen

@@ -1,6 +1,6 @@
 {
   "name": "pokerabend",
-  "version": "3.1.2",
+  "version": "3.1.3",
   "description": "Spieleabend für die Freundesgruppe – Karten-, Würfel-, Brett- und Partyspiele im Browser, dazu lokale Einzelspieler",
   "type": "module",
   "main": "server/index.js",
