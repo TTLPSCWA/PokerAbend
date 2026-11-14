@@ -2,6 +2,7 @@
 import { Room, SalvoRoom } from './room.js';
 import { turnGame } from '../../server/turn-game.js';
 import { battle } from '../art-kit.js';
+import { SKINS, DEFAULT_SKIN } from './skins.js';
 
 export default turnGame(Room, {
   id: 'schiffe',
@@ -13,6 +14,8 @@ export default turnGame(Room, {
   art: battle(), // Spielbild für die Startseite (siehe games/art-kit.js)
   players: '2 Spieler (weitere schauen zu)',
   createFields: [{ key: 'turnTime', label: 'Sekunden pro Schuss (0 = ohne)', type: 'number', min: 0, value: 60 }],
+  // Design-Auswahl mit Vorschaukarten beim Erstellen (nur Aussehen, getrennt von der Spielvariante classic/salvo)
+  createChoices: [{ key: 'skin', label: 'Design', value: DEFAULT_SKIN, choices: SKINS.map(({ id, name, description, preview }) => ({ value: id, label: name, description, image: preview })) }],
   createHint: 'Wer mitspielen will, klickt am Tisch auf „Mitspielen“ – genau zwei. Der Host startet das Spiel.',
   events: {
     place: (room, p, { ships }) => room.place(p.id, Array.isArray(ships) ? ships.slice(0, 12).map((s) => ({ cell: Number(s?.cell), horizontal: !!s?.horizontal })) : null),

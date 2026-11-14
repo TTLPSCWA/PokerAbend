@@ -214,7 +214,7 @@ function openHost(id) {
       <p class="host-meta">${uiText(catTitle(g.category))} · ${esc(playersText(g))} · ca. ${g.duration} Min.</p></div>
       <p>${uiText(g.description)}</p>
       ${(g.variants || []).length > 1 ? I18n.html`<label class="field"><span>Spielvariante</span><select class="input" id="host-variant">${g.variants.map((v) => I18n.html`<option value="${v.id}">${esc(v.name)} · ${v.minPlayers}–${v.maxPlayers} Spieler</option>`).join('')}</select></label>` : ''}
-      ${unoVariantPreviewsHTML(g.id, g.variants || [])}
+      ${unoVariantPreviewsHTML(g.id, g.variants || [])}${createChoicesHTML(g)}
       ${(g.createFields || []).length ? `<div class="host-fields">${g.createFields.map((f) => `<label class="field"><span>${uiText(f.label)}</span>
         <input data-cf="${esc(f.key)}" type="${f.type === 'number' ? 'number' : 'text'}" ${f.min !== undefined ? `min="${f.min}"` : ''} ${f.step ? `step="${f.step}"` : ''} value="${esc(f.value)}"></label>`).join('')}</div>` : ''}
       <p class="hint">Alles Weitere stellst du am Tisch unter „Host“ ein.</p>
@@ -239,7 +239,7 @@ $('#host-dlg').addEventListener('click', (e) => { if (e.target === $('#host-dlg'
 $('#host-dlg').addEventListener('submit', (e) => {
   e.preventDefault();
   const d = $('#host-dlg');
-  const settings = Object.fromEntries($$('[data-cf]', d).map((el) => [el.dataset.cf, el.value]));
+  const settings = { ...Object.fromEntries($$('[data-cf]', d).map((el) => [el.dataset.cf, el.value])), ...createChoiceSettings(d) };
   socket.emit('create', { game: d.dataset.game, name: profile.name, avatar: profile.avatar, settings, variant: $('#host-variant')?.value }, (r) => {
     if (!r?.ok) { $('#host-error').textContent = r?.error || I18n.t('Verbindung fehlgeschlagen'); return; }
     d.close();

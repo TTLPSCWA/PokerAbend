@@ -1,8 +1,20 @@
 'use strict';
+// Englisch für die Design-Auswahl (Schiffe versenken, games/schiffe/skins.js)
+Object.assign(window.EN || {}, { 'Design': 'Design', 'Design (nur das Aussehen)': 'Design (appearance only)', 'Klassisch': 'Classic', 'Taktik-Konsole': 'Tactical console',
+  'Dunkle Seekarte mit Schiffen von oben: Wasser mit Raster, Treffer als Stern, versenkte Schiffe als Wrack.': 'Dark sea chart with ships seen from above: gridded water, hits as stars, sunk ships as wrecks.',
+  'Dunkle Weltraum-Konsole: Sektoren mit Radarringen, Raumschiffe von oben, Treffer glühen bernsteinfarben, versenkte Schiffe als rotes Wrack.': 'Dark space console: sectors with radar rings, spaceships seen from above, hits glow amber, sunk ships as red wrecks.' });
 const variantMeta = (game, id = 'classic') => account.games.find((g) => g.id === game)?.variants?.find((v) => v.id === id);
 const variantBadgesHTML = (game) => (game.variants || []).filter((v) => v.id !== 'classic').map((v) => `<span class="variant-badge">${esc(v.name)}</span>`).join('');
 // UNO keeps its native select as the single source of truth, with accessible visual choices.
 const unoVariantPreviewsHTML = (game, variants, selected = 'classic', disabled = false) => game !== 'farbenchaos' ? '' : `<div class="uno-variant-options" role="group" aria-label="${I18n.t('UNO-Varianten')}">${variants.map((v) => `<button type="button" class="uno-variant-pick" data-uno-variant="${esc(v.id)}" aria-pressed="${v.id === selected}" ${disabled ? 'disabled' : ''}><span class="uno-preview-art">${v.art || ''}</span><span><b>${I18n.t(v.displayName || v.name)}</b><small>${I18n.t(v.description || '')}</small><em>${v.minPlayers}–${v.maxPlayers} ${I18n.t('Spieler')}</em></span></button>`).join('')}</div>`;
+// Design-Auswahl beim Erstellen eines Tisches (z. B. Schiffe versenken): Vorschaukarten, getrennt von der Spielvariante.
+// Das Spiel liefert sie als createChoices; erst ab zwei Auswahlmöglichkeiten wird etwas gezeigt, sonst gilt der Standardwert des Servers.
+const createChoicesHTML = (game) => (game.createChoices || []).filter((c) => c.choices?.length > 1).map((c) => I18n.html`<fieldset class="create-choice"><legend>${uiText(c.label)}</legend><div class="uno-variant-options create-choice-cards" role="group" aria-label="${uiText(c.label)}">${c.choices.map((o) => I18n.html`<button type="button" class="uno-variant-pick create-choice-pick" data-choice-key="${esc(c.key)}" data-choice-value="${esc(o.value)}" aria-pressed="${o.value === c.value}"><span class="create-choice-art"><img src="${esc(o.image)}" alt="" width="144" height="90" loading="lazy" decoding="async" draggable="false"></span><span><b>${uiText(o.label)}</b><small>${uiText(o.description)}</small></span></button>`).join('')}</div></fieldset>`).join('');
+const createChoiceSettings = (root) => Object.fromEntries([...root.querySelectorAll('[data-choice-key][aria-pressed=true]')].map((el) => [el.dataset.choiceKey, el.dataset.choiceValue]));
+document.addEventListener('click', (e) => {
+  const button = e.target.closest('[data-choice-key]'); if (!button || button.disabled) return;
+  button.closest('.create-choice-cards')?.querySelectorAll('[data-choice-key]').forEach((el) => el.setAttribute('aria-pressed', String(el === button)));
+});
 const variantControlsHTML = (S) => {
   const variants = account.games.find((g) => g.id === S.game)?.variants || [];
   return variants.length > 1 ? I18n.html`<section><h3>Variante</h3><label class="field"><span>Spielvariante</span><select class="input" data-variant ${S.phase === 'playing' || programRunning(S) ? 'disabled' : ''}>${variants.map((v) => I18n.html`<option value="${v.id}" ${v.id === (S.variant || 'classic') ? 'selected' : ''}>${esc(v.name)} · ${v.minPlayers}–${v.maxPlayers} Spieler</option>`).join('')}</select></label>${unoVariantPreviewsHTML(S.game, variants, S.variant, S.phase === 'playing' || programRunning(S))}<p class="hint">Beim Wechsel gelten die Standardregeln der neuen Variante und ein neuer Tischstand. Ein vorbereitetes Abendprogramm wird dabei ersetzt.</p></section>` : '';

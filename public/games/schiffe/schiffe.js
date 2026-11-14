@@ -10,6 +10,34 @@
   const cellName = (i) => `${COLS[i % SIZE]}${Math.floor(i / SIZE) + 1}`;
   const FINE = matchMedia('(pointer: fine)');
 
+  // ---- Design (Skin): nur das Aussehen. Die ID kommt als Raumeinstellung vom Server (games/schiffe/skins.js) und gilt für alle am Tisch. ----
+  const SKINS = ['naval'];
+  const skinOf = (S) => (SKINS.includes(S?.settings?.skin) ? S.settings.skin : 'naval');
+  function applySkin(S) { const root = document.getElementById('kg'); if (root && S) root.dataset.svSkin = skinOf(S); }
+  // Klassisch (naval): vorgerenderte Watercraft-Modelle von oben (Kenney, CC0), Stahlton eingerechnet. Passregel aus dem Entwurf (Design C):
+  // Länge N − 0,1 Felder, Breite höchstens 0,96 Zeilen, rundum 22 % Rand für den Schatten. len/wid in Feldern.
+  const NAVAL_ART = '/games/schiffe/art/naval/';
+  const NAVAL_FIT = {
+    5: [{ m: 'ship-ocean-liner', len: 4.9, wid: 0.96 }], 4: [{ m: 'ship-ocean-liner-small', len: 3.68, wid: 0.96 }],
+    3: [{ m: 'ship-cargo-a', len: 2.9, wid: 0.96 }, { m: 'ship-cargo-b', len: 2.9, wid: 0.96 }], 2: [{ m: 'boat-tow-a', len: 1.9, wid: 0.89 }],
+  };
+  // Modellwahl nur aus Länge und Lage der Zellen – für alle gleich (auch die Gegenseite sieht dasselbe Modell, nichts Verdecktes)
+  const navalFit = (n, first) => { const list = NAVAL_FIT[n] || NAVAL_FIT[n > 5 ? 5 : 2]; return list[(Math.floor(first / SIZE) + first % SIZE) % list.length]; };
+  const SINK_MS = 900;
+  let sunkRound = null, sunkSeen = new Set(), sunkFresh = new Map(); // frisch versenkte Schiffe: Schlüssel → Startzeit der Sinkbewegung (läuft auch über ein Neuzeichnen hinweg weiter)
+  const sunkKeys = (g) => new Set(Object.entries(g.seas).flatMap(([id, sea]) => (sea.sunk || []).map((x) => id + ':' + Math.min(...x.cells))));
+  const vesselHTML = (cells, { owner, sunk, picked }) => {
+    cells = [...cells].sort((a, b) => a - b);
+    const n = cells.length; if (!n) return '';
+    const first = cells[0], r0 = Math.floor(first / SIZE), c0 = first % SIZE, vertical = n > 1 && cells[1] - first === SIZE, fit = navalFit(n, first);
+    const wreck = cells.every((c) => sunk.has(c)), since = Date.now() - (sunkFresh.get(owner + ':' + first) ?? -Infinity), sinking = wreck && since < SINK_MS && !motionOff();
+    // Absolut platziert (nimmt an der Zellenplatzierung nicht teil) – darum Start und Ende aller Linien angeben; „auto“ hieße bis zum Rand
+    const pos = vertical ? 'grid-row:' + (r0 + 2) + ' / ' + (r0 + 2 + n) + ';grid-column:' + (c0 + 2) + ' / ' + (c0 + 3) : 'grid-row:' + (r0 + 2) + ' / ' + (r0 + 3) + ';grid-column:' + (c0 + 2) + ' / ' + (c0 + 2 + n);
+    return '<span class="sv-vessel ' + (vertical ? 'v' : 'h') + (wreck ? ' wreck' : '') + (sinking ? ' sinking' : '') + (picked ? ' picked' : '') + '" style="' + pos + ';--n:' + n + ';--len:' + fit.len + ';--wid:' + fit.wid + (sinking ? ';--sink-delay:-' + Math.round(since) + 'ms' : '') + '" aria-hidden="true"><img src="' + NAVAL_ART + 'stahl-' + fit.m + '-' + (vertical ? 'v' : 'h') + '.webp" alt="" decoding="async" draggable="false"></span>';
+  };
+  // Flottenliste beim Setzen: das Schiff als kleines Bild (waagerecht)
+  const fleetIconHTML = (size) => { const fit = navalFit(size, 0); return '<span class="sv-hull sv-hull-img" style="--len:' + fit.len + ';--wid:' + fit.wid + '" aria-hidden="true"><img src="' + NAVAL_ART + 'stahl-' + fit.m + '-h.webp" alt="" decoding="async" draggable="false"></span>'; };
+
   // Gleiche Prüfung wie auf dem Server (der entscheidet am Ende trotzdem selbst)
   function shipCells(cell, size, horizontal) {
     const r = Math.floor(cell / SIZE), c = cell % SIZE;
@@ -61,7 +89,7 @@
   const foeOf = (S, id) => Object.keys(S.g.seas).find((x) => x !== id);
 
   // Ein Meer zeichnen. opts: { ships: [[Zellen]], target (anklickbar zum Schießen), place (anklickbar zum Setzen), small, title }
-  function board(sea, { ships = [], target = false, place = false, small = false, title = '', sel = null, label = '' }) {
+  function board(sea, { ships = [], target = false, place = false, small = false, title = '', sel = null, label = '', owner = '' }) {
     const own = new Map(); ships.forEach((cells, k) => cells.forEach((c) => own.set(c, k)));
     const sunk = new Set((sea?.sunk || []).flatMap((s) => s.cells));
     const shots = sea?.shots || {};
@@ -81,6 +109,7 @@
           : `<span class="${cls}" role="img" aria-label="${cellName(i)} ${state}">${mark}</span>`;
       }
     }
+    html += ships.map((cells, k) => vesselHTML(cells, { owner, sunk, picked: place && selShip === k })).join('');
     return `<div class="sv-sea ${small ? 'small' : ''}">${title ? `<h3>${title}${label ? ` <small>${label}</small>` : ''}</h3>` : ''}<div class="sv-board" role="grid" aria-label="${esc(title || 'Meer')}">${html}</div></div>`;
   }
   const draftCells = (fleet) => draft.map((d, k) => (d ? shipCells(d.cell, fleet[k], d.horizontal) : [])).map((x) => x || []);
@@ -104,11 +133,17 @@
       'Wer zuerst alle gegnerischen Schiffe versenkt, gewinnt. Läuft die Zeit ab, wird zufällig geschossen.',
     ],
     house: () => [],
-    status: (S) => (S.g?.step === 'place' ? I18n.html`Runde #${S.roundNo} · Schiffe setzen` : null),
+    status: (S) => { applySkin(S); return S.g?.step === 'place' ? I18n.html`Runde #${S.roundNo} · Schiffe setzen` : null; },
     playerInfo: (p, S) => (S.g?.step === 'place' ? (p.ready ? '✓ bereit' : 'setzt Schiffe') : p.afloat !== null && p.afloat !== undefined ? I18n.html`${p.afloat} Schiff${p.afloat === 1 ? '' : 'e'} übrig` : ''),
     onState(S) {
+      applySkin(S); // auch in der Lobby: das Design gehört zum Tisch
       const g = S.g;
       if (!g) return;
+      const now = sunkKeys(g);
+      const t = Date.now();
+      if (sunkRound !== S.roundNo) { sunkRound = S.roundNo; sunkFresh = new Map(); } // neue Runde oder erster Stand (Laden, Wiederverbinden): ohne Bewegung
+      else { sunkFresh = new Map([...sunkFresh].filter(([, t0]) => t - t0 < SINK_MS)); for (const k of now) if (!sunkSeen.has(k)) sunkFresh.set(k, t); }
+      sunkSeen = now;
       const vk = `${S.variant}:${S.roundNo}:${g.salvoRound}`;
       if (vk !== volleyKey) { volleyKey = vk; volley.clear(); }
       const key = `${S.roundNo}:${g.fleet.join(',')}`;
@@ -135,7 +170,8 @@
     main(S) {
       const W = WorldKit, t = W.t, g1 = S.g, over1 = S.phase === 'over', mine1 = meIn(S);
       const chips = [g1.step === 'place' && !over1 ? W.chip('⚓', mine1?.ready ? t('Flotte steht – warte auf den Gegner', 'Fleet ready – waiting for the opponent') : t('Phase: Schiffe setzen', 'Phase: placing ships'), mine1?.ready ? 'good' : 'warn') : over1 ? W.chip('🏁', t('Partie vorbei – beide Meere aufgedeckt', 'Game over – both seas revealed')) : W.chip('🎯', S.turnId === S.you?.id ? t('Du schießt', 'You are firing') : t('Der Gegner schießt', 'The opponent is firing'), S.turnId === S.you?.id ? 'good' : ''), S.variant === 'salvo' ? W.chip('✦', t('Salve-Variante', 'Salvo variant')) : ''].filter(Boolean);
-      return `<div class="wk-stage sv-stage">${W.head({ eyebrow: t('Seekarte', 'Sea chart'), title: g1.step === 'place' && !over1 ? t('Flotte aufstellen', 'Deploy your fleet') : t('Seeschlacht', 'Sea battle'), chips })}${this.mainBody(S)}</div>`;
+      applySkin(S);
+      return `<div class="wk-stage sv-stage" data-skin="${skinOf(S)}">${W.head({ eyebrow: t('Seekarte', 'Sea chart'), title: g1.step === 'place' && !over1 ? t('Flotte aufstellen', 'Deploy your fleet') : t('Seeschlacht', 'Sea battle'), chips })}${this.mainBody(S)}</div>`;
     },
     mainBody(S) {
       const g = S.g;
@@ -147,18 +183,18 @@
       if (g.step === 'place' && !over) {
         if (!mine) return I18n.html`<div class="kg-table sv-wrap"><p class="hint">Die beiden setzen gerade ihre Schiffe – gleich geht es los.</p></div>`;
         const ships = mine.ready ? shipList(mine.ships) : draftCells(g.fleet);
-        return `<div class="kg-table sv-wrap">${board(mine, { ships, place: !mine.ready, title: 'Dein Meer', label: mine.ready ? '✓ bereit' : '' })}</div>`;
+        return `<div class="kg-table sv-wrap">${board(mine, { ships, place: !mine.ready, title: 'Dein Meer', label: mine.ready ? '✓ bereit' : '', owner: me })}</div>`;
       }
       // Zuschauer oder Spielende: beide Meere (nach Spielende mit allen Schiffen)
       if (!mine || over) {
-        return `<div class="kg-table sv-wrap"><div class="sv-two">${ids.map((id) => board(g.seas[id], { ships: shipList(g.seas[id].ships), small: true, title: I18n.html`Meer von ${nameOf(S, id)}`, label: over ? 'aufgedeckt' : '' })).join('')}</div></div>`;
+        return `<div class="kg-table sv-wrap"><div class="sv-two">${ids.map((id) => board(g.seas[id], { ships: shipList(g.seas[id].ships || g.seas[id].sunk), small: true, title: I18n.html`Meer von ${nameOf(S, id)}`, label: over ? 'aufgedeckt' : '', owner: id })).join('')}</div></div>`;
       }
       const foe = foeOf(S, me);
       const salvo = S.variant === 'salvo';
       const myTurn = salvo ? !g.salvoReady?.[me] : S.turnId === me;
       return `<div class="kg-table sv-wrap"><div class="sv-two">
-        ${board(g.seas[foe], { ships: shipList(g.seas[foe].sunk), target: myTurn, sel: salvo ? volley : aim, title: I18n.html`Meer von ${nameOf(S, foe)}`, label: myTurn ? 'du schießt' : '' })}
-        ${board(mine, { ships: shipList(mine.ships), small: true, title: 'Dein Meer' })}
+        ${board(g.seas[foe], { ships: shipList(g.seas[foe].sunk), target: myTurn, sel: salvo ? volley : aim, title: I18n.html`Meer von ${nameOf(S, foe)}`, label: myTurn ? 'du schießt' : '', owner: foe })}
+        ${board(mine, { ships: shipList(mine.ships), small: true, title: 'Dein Meer', owner: me })}
       </div></div>`;
     },
     dock(S, myTurn) {
@@ -168,7 +204,7 @@
       if (g.step === 'place') {
         if (mine.ready) return I18n.html('<button class="btn" data-g="unplace">Doch nochmal umstellen</button>');
         const ships = g.fleet.map((size, k) => `<button type="button" class="sv-ship ${selShip === k ? 'sel' : ''} ${draft[k] ? 'set' : ''}" data-g="ship" data-k="${k}" data-drag="ship${k}" aria-pressed="${selShip === k}">
-            <span class="sv-hull" aria-hidden="true">${'<i></i>'.repeat(size)}</span><span>${SHIP[size]}${draft[k] ? ' ✓' : ''}</span></button>`).join('');
+            ${fleetIconHTML(size)}<span>${SHIP[size]}${draft[k] ? ' ✓' : ''}</span></button>`).join('');
         const done = draft.every(Boolean);
         return I18n.html`<div class="sv-ships" role="group" aria-label="Deine Flotte">${ships}</div>
           <div class="kg-acts"><button class="btn" data-g="turn">Drehen (${horizontal ? 'quer' : 'längs'})</button>

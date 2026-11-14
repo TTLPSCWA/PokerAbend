@@ -6,15 +6,16 @@ import {io} from 'socket.io-client';
 // These clients use the ordinary login and server-issued identity, without
 // changing the identity code, fabricating IDs or weakening authorization.
 export async function independentPlayer(app,code,name,seat){
-  const http=await request.newContext({baseURL:app.url});let socket;
+  const http=await request.newContext({baseURL:app.url});let socket,latest=null;
   const close=async()=>{socket?.disconnect();await http.dispose();};
   try{
     const login=await http.post('/login',{form:{password:app.password}});if(!login.ok())throw Error('Test player login failed');
     await http.get('/');const {cookies}=await http.storageState();
     socket=io(app.url,{transports:['websocket'],forceNew:true,reconnection:false,extraHeaders:{cookie:cookies.map(c=>`${c.name}=${c.value}`).join('; ')}});
     await new Promise((resolve,reject)=>{socket.once('connect',resolve);socket.once('connect_error',reject);});
+    socket.on('state',state=>{latest=state;});
     const ask=(event,data={})=>socket.timeout(7000).emitWithAck(event,data);
     for(const [event,data]of [['join',{code,name,avatar:'🦊'}],['sit',seat===undefined?{}:{seat}]]){const reply=await ask(event,data);if(!reply.ok)throw Error(`${name}: ${event}: ${reply.error}`);}
-    return {ask,close};
+    return {ask,close,view:()=>latest};
   }catch(error){await close();throw error;}
 }

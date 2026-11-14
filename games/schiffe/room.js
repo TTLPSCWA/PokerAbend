@@ -5,6 +5,7 @@
 // Wer zuerst alle gegnerischen Schiffe versenkt, gewinnt. Zeit pro Schuss über den Zug-Timer (läuft sie ab, wird zufällig geschossen).
 // WICHTIG: Wo die Schiffe des Gegners liegen, verlässt den Server erst nach Spielende – vorher nur Treffer, Wasser und versenkte Schiffe.
 import { TurnRoom } from '../../server/turn-room.js';
+import { SKINS, DEFAULT_SKIN } from './skins.js';
 
 export const SIZE = 10;
 export const FLEETS = { standard: [5, 4, 3, 3, 2], classic: [5, 4, 4, 3, 3, 3, 2, 2, 2, 2] };
@@ -71,8 +72,10 @@ export class Room extends TurnRoom {
     { key: 'touch', label: 'Schiffe dürfen sich berühren', type: 'bool' },
     { key: 'again', label: 'Treffer: nochmal schießen', type: 'bool' },
     { key: 'turnTime', label: 'Zeit pro Schuss in Sekunden (0 = ohne)', type: 'number', min: 0, max: 300 },
+    // Nur das Aussehen (Skin, siehe skins.js) – gilt für alle am Tisch und ändert keine Regel. Erst ab zwei Designs wählbar.
+    ...(SKINS.length > 1 ? [{ key: 'skin', label: 'Design (nur das Aussehen)', type: 'select', values: SKINS.map((s) => ({ value: s.id, label: s.name })) }] : []),
   ];
-  defaultSettings() { return { classic: false, touch: false, again: false, turnTime: 60 }; }
+  defaultSettings() { return { classic: false, touch: false, again: false, turnTime: 60, skin: DEFAULT_SKIN }; }
 
   constructor(code, settings, onChange) {
     super(code, settings, onChange, { minPlayers: 2, maxPlayers: 2, lowWins: false, scoreLabel: 'Siege', winPoints: 1 });

@@ -108,8 +108,8 @@ import { SINGLEPLAYER_GAMES } from './singleplayer/index.js';
 export const PLAYABLE_GAMES = { ...GAMES, ...SINGLEPLAYER_GAMES };
 
 // Was die Startseite über die Spiele wissen muss
-export const gameList = () => Object.values(GAMES).map(({ id, name, description, players, category = 'karten', minPlayers, maxPlayers, duration, art, createFields, createHint, variants, create, options = [] }) => ({
-  id, name, description, players, category, minPlayers, maxPlayers, duration, art, createFields, createHint, options, ...(variants ? { variants: variants.map((v) => { const r = create('META', { variant: v.id }, () => {}); const defaults = { ...r.settings }; r.dispose(); return { ...v, defaults }; }) } : {}),
+export const gameList = () => Object.values(GAMES).map(({ id, name, description, players, category = 'karten', minPlayers, maxPlayers, duration, art, createFields, createChoices, createHint, variants, create, options = [] }) => ({
+  id, name, description, players, category, minPlayers, maxPlayers, duration, art, createFields, ...(createChoices ? { createChoices } : {}), createHint, options, ...(variants ? { variants: variants.map((v) => { const r = create('META', { variant: v.id }, () => {}); const defaults = { ...r.settings }; r.dispose(); return { ...v, defaults }; }) } : {}),
 }));
 export { PLANNED, plannedGames } from './planned.js';
 // Kategorien der Startseite, in dieser Reihenfolge

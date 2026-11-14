@@ -12,10 +12,14 @@ Jede Grafik in `public/games/<spiel>/art/` steht hier mit Herkunft und Lizenz. F
 | ART-009 | `public/games/stapelrennen/art/table.webp` | eigene Leinen-/Papierstruktur (erzeugt, 96 × 96, kachelbar) |
 | ART-008 | `public/games/zehnetappen/art/table.webp` | eigene Köper-Tischtuchstruktur (erzeugt, 96 × 96, kachelbar) |
 | ART-T1 | `public/games/card-worlds/art/<Welt>/` mit `0.svg`–`3.svg`, `w.svg`, `back.svg` für die Welten U-01, U-02, U-03, U-04, U-05, U-06, U-07, U-08, U-09, U-10, SB-01, SB-02, SB-03, SB-04, SB-05, SB-06, SB-07, SB-08, SB-09, SB-10, P-01, P-02, P-03, P-04, P-05, P-06, P-07, P-08, P-09, P-10, X-01, X-02, X-03, X-04, X-05, X-06, X-07, X-08, X-09, X-10 | eigene Zeichnungen, erzeugt mit `node scripts/build-card-worlds.mjs` aus `scripts/card-worlds/motifs.mjs`; Vorbilder nur als Stimmung, keine Logos oder Figuren |
+| ART-013 | `public/games/schiffe/art/naval/water.svg`, `public/games/schiffe/art/naval/mark-hit.svg`, `public/games/schiffe/art/naval/mark-miss.svg`, `public/games/schiffe/art/naval/mark-aim.svg` | eigene Zeichnung (Wellenkachel, Treffer-Stern, Wasser-Ring, Zielmarke) nach dem Entwurf „Design C“ |
+| ART-013 | `public/games/schiffe/art/preview-naval.webp` | Bildschirmfoto des laufenden Spiels (Designauswahl), erzeugt mit `node scripts/capture-schiffe-skins.mjs` |
 
 ## Fremde Grafiken
 
-Noch keine.
+| Paket | Dateien | Quelle und Urheber | Lizenz | Bearbeitung |
+|---|---|---|---|---|
+| ART-013 | `public/games/schiffe/art/naval/stahl-ship-ocean-liner-h.webp`, `public/games/schiffe/art/naval/stahl-ship-ocean-liner-v.webp`, `public/games/schiffe/art/naval/stahl-ship-ocean-liner-small-h.webp`, `public/games/schiffe/art/naval/stahl-ship-ocean-liner-small-v.webp`, `public/games/schiffe/art/naval/stahl-ship-cargo-a-h.webp`, `public/games/schiffe/art/naval/stahl-ship-cargo-a-v.webp`, `public/games/schiffe/art/naval/stahl-ship-cargo-b-h.webp`, `public/games/schiffe/art/naval/stahl-ship-cargo-b-v.webp`, `public/games/schiffe/art/naval/stahl-boat-tow-a-h.webp`, `public/games/schiffe/art/naval/stahl-boat-tow-a-v.webp` | Kenney, „Watercraft Pack“ 2.0 (Modelle `ship-ocean-liner`, `ship-ocean-liner-small`, `ship-cargo-a`, `ship-cargo-b`, `boat-tow-a`), kenney.nl/assets/watercraft-kit | CC0 1.0 (`License.txt` im Originalpaket und Angabe auf kenney.nl am 14.11.2026 geprüft; Namensnennung nicht verlangt, hier ausdrücklich genannt: Kenney, www.kenney.nl) | eigene Renderings mit Blender 4.5 (senkrecht von oben, je waagerecht und senkrecht, Schatten nach unten rechts), Stahlton in die Pixel eingerechnet, auf Feldgröße skaliert (1,0–1,2-fache Längsstreckung), WebP Qualität 80; nur die fünf benutzten Modelle in beiden Lagen, nicht das ganze Paket |
 
 ## Musik (Wintermusik, ART-T6)
 

@@ -2,6 +2,12 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.3.0 – 14. November 2026
+
+* **Schiffe versenken, neues Aussehen:** Auf dem Meer fahren jetzt echte Schiffe von oben (Ozeandampfer, Frachter, Schlepper statt grauer Blöcke). Das Wasser hat Wellen und ein goldenes Gitter, ein Treffer ist ein orangener Stern, Wasser ein Ring, ein versenktes Schiff liegt dunkel als Wrack unter dem Stern und sinkt kurz. Alles gilt für klassische Regeln und Salvo, die Regeln selbst sind unverändert.
+* **Design am Tisch:** Der Tisch hat jetzt eine Einstellung „Design“ (nur das Aussehen). Sie gehört zum Raum, der Host stellt sie ein, und alle am Tisch – auch Zuschauer – sehen dasselbe. Alte Tische bekommen das klassische Design. Jetzt gibt es erst eines; weitere folgen als Auswahl.
+* **Hinweis für Entwickler:** `games/schiffe/skins.js` führt die Designs, getrennt von den Spielvarianten; das Spiel bleibt ein einziges mit der ID `schiffe`. Die Schiffsbilder sind die Kenney-Modelle (CC0), eingetragen in `docs/design/ART_LICENSES.md`.
+
 ## 3.2.0 – 13. November 2026
 
 * **Design-Entwürfe:** Neue Grundregel für Entwürfe in [docs/design/DESIGN_DRAFTS.md](docs/design/DESIGN_DRAFTS.md) und ein Export-Befehl `npm run export:design`, der SVG-Entwürfe aus `docs/design/drafts/` als PNG (doppelte Breite) und PDF (Vektor) speichert. An der Seite selbst ändert sich nichts.

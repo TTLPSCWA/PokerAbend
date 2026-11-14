@@ -42,8 +42,13 @@ test('Jede Grafik unter public/games/*/art/ steht in der Lizenzliste, Dateien bl
     for (const file of readdirSync(dir)) {
       // ART-T1: Kartenwelten liegen je Welt in einem Unterordner (<Welt>/0–3, w, back.svg)
       if (statSync(`${dir}/${file}`).isDirectory()) {
-        assert.ok(licenses.includes(`${dir}/<Welt>/`) && licenses.includes(file), `${dir}/${file}/ fehlt in docs/design/ART_LICENSES.md`);
-        for (const inner of readdirSync(`${dir}/${file}`)) assert.ok(readFileSync(`${dir}/${file}/${inner}`).length < 60_000, `${dir}/${file}/${inner} ist zu groß`);
+        const world = licenses.includes(`${dir}/<Welt>/`);
+        // Kartenwelten: ein Sammeleintrag je Ordner. Alle anderen Unterordner (z. B. Designs/Skins wie schiffe/art/naval/): jede Datei einzeln
+        if (world) assert.ok(licenses.includes(file), `${dir}/${file}/ fehlt in docs/design/ART_LICENSES.md`);
+        for (const inner of readdirSync(`${dir}/${file}`)) {
+          if (!world) assert.ok(licenses.includes(`${dir}/${file}/${inner}`), `${dir}/${file}/${inner} fehlt in docs/design/ART_LICENSES.md`);
+          assert.ok(readFileSync(`${dir}/${file}/${inner}`).length < 60_000, `${dir}/${file}/${inner} ist zu groß`);
+        }
         continue;
       }
       const listed = licenses.includes(`${dir}/${file}`) || licenses.includes(`${dir}/${file.replace(/c[1-5]\.svg$/, 'c1…c5.svg')}`);
