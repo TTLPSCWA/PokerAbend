@@ -69,8 +69,11 @@ Die IDs folgen den VIS-Nummern: **ART-002 gehört zu VIS-002 (Texas Hold'em)** u
 
 #### ART-013 · Schiffe versenken (`schiffe`) · P2
 - **Ziel:** echte Schiffe statt Blöcken (von oben gesehen), Wasser mit Struktur, Treffer und Versenken mit Bewegung (Schiff kippt und sinkt).
-- **Material:** Kenney „Pirate Pack“ (2D von oben, CC0) bzw. „Watercraft Kit“ (3D, CC0, vorgerendert). ZIPs liefert Tobi.
-- **Status:** planned
+- **Material:** Kenney „Watercraft Kit“ (3D, CC0, vorgerendert; fünf Modelle in zwei Lagen), eigene SVG-Grafiken (Wasser, Markierungen, Raumschiffe der Taktik-Konsole).
+- **Status:** done
+- **Implementierungscommit:** `3352d886603532aaf66752ab86a13160c04f129f`
+- **Umsetzung:** Das bestehende Spiel bekommt Designs (Skins) als Raumeinstellung des Hosts, getrennt von den Spielvarianten und für alle am Tisch gleich: `naval` „Klassisch“ (Standard: Seekarte mit Kenney-Schiffen im Stahlton, Wasser mit Wellen und Raster, Treffer als Stern, Wrack mit Sinkbewegung) und `space` „Taktik-Konsole“ (Commit `cc8281ee8a5ad5a35edf6830fbfed222d582d138`, Korrektur `01ed27734ef16ae9eace5b26edc2053f52f58ead`: Weltraum-Konsole mit eigenen Raumschiffen, Flottenstatus, Gegnerflotte, Protokoll). Kein zweites Spiel; Regeln, Server und Bedienung unverändert; gegnerische Schiffe erst nach „versenkt“ sichtbar.
+- **Nachweise:** `test/schiffe-skins.test.js`, `test/ui/art-schiffe.spec.js`, `docs/design/SCHIFFE_SKINS.md`, `docs/design/art/ART-013/README.md`, `docs/design/art/ART-013/designauswahl-desktop.webp`, `docs/design/art/ART-013/naval-desktop-classic.webp`, `docs/design/art/ART-013/naval-mobil-classic.webp`, `docs/design/art/ART-013/space-desktop-classic.webp`, `docs/design/art/ART-013/space-mobil-classic.webp`, `docs/design/art/ART-013/fps-naval-desktop.json`, `docs/design/art/ART-013/fps-space-desktop.json`
 
 #### ART-046 · Monopoly (`monopoly`) · P2
 - **Ziel:** Spielfiguren als Püppchen, die Feld für Feld über das Brett laufen; Häuser und Hotels als kleine Modelle; Brett mit Struktur.

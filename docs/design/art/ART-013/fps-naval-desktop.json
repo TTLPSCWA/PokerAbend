@@ -1,0 +1,9 @@
+{
+  "skin": "naval",
+  "project": "desktop",
+  "fps": 220.73,
+  "baselineFps": 218.07,
+  "ratio": 1.012,
+  "cpuThrottle": 4,
+  "minRatio": 0.9
+}

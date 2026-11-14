@@ -1,0 +1,9 @@
+{
+  "skin": "naval",
+  "project": "mobil",
+  "fps": 220.67,
+  "baselineFps": 221.41,
+  "ratio": 0.997,
+  "cpuThrottle": 4,
+  "minRatio": 0.9
+}

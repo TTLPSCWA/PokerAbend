@@ -1,0 +1,9 @@
+{
+  "skin": "space",
+  "project": "desktop",
+  "fps": 211.33,
+  "baselineFps": 204.76,
+  "ratio": 1.032,
+  "cpuThrottle": 4,
+  "minRatio": 0.9
+}

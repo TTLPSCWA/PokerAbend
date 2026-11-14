@@ -99,10 +99,24 @@
       "game_name": "Schiffe versenken",
       "priority": "P2",
       "vis_id": "VIS-013",
-      "status": "planned",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "3352d886603532aaf66752ab86a13160c04f129f",
       "goal": "echte Schiffe statt Blöcken (von oben gesehen), Wasser mit Struktur, Treffer und Versenken mit Bewegung (Schiff kippt und sinkt).",
-      "material": "Kenney „Pirate Pack“ (2D von oben, CC0) bzw. „Watercraft Kit“ (3D, CC0, vorgerendert). ZIPs liefert Tobi."
+      "material": "Kenney „Watercraft Kit“ (3D, CC0, vorgerendert; fünf Modelle in zwei Lagen), eigene SVG-Grafiken (Wasser, Markierungen, Raumschiffe der Taktik-Konsole).",
+      "implementation_note": "Das bestehende Spiel bekommt Designs (Skins) als Raumeinstellung des Hosts, getrennt von den Spielvarianten und für alle am Tisch gleich: `naval` „Klassisch“ (Standard: Seekarte mit Kenney-Schiffen im Stahlton, Wasser mit Wellen und Raster, Treffer als Stern, Wrack mit Sinkbewegung) und `space` „Taktik-Konsole“ (Commit `cc8281ee8a5ad5a35edf6830fbfed222d582d138`, Korrektur `01ed27734ef16ae9eace5b26edc2053f52f58ead`: Weltraum-Konsole mit eigenen Raumschiffen, Flottenstatus, Gegnerflotte, Protokoll). Kein zweites Spiel; Regeln, Server und Bedienung unverändert; gegnerische Schiffe erst nach „versenkt“ sichtbar.",
+      "evidence": [
+        "test/schiffe-skins.test.js",
+        "test/ui/art-schiffe.spec.js",
+        "docs/design/SCHIFFE_SKINS.md",
+        "docs/design/art/ART-013/README.md",
+        "docs/design/art/ART-013/designauswahl-desktop.webp",
+        "docs/design/art/ART-013/naval-desktop-classic.webp",
+        "docs/design/art/ART-013/naval-mobil-classic.webp",
+        "docs/design/art/ART-013/space-desktop-classic.webp",
+        "docs/design/art/ART-013/space-mobil-classic.webp",
+        "docs/design/art/ART-013/fps-naval-desktop.json",
+        "docs/design/art/ART-013/fps-space-desktop.json"
+      ]
     },
     {
       "id": "ART-046",

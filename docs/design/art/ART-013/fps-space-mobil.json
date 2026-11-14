@@ -1,0 +1,9 @@
+{
+  "skin": "space",
+  "project": "mobil",
+  "fps": 230,
+  "baselineFps": 230.67,
+  "ratio": 0.997,
+  "cpuThrottle": 4,
+  "minRatio": 0.9
+}
