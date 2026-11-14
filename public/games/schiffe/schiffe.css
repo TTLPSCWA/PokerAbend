@@ -108,11 +108,8 @@ body.calm .sv-vessel.sinking img { animation: none; }
   linear-gradient(0deg, transparent calc(50% - .5px), rgba(57,208,255,.2) calc(50% - .5px) calc(50% + .5px), transparent calc(50% + .5px)),
   radial-gradient(circle at 50% 50%, transparent 0 17.5%, rgba(57,208,255,.2) 17.5% 18.2%, transparent 18.2% 35%, rgba(57,208,255,.16) 35% 35.7%, transparent 35.7% 52.5%, rgba(57,208,255,.13) 52.5% 53.2%, transparent 53.2% 70%, rgba(57,208,255,.1) 70% 70.7%, transparent 70.7%),
   radial-gradient(circle at 50% 50%, #0f3550, #07121d 72%); box-shadow: inset 0 0 0 1px rgba(57,208,255,.3); }
-/* Radarschwenk: nur Zielsektor auf dem Desktop, langsam (transform), aus bei „Animationen aus“ und reduzierter Bewegung */
-.kg-schiffe[data-sv-skin=space] .sv-sea:not(.small) .sv-board::after { content: ''; position: absolute; inset: 0; grid-area: 2 / 2 / 12 / 12; pointer-events: none; border-radius: 50%; background: conic-gradient(from 0deg, rgba(57,208,255,.26), rgba(57,208,255,0) 38deg, transparent 360deg); mix-blend-mode: screen; animation: sv-sweep 16s linear infinite; will-change: transform; }
-@keyframes sv-sweep { to { transform: rotate(360deg); } }
-@media (max-width: 640px), (prefers-reduced-motion: reduce) { .kg-schiffe[data-sv-skin=space] .sv-sea:not(.small) .sv-board::after { animation: none; } }
-body.calm .kg-schiffe[data-sv-skin=space] .sv-board::after { animation: none; }
+/* Radarkegel (Zielsektor): bewusst ohne dauerhafte Drehung – ein laufender Schwenk kostete im Test dreifach so viel Bildzeit (Abnahme: mindestens 90 % der Bildrate ohne Optik) */
+.kg-schiffe[data-sv-skin=space] .sv-sea:not(.small) .sv-board::after { content: ''; position: absolute; inset: 0; grid-area: 2 / 2 / 12 / 12; pointer-events: none; border-radius: 50%; background: conic-gradient(from 62deg, rgba(57,208,255,.24), rgba(57,208,255,0) 36deg, transparent 360deg); }
 .kg-schiffe[data-sv-skin=space] .sv-lab { color: #7fb8d4; font-size: 11px; font-weight: 700; letter-spacing: .05em; }
 .kg-schiffe[data-sv-skin=space] .sv-stage .sv-cell { min-height: 0; background: transparent; border-radius: 0; box-shadow: inset 0 0 0 .5px rgba(57,208,255,.17); color: transparent; position: relative; }
 .kg-schiffe[data-sv-skin=space] button.sv-cell:hover, .kg-schiffe[data-sv-skin=space] button.sv-cell:focus-visible { outline: 2px solid #ffb347; outline-offset: -2px; background: rgba(255,179,71,.1); }

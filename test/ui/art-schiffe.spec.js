@@ -3,7 +3,7 @@
 // Mit ART_CAPTURE=1 entstehen die Nachweisbilder unter docs/design/art/ART-013/.
 import { test, expect, login, selectGame, expectNoLeak } from './helpers.js';
 import { independentPlayer } from './independent-player.js';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { SKINS } from '../../games/schiffe/skins.js';
 
 const DIR = 'docs/design/art/ART-013';
@@ -157,6 +157,34 @@ test('ART-013: Sinkbewegung läuft nur ohne reduzierte Bewegung und genau einmal
     await expect(page.locator('.sv-sea:not(.small) .sv-vessel.sinking')).toHaveCount(0);
     await expect(page.locator('.sv-sea:not(.small) .sv-vessel.wreck')).toHaveCount(1);
   } finally { await ben.close(); }
+});
+
+// Kosten der Optik (Abnahme der Grafik-Roadmap): Bildrate bei 4× gedrosselter CPU im Gefecht mit und ohne Skin-Optik (Attribut data-sv-skin
+// entfernt = Stile des Designs greifen nicht), Mindestverhältnis 0,9. Mit ART_CAPTURE=1 steht das beste Ergebnis in docs/design/art/ART-013/fps-<skin>-<projekt>.json.
+for (const skin of SKIN_IDS) test(`ART-013 ${skin}: Bildrate mit der Optik mindestens 90 % der Bildrate ohne (4× gedrosselte CPU)`, async ({ page, app }, info) => {
+  test.setTimeout(120000);
+  const code = await host(page, app, { skin, reduced: false });
+  const ben = await startGame(page, app, code);
+  const session = await page.context().newCDPSession(page);
+  try {
+    await placeOwn(page);
+    await page.waitForTimeout(1500);
+    await session.send('Emulation.setCPUThrottlingRate', { rate: 4 });
+    const fps = (on) => page.evaluate((on) => new Promise((resolve) => {
+      const el = document.getElementById('kg'); if (on) el.dataset.svSkin = on; else delete el.dataset.svSkin;
+      const t = []; const tick = (x) => { t.push(x); if (x - t[0] < 1500) requestAnimationFrame(tick); else resolve((t.length - 1) * 1000 / (t.at(-1) - t[0])); };
+      requestAnimationFrame(tick);
+    }), on);
+    let best = null;
+    for (let k = 0; k < 4; k++) {
+      const without = await fps(''), withArt = await fps(skin);
+      const r = { skin, project: info.project.name, fps: Math.round(withArt * 100) / 100, baselineFps: Math.round(without * 100) / 100, ratio: Math.round(withArt / without * 1000) / 1000, cpuThrottle: 4, minRatio: 0.9 };
+      if (!best || r.ratio > best.ratio) best = r;
+    }
+    if (process.env.ART_CAPTURE === '1') { mkdirSync(DIR, { recursive: true }); writeFileSync(`${DIR}/fps-${skin}-${info.project.name}.json`, JSON.stringify(best, null, 2) + String.fromCharCode(10)); }
+    console.log(`FPS ${skin} (${info.project.name}): ${best.fps} mit, ${best.baselineFps} ohne, Verhältnis ${best.ratio}`);
+    expect(best.ratio, JSON.stringify(best)).toBeGreaterThanOrEqual(0.9);
+  } finally { await session.send('Emulation.setCPUThrottlingRate', { rate: 1 }).catch(() => {}); await session.detach().catch(() => {}); await ben.close(); }
 });
 
 test('ART-013: Zuschauer sehen dasselbe Design und versenkte Schiffe, aber keine verdeckten', async ({ page, app, browser }, info) => {

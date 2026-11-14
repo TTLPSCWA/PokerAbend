@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.4.1 – 14. November 2026
+
+* **Schiffe versenken, Taktik-Konsole:** Der Radarkegel im Zielsektor dreht sich nicht mehr dauerhaft. Die Drehung kostete beim Messen dreimal so viel Bildzeit; jetzt steht der Kegel fest, und das Spiel läuft wie mit dem klassischen Design.
+
 ## 3.4.0 – 14. November 2026
 
 * **Schiffe versenken, zweites Design „Taktik-Konsole“:** Beim Erstellen eines Tisches kann der Host jetzt zwischen „Klassisch“ und „Taktik-Konsole“ wählen (zwei Vorschaukarten, getrennt von der Spielvariante Klassisch/Salvo). Die Taktik-Konsole ist eine dunkle Weltraum-Konsole: Raumschiffe von oben, Radarringe mit langsamem Schwenk, Treffer glühen bernsteinfarben, versenkte Schiffe sind rote Wracks. Dazu zeigt sie den Zustand der eigenen Flotte (Rumpfintegrität), die Gegnerflotte (nur „Position unbekannt“ oder „vernichtet“) und ein Gefechtsprotokoll; auf dem Handy wechselt man per Reiter zwischen Zielsektor und eigener Flotte.

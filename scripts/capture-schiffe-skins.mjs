@@ -1,7 +1,7 @@
 // ART-013: Screenshots der Schiffe-versenken-Designs aus dem echten, laufenden Spiel (kein Entwurfsbild).
 // Startet einen Testserver mit eigenem Datenordner, spielt gegen einen Computer-Gegner und speichert
 //   • die Vorschaubilder der Designauswahl: public/games/schiffe/art/preview-<skin>.webp (288 × 180, beide Meere)
-//   • die Nachweisbilder unter docs/design/art/ART-013/ (Desktop und Handy, Klassisch/Salvo)
+//   • die Nachweisbilder unter docs/design/art/ART-013/ (WebP: Desktop und Handy, Klassisch/Salvo, je Design, dazu die Designauswahl)
 //
 //   node scripts/capture-schiffe-skins.mjs                 alle Designs
 //   node scripts/capture-schiffe-skins.mjs naval           nur dieses Design
@@ -35,9 +35,9 @@ const url = await new Promise((res, rej) => {
 const browser = await chromium.launch({ channel: process.env.PLAYWRIGHT_CHANNEL || undefined });
 
 // Eine Partie bis zu einem zeigbaren Stand spielen. Gibt die Seite zurück.
-async function play({ skin, variant, width, height, shots }) {
+async function play({ skin, variant, width, height, shots, dpr = 2 }) {
   const mobile = width < 600;
-  const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 2, isMobile: mobile, hasTouch: mobile, reducedMotion: 'reduce' });
+  const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: dpr, isMobile: mobile, hasTouch: mobile, reducedMotion: 'reduce' });
   await ctx.addInitScript(() => { localStorage.setItem('poker:name', JSON.stringify('Anna')); localStorage.setItem('poker:avatar', JSON.stringify('🦉')); localStorage.setItem('poker:prefs', JSON.stringify({ intros: false })); });
   const p = await ctx.newPage();
   await p.goto(url); await p.getByLabel('Passwort').fill('capture-pw'); await p.getByRole('button', { name: 'Reinkommen' }).click();
@@ -66,17 +66,35 @@ async function play({ skin, variant, width, height, shots }) {
   return { p, ctx };
 }
 
-async function toWebp(page, buffer, w, h, q = 0.82) {
-  const data = await page.evaluate(async ({ b64, w, h, q }) => {
+async function toWebp(page, buffer, w, h, q = 0.82, keep = false) {
+  const data = await page.evaluate(async ({ b64, w, h, q, keep }) => {
     const img = new Image(); img.src = 'data:image/png;base64,' + b64; await img.decode();
+    if (keep) { w = img.width; h = img.height; } // Originalgröße (Nachweisbild ohne Zuschnitt)
     const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.imageSmoothingQuality = 'high';
     const s = Math.max(w / img.width, h / img.height), dw = img.width * s, dh = img.height * s; x.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
     return c.toDataURL('image/webp', q).split(',')[1];
-  }, { b64: buffer.toString('base64'), w, h, q });
+  }, { b64: buffer.toString('base64'), w, h, q, keep });
   return Buffer.from(data, 'base64');
 }
 
+// Designauswahl beim Erstellen (Vorschaukarten), Desktop und Handy
+async function chooser(width, height, name) {
+  const mobile = width < 600, dpr = mobile ? 2 : 1;
+  const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: dpr, isMobile: mobile, hasTouch: mobile, reducedMotion: 'reduce' });
+  await ctx.addInitScript(() => { localStorage.setItem('poker:name', JSON.stringify('Anna')); localStorage.setItem('poker:avatar', JSON.stringify('🦉')); localStorage.setItem('poker:prefs', JSON.stringify({ intros: false })); });
+  const p = await ctx.newPage();
+  await p.goto(url); await p.getByLabel('Passwort').fill('capture-pw'); await p.getByRole('button', { name: 'Reinkommen' }).click();
+  await p.waitForSelector('#hub'); await p.evaluate(() => { location.hash = '#spiele'; }); await p.locator('[data-host="schiffe"]').first().click();
+  await p.waitForSelector('#host-form .create-choice-pick');
+  await p.waitForFunction(() => [...document.querySelectorAll('.create-choice-art img')].every((i) => i.complete && i.naturalWidth > 0));
+  await p.waitForTimeout(600);
+  writeFileSync(join(docsDir, `${name}.webp`), await toWebp(p, await p.locator('#host-dlg').screenshot(), 0, 0, 0.82, true));
+  await ctx.close();
+  console.log('Nachweis', name);
+}
+
 try {
+  if (wantDocs && skins.length > 1) { await chooser(1440, 900, 'designauswahl-desktop'); await chooser(390, 844, 'designauswahl-mobil'); }
   for (const skin of skins) {
     if (wantPreviews) {
       // Vorschau: beide Meere mit Schiffen, Treffern und Wasser, Desktop, Klassische Regeln
@@ -88,8 +106,9 @@ try {
     }
     if (wantDocs) {
       for (const [variant, shots, size, name] of [['classic', 26, [1440, 900], 'desktop-classic'], ['salvo', 20, [1440, 900], 'desktop-salvo'], ['classic', 26, [390, 844], 'mobil-classic'], ['salvo', 20, [390, 844], 'mobil-salvo']]) {
-        const { p, ctx } = await play({ skin, variant, width: size[0], height: size[1], shots });
-        await p.screenshot({ path: join(docsDir, `${skin}-${name}.png`) });
+        const dpr = size[0] < 600 ? 2 : 1;
+        const { p, ctx } = await play({ skin, variant, width: size[0], height: size[1], shots, dpr });
+        writeFileSync(join(docsDir, `${skin}-${name}.webp`), await toWebp(p, await p.screenshot(), size[0] * dpr, size[1] * dpr, 0.8));
         await ctx.close();
         console.log('Nachweis', skin, name);
       }
