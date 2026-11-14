@@ -464,7 +464,7 @@ Diese Reihenfolge gilt erst nach separater Gameplay-Freigabe und tatsächlicher 
 ### VIS-013 – Schiffe versenken
 
 - **Spiel-ID/Kategorie:** `schiffe` / Brettspiele.
-- **Implementierung / Design:** playable / **planned**.
+- **Implementierung / Design:** playable / **done** (JSON-Roadmap: `visual_status: done`, Commit `ea6279672af43ca169c527711c7ac3d56b9af911`, 07.11.2026; dieser Einzelabschnitt war veraltet).
 - **Priorität / Aufwand:** P3; 14–21 h; individuell aufwendiges Spielfeld.
 - **Frontend:** [public/games/schiffe/schiffe.css](../../public/games/schiffe/schiffe.css), [public/games/schiffe/schiffe.js](../../public/games/schiffe/schiffe.js)
 - **Gemeinsame Komponenten:** [public/core.js](../../public/core.js), [public/game-design.js](../../public/game-design.js), [public/game-design.css](../../public/game-design.css), [public/ui-theme.css](../../public/ui-theme.css), [public/style.css](../../public/style.css), [public/games/kit.js](../../public/games/kit.js)
@@ -484,6 +484,8 @@ Diese Reihenfolge gilt erst nach separater Gameplay-Freigabe und tatsächlicher 
 
 - Aufstellen, Warten, Schießen und Salvo zeigen.
 - Identische Gegneransicht für unterschiedliche verdeckte Flotten nachweisen.
+
+**Erweiterungen nach der Umsetzung:** Wählbare Designs `naval` und `space` (siehe ART-013) und, ausdrücklich freigegeben am 14.11.2026, ein eigener Lobbybildschirm je Design (Commit `d36c241be85009a8f8c86ac522d602b8dcfc5062`, Version 3.5.0; Nachweise `lobby-*.jpg` unter `docs/design/screenshots/schiffe/`, Test `test/ui/schiffe-lobby.spec.js`). Die ursprünglichen Nachweise bleiben unverändert.
 - Zusätzlich gelten G01–G10 aus dem Designstandard und die erforderlichen Zustands-/Größenprüfungen.
 
 **Nachweise:** Noch keine Implementierungscommits, Testergebnisse oder Screenshots für dieses neue Paket. Erst nach tatsächlicher Umsetzung ergänzen.

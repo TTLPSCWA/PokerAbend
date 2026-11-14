@@ -3280,7 +3280,35 @@
         "docs/design/screenshots/schiffe/mobil-paused.jpg",
         "docs/design/screenshots/schiffe/mobil-reconnect.jpg",
         "docs/design/screenshots/schiffe/mobil-spectator.jpg",
-        "docs/design/screenshots/schiffe/mobil-waiting.jpg"
+        "docs/design/screenshots/schiffe/mobil-waiting.jpg",
+        "docs/design/screenshots/schiffe/lobby-naval-1440x900.jpg",
+        "docs/design/screenshots/schiffe/lobby-naval-1920x1080.jpg",
+        "docs/design/screenshots/schiffe/lobby-naval-360x800.jpg",
+        "docs/design/screenshots/schiffe/lobby-naval-390x844.jpg",
+        "docs/design/screenshots/schiffe/lobby-naval-768x1024.jpg",
+        "docs/design/screenshots/schiffe/lobby-naval-900x450.jpg",
+        "docs/design/screenshots/schiffe/lobby-naval-classic-leer-desktop.jpg",
+        "docs/design/screenshots/schiffe/lobby-naval-classic-leer-mobil.jpg",
+        "docs/design/screenshots/schiffe/lobby-naval-classic-voll-desktop.jpg",
+        "docs/design/screenshots/schiffe/lobby-naval-classic-voll-mobil.jpg",
+        "docs/design/screenshots/schiffe/lobby-naval-salvo-leer-desktop.jpg",
+        "docs/design/screenshots/schiffe/lobby-naval-salvo-leer-mobil.jpg",
+        "docs/design/screenshots/schiffe/lobby-naval-salvo-voll-desktop.jpg",
+        "docs/design/screenshots/schiffe/lobby-naval-salvo-voll-mobil.jpg",
+        "docs/design/screenshots/schiffe/lobby-space-1440x900.jpg",
+        "docs/design/screenshots/schiffe/lobby-space-1920x1080.jpg",
+        "docs/design/screenshots/schiffe/lobby-space-360x800.jpg",
+        "docs/design/screenshots/schiffe/lobby-space-390x844.jpg",
+        "docs/design/screenshots/schiffe/lobby-space-768x1024.jpg",
+        "docs/design/screenshots/schiffe/lobby-space-900x450.jpg",
+        "docs/design/screenshots/schiffe/lobby-space-classic-leer-desktop.jpg",
+        "docs/design/screenshots/schiffe/lobby-space-classic-leer-mobil.jpg",
+        "docs/design/screenshots/schiffe/lobby-space-classic-voll-desktop.jpg",
+        "docs/design/screenshots/schiffe/lobby-space-classic-voll-mobil.jpg",
+        "docs/design/screenshots/schiffe/lobby-space-salvo-leer-desktop.jpg",
+        "docs/design/screenshots/schiffe/lobby-space-salvo-leer-mobil.jpg",
+        "docs/design/screenshots/schiffe/lobby-space-salvo-voll-desktop.jpg",
+        "docs/design/screenshots/schiffe/lobby-space-salvo-voll-mobil.jpg"
       ],
       "test_results": [
         "npx playwright test test/ui/visual-p1.spec.js (desktop + mobil, sauberer Checkout): bestanden, sechs Viewports ohne seitliches Überlaufen, Lobby/eigene Aktion/Zuschauer/Wartend/Pause/Wiederverbindung/Englisch (+ Ergebnis, wo schnell erreichbar).",
@@ -3291,7 +3319,49 @@
         "ea6279672af43ca169c527711c7ac3d56b9af911"
       ],
       "implementation_commit": "ea6279672af43ca169c527711c7ac3d56b9af911",
-      "completed_at": "2026-11-07"
+      "completed_at": "2026-11-07",
+      "extensions": [
+        {
+          "id": "VIS-013-lobby",
+          "date": "2026-11-14",
+          "implementation_commit": "d36c241be85009a8f8c86ac522d602b8dcfc5062",
+          "description": "Eigener Start- und Lobbybildschirm je Design (naval „Klassisch“, space „Taktik-Konsole“) über den lobby(S)-Haken, Version 3.5.0. Nur Aussehen; Plätze, Start und Host-Menü bleiben die der Plattform, keine Bereitschaft vor dem Start.",
+          "tests": [
+            "test/ui/schiffe-lobby.spec.js"
+          ],
+          "screenshots": [
+            "docs/design/screenshots/schiffe/lobby-naval-1440x900.jpg",
+            "docs/design/screenshots/schiffe/lobby-naval-1920x1080.jpg",
+            "docs/design/screenshots/schiffe/lobby-naval-360x800.jpg",
+            "docs/design/screenshots/schiffe/lobby-naval-390x844.jpg",
+            "docs/design/screenshots/schiffe/lobby-naval-768x1024.jpg",
+            "docs/design/screenshots/schiffe/lobby-naval-900x450.jpg",
+            "docs/design/screenshots/schiffe/lobby-naval-classic-leer-desktop.jpg",
+            "docs/design/screenshots/schiffe/lobby-naval-classic-leer-mobil.jpg",
+            "docs/design/screenshots/schiffe/lobby-naval-classic-voll-desktop.jpg",
+            "docs/design/screenshots/schiffe/lobby-naval-classic-voll-mobil.jpg",
+            "docs/design/screenshots/schiffe/lobby-naval-salvo-leer-desktop.jpg",
+            "docs/design/screenshots/schiffe/lobby-naval-salvo-leer-mobil.jpg",
+            "docs/design/screenshots/schiffe/lobby-naval-salvo-voll-desktop.jpg",
+            "docs/design/screenshots/schiffe/lobby-naval-salvo-voll-mobil.jpg",
+            "docs/design/screenshots/schiffe/lobby-space-1440x900.jpg",
+            "docs/design/screenshots/schiffe/lobby-space-1920x1080.jpg",
+            "docs/design/screenshots/schiffe/lobby-space-360x800.jpg",
+            "docs/design/screenshots/schiffe/lobby-space-390x844.jpg",
+            "docs/design/screenshots/schiffe/lobby-space-768x1024.jpg",
+            "docs/design/screenshots/schiffe/lobby-space-900x450.jpg",
+            "docs/design/screenshots/schiffe/lobby-space-classic-leer-desktop.jpg",
+            "docs/design/screenshots/schiffe/lobby-space-classic-leer-mobil.jpg",
+            "docs/design/screenshots/schiffe/lobby-space-classic-voll-desktop.jpg",
+            "docs/design/screenshots/schiffe/lobby-space-classic-voll-mobil.jpg",
+            "docs/design/screenshots/schiffe/lobby-space-salvo-leer-desktop.jpg",
+            "docs/design/screenshots/schiffe/lobby-space-salvo-leer-mobil.jpg",
+            "docs/design/screenshots/schiffe/lobby-space-salvo-voll-desktop.jpg",
+            "docs/design/screenshots/schiffe/lobby-space-salvo-voll-mobil.jpg"
+          ],
+          "note": "Die source_audit-Prüfsummen oben beschreiben bewusst den Stand der ursprünglichen Umsetzung (2026-11-07) und wurden nicht verändert; spätere Änderungen an schiffe.js/schiffe.css (ART-013 Designs, Lobby) stehen unter extensions und in docs/design/art/ART-013/README.md."
+        }
+      ]
     },
     {
       "id": "VIS-014",
