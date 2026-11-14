@@ -1,0 +1,123 @@
+{
+  "date": "2026-11-15",
+  "baseline_commit": "390e9233acbf47151439a7a377f3ab1683de08e7",
+  "fixture": "Controlled public board: all 24 treasure IDs, 23 on board and one spare; four real browser players and spectator. Secret tasks are server fixtures; actions are real sockets.",
+  "checks": [
+    "All 24 stable IDs, 23 decoded symbols, Ring numeric fallback, spare symbol",
+    "Four actual spare rotations retain the treasure symbol",
+    "Actual row shift moves symbol/spare and wraps all four player positions together",
+    "Actual move/stay collects only current task and reveals next owner task",
+    "Spectator DOM has no task symbols/target; changing another private task leaves public DOM identical",
+    "Reload, English names and enlarged board keep the same mapping",
+    "Published in-app credit link resolves with per-file attribution and licence"
+  ],
+  "errors": [],
+  "passed": true,
+  "source_audit": [
+    {
+      "path": "public/games/labyrinth-brett/labyrinth-brett.css",
+      "sha256": "68484f9beb896f5c08551336e1a4538195cc41cc4b51417a5b8d30829d220fa1"
+    },
+    {
+      "path": "public/games/labyrinth-brett/labyrinth-brett.js",
+      "sha256": "c7be40bf3954cceb74fe041eee3600923b87141add668cf6ecfcb6896bb00c6d"
+    }
+  ],
+  "pairs": [
+    {
+      "size": "1920x1080",
+      "before": {
+        "path": "docs/design/screenshots/labyrinth-brett/treasures-2026-11/before-1920x1080.png",
+        "sha256": "d78059fdd2bb1bb74b69dcd1b1ffea9f480340d599c7d85a5868da5f8a8f44ae",
+        "width": 1920,
+        "height": 1080
+      },
+      "after": {
+        "path": "docs/design/screenshots/labyrinth-brett/treasures-2026-11/after-1920x1080.png",
+        "sha256": "0ed455ed7234d9886e05817416bd42c832331e981174ba9006d466056247a1a8",
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "size": "1440x900",
+      "before": {
+        "path": "docs/design/screenshots/labyrinth-brett/treasures-2026-11/before-1440x900.png",
+        "sha256": "54b130983ab77e54085c5a2c1601d6236221c22ccd1d97eadc6737de7d2834d8",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "docs/design/screenshots/labyrinth-brett/treasures-2026-11/after-1440x900.png",
+        "sha256": "7a72163df587cfdf2e4df988ef523cb10d11b5ffd8371f75ebaba92c778afa0e",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "size": "768x1024",
+      "before": {
+        "path": "docs/design/screenshots/labyrinth-brett/treasures-2026-11/before-768x1024.png",
+        "sha256": "52b2f3adc444758a99a40b9433850d434b254893d16b57048a631cad10c530e6",
+        "width": 768,
+        "height": 1024
+      },
+      "after": {
+        "path": "docs/design/screenshots/labyrinth-brett/treasures-2026-11/after-768x1024.png",
+        "sha256": "89575445f2bdbc99ccfd4585dc312e92ad76fdf57d5be546969f368ce4b95086",
+        "width": 768,
+        "height": 1024
+      }
+    },
+    {
+      "size": "390x844",
+      "before": {
+        "path": "docs/design/screenshots/labyrinth-brett/treasures-2026-11/before-390x844.png",
+        "sha256": "c13fed6362697a1527f15ac582d3f7128a21e49273f286a63d60cc11b8036f3b",
+        "width": 390,
+        "height": 844
+      },
+      "after": {
+        "path": "docs/design/screenshots/labyrinth-brett/treasures-2026-11/after-390x844.png",
+        "sha256": "2147eab6e497c2cd409330f3d4e1ad92c30236f4fde4ba9e1e7e4f9e4abfd8cb",
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "size": "360x800",
+      "before": {
+        "path": "docs/design/screenshots/labyrinth-brett/treasures-2026-11/before-360x800.png",
+        "sha256": "922317baba2d9b6855e127e3b73d87cb9d382ab33cabaa3896ebeeed13e9f567",
+        "width": 360,
+        "height": 800
+      },
+      "after": {
+        "path": "docs/design/screenshots/labyrinth-brett/treasures-2026-11/after-360x800.png",
+        "sha256": "632deb02263305de57ca92296a048dfc652f4bb8dd1c8f1430e365e1f97730cc",
+        "width": 360,
+        "height": 800
+      }
+    }
+  ],
+  "observations": [
+    {
+      "path": "docs/design/screenshots/labyrinth-brett/treasures-2026-11/after-shift-and-players.png",
+      "sha256": "664b8e770a30c2364949a480cdf7118b839bcc3966738063efa29244bef2bb5b",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/design/screenshots/labyrinth-brett/treasures-2026-11/after-spectator.png",
+      "sha256": "2d5384280dc803b90bddbafad85595a6898fc486d61fc0cec6997f87782dc7ed",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/design/screenshots/labyrinth-brett/treasures-2026-11/after-english-zoom.png",
+      "sha256": "30431ac88e823573c45c4b164a521736727fcbbb561fd00117619d90ee5ca9b0",
+      "width": 1440,
+      "height": 900
+    }
+  ]
+}

@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.8.0 – 15. November 2026
+
+* **Labyrinth-Brett:** 23 lizenzierte Schatzsymbole ergänzen die bestehenden Nummern auf Brett, freiem Plättchen und eigenem Auftrag. Der Ring behält seinen Nummern-Fallback; bei fehlenden Bildern bleibt die Nummer sichtbar. Figuren und Symbole sind räumlich getrennt, der vergrößerte Modus und Grafiknachweise sind direkt erreichbar. Spielregeln und geheime Aufträge bleiben unverändert.
+
 ## 3.7.0 – 14. November 2026
 
 * **Monopoly, technische V4-Anbindung:** Optionaler perspektivischer Szenenrenderer für die bestehende Engine, dynamische Figuren und Gebäude, Grundstücksurkunden und mobile Navigation. Private Themen bleiben als unveröffentlichte Definition außerhalb des Repositorys und sind ausschließlich in einer gesonderten Loopback-Vorschau auswählbar. Die öffentlichen Designs modern/classic und Junior bleiben erhalten. Private Theme-Inhalte werden weder im Repository noch im Container mitgeliefert.
