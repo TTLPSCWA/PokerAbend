@@ -2,7 +2,7 @@
   "schema_version": 1,
   "game": "labyrinth-brett",
   "implementation_commit": "187d9f937673e79b80b86df3c6ca7fce8b7b7f05",
-  "source_audit_commit": "187d9f937673e79b80b86df3c6ca7fce8b7b7f05",
+  "source_audit_commit": "2a8de43cf799e0eaade1857a7d7fdc1decad3c96",
   "date": "2026-11-07",
   "art": "Original inline corridor SVGs and game-scoped CSS, plus 23 locally served Game-icons SVGs by Lorc and Delapouite under CC BY 3.0; Ring ID 11 retains numeric fallback. See docs/design/LABYRINTH_TREASURES.md and public/games/labyrinth-brett/asset-manifest.json.",
   "tests": [
@@ -158,7 +158,8 @@
   ],
   "browser_scope": "Real host and separate spectator contexts, pause/reload/resume, six-size desktop matrix and mobile native taps. All three games have normal desktop/mobile result captures. Final checks execute actual strategy workers.",
   "followup_commits": [
-    "3c145f833dba1be85f7d0a901f7e73da36a051cf"
+    "3c145f833dba1be85f7d0a901f7e73da36a051cf",
+    "2a8de43cf799e0eaade1857a7d7fdc1decad3c96"
   ],
   "treasure_art_followup": {
     "date": "2026-11-15",
@@ -188,6 +189,7 @@
         "duration_seconds": 107.823,
         "note": "Final release run after refreshing the unchanged proof test’s source hashes. Log kept in the private local review folder."
       }
-    ]
+    ],
+    "implementation_commit": "2a8de43cf799e0eaade1857a7d7fdc1decad3c96"
   }
 }

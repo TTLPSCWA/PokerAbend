@@ -1,6 +1,6 @@
 # Labyrinth-Brett – lizenzierte Schatzsymbole (VIS-058)
 
-Stand: 15. November 2026. Version **3.8.0**. Freigegeben war ausschließlich die Darstellung von `labyrinth-brett`. Keine neuen Regeln, Spiele, Abhängigkeiten oder Serverdeployments. Ausgangsstand: `390e9233acbf47151439a7a377f3ab1683de08e7` (3.7.0). Der tatsächliche Implementierungscommit wird nach Erstellung im Nachweis ergänzt; der ursprüngliche BACKLOG-06-Commit bleibt historisch erhalten.
+Stand: 15. November 2026. Version **3.8.0**. Freigegeben war ausschließlich die Darstellung von `labyrinth-brett`. Keine neuen Regeln, Spiele, Abhängigkeiten oder Serverdeployments. Ausgangsstand: `390e9233acbf47151439a7a377f3ab1683de08e7` (3.7.0). Implementierungscommit dieser Grafikergänzung: `2a8de43cf799e0eaade1857a7d7fdc1decad3c96`. Der ursprüngliche BACKLOG-06-Commit bleibt historisch erhalten.
 
 ## Ergebnis und Zuordnung
 

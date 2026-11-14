@@ -10039,7 +10039,8 @@
       ],
       "commits": [
         "187d9f937673e79b80b86df3c6ca7fce8b7b7f05",
-        "3c145f833dba1be85f7d0a901f7e73da36a051cf"
+        "3c145f833dba1be85f7d0a901f7e73da36a051cf",
+        "2a8de43cf799e0eaade1857a7d7fdc1decad3c96"
       ],
       "implementation_commit": "187d9f937673e79b80b86df3c6ca7fce8b7b7f05",
       "completed_at": "2026-11-07",
@@ -10071,7 +10072,8 @@
             "duration_seconds": 107.823,
             "note": "Final release run after refreshing the unchanged proof test’s source hashes. Log kept in the private local review folder."
           }
-        ]
+        ],
+        "implementation_commit": "2a8de43cf799e0eaade1857a7d7fdc1decad3c96"
       }
     },
     {
