@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.7.0 – 14. November 2026
+
+* **Monopoly, technische V4-Anbindung:** Optionaler perspektivischer Szenenrenderer für die bestehende Engine, dynamische Figuren und Gebäude, Grundstücksurkunden und mobile Navigation. Private Themen bleiben als unveröffentlichte Definition außerhalb des Repositorys und sind ausschließlich in einer gesonderten Loopback-Vorschau auswählbar. Die öffentlichen Designs modern/classic und Junior bleiben erhalten. Private Theme-Inhalte werden weder im Repository noch im Container mitgeliefert.
+
 ## 3.6.0 – 14. November 2026
 
 * **Monopoly, Werkzeug für weitere Brettdesigns:** Hinter den Kulissen gibt es jetzt eine geprüfte Bild-Pipeline für künftige Designs: Bilder werden automatisch verkleinert (Handy-Varianten), als WebP gespeichert, mit Prüfsumme und Herkunft erfasst und dauerhaft zwischenspeicherbar ausgeliefert. Sichtbar ändert sich noch nichts, es gibt kein neues Design und die vorhandenen bleiben unverändert.

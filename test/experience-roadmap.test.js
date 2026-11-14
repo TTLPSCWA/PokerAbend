@@ -30,7 +30,7 @@ test('EXP-Nummern folgen den VIS-Nummern, jedes Paket hat Welt, Sound, Animation
 });
 
 test('game-experience-roadmap.json ist aus der Markdown-Quelle erzeugt und aktuell', () => {
-  const before = readFileSync('docs/design/game-experience-roadmap.json', 'utf8');
+  const before = readFileSync('docs/design/game-experience-roadmap.json', 'utf8').replace(/\r\n/g, '\n'); // Windows-Checkout und Generator dürfen unterschiedliche Zeilenenden haben.
   execFileSync(process.execPath, ['scripts/build-experience-roadmap.mjs']);
   assert.equal(readFileSync('docs/design/game-experience-roadmap.json', 'utf8'), before, 'node scripts/build-experience-roadmap.mjs ausführen');
 });

@@ -20,7 +20,7 @@ test('ART-Nummern folgen den VIS-Nummern, jedes Paket hat Ziel und Material', ()
 });
 
 test('game-art-roadmap.json ist aus der Markdown-Quelle erzeugt und aktuell', () => {
-  const before = readFileSync('docs/design/game-art-roadmap.json', 'utf8');
+  const before = readFileSync('docs/design/game-art-roadmap.json', 'utf8').replace(/\r\n/g, '\n'); // Inhaltsabweichungen bleiben Fehler; CRLF/LF ist nur Checkout-Formatierung.
   execFileSync(process.execPath, ['scripts/build-art-roadmap.mjs']);
   assert.equal(readFileSync('docs/design/game-art-roadmap.json', 'utf8'), before, 'node scripts/build-art-roadmap.mjs ausführen');
 });

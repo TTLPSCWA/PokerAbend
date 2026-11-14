@@ -1,8 +1,8 @@
 'use strict';
 {
-  let data = null, baseData = null, art = null, dialogKey = '', zoom = 1, observer = null, viewport = null, animated = 0, animatedRoll = 0;
-  function useData(S) { if (!baseData) return; const board = baseData.JUNIOR_BOARD; data = S.variant === 'junior' ? { ...baseData, BOARD: board, PROPERTIES: board.filter((f) => f.price).map((f) => f.index), square: baseData.juniorSquare, group: (i) => board.filter((f) => f.color === board[i].color).map((f) => f.index) } : baseData; }
-  function coordinates(i, S) { const [row, col] = data.square(i), junior = S.variant === 'junior', classic = S.settings.theme === 'classic' && !junior; const widths = Array(junior ? 7 : 11).fill(1); if (classic) widths[0] = widths[10] = 1.45; const total = widths.reduce((a, b) => a + b); const center = (n) => (widths.slice(0, n).reduce((a, b) => a + b, 0) + widths[n] / 2) / total * 100; return { left: center(col), top: center(row) }; }
+  let data = null, baseData = null, art = null, themed = null, dialogKey = '', zoom = 1, observer = null, viewport = null, animated = 0, animatedRoll = 0;
+  function useData(S) { if (!baseData) return; const board = baseData.JUNIOR_BOARD; data = S.variant === 'junior' ? { ...baseData, BOARD: board, PROPERTIES: board.filter((f) => f.price).map((f) => f.index), square: baseData.juniorSquare, group: (i) => board.filter((f) => f.color === board[i].color).map((f) => f.index) } : baseData; themed?.sync(S); }
+  function coordinates(i, S) { if(themed?.active(S))return themed.coordinates(i); const [row, col] = data.square(i), junior = S.variant === 'junior', classic = S.settings.theme === 'classic' && !junior; const widths = Array(junior ? 7 : 11).fill(1); if (classic) widths[0] = widths[10] = 1.45; const total = widths.reduce((a, b) => a + b); const center = (n) => (widths.slice(0, n).reduce((a, b) => a + b, 0) + widths[n] / 2) / total * 100; return { left: center(col), top: center(row) }; }
   function tokenPicker(S) { return !art || !S.you?.playing ? '' : I18n.html`<section class="mo-token-picker"><h3>Deine Spielfigur</h3><div class="kg-acts">${Object.entries(art.TOKENS).map(([id, token]) => { const taken = Object.entries(S.monopolyTokens || {}).some(([p, t]) => p !== S.you.id && t === id && S.players.some((q) => q.id === p && q.seated)); return `<button class="btn" data-g="token" data-token="${id}" aria-pressed="${S.monopolyTokens?.[S.you.id] === id}" ${taken ? 'disabled' : ''}>${token.art}<span>${token.name}</span></button>`; }).join('')}</div></section>`; }
   const palette = ['#f3c968', '#8dc9ec', '#dc9fca', '#a4d59b', '#edab82', '#c4b0e9', '#9edbd1', '#e5e0b1'];
   const name = (S, id) => esc(S.players.find((p) => p.id === id)?.name || '?');
@@ -16,6 +16,7 @@
     let d = document.querySelector('#mo-dialog');
     if (!d) { d = document.createElement('dialog'); d.id = 'mo-dialog'; d.className = 'dlg mo-dialog'; d.setAttribute('aria-labelledby', 'mo-title'); document.body.append(d); d.addEventListener('close', () => { dialogKey = ''; }); }
     if (d.open) d.close();
+    d.classList.toggle('mo-theme-dialog',!!themed?.active(kit.S));html=themed?.decorateDialog(kit.S,key,html)||html;
     d.innerHTML = I18n.html`<div class="mo-dialog-body"><div class="panel-head"><h2 id="mo-title">${esc(title)}</h2><button type="button" class="icon-btn" data-mo="close" aria-label="Schließen">×</button></div>${html}</div>`;
     dialogKey = key; d.showModal(); return d;
   }
@@ -81,12 +82,14 @@
     dialog('Eigenes Stadtbrett', I18n.html`<p>28 eigene Grundstücksnamen, unveränderte Regelwerte. Höchstens 20 eigene Bretter werden auf dem Server gespeichert.</p>${field('Brettname', '<input class="input" id="mo-board-title" maxlength="60" value="Unser Spieleabend">')}<div class="mo-board-editor">${data.PROPERTIES.map((i, at) => field(data.BOARD[i].name, `<input class="input" data-mo-name="${at}" maxlength="40" value="${esc(board.names[at])}">`)).join('')}</div><button class="btn btn-brass" data-mo="board-save">Brett speichern und auswählen</button>`, 'board-editor');
   }
   function fit() {
+    if(themed?.active(kit.S)){themed.fit();return;}
     if (!viewport?.isConnected) return;
     const board = viewport.querySelector('.mo-board');
     const base = Math.max(matchMedia('(max-width:600px), (pointer:coarse)').matches ? 530 : 364, Math.min(viewport.clientWidth, viewport.clientHeight, 880)); board.style.setProperty('--mo-size', Math.round(base * zoom) + 'px');
     const label = viewport.parentElement.querySelector('.mo-zoom > span'); if (label) label.textContent = Math.round(zoom * 100) + ' %';
   }
   function showOwn() {
+    if(themed?.active(kit.S))return;
     const token = viewport?.querySelector('.mo-token.own'); if (!token) return;
     const a = token.getBoundingClientRect(), b = viewport.getBoundingClientRect(), padding = 20;
     if (a.left < b.left + padding) viewport.scrollLeft -= b.left + padding - a.left;
@@ -95,6 +98,9 @@
     if (a.bottom > b.bottom - padding) viewport.scrollTop += a.bottom - b.bottom + padding;
   }
   function afterRender(S) {
+    if (!data) return;
+    themed?.after(S);
+    if(themed?.active(S))document.querySelectorAll('.mo-token-picker .kg-acts').forEach(el=>{el.innerHTML=themed.picker(S,el.innerHTML);});
     if (!data) return;
     if (S.phase !== 'playing' && dialogKey !== 'board-editor') close();
     const next = document.querySelector('.mo-board-viewport');
@@ -108,8 +114,8 @@
     if (viewport && move && move.n !== animated) {
       animated = move.n;
       const token = viewport.querySelector(I18n.html`[data-mo-token="${move.id}"]`);
-      if (token && !motionOff()) {
-        const frames = move.path.map((i) => { const at = coordinates(i, S); return { left: at.left + '%', top: at.top + '%' }; });
+      if (token && !motionOff() && (!themed?.active(S) || themed.wantsMovement(move))) {
+        const frames = themed?.active(S) ? themed.movementFrames(move) : move.path.map((i) => { const at = coordinates(i, S); return { left: at.left + '%', top: at.top + '%' }; });
         const animation = token.animate(frames, { duration: Math.min(2500, Math.max(250, (frames.length - 1) * 95)), easing: 'linear' });
         if (move.id === S.you?.id) { const follow = () => { if (!token.isConnected || animation.playState !== 'running') return; showOwn(); requestAnimationFrame(follow); }; requestAnimationFrame(follow); }
       }
@@ -118,6 +124,7 @@
   }
   function boardHTML(S) {
     if (!data) return I18n.html('<p>Lade die Stadt …</p>');
+    const custom=themed?.html(S,data);if(custom)return custom;
     const g = S.g, junior = S.variant === 'junior', classic = S.settings.theme === 'classic' || junior;
     const players = S.players.filter((p) => g.people[p.id]), color = (id) => palette[players.findIndex((p) => p.id === id) % palette.length];
     const fields = data.BOARD.map((f) => {
@@ -157,10 +164,13 @@
     },
     hostExtra: (S) => S.variant === 'junior' ? '' : I18n.html`<h3>Stadtbrett</h3>${field('Brett auswählen', `<select class="input" data-g="board" ${S.phase === 'playing' ? 'disabled' : ''}>${(S.monopolyBoards || []).map((b) => option(b.id, b.title, b.id === S.settings.board)).join('')}</select>`)}<button class="btn" data-g="board-editor" ${S.phase === 'playing' ? 'disabled' : ''}>Eigenes Brett anlegen</button>`,
     standExtra: (S) => !data || !S.g ? '' : I18n.html`<h3>Besitz und Vermögen</h3>${S.players.filter((p) => S.g.people[p.id]).map((p) => I18n.html`<div class="mo-stand"><b>${name(S, p.id)} · ${p.money} Geld · ${p.wealth} Vermögen${p.out ? ' · bankrott' : ''}</b><div>${Object.entries(data.COLORS).map(([color, c]) => { const fields = data.BOARD.filter((f) => f.color === color), own = fields.filter((f) => S.g.owned[f.index].owner === p.id).length; return own ? `<span style="border-color:${c.hex}">${c.name} ${own}/${fields.length}</span>` : ''; }).join('')}</div></div>`).join('')}`,
-    onChange(t) { if (t.dataset.g === 'board') send('boardChoose', { board: t.value }); },
+    onChange(t) { if(themed?.action(t.dataset.g,t.value))return; if (t.dataset.g === 'board') send('boardChoose', { board: t.value }); },
     onClick(t, S) {
       if (!data) return;
       const action = t.dataset.g;
+      if(action==='theme-manage'){propertyDialog(S,Number(t.dataset.field));return;}
+      if(themed?.active(S)&&action==='field'){themed.action(action,t.dataset.field);propertyDialog(S,Number(t.dataset.field));return;}
+      if(themed?.action(action,t.dataset.field))return;
       if (action === 'token') send('token', { token: t.dataset.token });
       if (action === 'junior') send('juniorSelect', { field: Number(t.dataset.field) });
       if (action === 'speed') send('speedSelect', { value: Number(t.dataset.value) });
@@ -191,5 +201,5 @@
     }
     if (action === 'board-save') perform('boardSave', { title: d.querySelector('#mo-board-title').value, names: [...d.querySelectorAll('[data-mo-name]')].map((input) => input.value) });
   });
-  Promise.all([import('/games/monopoly/data.js'), import('/games/monopoly/tokens.js')]).then(([module, artwork]) => { baseData = module; art = artwork; useData(kit.S || {}); kit.render(); });
+  Promise.all([import('/games/monopoly/data.js'), import('/games/monopoly/tokens.js'),import('/games/monopoly/theme-renderer.js')]).then(([module, artwork, renderer]) => { baseData = module; art = artwork; themed=renderer.createThemeRenderer({esc,redemption:module.redemption,dieHTML,onReady:()=>kit.render(),language:()=>I18n.language,reduced:motionOff});const css=document.createElement('link');css.rel='stylesheet';css.href='/games/monopoly/theme-renderer.css';document.head.append(css);useData(kit.S || {});kit.render(); });
 }

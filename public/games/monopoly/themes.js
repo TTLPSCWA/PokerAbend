@@ -6,6 +6,7 @@
 // Das Raumsetting heißt weiter `settings.theme`; `modern` und `classic` bleiben unverändert. Junior (24 Felder) kennt keine Themes.
 // Ein neues Theme erscheint erst in der Auswahl und wird nur dann angenommen, wenn `released: true` gesetzt ist.
 import { BOARD, PROPERTIES, EVENTS, CHEST } from './data.js';
+import { TOKENS } from './tokens.js';
 
 export const DEFAULT_THEME = 'modern';
 export const THEME_VARIANTS = ['classic', 'speed']; // Junior hat ein eigenes 24-Felder-Brett und bekommt nie ein Theme
@@ -16,7 +17,7 @@ const clean = (value, max) => typeof value === 'string' && value.length >= 1 && 
 // Prüft eine Theme-Definition und gibt eine eingefrorene Kopie zurück. Fehler sind sofort sichtbar, nicht erst im Spiel.
 export function validateTheme(def) {
   if (!def || typeof def !== 'object') throw new Error('Theme-Definition fehlt');
-  const { id, name, released = false, variants = THEME_VARIANTS, fields = {}, cards = null, manifest = null } = def;
+  const { id, name, released = false, variants = THEME_VARIANTS, fields = {}, cards = null, manifest = null, presentation = null } = def;
   if (typeof id !== 'string' || !ID.test(id)) throw new Error('Ungültige Theme-ID: ' + id);
   if (!clean(name, 40)) throw new Error(`Theme ${id}: Name fehlt oder ist zu lang`);
   if (typeof released !== 'boolean') throw new Error(`Theme ${id}: released muss wahr oder falsch sein`);
@@ -31,21 +32,31 @@ export function validateTheme(def) {
     for (const [deck, list] of [['event', EVENTS], ['chest', CHEST]]) if (cards[deck].length !== list.length || cards[deck].some((t) => !clean(t, 200))) throw new Error(`Theme ${id}: ${deck} braucht genau ${list.length} Kartentexte`);
   }
   if (manifest !== null && manifest !== MANIFEST_PATH(id)) throw new Error(`Theme ${id}: manifest muss ${MANIFEST_PATH(id)} lauten`);
-  return Object.freeze({ id, name, released, variants: Object.freeze([...variants]), fields: Object.freeze({ ...fields }), cards: cards && Object.freeze({ event: Object.freeze([...cards.event]), chest: Object.freeze([...cards.chest]) }), manifest });
+  if (presentation !== null) {
+    if (!presentation || presentation.layout !== `/games/monopoly/themes/${id}/layout.json`) throw Error('Invalid theme layout path');
+    if(Object.keys(presentation).some(k=>!['layout','tokenNames','cardsEnglish'].includes(k)))throw Error('Unknown presentation data');
+    if(Object.keys(presentation.tokenNames||{}).some(k=>!Object.hasOwn(TOKENS,k)))throw Error('Unknown token slot');
+    if (Object.values(presentation.tokenNames || {}).some(n => !clean(n,40))) throw Error('Invalid token label');
+    if(presentation.cardsEnglish)for(const deck of ['event','chest'])if(!Array.isArray(presentation.cardsEnglish[deck])||presentation.cardsEnglish[deck].length!==16||presentation.cardsEnglish[deck].some(t=>!clean(t,200)))throw Error('Invalid translated card text');
+  }
+  return Object.freeze({ id, name, released, variants: Object.freeze([...variants]), fields: Object.freeze({ ...fields }), cards: cards && Object.freeze({ event: Object.freeze([...cards.event]), chest: Object.freeze([...cards.chest]) }), manifest, ...(presentation ? {presentation:Object.freeze(structuredClone(presentation))} : {}) });
 }
 
-export function createThemeRegistry(defs) {
+export function createThemeRegistry(defs, {privateThemes = []} = {}) {
   const list = defs.map(validateTheme);
   if (new Set(list.map((t) => t.id)).size !== list.length) throw new Error('Doppelte Theme-ID');
   if (!list.some((t) => t.id === DEFAULT_THEME && t.released)) throw new Error('Das Standardtheme muss freigegeben sein');
   const get = (id) => list.find((t) => t.id === id) || null;
+  const selectable = t => t.released || privateThemes.includes(t.id);
   return Object.freeze({
     list: () => list,
     released: () => list.filter((t) => t.released),
+    selectable: () => list.filter(selectable),
+    isPrivate: id => privateThemes.includes(id),
     get,
     // Auswählbar: freigegeben und für diese Variante vorgesehen. Entwürfe (released: false) werden nirgends angenommen.
-    supports: (id, variant) => { const t = get(id); return !!t && t.released && t.variants.includes(variant); },
-    safe: (id) => (get(id)?.released ? id : DEFAULT_THEME),
+    supports: (id, variant) => { const t = get(id); return !!t && selectable(t) && t.variants.includes(variant); },
+    safe: (id) => (get(id) && selectable(get(id)) ? id : DEFAULT_THEME),
   });
 }
 
@@ -73,6 +84,7 @@ export function fieldNames({ theme = DEFAULT_THEME, board = null, registry = act
 }
 
 // Kartentext: Theme-Text, sonst der Standardtext. Die Wirkung der Karte (Geld, Zielfeld …) steht allein in data.js.
-export function cardText(deck, index, { theme = DEFAULT_THEME, registry = active } = {}) {
-  return registry.get(theme)?.cards?.[deck]?.[index] ?? (deck === 'event' ? EVENTS : CHEST)[index].text;
+export function cardText(deck, index, { theme = DEFAULT_THEME, board = null, registry = active } = {}) {
+  const text=registry.get(theme)?.cards?.[deck]?.[index] ?? (deck === 'event' ? EVENTS : CHEST)[index].text;
+  return text.replace(/\{field:(\d{1,2})\}/g,(_,i)=>fieldNames({theme,board,registry})[Number(i)]||'?');
 }

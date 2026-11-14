@@ -1,0 +1,16 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {validateLayout,fieldRect,fieldCenter,piecePositions} from '../public/games/monopoly/theme-layout.js';
+import {themeRegistry,createThemeRegistry,useThemeRegistry,cardText} from '../public/games/monopoly/themes.js';
+import {Room} from '../games/monopoly/room.js';
+import {TOKENS} from '../public/games/monopoly/tokens.js';
+test('Private selection does not mark an unpublished definition released; default registry rejects it',()=>{
+ const def={id:'testbed',name:'Testbed',released:false,fields:{1:'Test place'},cards:{event:Array(16).fill('Visit {field:1}'),chest:Array(16).fill('Card')},manifest:'/games/monopoly/themes/testbed/manifest.json',presentation:{layout:'/games/monopoly/themes/testbed/layout.json',tokenNames:{hat:'Test figure'}}};
+ const ordinary=createThemeRegistry([...themeRegistry().list(),def]);assert.equal(ordinary.supports('testbed','classic'),false);assert.equal(ordinary.safe('testbed'),'modern');
+ const registry=createThemeRegistry([...themeRegistry().list(),def],{privateThemes:['testbed']});assert.equal(registry.get('testbed').released,false);assert.equal(registry.released().length,2);assert.equal(registry.selectable().length,3);assert.equal(registry.supports('testbed','junior'),false);
+ const reset=useThemeRegistry(registry);try{const r=new Room('LOCAL',{theme:'testbed'},()=>{});assert.equal(r.settings.theme,'testbed');const a=r.addPlayer('A'),b=r.addPlayer('B');r.sit(a.id);r.sit(b.id);r.chooseToken(a.id,'hat');r.start(a.id);assert.equal(r.tokens[a.id],'hat');assert.deepEqual(Object.keys(TOKENS),['hat','car','dog','ship','thimble','barrow','shoe','cat']);assert.equal(r.view(a.id).monopolyTheme.private,true);assert.equal(cardText('event',0,{theme:'testbed'}),'Visit Test place');r.dispose();}finally{reset();}
+});
+test('Layout rejects rule data, missing fields, nonfinite projection and invalid anchors',()=>{
+ const l={version:1,width:1600,height:1440,geometry:{cx:790,cy:722,pxu:112,tilt_deg:35},fields:Array.from({length:40},(_,index)=>({index,rect:{x:index%10-5,y:Math.floor(index/10)-2,width:1,height:1},zones:{image:[.05,.05,.9,.4]},figureArea:{anchor:{x:0,y:0}},buildingArea:{anchor:{x:3,y:3}}})),figures:Object.fromEntries(Object.keys(TOKENS).map(slot=>[slot,{width:400,height:680,baseWidth:384,anchor:{x:200,y:480}}]))};assert.deepEqual(validateLayout(l),[]);assert.equal(fieldRect(l,0).width,112);assert.ok(Number.isFinite(fieldCenter(l,39).x));
+ for(const mutate of [x=>x.fields.pop(),x=>x.geometry.pxu=NaN,x=>x.figures.hat.anchor.x=999,x=>x.fields[0].price=5,x=>x.fields[0].zones.image=[0,0,2,1]]){const copy=structuredClone(l);mutate(copy);assert.ok(validateLayout(copy).length);}
+ const players=Object.keys(TOKENS).map((slot,n)=>({id:'p'+n})),tokens=Object.fromEntries(players.map((p,n)=>[p.id,Object.keys(TOKENS)[n]])),people=Object.fromEntries(players.map(p=>[p.id,{position:1,out:false}]));const placed=piecePositions(l,players,people,tokens);assert.equal(placed.length,8);for(const p of placed)assert.equal(p.field,1);for(let i=0;i<8;i++)for(let j=i+1;j<8;j++){const a=placed[i].box,b=placed[j].box;assert.ok(!(a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y),'Eight pieces do not intersect');}
+});

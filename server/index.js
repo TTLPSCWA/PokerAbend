@@ -37,6 +37,7 @@ import {botMetadata,savedBotLevel} from '../games/bot-levels.js';
 import { BOTS } from '../games/bots.js';
 import { configureBoards, boardStore } from '../games/monopoly/boards.js';
 import { themeAssets } from './theme-assets.js';
+import { configurePrivateMonopoly } from './private-monopoly-theme.js';
 import { createReviewStore, reviewMarkdown } from './evening-reviews.js';
 import { createPlanAPI } from './plan-api.js';
 import { createAchievements } from './achievements.js';
@@ -47,6 +48,8 @@ import { worldOf } from '../public/games/card-worlds/worlds.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
+// Fail closed before opening/migrating any data when local preview was requested.
+const privateMonopoly = configurePrivateMonopoly();
 const DATA_DIR = process.env.DATA_DIR || join(__dirname, '..', 'data');
 // V2-01: vor der ersten Nutzung des neuen Formats die vorhandenen Dateien einmalig sichern (nur kopieren)
 try {
@@ -111,6 +114,7 @@ const limits = {
 const connections = new Map(); // IP → offene Verbindungen
 
 const app = express();
+if(privateMonopoly)app.use(privateMonopoly.guard);
 app.disable('x-powered-by');
 app.set('trust proxy', TRUST_PROXY);
 app.use(securityHeaders);
@@ -317,6 +321,7 @@ app.get('/api/ranked', (req, res) => {
   res.json({ view: 'ranked', game, period, games: Object.values(GAME_INFO), rows: leaderboard.rankedTable(game, period, !!GAME_INFO[game]?.lowWins, { withOwner: true }).map(({ owner, ...row }) => ({ ...row, gameId: accounts.get(owner)?.gameId || null })), summary: leaderboard.rankedSummary(game, period) });
 });
 // Monopoly-Theme-Bilder mit Hash im Namen: unveränderlich cachebar (nur dieser Pfad; alles andere bleibt wie bisher)
+privateMonopoly?.mount(app);
 app.use('/games/monopoly/themes', themeAssets(join(PUBLIC_DIR, 'games', 'monopoly', 'themes')));
 app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
 app.use((_req, res) => res.status(404).send('Nicht gefunden'));
@@ -327,6 +332,7 @@ const io = new Server(http, {
   pingTimeout: 8000,
   maxHttpBufferSize: 16 * 1024, // keine großen Pakete
   allowRequest: (req, cb) => {
+    if(privateMonopoly&&!privateMonopoly.allowRequest(req))return cb('Private lokale Vorschau',false);
     if (!sameOrigin(req)) return cb('Fremde Herkunft', false);
     const ip = clientIp(req, TRUST_PROXY);
     if ((connections.get(ip) || 0) >= MAX_CONN_PER_IP) return cb('Zu viele Verbindungen', false);
@@ -1013,7 +1019,7 @@ for (const g of Object.values(GAMES)) {
 }
 
 if (load()) removeOrphanHistory(); // nach einem Lesefehler bleiben alle Verlaufsdateien liegen
-http.listen(PORT, () => console.log(`Spieleabend läuft auf http://localhost:${PORT}`));
+http.listen(PORT, privateMonopoly?.host, () => console.log(`Spieleabend läuft auf http://localhost:${PORT}${privateMonopoly ? ' (private lokale Theme-Vorschau)' : ''}`));
 
 // ---------- Admin-Hilfen ----------
 function adminRooms() {

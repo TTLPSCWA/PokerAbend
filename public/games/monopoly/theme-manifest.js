@@ -129,7 +129,7 @@ export const assetUrl = (m, variant) => m.assetBase + variant.file;
 export const lobbyBytes = (m, target = 'desktop') => m.assets.filter((a) => a.load === 'lobby').reduce((s, a) => s + selectVariant(a, { mobile: target === 'mobile' }).bytes, 0);
 // Bytes, die zum Spielstart nötig sind: alles mit load initial, dazu die Figuren der Mitspieler (schlimmster Fall: die `figures` größten)
 export function startBytes(m, target = 'desktop', { figures = MAX_PLAYERS } = {}) {
-  const pick = (a) => selectVariant(a, { mobile: target === 'mobile' }).bytes;
+  const pick = (a) => selectVariant(a, { mobile: target === 'mobile', thumb:a.role==='location' }).bytes;
   const initial = m.assets.filter((a) => a.load === 'initial').reduce((s, a) => s + pick(a), 0);
   const figs = m.assets.filter((a) => a.role === 'figure' && a.load === 'onDemand').map(pick).sort((x, y) => y - x).slice(0, figures).reduce((s, n) => s + n, 0);
   return initial + figs;
@@ -137,7 +137,7 @@ export function startBytes(m, target = 'desktop', { figures = MAX_PLAYERS } = {}
 // Ladeplan für das Spiel: was sofort, was später kommt (Dateien mit URL und Bytes)
 export function loadPlan(m, target = 'desktop') {
   const mobile = target === 'mobile', plan = { lobby: [], initial: [], lazy: [], onDemand: [] };
-  for (const a of m.assets) plan[a.load].push({ id: a.id, role: a.role, url: assetUrl(m, selectVariant(a, { mobile })), bytes: selectVariant(a, { mobile }).bytes });
+  for (const a of m.assets) { const v=selectVariant(a,{mobile,thumb:a.role==='location'}); plan[a.load].push({ id: a.id, role: a.role, url: assetUrl(m, v), bytes:v.bytes }); }
   return plan;
 }
 // Welche Felder hat ein Theme für diese Rolle noch nicht abgedeckt? (expected: Liste der Feld-IDs, Standard alle 40)

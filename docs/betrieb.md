@@ -1,8 +1,10 @@
 # Betrieb: Spieleabend aufsetzen, aktualisieren, sichern, reparieren
 
-Stand: Version **3.6.0** (14. November 2026). Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
+Stand: Version **3.7.0** (14. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
 
 **Inhalt**
+
+Lokale, unveröffentlichte Monopoly-Grafikvorschau: `MONOPOLY_PRIVATE_THEME_DIR` benennt ein externes privates Bundle; `HOST` ist dabei ausschließlich Loopback. Diese Entwicklungsparameter werden absichtlich nicht an Produktionscontainer weitergereicht. Die Vorschau verweigert `NODE_ENV=production` und benötigt ein eigenes `DATA_DIR` unter dem privaten Arbeitsbereich. Ohne diese Aktivierung bleibt das öffentliche Verhalten unverändert. Details: [Lokale Szenenintegration](design/MONOPOLY_V4_LOCAL.md).
 
 1. [So läuft es](#1-so-läuft-es)
 2. [Server von null einrichten](#2-server-von-null-einrichten)

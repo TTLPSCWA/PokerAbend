@@ -1,6 +1,6 @@
 // Erzeugt docs/design/game-experience-roadmap.json aus GAME_EXPERIENCE_ROADMAP.md (Quelle ist die Markdown-Datei).
 import { readFileSync, writeFileSync } from 'node:fs';
-const md = readFileSync('docs/design/GAME_EXPERIENCE_ROADMAP.md', 'utf8');
+const md = readFileSync('docs/design/GAME_EXPERIENCE_ROADMAP.md', 'utf8').replaceAll('\r\n','\n');
 const vis = JSON.parse(readFileSync('docs/design/game-visual-roadmap.json', 'utf8'));
 const visId = Object.fromEntries(vis.packages.map((p) => [p.game_id, p.id]));
 const keys = { 'Welt': 'world', 'Figuren & Material': 'pieces_and_material', 'Sound': 'sound', 'Animation': 'animation', 'Highlight': 'highlight' };

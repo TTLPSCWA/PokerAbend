@@ -7,10 +7,11 @@ import express from 'express';
 // Pfad relativ zum Einhängepunkt /games/monopoly/themes: streng, ohne Punkte außer der Dateiendung → kein Pfad-Traversal, keine Fremdformate
 export const THEME_ASSET_PATH = /^\/[a-z][a-z0-9-]{1,23}\/assets\/[a-z][a-z0-9-]{0,40}\.(desktop|mobile|thumb)\.[0-9a-f]{12}\.webp$/;
 
-export function themeAssets(root) {
-  const files = express.static(root, { index: false, dotfiles: 'ignore', redirect: false, fallthrough: true, immutable: true, maxAge: '365d', extensions: false });
+export function themeAssets(root, {privateCache=false, flatTheme=false}={}) {
+  const pattern=flatTheme ? /^\/assets\/[a-z][a-z0-9-]{0,40}\.(desktop|mobile|thumb)\.[0-9a-f]{12}\.webp$/ : THEME_ASSET_PATH;
+  const files = express.static(root, { index: false, dotfiles: 'ignore', redirect: false, fallthrough: true, immutable: true, maxAge: '365d', extensions: false, ...(privateCache?{setHeaders:res=>res.setHeader('Cache-Control','private, max-age=31536000, immutable')}:{}) });
   return (req, res, next) => {
-    if ((req.method !== 'GET' && req.method !== 'HEAD') || !THEME_ASSET_PATH.test(req.path)) return next();
+    if ((req.method !== 'GET' && req.method !== 'HEAD') || !pattern.test(req.path)) return next();
     res.setHeader('X-Content-Type-Options', 'nosniff');
     files(req, res, next);
   };

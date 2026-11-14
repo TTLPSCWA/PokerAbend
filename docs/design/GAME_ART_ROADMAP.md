@@ -77,7 +77,8 @@ Die IDs folgen den VIS-Nummern: **ART-002 gehört zu VIS-002 (Texas Hold'em)** u
 
 #### ART-046 · Monopoly (`monopoly`) · P2
 - **Ziel:** Spielfiguren als Püppchen, die Feld für Feld über das Brett laufen; Häuser und Hotels als kleine Modelle; Brett mit Struktur.
-- **Material:** Kenney „Board Game Pack“ (Figuren, CC0) bzw. vorgerenderte 3D-Figuren (CC0). ZIPs liefert Tobi.
+- **Material:** Ausschließlich die vorhandene private V4-Vorlage; keine neuen oder fremden Ersatzgrafiken. Nicht öffentlich freigegebene Quellen bleiben außerhalb des Repositorys.
+- **Umsetzung:** Pakete A und F als Fundament vorhanden; B, C, D, E, G und H lokal integriert und geprüft. Version 3.7.0 enthält die generische technische Anbindung; private Theme-Definitionen, Assets und Bildnachweise bleiben außerhalb des Repositorys. Der vollständige öffentliche ART-Abschluss bleibt bis zur Rechtefreigabe offen. Commitnachweis der Anbindung: Git-Historie. Architektur: `docs/design/MONOPOLY_V4_LOCAL.md`.
 - **Status:** planned
 
 ---

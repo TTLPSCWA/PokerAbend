@@ -10,7 +10,7 @@ const integer = (n) => Number.isSafeInteger(n) && n >= 0;
 export class Room extends TurnRoom {
   static OPTIONS = [
     // Die Auswahl kommt aus der Theme-Registry (themes.js): nur freigegebene Themes erscheinen. Heute sind das die beiden bisherigen.
-    { key: 'theme', label: 'Brettgestaltung', type: 'select', get values() { return themeRegistry().released().map((t) => ({ value: t.id, label: t.name })); } },
+    { key: 'theme', label: 'Brettgestaltung', type: 'select', get values() { return themeRegistry().selectable().map((t) => ({ value: t.id, label: t.name })); } },
     { key: 'startMoney', label: 'Startgeld', type: 'number', min: 200, max: 5000 },
     { key: 'timeLimit', label: 'Zeitlimit in Minuten (0 = ohne)', type: 'number', min: 0, max: 180 },
     { key: 'turnTime', label: 'Sekunden pro Entscheidung', type: 'number', min: 5, max: 180 },
@@ -55,7 +55,7 @@ export class Room extends TurnRoom {
   chooseToken(id, token) {
     if (!this.players.has(id) || !TOKENS[token]) throw new Error('Unbekannte Spielfigur');
     if (Object.entries(this.tokens).some(([p, t]) => p !== id && t === token && this.seats.includes(p))) throw new Error('Diese Figur ist schon gewählt');
-    this.tokens[id] = token; this.act(id, `wählt ${TOKENS[token].name}`);
+    this.tokens[id] = token; this.act(id, `wählt ${themeRegistry().get(this.settings.theme)?.presentation?.tokenNames?.[token] || TOKENS[token].name}`);
   }
   saveExtra() { return { tokens: this.tokens }; }
   loadExtra(x) { this.tokens = x.tokens || {}; }
@@ -129,7 +129,7 @@ export class Room extends TurnRoom {
   drawCard(id, deck, depth = 0) {
     const index = this.decks[deck].shift(), c = (deck === 'event' ? EVENTS : CHEST)[index];
     if (c.kind !== 'free') this.decks[deck].push(index); else this.people[id].free.push({ deck, index });
-    const text = cardText(deck, index, { theme: this.settings.theme }); this.card = { deck, index, text }; this.say(text, 'street');
+    const text = cardText(deck, index, { theme: this.settings.theme, board:this.board }); this.card = { deck, index, text }; this.say(text, 'street');
     if (c.kind === 'move') this.walk(id, (c.field - this.people[id].position + 40) % 40, null, depth);
     else if (c.kind === 'back') this.walk(id, -c.steps, null, depth);
     else if (c.kind === 'jail') this.jail(id);
@@ -334,6 +334,6 @@ export class Room extends TurnRoom {
       auction: this.auction ? structuredClone(this.auction) : null, trade: this.trade ? structuredClone(this.trade) : null, debt: this.debt ? { ...this.debt } : null,
       possible: this.possible(id), liquidation: this.people[id] ? this.liquidation(id) : 0, boards: this.phase === 'lobby' ? boardStore().list() : null };
   }
-  view(id) { const v = super.view(id); v.monopolyBoards = boardStore().list(); v.monopolyTokens = this.tokens; return v; }
+  view(id) { const v = super.view(id); v.monopolyBoards = boardStore().list(); v.monopolyTokens = this.tokens; const t=themeRegistry().get(this.settings.theme); if(t?.manifest)v.monopolyTheme={id:t.id,name:t.name,manifest:t.manifest,...t.presentation,private:themeRegistry().isPrivate(t.id)}; return v; }
   static restore(data, onChange) { const r = TurnRoom.restoreInto(new this(data.code, data.settings, onChange), data); try { r.board = boardStore().get(r.settings.board); } catch { r.settings.board = 'default'; } return r; }
 }
