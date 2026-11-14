@@ -6,7 +6,8 @@
   function tokenPicker(S) { return !art || !S.you?.playing ? '' : I18n.html`<section class="mo-token-picker"><h3>Deine Spielfigur</h3><div class="kg-acts">${Object.entries(art.TOKENS).map(([id, token]) => { const taken = Object.entries(S.monopolyTokens || {}).some(([p, t]) => p !== S.you.id && t === id && S.players.some((q) => q.id === p && q.seated)); return `<button class="btn" data-g="token" data-token="${id}" aria-pressed="${S.monopolyTokens?.[S.you.id] === id}" ${taken ? 'disabled' : ''}>${token.art}<span>${token.name}</span></button>`; }).join('')}</div></section>`; }
   const palette = ['#f3c968', '#8dc9ec', '#dc9fca', '#a4d59b', '#edab82', '#c4b0e9', '#9edbd1', '#e5e0b1'];
   const name = (S, id) => esc(S.players.find((p) => p.id === id)?.name || '?');
-  const fieldName = (S, i) => { const at = data.PROPERTIES.indexOf(i); return at < 0 ? data.BOARD[i].name : S.g?.board.names[at] || S.monopolyBoards.find((b) => b.id === S.settings.board)?.names[at] || data.BOARD[i].name; };
+  // Die Namen aller 40 Felder löst der Server auf (Theme, eigenes Brett); Junior und die Lobby fallen auf das Brett zurück
+  const fieldName = (S, i) => { if (S.g?.names?.[i]) return S.g.names[i]; const at = data.PROPERTIES.indexOf(i); return at < 0 ? data.BOARD[i].name : S.g?.board.names[at] || S.monopolyBoards.find((b) => b.id === S.settings.board)?.names[at] || data.BOARD[i].name; };
   const option = (id, label, selected = false) => `<option value="${esc(id)}" ${selected ? 'selected' : ''}>${esc(label)}</option>`;
   const field = (label, inner) => `<label class="field"><span>${label}</span>${inner}</label>`;
   const input = (id, value = 0, max = 1000000) => `<input class="input" type="number" id="${id}" min="0" max="${max}" step="1" value="${value}">`;

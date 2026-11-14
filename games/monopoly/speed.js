@@ -1,6 +1,7 @@
 import { Room, BOARD, PROPERTIES } from './room.js';
 
 export class SpeedRoom extends Room {
+  static VARIANT = 'speed';
   defaultSettings() { return { ...super.defaultSettings(), startMoney: 2500 }; }
   setupRound() { super.setupRound(); for (const p of Object.values(this.people)) p.speedActive = false; this.speedDie = null; this.speedBonus = null; this.speedChoice = null; }
   cash(from, to, amount, reason, tax = false) { super.cash(from, to, amount, reason, tax); if (to && reason === 'Über Los') this.people[to].speedActive = true; }

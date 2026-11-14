@@ -3,12 +3,14 @@ import { die, shuffle } from '../../server/random.js';
 import { BOARD, COLORS, PROPERTIES, group, EVENTS, CHEST, redemption } from '../../public/games/monopoly/data.js';
 import { boardStore } from './boards.js';
 import { TOKENS } from '../../public/games/monopoly/tokens.js';
+import { DEFAULT_THEME, themeRegistry, fieldNames, cardText } from '../../public/games/monopoly/themes.js';
 export { BOARD, COLORS, PROPERTIES, group, EVENTS, CHEST };
 const integer = (n) => Number.isSafeInteger(n) && n >= 0;
 
 export class Room extends TurnRoom {
   static OPTIONS = [
-    { key: 'theme', label: 'Brettgestaltung', type: 'select', values: [{ value: 'modern', label: 'Bisheriges Thema' }, { value: 'classic', label: 'Klassik' }] },
+    // Die Auswahl kommt aus der Theme-Registry (themes.js): nur freigegebene Themes erscheinen. Heute sind das die beiden bisherigen.
+    { key: 'theme', label: 'Brettgestaltung', type: 'select', get values() { return themeRegistry().released().map((t) => ({ value: t.id, label: t.name })); } },
     { key: 'startMoney', label: 'Startgeld', type: 'number', min: 200, max: 5000 },
     { key: 'timeLimit', label: 'Zeitlimit in Minuten (0 = ohne)', type: 'number', min: 0, max: 180 },
     { key: 'turnTime', label: 'Sekunden pro Entscheidung', type: 'number', min: 5, max: 180 },
@@ -18,8 +20,12 @@ export class Room extends TurnRoom {
     { key: 'noAuction', label: 'Keine Versteigerung bei Kaufverzicht', type: 'bool' },
     { key: 'quick', label: 'Schnellstart mit zwei zufälligen Grundstücken', type: 'bool' },
   ];
-  defaultSettings() { return { theme: 'modern', startMoney: 1500, timeLimit: 0, turnTime: 45, auctionTime: 15, parkingPot: false, doubleGo: false, noAuction: false, quick: false, board: 'default' }; }
-  clampSettings(input, base) { const s = super.clampSettings(input, base); if (typeof input.board === 'string' && /^[a-zA-Z0-9-]{1,50}$/.test(input.board)) s.board = input.board; return s; }
+  static VARIANT = 'classic'; // Variante für die Theme-Prüfung (SpeedRoom überschreibt; Junior hat kein Theme)
+  defaultSettings() { return { theme: DEFAULT_THEME, startMoney: 1500, timeLimit: 0, turnTime: 45, auctionTime: 15, parkingPot: false, doubleGo: false, noAuction: false, quick: false, board: 'default' }; }
+  clampSettings(input, base) { const s = super.clampSettings(input, base); if (typeof input.board === 'string' && /^[a-zA-Z0-9-]{1,50}$/.test(input.board)) s.board = input.board;
+    // Unbekannte, nicht freigegebene oder für diese Variante nicht vorgesehene Themes ergeben nie ein anderes Aussehen als bisher
+    if (!themeRegistry().supports(s.theme, this.constructor.VARIANT)) s.theme = themeRegistry().supports(base.theme, this.constructor.VARIANT) ? base.theme : DEFAULT_THEME;
+    return s; }
   constructor(code, settings, onChange) {
     super(code, settings, onChange, { minPlayers: 2, maxPlayers: 8, scoreLabel: 'Siege', winPoints: 1 });
     this.people = {}; this.owned = {}; this.bank = 10000000; this.pot = 0; this.stock = { houses: 32, hotels: 12 };
@@ -28,7 +34,9 @@ export class Room extends TurnRoom {
     this.tokens = {};
   }
   validateStart() { this.board = boardStore().get(this.settings.board); }
-  fieldName(i) { const at = PROPERTIES.indexOf(i); return at < 0 ? BOARD[i].name : this.board.names[at]; }
+  // Anzeigenamen aller 40 Felder (eigenes Brett vor Theme vor Standard, siehe themes.js); gemeinsame Quelle für Brett, Protokoll und Karten
+  fieldNames() { const key = this.settings.theme + '|' + this.board.id; if (this.namesCache?.key !== key) this.namesCache = { key, list: fieldNames({ theme: this.settings.theme, board: this.board }) }; return this.namesCache.list; }
+  fieldName(i) { return this.fieldNames()[i]; }
   chooseBoard(id, board) { this.requireHost(id); if (this.busy) throw new Error('Brettwechsel nur zwischen Partien'); this.board = boardStore().get(board); this.settings.board = board; this.say(`Brett: ${this.board.title}`); }
   saveBoard(id, input) { this.requireHost(id); if (this.busy) throw new Error('Bretter zwischen Partien anlegen'); const b = boardStore().save(input, this.players.get(id)?.accountId); this.chooseBoard(id, b.id); return b; }
   setupRound() {
@@ -113,7 +121,7 @@ export class Room extends TurnRoom {
     if (own) {
       if (!own.owner) { this.step = 'buy'; return; }
       if (own.owner !== id) { const sum = special === 'utility' ? this.roll() + this.roll() : this.dice[0] + this.dice[1]; this.charge(id, own.owner, this.rent(f.index, sum, special), `Miete ${this.fieldName(f.index)}`); }
-    } else if (f.type === 'tax') this.charge(id, null, f.tax, f.name, true);
+    } else if (f.type === 'tax') this.charge(id, null, f.tax, this.fieldName(f.index), true);
     else if (f.type === 'gotojail') this.jail(id);
     else if (f.type === 'parking' && this.settings.parkingPot && this.pot) { const value = this.pot; this.pot = 0; this.people[id].money += value; this.say(`${this.name(id)} erhält ${value} von Frei Parken`, 'bet'); }
     else if (f.type === 'event' || f.type === 'chest') this.drawCard(id, f.type, depth + 1);
@@ -121,7 +129,7 @@ export class Room extends TurnRoom {
   drawCard(id, deck, depth = 0) {
     const index = this.decks[deck].shift(), c = (deck === 'event' ? EVENTS : CHEST)[index];
     if (c.kind !== 'free') this.decks[deck].push(index); else this.people[id].free.push({ deck, index });
-    this.card = { deck, index, text: c.text }; this.say(c.text, 'street');
+    const text = cardText(deck, index, { theme: this.settings.theme }); this.card = { deck, index, text }; this.say(text, 'street');
     if (c.kind === 'move') this.walk(id, (c.field - this.people[id].position + 40) % 40, null, depth);
     else if (c.kind === 'back') this.walk(id, -c.steps, null, depth);
     else if (c.kind === 'jail') this.jail(id);
@@ -321,7 +329,7 @@ export class Room extends TurnRoom {
   }
   publicPlayer(p) { const q = this.people[p.id]; return q ? { money: q.money, position: q.position, jail: q.jail, out: q.out, wealth: this.wealth(p.id), properties: PROPERTIES.filter((i) => this.owned[i].owner === p.id).length } : {}; }
   gameView(id) {
-    return { board: structuredClone(this.board), tokens: this.tokens, people: structuredClone(this.people), owned: structuredClone(this.owned), stock: { ...this.stock }, pot: this.pot, actor: this.actor,
+    return { board: structuredClone(this.board), names: [...this.fieldNames()], tokens: this.tokens, people: structuredClone(this.people), owned: structuredClone(this.owned), stock: { ...this.stock }, pot: this.pot, actor: this.actor,
       dice: [...this.dice], rollNo: this.rollNo, doubles: this.doubles, step: this.step, turnNo: this.turnNo, endsAt: this.endsAt, card: this.card, lastMove: this.lastMove ? structuredClone(this.lastMove) : null,
       auction: this.auction ? structuredClone(this.auction) : null, trade: this.trade ? structuredClone(this.trade) : null, debt: this.debt ? { ...this.debt } : null,
       possible: this.possible(id), liquidation: this.people[id] ? this.liquidation(id) : 0, boards: this.phase === 'lobby' ? boardStore().list() : null };
