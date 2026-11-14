@@ -5,6 +5,7 @@
 'use strict';
 {
   const SIZE = 10;
+  const FLEETS_N = { standard: 5, classic: 10 }; // Schiffe je Flotte (Server: FLEETS in room.js)
   const COLS = 'ABCDEFGHIJ';
   const SHIP = { 5: 'Flugzeugträger', 4: 'Schlachtschiff', 3: 'Kreuzer', 2: 'Zerstörer' };
   const cellName = (i) => `${COLS[i % SIZE]}${Math.floor(i / SIZE) + 1}`;
@@ -152,6 +153,53 @@
   const draftCells = (fleet) => draft.map((d, k) => (d ? shipCells(d.cell, fleet[k], d.horizontal) : [])).map((x) => x || []);
   const shipList = (list) => (list || []).map((s) => s.cells);
 
+  // ---- Lobby (VIS-013): eigener Start- und Lobbybildschirm je Design. Die Plätze zeigt die Plattform selbst (Tischring, auf dem Handy die Leiste),
+  // deshalb steht hier keine zweite Spielerliste: Briefing, Variante, Regeln dieses Tisches, Ablauf und Status. Alles aus dem Raumzustand; keine Bereitschaft vor dem Start. ----
+  const LOBBY_FLEET = [[5, 1, 1, true], [4, 6, 3, false], [3, 0, 5, true], [3, 4, 7, true], [2, 8, 7, false]]; // nur Schmuck: Länge, Spalte, Zeile, waagerecht – keine Spielstellung
+  function lobbyChart(space) {
+    const ships = LOBBY_FLEET.map(([n, c, r, h]) => {
+      const first = r * SIZE + c, cx = (c + (h ? n : 1) / 2) * 10, cy = (r + (h ? 1 : n) / 2) * 10;
+      let src, w;
+      if (space) { src = spaceImg(n, !h, false); w = h ? n * 10 : 13; } else { const fit = navalFit(n, first); src = NAVAL_ART + 'stahl-' + fit.m + '-' + (h ? 'h' : 'v') + '.webp'; w = (h ? fit.len : fit.wid) * 12.2; }
+      return '<img class="sv-lb-ship" src="' + src + '" alt="" decoding="async" draggable="false" style="left:' + cx + '%;top:' + cy + '%;width:' + w + '%">';
+    }).join('');
+    const cols = [...COLS].map((c, i) => '<span style="left:' + (i * 10 + 5) + '%">' + c + '</span>').join(''), rows = Array.from({ length: SIZE }, (_, i) => '<span style="top:' + (i * 10 + 5) + '%">' + (i + 1) + '</span>').join('');
+    const compass = space ? '' : '<svg class="sv-lb-compass" viewBox="-50 -50 100 100"><circle r="44" fill="none" stroke="currentColor" stroke-width="2"/><circle r="36" fill="none" stroke="currentColor" stroke-width=".8" stroke-dasharray="2 3"/><path d="M0-46L9-9L46 0L9 9L0 46L-9 9L-46 0L-9-9Z" fill="currentColor" opacity=".85"/><path d="M0-46L9-9L0 0Z" fill="#b3342b"/><text y="-52" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">N</text></svg>';
+    return '<div class="sv-lb-wrap" aria-hidden="true"><div class="sv-lb-cols">' + cols + '</div><div class="sv-lb-rows">' + rows + '</div><div class="sv-lb-chart">' + ships + compass + '</div></div>';
+  }
+  function lobbyHTML(S) {
+    applySkin(S);
+    const t = WorldKit.t, space = skinNow === 'space', salvo = S.variant === 'salvo', cfg = S.settings || {};
+    const need = S.minPlayers || 2, max = S.maxPlayers || 2, seated = S.players.filter((p) => p.seated).length, watchers = S.players.length - seated;
+    const meSeated = !!S.players.find((p) => p.id === S.you?.id)?.seated, full = seated >= need, host = !!S.you?.isHost;
+    const fleetN = cfg.classic ? FLEETS_N.classic : FLEETS_N.standard, tt = Number(cfg.turnTime) || 0;
+    const missing = need - seated;
+    const status = !full ? t('Es fehlt noch ' + missing + ' Mitspieler. Wer mitspielen will, tippt unten auf „Mitspielen“.', missing + ' more player needed. To join, tap “Play” below.')
+      : host ? t('Beide Plätze sind besetzt – du kannst die Runde unten starten.', 'Both seats are taken – you can start the round below.') : t('Beide Plätze sind besetzt – der Host startet die Runde.', 'Both seats are taken – the host starts the round.');
+    const pips = Array.from({ length: max }, (_, i) => '<i class="' + (i < seated ? 'on' : '') + '"></i>').join('');
+    const facts = [
+      [t('Design', 'Design'), space ? t('Taktik-Konsole', 'Tactical console') : t('Klassisch', 'Classic')],
+      [t('Variante', 'Variant'), salvo ? t('Salvo', 'Salvo') : t('Klassisch', 'Classic')],
+      [t('Flotte', 'Fleet'), fleetN + ' ' + t('Schiffe', 'ships') + (cfg.classic ? ' · ' + t('Hausregel „Klassisch“', 'house rule “Classic”') : '')],
+      [t('Zeit pro Schuss', 'Time per shot'), tt ? tt + ' s' : t('ohne Limit', 'no limit')],
+      [t('Schiffe', 'Ships'), cfg.touch ? t('dürfen sich berühren', 'may touch') : t('berühren sich nicht', 'must not touch')],
+      ...(!salvo ? [[t('Nach einem Treffer', 'After a hit'), cfg.again ? t('nochmal schießen', 'fire again') : t('Wechsel', 'turn passes')]] : []),
+    ].map(([k, v]) => '<div><dt>' + esc(k) + '</dt><dd>' + esc(v) + '</dd></div>').join('');
+    const steps = [
+      [t('Flotte setzen', 'Deploy'), space ? t('Ordnet eure Raumschiffe im Sektor an – beide gleichzeitig, ohne Einblick.', 'Arrange your ships in the sector – both at once, unseen.') : t('Verteilt eure Schiffe auf der Seekarte – beide gleichzeitig, ohne Einblick.', 'Place your ships on the chart – both at once, unseen.')],
+      salvo ? [t('Salve festlegen', 'Plan a salvo'), t('Ihr wählt gleichzeitig so viele Ziele, wie ihr noch Schiffe habt; beide Salven werden gemeinsam aufgelöst.', 'You both pick as many targets as you have ships left; both salvos resolve together.')]
+        : [t('Feuern', 'Fire'), t('Abwechselnd ein Feld wählen: Wasser, Treffer oder versenkt.', 'Take turns picking a square: miss, hit or sunk.')],
+      [t('Gewinnen', 'Win'), space ? t('Wer zuerst die ganze gegnerische Flotte vernichtet, gewinnt.', 'The first to destroy the whole enemy fleet wins.') : t('Wer zuerst die ganze gegnerische Flotte versenkt, gewinnt.', 'The first to sink the whole enemy fleet wins.')],
+    ].map(([h, p], i) => '<li><b>' + (i + 1) + '</b><span><strong>' + esc(h) + '</strong>' + esc(p) + '</span></li>').join('');
+    return '<section class="sv-lobby" data-skin="' + skinNow + '">' +
+      '<div class="sv-lb-art">' + lobbyChart(space) + '</div>' +
+      '<div class="sv-lb-brief"><span class="sv-lb-eyebrow">' + (space ? t('TAKTIK-KONSOLE · GEFECHTSSTAND', 'TACTICAL CONSOLE · BATTLE STATION') : t('FLOTTENKOMMANDO · SEEKARTE', 'FLEET COMMAND · SEA CHART')) + '</span>' +
+      '<h2>' + (space ? t('Zwei Flotten.<br>Ein Sektor.', 'Two fleets.<br>One sector.') : t('Zwei Flotten.<br>Ein Meer.', 'Two fleets.<br>One sea.')) + '</h2>' +
+      '<p class="sv-lb-lead">' + (space ? t('Positioniert eure Schiffe im Sektor und feuert abwechselnd auf Koordinaten. Das Briefing steht, die Konsole ist bereit.', 'Position your ships in the sector and fire at coordinates in turn. Briefing done, console ready.') : t('Versteckt eure Schiffe auf der Seekarte und feuert abwechselnd auf Koordinaten. Wer die Flotte des anderen findet, gewinnt die Seeschlacht.', 'Hide your ships on the chart and fire at coordinates in turn. Find the other fleet to win the battle.')) + '</p>' +
+      '<dl class="sv-lb-facts">' + facts + '</dl><ol class="sv-lb-steps">' + steps + '</ol>' +
+      '<div class="sv-lb-status" role="status"><span class="sv-lb-pips" aria-hidden="true">' + pips + '</span><span><b>' + seated + ' / ' + max + ' ' + esc(t('Plätze besetzt', 'seats taken')) + '</b>' + esc(status) + (!meSeated ? ' ' + esc(t('Du schaust zu.', 'You are watching.')) : '') + (watchers ? ' · ' + watchers + ' ' + esc(t('Zuschauer', 'watching')) : '') + '</span></div></div></section>';
+  }
+
   const kit = kitGame({
     id: 'schiffe',
     name: 'Schiffe versenken',
@@ -204,6 +252,7 @@
       if (aim !== null) return I18n.html`Ziel <b>${cellName(aim)}</b> – „Feuer“ oder ein anderes Feld wählen`;
       return 'Tipp ein Feld im gegnerischen Meer an';
     },
+    lobby(S) { return lobbyHTML(S); },
     main(S) {
       const W = WorldKit, t = W.t, g1 = S.g, over1 = S.phase === 'over', mine1 = meIn(S);
       const chips = [g1.step === 'place' && !over1 ? W.chip('⚓', mine1?.ready ? t('Flotte steht – warte auf den Gegner', 'Fleet ready – waiting for the opponent') : t('Phase: Schiffe setzen', 'Phase: placing ships'), mine1?.ready ? 'good' : 'warn') : over1 ? W.chip('🏁', t('Partie vorbei – beide Meere aufgedeckt', 'Game over – both seas revealed')) : W.chip('🎯', S.turnId === S.you?.id ? t('Du schießt', 'You are firing') : t('Der Gegner schießt', 'The opponent is firing'), S.turnId === S.you?.id ? 'good' : ''), S.variant === 'salvo' ? W.chip('✦', t('Salve-Variante', 'Salvo variant')) : ''].filter(Boolean);

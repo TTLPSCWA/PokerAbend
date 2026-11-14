@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.5.0 – 14. November 2026
+
+* **Schiffe versenken, eigener Lobbybildschirm:** Vor dem Start zeigt der Tisch jetzt einen Bildschirm im Stil des gewählten Designs. „Klassisch“ ist ein Flottenkommando mit Seekarte auf Elfenbein, Messing und Schiffen von oben, die „Taktik-Konsole“ eine Raumflotten-Zentrale mit Radar und Raumschiffen. Dazu stehen dort das Briefing, die gewählte Variante (Klassisch oder Salvo), die Regeln dieses Tisches (Flotte, Zeit pro Schuss, Berühren, nochmal schießen), der Ablauf in drei Schritten und wie viele Plätze besetzt sind. Die Spieler zeigt wie bisher der Tisch selbst; gestartet wird wie gewohnt unten. Auch auf Englisch.
+
 ## 3.4.1 – 14. November 2026
 
 * **Schiffe versenken, Taktik-Konsole:** Der Radarkegel im Zielsektor dreht sich nicht mehr dauerhaft. Die Drehung kostete beim Messen dreimal so viel Bildzeit; jetzt steht der Kegel fest, und das Spiel läuft wie mit dem klassischen Design.
