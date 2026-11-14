@@ -11751,14 +11751,14 @@
       "source_audit": [
         {
           "path": "public/games/schatzinsel/schatzinsel.css",
-          "sha256": "75346575a3001fd67383a0cc294940acca59781341d57e1e0d48f13c717b42ab"
+          "sha256": "108a8971e712e169ced274aa55d5cbb301ee1f4094bd2c98690ad4bcf2591d7f"
         },
         {
           "path": "public/games/schatzinsel/schatzinsel.js",
-          "sha256": "6690102fe98b823c7357039448bd89996fd1bd549ab63d502e311e3d12a7710d"
+          "sha256": "c5a7ee47b4b218feb5d59eb78d2ec3b481f41f7e9d6d62b671e7bae9f4f9f7f8"
         }
       ],
-      "current_design": "Eigene Ausgrabungskarte mit privaten Verstecken, öffentlichen Grabungsspuren und textlichen Wärmehinweisen.",
+      "current_design": "Zusammenhängende Kenney-Sandinsel mit fester dekorativer Küste und Wasser, weiterhin 64 Suchfeldern A1–H8, privaten Verstecken und öffentlichen H/W/K-/Fundmarkierungen.",
       "known_visual_weaknesses": [],
       "assessment_method": "Actual desktop/mobile play, six viewport sizes, independent spectator/privacy, pause and reconnect; original screenshots and Node rule tests.",
       "gameplay_summary": "Schätze auf der eigenen Insel verstecken und die der anderen ausgraben.",
@@ -11887,7 +11887,37 @@
         "3c145f833dba1be85f7d0a901f7e73da36a051cf"
       ],
       "implementation_commit": "187d9f937673e79b80b86df3c6ca7fce8b7b7f05",
-      "completed_at": "2026-11-07"
+      "completed_at": "2026-11-07",
+      "asset_followup": {
+        "date": "2026-11-15",
+        "version": "3.9.0",
+        "report": "docs/design/SCHATZINSEL_KENNEY.md",
+        "manifest": "public/games/schatzinsel/asset-manifest.json",
+        "screenshot_manifest": "docs/design/screenshots/schatzinsel/kenney-2026-11/screenshots.json",
+        "scope": "Prepared Kenney terrain integration and presentation only; unchanged game engine and bot files.",
+        "tests": [
+          {
+            "command": "node --test test/schatzinsel-art.test.js test/backlog06.test.js",
+            "passed": 21,
+            "failed": 0,
+            "note": "Four new art/privacy tests, nine paired private-state comparisons and 27 additional full strategy matches; 17 existing rule/bot tests."
+          },
+          {
+            "command": "playwright test test/ui/schatzinsel-art.spec.js test/ui/backlog06.spec.js test/ui/backlog06-end.spec.js --grep schatzinsel --workers=1",
+            "passed": 12,
+            "failed": 0,
+            "note": "Desktop and native touch profiles; real 2/3/4 human players, 3/4/5 treasures, spectator, hints, missing art, complete hard-worker bot games, pause/reload and six sizes."
+          },
+          {
+            "command": "npm run test:fast",
+            "passed": 2062,
+            "failed": 0,
+            "skipped": 3,
+            "duration_seconds": 125.379,
+            "note": "Final unchanged application code; local log kept in the private review folder."
+          }
+        ]
+      }
     },
     {
       "id": "VIS-070",

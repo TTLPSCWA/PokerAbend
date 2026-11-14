@@ -1,0 +1,250 @@
+{
+  "date": "2026-11-15",
+  "baseline_commit": "c1a3ae6f7286d95c794317bb3ed88620c997c389",
+  "fixture": "Four independent real human browser contexts, five treasures each deliberately selected through the UI; spectator context. All hiding and digging actions use the real unchanged server. No hidden positions injected into client or server.",
+  "checks": [
+    "Four actual five-treasure placements; every owner receives only their own positions; spectator hide view has no grid or positions",
+    "Actual hit retains turn and increases score; actual misses pass turn and show server-issued hot/warm/cold hints",
+    "Island switching exposes only own positions or public hits; enemy hidden treasures remain unmarked",
+    "Reconnect preserves private owner positions and public dig history; spectator sees only public information",
+    "All local terrain assets load; mobile board is keyboard-scrollable and cells remain at least 44px"
+  ],
+  "errors": [],
+  "passed": true,
+  "source_audit": [
+    {
+      "path": "public/games/schatzinsel/schatzinsel.css",
+      "sha256": "108a8971e712e169ced274aa55d5cbb301ee1f4094bd2c98690ad4bcf2591d7f"
+    },
+    {
+      "path": "public/games/schatzinsel/schatzinsel.js",
+      "sha256": "c5a7ee47b4b218feb5d59eb78d2ec3b481f41f7e9d6d62b671e7bae9f4f9f7f8"
+    }
+  ],
+  "pairs": [
+    {
+      "phase": "dig",
+      "size": "1920x1080",
+      "before": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/before-dig-1920x1080.png",
+        "sha256": "08ec294fcf593f035bef98504d5b1b230f629563144065e12ac741174527843d",
+        "width": 1920,
+        "height": 1080
+      },
+      "after": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/after-dig-1920x1080.png",
+        "sha256": "dc9f1427a9ddc8de73383a00c5699089d039c9e4a890ee605a6a6b093b5b380d",
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "phase": "dig",
+      "size": "1440x900",
+      "before": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/before-dig-1440x900.png",
+        "sha256": "88aff058a2704a9138c7b566b3dc7c658f99aa23babf1a8265e17892e1fe684a",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/after-dig-1440x900.png",
+        "sha256": "cbde21386df5cc9b72c419cf40554a216db65d0e285ae68cb1660aada93d3297",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "phase": "dig",
+      "size": "768x1024",
+      "before": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/before-dig-768x1024.png",
+        "sha256": "bc23a09fb0859eba7df96b5bb2a34a621d592dfcb153d02cd72391cdb90467d7",
+        "width": 768,
+        "height": 1024
+      },
+      "after": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/after-dig-768x1024.png",
+        "sha256": "b6c7e00e3c81c595a788dbf67bce7371825dd797205da93a3b37a1cd28aa8c5b",
+        "width": 768,
+        "height": 1024
+      }
+    },
+    {
+      "phase": "dig",
+      "size": "390x844",
+      "before": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/before-dig-390x844.png",
+        "sha256": "7aeaf31d5146b5093742fbb9b390aabaf4c1134d5373c470754274ea2e61545e",
+        "width": 390,
+        "height": 844
+      },
+      "after": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/after-dig-390x844.png",
+        "sha256": "f7812c2c6f189de43b4a810d9aa4e0b455d5cd2f5ca36a682c1c738925ee7237",
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "phase": "dig",
+      "size": "360x800",
+      "before": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/before-dig-360x800.png",
+        "sha256": "9a4fba8d2c565d23608b2d7dc5609c258f153294ca7b2ae5b229ce7f465ff7a1",
+        "width": 360,
+        "height": 800
+      },
+      "after": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/after-dig-360x800.png",
+        "sha256": "5377d3ae1a3b3f7462a8bc130f350e5b2c0cdfaa32ffefc27ba3e1a0121617d6",
+        "width": 360,
+        "height": 800
+      }
+    },
+    {
+      "phase": "hide",
+      "size": "1920x1080",
+      "before": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/before-hide-1920x1080.png",
+        "sha256": "382b839658d24176ef8abd066d225207123812db60eb9863971dcd13c121612f",
+        "width": 1920,
+        "height": 1080
+      },
+      "after": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/after-hide-1920x1080.png",
+        "sha256": "e26ee65bb549abb41f8d7ba8609d5a34d506652c7b8348dc4d5dff345b270e75",
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "phase": "hide",
+      "size": "1440x900",
+      "before": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/before-hide-1440x900.png",
+        "sha256": "a307c3821b64be1b8dfebc83da7f4edf918eab4ff6bf3684bfaae0ddb93e22cb",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/after-hide-1440x900.png",
+        "sha256": "f55625d03baa796597363f94ca0789b6103d223181e44e0e1a05fa8b59491e4f",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "phase": "hide",
+      "size": "768x1024",
+      "before": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/before-hide-768x1024.png",
+        "sha256": "eac83de186ef5e8d38f3266eaa4d973ab5738c50f6dcdebd5800b6964f27d576",
+        "width": 768,
+        "height": 1024
+      },
+      "after": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/after-hide-768x1024.png",
+        "sha256": "5de2eaa1ab930be2f780cfde8ed0548ec3b6db5d43884fb15df19b9d866790d1",
+        "width": 768,
+        "height": 1024
+      }
+    },
+    {
+      "phase": "hide",
+      "size": "390x844",
+      "before": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/before-hide-390x844.png",
+        "sha256": "8d6de678f3b4c34b432bbfcee3c2a6b53f59985e8bf2feba39358418402d79f5",
+        "width": 390,
+        "height": 844
+      },
+      "after": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/after-hide-390x844.png",
+        "sha256": "11159acf454a04529ba2e4d08fc99a67a39f2d8b365e049a279973833eb2c3de",
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "phase": "hide",
+      "size": "360x800",
+      "before": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/before-hide-360x800.png",
+        "sha256": "b7f4018f60b416aa6ce5ebf0849f702b0f3b535c0f8b31abd845150e831020c6",
+        "width": 360,
+        "height": 800
+      },
+      "after": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/after-hide-360x800.png",
+        "sha256": "d37e9bbfc4c67b454d992e6ccd24516a05c82a46dfe4172871438c15e74d9f9f",
+        "width": 360,
+        "height": 800
+      }
+    },
+    {
+      "phase": "lobby",
+      "size": "1440x900",
+      "before": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/before-lobby-1440x900.png",
+        "sha256": "af068594699ef1e491fd6863261595cf59545d5865e05e46d5721a9080485a98",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/after-lobby-1440x900.png",
+        "sha256": "c2bf46384633e3dabdf6feb055052666aeb64d65cf8979aea400244f409acf2a",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "phase": "lobby",
+      "size": "390x844",
+      "before": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/before-lobby-390x844.png",
+        "sha256": "8f03465ce42ea21b4ea80494e14cea8c810d11a7e3731bc5dd629cc1220b1652",
+        "width": 390,
+        "height": 844
+      },
+      "after": {
+        "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/after-lobby-390x844.png",
+        "sha256": "3e3f3102da4d7e00c6cb0bf9f48b4bb9b7e5ad3db4e37985a6fced2ebc80a465",
+        "width": 390,
+        "height": 844
+      }
+    }
+  ],
+  "observations": [
+    {
+      "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/after-own-island.png",
+      "sha256": "9bd667c784ebfd2996c505503e5f807bed19243c8436e963c06abd4d26b6e5b5",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/after-spectator-hide.png",
+      "sha256": "aaa4f3948b10dba5e6f1ad992c7d2a66fc5cc7781b54b4588eacbb32459369f0",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/after-spectator-dig.png",
+      "sha256": "80f7f803d7bda8c76f2ee0b5baf16e49ce56548114f0b5d04502bb24b8dda1c4",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/after-english-1440x900.png",
+      "sha256": "e9b4d6b6b5648560bacf861b6ca554b28b88c1caa42a6da1578e13dc2cf7732b",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/design/screenshots/schatzinsel/kenney-2026-11/after-mobile-scroll.png",
+      "sha256": "9349d753d78d36ecfbc930bf62fdd2dbb32239dab4969e37b627e9d7f37fb99c",
+      "width": 360,
+      "height": 800
+    }
+  ]
+}

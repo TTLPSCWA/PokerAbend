@@ -1,1 +1,50 @@
-.kg-schatzinsel .si-world,.kg-schatzinsel .si-lobby{min-width:0;padding:clamp(12px,2.5vw,28px);background:#154758;color:#f6e9c9;border:1px solid #cdbd8577;border-radius:20px}.si-lobby{text-align:center}.si-lobby h2,.si-world h2{font:700 clamp(23px,4vw,35px) Georgia,serif}.si-world header{text-align:center}.si-targets{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}.si-scroll{max-width:100%;overflow:auto;margin:16px 0;overscroll-behavior:contain}.si-grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));min-width:288px;max-width:600px;gap:3px;padding:8px;margin:auto;border:2px solid #d0b67c;border-radius:14px;background:#d5c38b}.si-cell{aspect-ratio:1;min-width:0;min-height:34px;border:1px solid #8e9b6d;border-radius:5px;background:#a7b987;color:#244b42;font-weight:750;font-size:clamp(10px,2vw,15px);padding:0;opacity:1!important}.si-cell.chosen,.si-cell.treasure{background:#efcf72;color:#74442a;border:2px solid #a26e34;font-size:20px}.si-cell.hot{background:#b65737;color:#fff2d5}.si-cell.warm{background:#e6b86e;color:#573f20}.si-cell.cold{background:#507fa1;color:#f0eee5}.si-cell:focus-visible{outline:3px solid #eff7ca;outline-offset:-4px}.si-key{text-align:center;font-size:13px}.kg-schatzinsel #kg-main,.kg-schatzinsel #kg-dock{min-width:0}@media(max-width:420px){.si-grid{padding:4px;gap:2px}.si-world{padding:9px!important}.si-targets .btn{padding:8px;min-height:44px}}
+.kg-schatzinsel #kg-main{min-width:0;grid-template-columns:minmax(0,1fr)}
+.kg-schatzinsel #kg-dock{min-width:0}
+.kg-schatzinsel .si-world,.kg-schatzinsel .si-lobby{width:100%;max-width:960px;margin:auto;min-width:0;padding:clamp(10px,2vw,22px);border:1px solid #97bdc080;border-radius:20px;background:linear-gradient(145deg,#103d4d,#1c5969);color:#f6e9c9}
+.si-world header,.si-lobby{text-align:center}
+.si-world h2,.si-lobby h2{font:700 clamp(23px,3vw,32px)/1.15 Georgia,serif;margin:5px 0 12px}
+.si-eyebrow{font-size:11px;letter-spacing:.18em;color:#b0dce1;margin:0}
+.si-ready{font-size:13px;margin:0 0 8px}
+.si-targets{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.si-targets .btn{display:grid;gap:3px;min-height:50px;max-width:190px;min-width:96px;padding:7px 13px;white-space:normal;overflow-wrap:anywhere;border:1px solid #b5dde04d;background:#092f3e80;color:#f6e9c9}
+.si-targets .btn small{font-size:11px;font-weight:500;color:#c4e3e4}
+.si-targets .btn[aria-pressed=true]{border:2px solid #efd184;background:#26596a;padding:6px 12px;box-shadow:0 0 0 2px #efd18425}
+.si-map-caption{font-size:14px;font-weight:700;text-align:center;margin:12px 0 5px}
+.si-pan-hint{display:none;font-size:12px;text-align:center;margin:0 0 6px;color:#c4e3e4}
+.si-scroll{width:100%;max-width:100%;overflow:auto;overscroll-behavior:contain;padding:12px;margin:8px 0 10px;border:1px solid #8cd2df77;border-radius:15px;background-color:#a9e2f1;background-image:linear-gradient(145deg,#08758a38,#ffffff10),url('/games/schatzinsel/art/tile_73.webp');background-size:auto,64px 64px}
+.si-map{--si-shore:24px;position:relative;isolation:isolate;padding:var(--si-shore);min-width:400px;width:min(100%,640px,calc(100dvh - var(--topbar,60px) - var(--dock-h,90px) - 310px));margin:auto;filter:drop-shadow(0 3px 3px #1e59664d)}
+.si-terrain{position:absolute;inset:0;z-index:-1;pointer-events:none;display:grid;grid-template-columns:var(--si-shore) minmax(0,1fr) var(--si-shore);grid-template-rows:var(--si-shore) minmax(0,1fr) var(--si-shore)}
+.si-terrain>span{display:block;min-width:0;min-height:0;background-repeat:repeat}
+.si-coast-nw{background-image:url('/games/schatzinsel/art/tile_01.webp');background-size:100% 100%}
+.si-coast-n{background-image:url('/games/schatzinsel/art/tile_02.webp');background-size:var(--si-shore) 100%}
+.si-coast-ne{background-image:url('/games/schatzinsel/art/tile_03.webp');background-size:100% 100%}
+.si-coast-w{background-image:url('/games/schatzinsel/art/tile_17.webp');background-size:100% var(--si-shore)}
+.si-coast-sand{background-color:#fbe9c5;background-image:url('/games/schatzinsel/art/tile_69.webp');background-size:64px 64px}
+.si-coast-e{background-image:url('/games/schatzinsel/art/tile_19.webp');background-size:100% var(--si-shore)}
+.si-coast-sw{background-image:url('/games/schatzinsel/art/tile_33.webp');background-size:100% 100%}
+.si-coast-s{background-image:url('/games/schatzinsel/art/tile_34.webp');background-size:var(--si-shore) 100%}
+.si-coast-se{background-image:url('/games/schatzinsel/art/tile_35.webp');background-size:100% 100%}
+.si-boat{position:absolute;bottom:0;left:24%;width:var(--si-shore);height:var(--si-shore);background-image:url('/games/schatzinsel/art/tile_81.webp');background-size:100% 100%}
+.si-grid{display:grid;grid-template-columns:repeat(8,minmax(44px,1fr));min-width:352px;width:100%;border:1px solid #826e3e88;border-radius:2px;overflow:hidden}
+.si-cell{position:relative;display:grid;place-items:center;align-content:center;gap:0;aspect-ratio:1;min-width:44px;min-height:44px;border:1px solid #967f405c;border-radius:0;padding:2px;background:#fff8e011;color:#493e26;font:700 13px/1.15 system-ui;opacity:1!important}
+.si-cell:not(:disabled):hover{background:#fff9db80}
+.si-mark{display:none}
+.si-cell.dug{background:radial-gradient(ellipse,#95744a4d 15%,#a88e5e15 60%,transparent 65%)}
+.si-cell.dug .si-mark,.si-cell.treasure .si-mark,.si-cell.chosen .si-mark{display:grid;place-items:center;min-width:23px;height:23px;border-radius:50%;font-size:15px;font-weight:800;line-height:1;background:#765d42;color:#fff6df;border:1px solid #4b3d2b}
+.si-cell.dug .si-coord,.si-cell.treasure .si-coord,.si-cell.chosen .si-coord{font-size:9px;line-height:1.1;margin-top:1px}
+.si-cell.hot .si-mark{background:#a13628;color:#fff5df}
+.si-cell.warm .si-mark{background:#f2c26a;color:#54361e;border-color:#8d5e2b}
+.si-cell.cold .si-mark{background:#245f7a;color:#fff7df}
+.si-cell.found .si-mark{background:#f4cc65;color:#684315;border:2px solid #85601f}
+.si-cell.own-treasure .si-mark,.si-cell.chosen .si-mark{background:#f7e4a0;color:#244b4b;border:2px solid #347379}
+.si-cell.chosen{box-shadow:inset 0 0 0 3px #246c73;background:#71c1c250}
+.si-cell.recent{outline:2px dashed #274e59;outline-offset:-4px}
+.si-cell:focus-visible{z-index:1;outline:3px solid #072d42;outline-offset:-4px;box-shadow:inset 0 0 0 6px #fff4c1}
+.si-scroll:focus-visible,.si-targets .btn:focus-visible,.si-credits:focus-visible{outline:3px solid #fff2b9;outline-offset:2px}
+.si-key{font-size:12px;line-height:1.5;text-align:center;margin:6px 0}
+.si-credits{display:flex;justify-content:center;align-items:center;min-height:44px;width:fit-content;max-width:100%;margin:auto;color:#c9e5e6;font-size:12px;text-underline-offset:3px}
+.si-lobby .si-lobby-art,.si-private-wait .si-lobby-art{width:min(100%,430px);margin:0 auto 18px}
+.si-lobby-art>svg{display:block;width:100%;height:auto;max-height:280px;filter:none}
+.si-lobby p:not(.si-eyebrow){max-width:48ch;margin:12px auto}
+.si-private-wait{text-align:center;padding:18px 0}
+@media(max-width:600px){.si-pan-hint{display:block}.si-world h2{font-size:23px}.si-targets .btn{flex:0 0 calc(50% - 4px);min-width:0;max-width:none}.si-scroll{padding:8px}.si-map{--si-shore:18px;min-width:388px}.si-key{font-size:11px}}

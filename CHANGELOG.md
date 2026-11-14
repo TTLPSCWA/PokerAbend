@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.9.0 – 15. November 2026
+
+* **Schatzinsel:** Zusammenhängende Sandinsel mit Kenney-Küste und Wasser, klaren Grabungs-/Fundmarkierungen, weiterhin allen 64 Koordinaten und gut bedienbaren Feldern. Verstecke und Regeln bleiben unverändert; Karte mit Tastatur und Touch verschiebbar, Grafiknachweise direkt erreichbar.
+
 ## 3.8.0 – 15. November 2026
 
 * **Labyrinth-Brett:** 23 lizenzierte Schatzsymbole ergänzen die bestehenden Nummern auf Brett, freiem Plättchen und eigenem Auftrag. Der Ring behält seinen Nummern-Fallback; bei fehlenden Bildern bleibt die Nummer sichtbar. Figuren und Symbole sind räumlich getrennt, der vergrößerte Modus und Grafiknachweise sind direkt erreichbar. Spielregeln und geheime Aufträge bleiben unverändert.
