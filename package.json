@@ -1,6 +1,6 @@
 {
   "name": "pokerabend",
-  "version": "3.5.1",
+  "version": "3.6.0",
   "description": "Spieleabend für die Freundesgruppe – Karten-, Würfel-, Brett- und Partyspiele im Browser, dazu lokale Einzelspieler",
   "type": "module",
   "main": "server/index.js",
@@ -8,6 +8,8 @@
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
     "test:fast": "node scripts/test-fast.mjs",
+    "monopoly:theme-build": "node scripts/build-monopoly-theme.mjs",
+    "monopoly:theme-verify": "node scripts/verify-monopoly-theme.mjs",
     "test": "node --test \"test/*.test.js\"",
     "test:ui": "playwright test",
     "test:smoke": "playwright test test/ui/smoke.spec.js",

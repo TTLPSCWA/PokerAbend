@@ -36,6 +36,7 @@ import { addBot, removeBot, setBotDifficulty, createBotRunner } from './bots.js'
 import {botMetadata,savedBotLevel} from '../games/bot-levels.js';
 import { BOTS } from '../games/bots.js';
 import { configureBoards, boardStore } from '../games/monopoly/boards.js';
+import { themeAssets } from './theme-assets.js';
 import { createReviewStore, reviewMarkdown } from './evening-reviews.js';
 import { createPlanAPI } from './plan-api.js';
 import { createAchievements } from './achievements.js';
@@ -315,6 +316,8 @@ app.get('/api/ranked', (req, res) => {
   const period = RANK_PERIODS.includes(req.query.period) ? req.query.period : 'all';
   res.json({ view: 'ranked', game, period, games: Object.values(GAME_INFO), rows: leaderboard.rankedTable(game, period, !!GAME_INFO[game]?.lowWins, { withOwner: true }).map(({ owner, ...row }) => ({ ...row, gameId: accounts.get(owner)?.gameId || null })), summary: leaderboard.rankedSummary(game, period) });
 });
+// Monopoly-Theme-Bilder mit Hash im Namen: unveränderlich cachebar (nur dieser Pfad; alles andere bleibt wie bisher)
+app.use('/games/monopoly/themes', themeAssets(join(PUBLIC_DIR, 'games', 'monopoly', 'themes')));
 app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
 app.use((_req, res) => res.status(404).send('Nicht gefunden'));
 

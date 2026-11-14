@@ -1,6 +1,6 @@
 # Monopoly: Theme-Architektur (ART-046, Paket A)
 
-Technisches Fundament für auswählbare Designs der vorhandenen Spiel-ID `monopoly`. Paket A liefert **keine neue sichtbare Option**; es bereitet Feldnamen, Kartentexte und Asset-Manifeste vor. Renderer, Assets und UI-Tests folgen in späteren, einzeln freizugebenden Paketen.
+Technisches Fundament für auswählbare Designs der vorhandenen Spiel-ID `monopoly`. Paket A liefert **keine neue sichtbare Option**; es bereitet Feldnamen, Kartentexte und Asset-Manifeste vor. Renderer, Assets und UI-Tests folgen in späteren, einzeln freizugebenden Paketen. Die Bild-Pipeline (Manifest, Optimierung, Auslieferung) steht in [MONOPOLY_THEME_ASSETS.md](MONOPOLY_THEME_ASSETS.md).
 
 ## Drei getrennte Ebenen
 

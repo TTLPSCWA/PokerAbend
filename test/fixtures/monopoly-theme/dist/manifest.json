@@ -1,0 +1,1519 @@
+{
+  "manifestVersion": 1,
+  "themeId": "testbed",
+  "release": "publishable",
+  "assetBase": "/games/monopoly/themes/testbed/assets/",
+  "generator": {
+    "tool": "scripts/build-monopoly-theme.mjs@1",
+    "encoder": "chromium-canvas-webp",
+    "encoderVersion": "157.0.8103.51",
+    "sourceSetHash": "f8af792c953ddb851e6843ff5839c8b6061e474dbf3ae87733e700c6a3146e50"
+  },
+  "budgets": {
+    "lobby": 307200,
+    "mobileStart": 1572864,
+    "desktopStart": 2621440
+  },
+  "assets": [
+    {
+      "id": "board",
+      "role": "board",
+      "load": "initial",
+      "alt": "Abstraktes Testbrett",
+      "focus": {
+        "board": {
+          "x": 50,
+          "y": 46
+        },
+        "deed": {
+          "x": 50,
+          "y": 50
+        },
+        "mobile": {
+          "x": 50,
+          "y": 44
+        }
+      },
+      "fallback": "placeholder-tile",
+      "source": {
+        "width": 2560,
+        "height": 1440,
+        "sha256": "4d0a0f4a28b1e4c36dfac17cdad830aff3b1ac53c35312a998b804302ca3b79c"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "board.desktop.dcd1c070cbf1.webp",
+          "mime": "image/webp",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 38100,
+          "sha256": "dcd1c070cbf1f7c86ba249c1eb0ec57686b350980f7169685414e2a01958313b",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.136,
+            "maxAlphaError": 0,
+            "q": 0.8
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "board.mobile.4a05b08f1096.webp",
+          "mime": "image/webp",
+          "width": 1170,
+          "height": 658,
+          "bytes": 19308,
+          "sha256": "4a05b08f1096f264ae3184a376303c906f30c74a930ee9ce46a70398ff4d3c60",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.379,
+            "maxAlphaError": 0,
+            "q": 0.78
+          }
+        }
+      ]
+    },
+    {
+      "id": "building-1",
+      "role": "building",
+      "load": "lazy",
+      "slot": 1,
+      "alt": "Abstrakte Gebäude 1",
+      "source": {
+        "width": 192,
+        "height": 192,
+        "sha256": "948286588af9790892f64842d9644756cb96e4af3c42938c28834e4586dd4e0a"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "building-1.desktop.9c9e1e9626ee.webp",
+          "mime": "image/webp",
+          "width": 96,
+          "height": 96,
+          "bytes": 1548,
+          "sha256": "9c9e1e9626ee83ea8946b94c2020d043be5934af5246d59bd5d5b019fd3b8748",
+          "alpha": true,
+          "quality": {
+            "meanError": 0,
+            "maxAlphaError": 0,
+            "q": 1
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "building-1.mobile.7b27c75ed02e.webp",
+          "mime": "image/webp",
+          "width": 64,
+          "height": 64,
+          "bytes": 1574,
+          "sha256": "7b27c75ed02e6d6da9c4cf496c152fd187d5818c3323de2ca540cf224825954d",
+          "alpha": true,
+          "quality": {
+            "meanError": 0,
+            "maxAlphaError": 0,
+            "q": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "building-2",
+      "role": "building",
+      "load": "lazy",
+      "slot": 2,
+      "alt": "Abstrakte Gebäude 2",
+      "source": {
+        "width": 192,
+        "height": 192,
+        "sha256": "364c5dcf6d6e8649bb154d8389421a885f79255fcb71bdd79ab1f7532092a966"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "building-2.desktop.1b6ab6495cfb.webp",
+          "mime": "image/webp",
+          "width": 96,
+          "height": 96,
+          "bytes": 1634,
+          "sha256": "1b6ab6495cfb640e1fab94df53d0ec0c06cb352b014670aa2301c23f7ca78b86",
+          "alpha": true,
+          "quality": {
+            "meanError": 0,
+            "maxAlphaError": 0,
+            "q": 1
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "building-2.mobile.8dfd338f4955.webp",
+          "mime": "image/webp",
+          "width": 64,
+          "height": 64,
+          "bytes": 1872,
+          "sha256": "8dfd338f495589c990ee152089ea9401c3988b0f42b0a66f17541bf42991c411",
+          "alpha": true,
+          "quality": {
+            "meanError": 0,
+            "maxAlphaError": 0,
+            "q": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "building-3",
+      "role": "building",
+      "load": "lazy",
+      "slot": 3,
+      "alt": "Abstrakte Gebäude 3",
+      "source": {
+        "width": 192,
+        "height": 192,
+        "sha256": "084abb6357242edaada2a8e46681791e5995cf7132de547ac77dec844e418022"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "building-3.desktop.37c286049dc7.webp",
+          "mime": "image/webp",
+          "width": 96,
+          "height": 96,
+          "bytes": 1676,
+          "sha256": "37c286049dc72f1f01b0da8d0f822ff4deed4840b2247fb7cb11eebc0fb87a6f",
+          "alpha": true,
+          "quality": {
+            "meanError": 0,
+            "maxAlphaError": 0,
+            "q": 1
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "building-3.mobile.706b02cf6a3b.webp",
+          "mime": "image/webp",
+          "width": 64,
+          "height": 64,
+          "bytes": 2470,
+          "sha256": "706b02cf6a3b83ac17a60ade9f76ec513409a296d31cb51ca312129962f1e040",
+          "alpha": true,
+          "quality": {
+            "meanError": 0,
+            "maxAlphaError": 0,
+            "q": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "building-4",
+      "role": "building",
+      "load": "lazy",
+      "slot": 4,
+      "alt": "Abstrakte Gebäude 4",
+      "source": {
+        "width": 192,
+        "height": 192,
+        "sha256": "3672e1cddfad1cdf3e5b220152b100a748e1fdc9514e918a1fccdfff6da23327"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "building-4.desktop.d0ca4963b33c.webp",
+          "mime": "image/webp",
+          "width": 96,
+          "height": 96,
+          "bytes": 1716,
+          "sha256": "d0ca4963b33c90c576ad60e4dcd052c2a3b163c514d026142c1fd609606d62d9",
+          "alpha": true,
+          "quality": {
+            "meanError": 0,
+            "maxAlphaError": 0,
+            "q": 1
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "building-4.mobile.01f66944968e.webp",
+          "mime": "image/webp",
+          "width": 64,
+          "height": 64,
+          "bytes": 2544,
+          "sha256": "01f66944968e89d99867885bf573395228db2ac35d76ba712e7f8278fb6e8bfd",
+          "alpha": true,
+          "quality": {
+            "meanError": 0,
+            "maxAlphaError": 0,
+            "q": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "building-5",
+      "role": "building",
+      "load": "lazy",
+      "slot": 5,
+      "alt": "Abstraktes Hotel",
+      "source": {
+        "width": 192,
+        "height": 192,
+        "sha256": "ce4af1ca973c245f3f5cb7067de467e770ae80238d1a02b8dcf830b4cabd8098"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "building-5.desktop.b334811bdc5a.webp",
+          "mime": "image/webp",
+          "width": 96,
+          "height": 96,
+          "bytes": 1514,
+          "sha256": "b334811bdc5ad84a0a887bca6b11f285fce78fa36f650af9604981fc289b54a6",
+          "alpha": true,
+          "quality": {
+            "meanError": 0,
+            "maxAlphaError": 0,
+            "q": 1
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "building-5.mobile.176daa2cba6c.webp",
+          "mime": "image/webp",
+          "width": 64,
+          "height": 64,
+          "bytes": 1900,
+          "sha256": "176daa2cba6cc3408d3bc639a6f6f5100916767591abbc43fe17f64b287b9f98",
+          "alpha": true,
+          "quality": {
+            "meanError": 0,
+            "maxAlphaError": 0,
+            "q": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "deed-01",
+      "role": "deed",
+      "load": "lazy",
+      "fieldIds": [
+        1
+      ],
+      "alt": "Abstraktes Urkundenbild 1",
+      "focus": {
+        "board": {
+          "x": 50,
+          "y": 46
+        },
+        "deed": {
+          "x": 50,
+          "y": 50
+        },
+        "mobile": {
+          "x": 50,
+          "y": 44
+        }
+      },
+      "fallback": "placeholder-tile",
+      "source": {
+        "width": 1672,
+        "height": 941,
+        "sha256": "0ccfe43621bd067c877ac2ecaa71dcf9f6b9ae22d776060f689fc1430920e739"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "deed-01.desktop.c6cddfdedc43.webp",
+          "mime": "image/webp",
+          "width": 959,
+          "height": 540,
+          "bytes": 13892,
+          "sha256": "c6cddfdedc43ebb5e20a31ae3d3a69aaad2b097c2f0d284365ec1ad0d1ba3347",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.108,
+            "maxAlphaError": 0,
+            "q": 0.8
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "deed-01.mobile.29374026c48c.webp",
+          "mime": "image/webp",
+          "width": 640,
+          "height": 360,
+          "bytes": 7494,
+          "sha256": "29374026c48c7dc7dcb0840d4e37bb71469a90ba727a80023f75163773c60189",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.364,
+            "maxAlphaError": 0,
+            "q": 0.78
+          }
+        }
+      ]
+    },
+    {
+      "id": "deed-03",
+      "role": "deed",
+      "load": "lazy",
+      "fieldIds": [
+        3
+      ],
+      "alt": "Abstraktes Urkundenbild 3",
+      "focus": {
+        "board": {
+          "x": 50,
+          "y": 46
+        },
+        "deed": {
+          "x": 50,
+          "y": 50
+        },
+        "mobile": {
+          "x": 50,
+          "y": 44
+        }
+      },
+      "fallback": "placeholder-tile",
+      "source": {
+        "width": 1672,
+        "height": 941,
+        "sha256": "a1f1fb3e7814fc37d7efc77d4ff174641d887b117ae9dea76e4e8a484d434b1d"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "deed-03.desktop.a47c42b8cce3.webp",
+          "mime": "image/webp",
+          "width": 959,
+          "height": 540,
+          "bytes": 12570,
+          "sha256": "a47c42b8cce36f9a71b5dc57eb59e5ca493b854dcce694eb904b08198cb0d68d",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.024,
+            "maxAlphaError": 0,
+            "q": 0.8
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "deed-03.mobile.3e79b0b77e8b.webp",
+          "mime": "image/webp",
+          "width": 640,
+          "height": 360,
+          "bytes": 6992,
+          "sha256": "3e79b0b77e8b285c47d55b556b3b12c77d833f0b1c5f6a7140d54d3ce667f5c9",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.285,
+            "maxAlphaError": 0,
+            "q": 0.78
+          }
+        }
+      ]
+    },
+    {
+      "id": "deed-06",
+      "role": "deed",
+      "load": "lazy",
+      "fieldIds": [
+        6
+      ],
+      "alt": "Abstraktes Urkundenbild 6",
+      "focus": {
+        "board": {
+          "x": 50,
+          "y": 46
+        },
+        "deed": {
+          "x": 50,
+          "y": 50
+        },
+        "mobile": {
+          "x": 50,
+          "y": 44
+        }
+      },
+      "fallback": "placeholder-tile",
+      "source": {
+        "width": 1672,
+        "height": 941,
+        "sha256": "994d582d0f1d24520166784c689a860752ca802a2c48ffe17e94af2732d5e967"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "deed-06.desktop.b68908b8fe7f.webp",
+          "mime": "image/webp",
+          "width": 959,
+          "height": 540,
+          "bytes": 12354,
+          "sha256": "b68908b8fe7f79a4a88106ea41aa6062a10ee9394236e2d0205588c504fc43be",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.082,
+            "maxAlphaError": 0,
+            "q": 0.8
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "deed-06.mobile.2157c6b9b2ad.webp",
+          "mime": "image/webp",
+          "width": 640,
+          "height": 360,
+          "bytes": 6790,
+          "sha256": "2157c6b9b2adf2fbc4f1bbb9215f6445c17c5dd52ef5de85a7d480b882dcfc90",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.323,
+            "maxAlphaError": 0,
+            "q": 0.78
+          }
+        }
+      ]
+    },
+    {
+      "id": "deed-08",
+      "role": "deed",
+      "load": "lazy",
+      "fieldIds": [
+        8
+      ],
+      "alt": "Abstraktes Urkundenbild 8",
+      "focus": {
+        "board": {
+          "x": 50,
+          "y": 46
+        },
+        "deed": {
+          "x": 50,
+          "y": 50
+        },
+        "mobile": {
+          "x": 50,
+          "y": 44
+        }
+      },
+      "fallback": "placeholder-tile",
+      "source": {
+        "width": 1672,
+        "height": 941,
+        "sha256": "27f370b7927aa96b967f60f2a636cbb8973dbcd4e798bbabc853c681ac121b60"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "deed-08.desktop.9821408ff7c8.webp",
+          "mime": "image/webp",
+          "width": 959,
+          "height": 540,
+          "bytes": 13296,
+          "sha256": "9821408ff7c8e35e997c4e9b19b1df436d0ff908367b159ba9090eb21e069fc5",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.055,
+            "maxAlphaError": 0,
+            "q": 0.8
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "deed-08.mobile.5cb713e7ba18.webp",
+          "mime": "image/webp",
+          "width": 640,
+          "height": 360,
+          "bytes": 7456,
+          "sha256": "5cb713e7ba1806ef1266b775a9f48b5153369b0303a7ef1d3ca6e87fb3a27915",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.282,
+            "maxAlphaError": 0,
+            "q": 0.78
+          }
+        }
+      ]
+    },
+    {
+      "id": "figure-barrow",
+      "role": "figure",
+      "load": "onDemand",
+      "slot": "barrow",
+      "alt": "Abstrakte Figur barrow",
+      "fallback": "placeholder-figure",
+      "source": {
+        "width": 389,
+        "height": 662,
+        "sha256": "ace057d5a9b7ee58a18e12a7db4d710454c77c9e605796253b252c05f05e44ae"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "figure-barrow.desktop.618fe7ba62b2.webp",
+          "mime": "image/webp",
+          "width": 256,
+          "height": 436,
+          "bytes": 16106,
+          "sha256": "618fe7ba62b2ea2a8414fac3ef77867f0f98e36c764d7fdd769884873fbb4b00",
+          "alpha": true,
+          "quality": {
+            "meanError": 1.242,
+            "maxAlphaError": 0,
+            "q": 0.9
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "figure-barrow.mobile.a6faecf64f66.webp",
+          "mime": "image/webp",
+          "width": 160,
+          "height": 272,
+          "bytes": 8700,
+          "sha256": "a6faecf64f6658aa68c17d386056bf9ee195c6883899dc6a8659088a56b49979",
+          "alpha": true,
+          "quality": {
+            "meanError": 1.503,
+            "maxAlphaError": 0,
+            "q": 0.9
+          }
+        }
+      ]
+    },
+    {
+      "id": "figure-car",
+      "role": "figure",
+      "load": "onDemand",
+      "slot": "car",
+      "alt": "Abstrakte Figur car",
+      "fallback": "placeholder-figure",
+      "source": {
+        "width": 389,
+        "height": 662,
+        "sha256": "35b3dc623fa90cf58809e63c3498d30490e7faf2cbad0fc3c6a0e7c840367c97"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "figure-car.desktop.68c5296e28cc.webp",
+          "mime": "image/webp",
+          "width": 256,
+          "height": 436,
+          "bytes": 15956,
+          "sha256": "68c5296e28cc64ed534b514e8a0f5d9fbcb980d6be7ca44a930d9cff4fdfa70d",
+          "alpha": true,
+          "quality": {
+            "meanError": 1.297,
+            "maxAlphaError": 0,
+            "q": 0.9
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "figure-car.mobile.a2f66dfeb1e8.webp",
+          "mime": "image/webp",
+          "width": 160,
+          "height": 272,
+          "bytes": 8436,
+          "sha256": "a2f66dfeb1e898fa6491dd68b98f4e46d5308da02793b72672cc17ddde4a629f",
+          "alpha": true,
+          "quality": {
+            "meanError": 1.55,
+            "maxAlphaError": 0,
+            "q": 0.9
+          }
+        }
+      ]
+    },
+    {
+      "id": "figure-cat",
+      "role": "figure",
+      "load": "onDemand",
+      "slot": "cat",
+      "alt": "Abstrakte Figur cat",
+      "fallback": "placeholder-figure",
+      "source": {
+        "width": 389,
+        "height": 662,
+        "sha256": "73ca7c5133c47188353ef816cd25558209360700019935518c1c55e727b8a65a"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "figure-cat.desktop.d58fce728463.webp",
+          "mime": "image/webp",
+          "width": 256,
+          "height": 436,
+          "bytes": 16986,
+          "sha256": "d58fce728463572f0048e579502268c70c3f371a6a6171fff8c29764a0a090b5",
+          "alpha": true,
+          "quality": {
+            "meanError": 1.336,
+            "maxAlphaError": 0,
+            "q": 0.9
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "figure-cat.mobile.9d0869f2ca98.webp",
+          "mime": "image/webp",
+          "width": 160,
+          "height": 272,
+          "bytes": 9032,
+          "sha256": "9d0869f2ca9848e97ce0294321fd84de7bc5f0407980777bf7609ec69d0ccd31",
+          "alpha": true,
+          "quality": {
+            "meanError": 1.547,
+            "maxAlphaError": 0,
+            "q": 0.9
+          }
+        }
+      ]
+    },
+    {
+      "id": "figure-dog",
+      "role": "figure",
+      "load": "onDemand",
+      "slot": "dog",
+      "alt": "Abstrakte Figur dog",
+      "fallback": "placeholder-figure",
+      "source": {
+        "width": 389,
+        "height": 662,
+        "sha256": "d5bc043f4f629cedd590952c94ab88eb3f34c623337ccf0ffd885d0386d4108b"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "figure-dog.desktop.94b22018e05e.webp",
+          "mime": "image/webp",
+          "width": 256,
+          "height": 436,
+          "bytes": 16070,
+          "sha256": "94b22018e05e77459a36a515fe7be2a3108a4cdbc19eb92061d34f4e67a37d74",
+          "alpha": true,
+          "quality": {
+            "meanError": 1.269,
+            "maxAlphaError": 0,
+            "q": 0.9
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "figure-dog.mobile.272c10266203.webp",
+          "mime": "image/webp",
+          "width": 160,
+          "height": 272,
+          "bytes": 8540,
+          "sha256": "272c10266203c0ca6be0fac2f9ae79918cb71cf2c573a62b100f49cae470fe70",
+          "alpha": true,
+          "quality": {
+            "meanError": 1.489,
+            "maxAlphaError": 0,
+            "q": 0.9
+          }
+        }
+      ]
+    },
+    {
+      "id": "figure-hat",
+      "role": "figure",
+      "load": "onDemand",
+      "slot": "hat",
+      "alt": "Abstrakte Figur hat",
+      "fallback": "placeholder-figure",
+      "source": {
+        "width": 389,
+        "height": 662,
+        "sha256": "294fb08a6248c6e5ff17e371a3cb8a302fbef8605a3e73a6ca3c81c097d4035c"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "figure-hat.desktop.65f8f11e45eb.webp",
+          "mime": "image/webp",
+          "width": 256,
+          "height": 436,
+          "bytes": 15878,
+          "sha256": "65f8f11e45eb51d673a745285453b75a778a4a832cec3f8a8bf2cbb156fb92cb",
+          "alpha": true,
+          "quality": {
+            "meanError": 1.294,
+            "maxAlphaError": 0,
+            "q": 0.9
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "figure-hat.mobile.6a6ed18f92f6.webp",
+          "mime": "image/webp",
+          "width": 160,
+          "height": 272,
+          "bytes": 8508,
+          "sha256": "6a6ed18f92f6544f4a2166ffea38dd1c73d7fbf8b9d250d8708199dd69826f5d",
+          "alpha": true,
+          "quality": {
+            "meanError": 1.659,
+            "maxAlphaError": 0,
+            "q": 0.9
+          }
+        }
+      ]
+    },
+    {
+      "id": "figure-ship",
+      "role": "figure",
+      "load": "onDemand",
+      "slot": "ship",
+      "alt": "Abstrakte Figur ship",
+      "fallback": "placeholder-figure",
+      "source": {
+        "width": 389,
+        "height": 662,
+        "sha256": "9994a8c9b2477adc3485e58a2c6dcba694681583d7425b11e1363ac298476ff6"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "figure-ship.desktop.64876e6fafb5.webp",
+          "mime": "image/webp",
+          "width": 256,
+          "height": 436,
+          "bytes": 16050,
+          "sha256": "64876e6fafb5a6ad6304ee83635ae658aaea9f2e937434ab1259230ae2cd7469",
+          "alpha": true,
+          "quality": {
+            "meanError": 1.314,
+            "maxAlphaError": 0,
+            "q": 0.9
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "figure-ship.mobile.7b172e203390.webp",
+          "mime": "image/webp",
+          "width": 160,
+          "height": 272,
+          "bytes": 8462,
+          "sha256": "7b172e2033903ce7014deee7759a938998db32f227c0c6dfb7516b9575d97f91",
+          "alpha": true,
+          "quality": {
+            "meanError": 1.616,
+            "maxAlphaError": 0,
+            "q": 0.9
+          }
+        }
+      ]
+    },
+    {
+      "id": "figure-shoe",
+      "role": "figure",
+      "load": "onDemand",
+      "slot": "shoe",
+      "alt": "Abstrakte Figur shoe",
+      "fallback": "placeholder-figure",
+      "source": {
+        "width": 389,
+        "height": 662,
+        "sha256": "1df958d577d01778c951bed89c8c08b1ff7b9d95fb4eb8c956fdd0e5f55845ec"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "figure-shoe.desktop.629370efed0c.webp",
+          "mime": "image/webp",
+          "width": 256,
+          "height": 436,
+          "bytes": 15826,
+          "sha256": "629370efed0c4ec3027117b56b4b5737881276da79ee874a8d84c0da896d98a3",
+          "alpha": true,
+          "quality": {
+            "meanError": 1.26,
+            "maxAlphaError": 0,
+            "q": 0.9
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "figure-shoe.mobile.885958088ee2.webp",
+          "mime": "image/webp",
+          "width": 160,
+          "height": 272,
+          "bytes": 8492,
+          "sha256": "885958088ee2fb33d3995e00363ab543ed36a43f4163812e4e30fdb3e6a2912c",
+          "alpha": true,
+          "quality": {
+            "meanError": 1.534,
+            "maxAlphaError": 0,
+            "q": 0.9
+          }
+        }
+      ]
+    },
+    {
+      "id": "figure-thimble",
+      "role": "figure",
+      "load": "onDemand",
+      "slot": "thimble",
+      "alt": "Abstrakte Figur thimble",
+      "fallback": "placeholder-figure",
+      "source": {
+        "width": 389,
+        "height": 662,
+        "sha256": "560bcc813e51622dfb72b29d71429bb2277b9b910c7a07dac727932ae05f35a2"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "figure-thimble.desktop.2bf5d4f1d35e.webp",
+          "mime": "image/webp",
+          "width": 256,
+          "height": 436,
+          "bytes": 15582,
+          "sha256": "2bf5d4f1d35e744f6c7634979ca57a2791b4c450852bc94b3248108e98c2d79a",
+          "alpha": true,
+          "quality": {
+            "meanError": 1.251,
+            "maxAlphaError": 0,
+            "q": 0.9
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "figure-thimble.mobile.90e85fe3c8fa.webp",
+          "mime": "image/webp",
+          "width": 160,
+          "height": 272,
+          "bytes": 8240,
+          "sha256": "90e85fe3c8faa870044d9c88427905a9ffaff5af99ffea7ffc4172caff309f4b",
+          "alpha": true,
+          "quality": {
+            "meanError": 1.547,
+            "maxAlphaError": 0,
+            "q": 0.9
+          }
+        }
+      ]
+    },
+    {
+      "id": "loc-01",
+      "role": "location",
+      "load": "lazy",
+      "fieldIds": [
+        1
+      ],
+      "alt": "Abstraktes Ortsbild 1",
+      "focus": {
+        "board": {
+          "x": 50,
+          "y": 46
+        },
+        "deed": {
+          "x": 50,
+          "y": 50
+        },
+        "mobile": {
+          "x": 50,
+          "y": 44
+        }
+      },
+      "fallback": "placeholder-tile",
+      "source": {
+        "width": 1672,
+        "height": 941,
+        "sha256": "0ccfe43621bd067c877ac2ecaa71dcf9f6b9ae22d776060f689fc1430920e739"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "loc-01.desktop.818affa4cbd8.webp",
+          "mime": "image/webp",
+          "width": 768,
+          "height": 432,
+          "bytes": 9964,
+          "sha256": "818affa4cbd8d6312829f0694e20a67e58be9496b6e09f8c1ce83a3130661a0d",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.174,
+            "maxAlphaError": 0,
+            "q": 0.8
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "loc-01.mobile.55603c12708f.webp",
+          "mime": "image/webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 5106,
+          "sha256": "55603c12708fe37a96d7a900d825fe4552b0c92757ac367928a6140459798e49",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.502,
+            "maxAlphaError": 0,
+            "q": 0.78
+          }
+        },
+        {
+          "name": "thumb",
+          "file": "loc-01.thumb.b60736fd5a8c.webp",
+          "mime": "image/webp",
+          "width": 384,
+          "height": 216,
+          "bytes": 3580,
+          "sha256": "b60736fd5a8cbb09f1c6bb0c6281a2d85b4a83a75f1c88259475b9bded22f69a",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.583,
+            "maxAlphaError": 0,
+            "q": 0.78
+          }
+        }
+      ]
+    },
+    {
+      "id": "loc-03",
+      "role": "location",
+      "load": "lazy",
+      "fieldIds": [
+        3
+      ],
+      "alt": "Abstraktes Ortsbild 3",
+      "focus": {
+        "board": {
+          "x": 50,
+          "y": 46
+        },
+        "deed": {
+          "x": 50,
+          "y": 50
+        },
+        "mobile": {
+          "x": 50,
+          "y": 44
+        }
+      },
+      "fallback": "placeholder-tile",
+      "source": {
+        "width": 1672,
+        "height": 941,
+        "sha256": "a1f1fb3e7814fc37d7efc77d4ff174641d887b117ae9dea76e4e8a484d434b1d"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "loc-03.desktop.f6894bee6458.webp",
+          "mime": "image/webp",
+          "width": 768,
+          "height": 432,
+          "bytes": 8970,
+          "sha256": "f6894bee6458f8410f49a0e250fbc8a46aab33d51f5dc5a9dc361ba1b06ea778",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.131,
+            "maxAlphaError": 0,
+            "q": 0.8
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "loc-03.mobile.aa23c1145b46.webp",
+          "mime": "image/webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 4690,
+          "sha256": "aa23c1145b46a73495a35331497526873ab22dcc5cb7b6c17b35f3f9270d9f1b",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.36,
+            "maxAlphaError": 0,
+            "q": 0.78
+          }
+        },
+        {
+          "name": "thumb",
+          "file": "loc-03.thumb.7aa7b5e91f6f.webp",
+          "mime": "image/webp",
+          "width": 384,
+          "height": 216,
+          "bytes": 3256,
+          "sha256": "7aa7b5e91f6ff4f7037bbe27bc519e3e562617fb53f9d75e4147139deeb39e95",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.512,
+            "maxAlphaError": 0,
+            "q": 0.78
+          }
+        }
+      ]
+    },
+    {
+      "id": "loc-06",
+      "role": "location",
+      "load": "lazy",
+      "fieldIds": [
+        6
+      ],
+      "alt": "Abstraktes Ortsbild 6",
+      "focus": {
+        "board": {
+          "x": 50,
+          "y": 46
+        },
+        "deed": {
+          "x": 50,
+          "y": 50
+        },
+        "mobile": {
+          "x": 50,
+          "y": 44
+        }
+      },
+      "fallback": "placeholder-tile",
+      "source": {
+        "width": 1672,
+        "height": 941,
+        "sha256": "994d582d0f1d24520166784c689a860752ca802a2c48ffe17e94af2732d5e967"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "loc-06.desktop.8851198622a8.webp",
+          "mime": "image/webp",
+          "width": 768,
+          "height": 432,
+          "bytes": 9046,
+          "sha256": "8851198622a8b7c2f255de0069a81b2f6805f9146e1da4eff5882ac5ddabfcc6",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.145,
+            "maxAlphaError": 0,
+            "q": 0.8
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "loc-06.mobile.e408147fed04.webp",
+          "mime": "image/webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 4680,
+          "sha256": "e408147fed04fd3c65be57a279d003bc532e612bcd88aaaaf611808e1de96df5",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.443,
+            "maxAlphaError": 0,
+            "q": 0.78
+          }
+        },
+        {
+          "name": "thumb",
+          "file": "loc-06.thumb.45632b29b307.webp",
+          "mime": "image/webp",
+          "width": 384,
+          "height": 216,
+          "bytes": 3268,
+          "sha256": "45632b29b30776fb5034898280875f2c7b68d3c858fea3cd9bb000726ebda61b",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.507,
+            "maxAlphaError": 0,
+            "q": 0.78
+          }
+        }
+      ]
+    },
+    {
+      "id": "loc-08",
+      "role": "location",
+      "load": "lazy",
+      "fieldIds": [
+        8
+      ],
+      "alt": "Abstraktes Ortsbild 8",
+      "focus": {
+        "board": {
+          "x": 50,
+          "y": 46
+        },
+        "deed": {
+          "x": 50,
+          "y": 50
+        },
+        "mobile": {
+          "x": 50,
+          "y": 44
+        }
+      },
+      "fallback": "placeholder-tile",
+      "source": {
+        "width": 1672,
+        "height": 941,
+        "sha256": "27f370b7927aa96b967f60f2a636cbb8973dbcd4e798bbabc853c681ac121b60"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "loc-08.desktop.a503e1d2d33d.webp",
+          "mime": "image/webp",
+          "width": 768,
+          "height": 432,
+          "bytes": 9542,
+          "sha256": "a503e1d2d33df19338037bb83a813b7bcf975dd47138024f7e8fe682d44b1bc5",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.146,
+            "maxAlphaError": 0,
+            "q": 0.8
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "loc-08.mobile.e9fd3f8995be.webp",
+          "mime": "image/webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 5080,
+          "sha256": "e9fd3f8995bea27297416e78a2d5907e7d094d199bbe690f4b6d91d121aa5546",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.407,
+            "maxAlphaError": 0,
+            "q": 0.78
+          }
+        },
+        {
+          "name": "thumb",
+          "file": "loc-08.thumb.18e6e8b5393d.webp",
+          "mime": "image/webp",
+          "width": 384,
+          "height": 216,
+          "bytes": 3524,
+          "sha256": "18e6e8b5393d459167206fe95aad8089a1ddd3283964adf3aaa442a6b6888215",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.485,
+            "maxAlphaError": 0,
+            "q": 0.78
+          }
+        }
+      ]
+    },
+    {
+      "id": "placeholder-figure",
+      "role": "ui",
+      "load": "initial",
+      "alt": "Platzhalter",
+      "source": {
+        "width": 64,
+        "height": 110,
+        "sha256": "c3a06e374724a323b8af07318ecfa67653f46f89ef8022c53c276d2a159b155a"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "placeholder-figure.desktop.79db51629745.webp",
+          "mime": "image/webp",
+          "width": 64,
+          "height": 110,
+          "bytes": 1470,
+          "sha256": "79db516297450998f91468962d8ac086f76c768a133bcbb94932882aaf124ed2",
+          "alpha": true,
+          "quality": {
+            "meanError": 1.241,
+            "maxAlphaError": 0,
+            "q": 0.8
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "placeholder-figure.mobile.79db51629745.webp",
+          "mime": "image/webp",
+          "width": 64,
+          "height": 110,
+          "bytes": 1470,
+          "sha256": "79db516297450998f91468962d8ac086f76c768a133bcbb94932882aaf124ed2",
+          "alpha": true,
+          "quality": {
+            "meanError": 1.241,
+            "maxAlphaError": 0,
+            "q": 0.8
+          }
+        }
+      ]
+    },
+    {
+      "id": "placeholder-tile",
+      "role": "ui",
+      "load": "initial",
+      "alt": "Platzhalter",
+      "source": {
+        "width": 96,
+        "height": 54,
+        "sha256": "b5fc5bc2f9fe8aee4475aad246e8f83d757c3a6828a1c86c760b8643bdec8947"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "placeholder-tile.desktop.6c980cfcb047.webp",
+          "mime": "image/webp",
+          "width": 96,
+          "height": 54,
+          "bytes": 894,
+          "sha256": "6c980cfcb047c1cc7b41d7c3522e2e29b75cbeb6e6bf13d9f65dc382e5258323",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.344,
+            "maxAlphaError": 0,
+            "q": 0.8
+          }
+        },
+        {
+          "name": "mobile",
+          "file": "placeholder-tile.mobile.6c980cfcb047.webp",
+          "mime": "image/webp",
+          "width": 96,
+          "height": 54,
+          "bytes": 894,
+          "sha256": "6c980cfcb047c1cc7b41d7c3522e2e29b75cbeb6e6bf13d9f65dc382e5258323",
+          "alpha": false,
+          "quality": {
+            "meanError": 1.344,
+            "maxAlphaError": 0,
+            "q": 0.8
+          }
+        }
+      ]
+    },
+    {
+      "id": "preview",
+      "role": "preview",
+      "load": "lobby",
+      "alt": "Vorschau des Testdesigns",
+      "source": {
+        "width": 576,
+        "height": 360,
+        "sha256": "e6f19b3eba098613d9e5d4c59528efaac074e54dc41184eb29bcc6d77c77efbb"
+      },
+      "origin": {
+        "creator": "PokerAbend-Projekt (Claude Code)",
+        "source": "scripts/monopoly-test-art.mjs: prozedural gezeichnete abstrakte Formen",
+        "license": "eigene Arbeit des Projekts, keine Fremdvorlage",
+        "licenseStatus": "cleared",
+        "evidence": "scripts/monopoly-test-art.mjs; docs/design/ART_LICENSES.md",
+        "publication": "public-ok"
+      },
+      "variants": [
+        {
+          "name": "desktop",
+          "file": "preview.desktop.a34cee3621bd.webp",
+          "mime": "image/webp",
+          "width": 288,
+          "height": 180,
+          "bytes": 5994,
+          "sha256": "a34cee3621bd68dd52d71e1239bc1b09fd61b730466a641e31c5a95c69cab4b8",
+          "alpha": false,
+          "quality": {
+            "meanError": 2.713,
+            "maxAlphaError": 0,
+            "q": 0.8
+          }
+        }
+      ]
+    }
+  ]
+}

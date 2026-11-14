@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.6.0 – 14. November 2026
+
+* **Monopoly, Werkzeug für weitere Brettdesigns:** Hinter den Kulissen gibt es jetzt eine geprüfte Bild-Pipeline für künftige Designs: Bilder werden automatisch verkleinert (Handy-Varianten), als WebP gespeichert, mit Prüfsumme und Herkunft erfasst und dauerhaft zwischenspeicherbar ausgeliefert. Sichtbar ändert sich noch nichts, es gibt kein neues Design und die vorhandenen bleiben unverändert.
+
 ## 3.5.1 – 14. November 2026
 
 * **Monopoly, Fundament für weitere Brettdesigns:** Hinter den Kulissen können Feldnamen und Kartentexte jetzt je Design festgelegt werden und erscheinen dann überall gleich: auf dem Brett, im Protokoll und auf den Karten. „Bisheriges Thema“ und „Klassik“ bleiben unverändert, ebenso alle Regeln, Räume und eigenen Bretter. Sichtbar ändert sich noch nichts; ein neues Design erscheint erst, wenn es fertig ist.
