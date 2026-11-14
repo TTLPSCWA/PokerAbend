@@ -11,9 +11,10 @@
   const FINE = matchMedia('(pointer: fine)');
 
   // ---- Design (Skin): nur das Aussehen. Die ID kommt als Raumeinstellung vom Server (games/schiffe/skins.js) und gilt für alle am Tisch. ----
-  const SKINS = ['naval'];
+  const SKINS = ['naval', 'space'];
   const skinOf = (S) => (SKINS.includes(S?.settings?.skin) ? S.settings.skin : 'naval');
-  function applySkin(S) { const root = document.getElementById('kg'); if (root && S) root.dataset.svSkin = skinOf(S); }
+  let skinNow = 'naval', svTab = 'target'; // Design des Tisches; Reiter „Zielsektor / Eigene Flotte“ auf schmalen Handys (nur Taktik-Konsole)
+  function applySkin(S) { if (S) skinNow = skinOf(S); const root = document.getElementById('kg'); if (root && S) root.dataset.svSkin = skinNow; }
   // Klassisch (naval): vorgerenderte Watercraft-Modelle von oben (Kenney, CC0), Stahlton eingerechnet. Passregel aus dem Entwurf (Design C):
   // Länge N − 0,1 Felder, Breite höchstens 0,96 Zeilen, rundum 22 % Rand für den Schatten. len/wid in Feldern.
   const NAVAL_ART = '/games/schiffe/art/naval/';
@@ -23,20 +24,56 @@
   };
   // Modellwahl nur aus Länge und Lage der Zellen – für alle gleich (auch die Gegenseite sieht dasselbe Modell, nichts Verdecktes)
   const navalFit = (n, first) => { const list = NAVAL_FIT[n] || NAVAL_FIT[n > 5 ? 5 : 2]; return list[(Math.floor(first / SIZE) + first % SIZE) % list.length]; };
+  // Taktik-Konsole (space): fünf Raumschiffklassen in Draufsicht aus dem Vault-Entwurf (eigene Zeichnungen, art/space/). Längen und Regeln bleiben, die Klassennamen sind nur Anzeige.
+  const SPACE_ART = '/games/schiffe/art/space/';
+  const SPACE_CLASS = { 5: ['Träger'], 4: ['Schlachtkreuzer'], 3: ['Fregatte', 'Korvette'], 2: ['Jäger'] };
+  const spaceSize = (n) => (n >= 5 ? 5 : n <= 2 ? 2 : n);
+  const spaceName = (n, k = 0) => { const list = SPACE_CLASS[spaceSize(n)]; return list[k % list.length]; };
+  const spaceNames = (sizes) => { const seen = {}; return sizes.map((n) => spaceName(n, (seen[n] = (seen[n] ?? -1) + 1))); };
+  const spaceImg = (n, vertical, wreck) => SPACE_ART + 'ship-' + spaceSize(n) + '-' + (vertical ? 'v' : 'h') + (wreck ? '-wreck' : '') + '.svg';
+  const T = (de) => esc(I18n.t(de));
+  Object.assign(window.EN || {}, { 'Eigener Sektor': 'Own sector', 'Zielsektor · Gegner {0}': 'Target sector · opponent {0}', 'Sektor von {0}': 'Sector of {0}', 'Zielsektor': 'Target sector', 'Eigene Flotte': 'Own fleet',
+    'Eigene Flotte · Rumpfintegrität': 'Own fleet · hull integrity', 'Gegnerflotte · erfasst': 'Enemy fleet · detected', 'Gefechtsprotokoll': 'Combat log', 'Position unbekannt': 'Position unknown', 'VERNICHTET': 'DESTROYED', 'Sektionen': 'sections',
+    'Noch kein Schuss.': 'No shot yet.', 'Ansicht': 'View', 'Träger': 'Carrier', 'Schlachtkreuzer': 'Battlecruiser', 'Fregatte': 'Frigate', 'Korvette': 'Corvette', 'Jäger': 'Fighter', 'Taktik-Konsole': 'Tactical console',
+    'Flotte ausrichten': 'Align your fleet', 'Gefechtsstand': 'Battle station' });
   const SINK_MS = 900;
   let sunkRound = null, sunkSeen = new Set(), sunkFresh = new Map(); // frisch versenkte Schiffe: Schlüssel → Startzeit der Sinkbewegung (läuft auch über ein Neuzeichnen hinweg weiter)
   const sunkKeys = (g) => new Set(Object.entries(g.seas).flatMap(([id, sea]) => (sea.sunk || []).map((x) => id + ':' + Math.min(...x.cells))));
   const vesselHTML = (cells, { owner, sunk, picked }) => {
     cells = [...cells].sort((a, b) => a - b);
     const n = cells.length; if (!n) return '';
-    const first = cells[0], r0 = Math.floor(first / SIZE), c0 = first % SIZE, vertical = n > 1 && cells[1] - first === SIZE, fit = navalFit(n, first);
+    const first = cells[0], r0 = Math.floor(first / SIZE), c0 = first % SIZE, vertical = n > 1 && cells[1] - first === SIZE, fit = navalFit(n, first), space = skinNow === 'space';
     const wreck = cells.every((c) => sunk.has(c)), since = Date.now() - (sunkFresh.get(owner + ':' + first) ?? -Infinity), sinking = wreck && since < SINK_MS && !motionOff();
     // Absolut platziert (nimmt an der Zellenplatzierung nicht teil) – darum Start und Ende aller Linien angeben; „auto“ hieße bis zum Rand
     const pos = vertical ? 'grid-row:' + (r0 + 2) + ' / ' + (r0 + 2 + n) + ';grid-column:' + (c0 + 2) + ' / ' + (c0 + 3) : 'grid-row:' + (r0 + 2) + ' / ' + (r0 + 3) + ';grid-column:' + (c0 + 2) + ' / ' + (c0 + 2 + n);
-    return '<span class="sv-vessel ' + (vertical ? 'v' : 'h') + (wreck ? ' wreck' : '') + (sinking ? ' sinking' : '') + (picked ? ' picked' : '') + '" style="' + pos + ';--n:' + n + ';--len:' + fit.len + ';--wid:' + fit.wid + (sinking ? ';--sink-delay:-' + Math.round(since) + 'ms' : '') + '" aria-hidden="true"><img src="' + NAVAL_ART + 'stahl-' + fit.m + '-' + (vertical ? 'v' : 'h') + '.webp" alt="" decoding="async" draggable="false"></span>';
+    return '<span class="sv-vessel ' + (vertical ? 'v' : 'h') + (space ? ' space' : '') + (wreck ? ' wreck' : '') + (sinking ? ' sinking' : '') + (picked ? ' picked' : '') + '" style="' + pos + ';--n:' + n + ';--len:' + fit.len + ';--wid:' + fit.wid + (sinking ? ';--sink-delay:-' + Math.round(since) + 'ms' : '') + '" aria-hidden="true"><img src="' + (space ? spaceImg(n, vertical, wreck) : NAVAL_ART + 'stahl-' + fit.m + '-' + (vertical ? 'v' : 'h') + '.webp') + '" alt="" decoding="async" draggable="false"></span>';
   };
+  // Taktik-Konsole: eigene Flotte mit Rumpfintegrität (eigene Schiffe und die Schüsse des Gegners darauf), Gegnerflotte nur „unbekannt“ oder „vernichtet“
+  // (aus den versenkten Schiffen), Protokoll aus den öffentlichen Zügen. Nichts davon enthält Positionen nicht versenkter gegnerischer Schiffe.
+  const secHTML = (n, hit) => Array.from({ length: n }, (_, i) => '<i' + (i < hit ? ' class="hit"' : '') + '></i>').join('');
+  function ownFleetHTML(mine) {
+    const hits = new Set(Object.keys(mine.shots || {}).filter((c) => mine.shots[c] === 'hit').map(Number)), ships = mine.ships || [], names = spaceNames(ships.map((x) => x.size));
+    return '<section class="sv-panel sv-own-fleet"><h3>' + T('Eigene Flotte · Rumpfintegrität') + '</h3><ul>' + ships.map((x, k) => {
+      const hit = x.cells.filter((c) => hits.has(c)).length, dead = hit === x.size;
+      return '<li class="sv-fl' + (dead ? ' dead' : '') + '">' + fleetIconHTML(x.size, dead) + '<span class="sv-fl-t"><b>' + T(names[k]) + '</b><small>' + (x.size - hit) + '/' + x.size + ' ' + T('Sektionen') + '</small></span><span class="sv-sec" aria-hidden="true">' + secHTML(x.size, hit) + '</span></li>';
+    }).join('') + '</ul></section>';
+  }
+  function foeFleetHTML(S, foe) {
+    const g = S.g, sunk = (g.seas[foe].sunk || []).map((x) => x.size), names = spaceNames(g.fleet);
+    return '<section class="sv-panel sv-foe-fleet"><h3>' + T('Gegnerflotte · erfasst') + '</h3><ul>' + g.fleet.map((size, k) => {
+      const at = sunk.indexOf(size), dead = at >= 0; if (dead) sunk.splice(at, 1);
+      return '<li class="sv-fl' + (dead ? ' dead' : '') + '">' + fleetIconHTML(size, dead) + '<span class="sv-fl-t"><b>' + T(names[k]) + '</b><small>' + (dead ? T('VERNICHTET') : T('Position unbekannt')) + '</small></span></li>';
+    }).join('') + '</ul></section>';
+  }
+  function logHTML(S) {
+    const rows = (S.moves || []).filter((m) => m.n).slice(-7).reverse();
+    // Salve: die aufgelösten Schüsse beider Seiten (öffentlich, erst nach der gemeinsamen Auflösung)
+    const salvo = S.g.lastSalvo ? Object.entries(S.g.lastSalvo.shots).map(([id, list]) => '<li class="salvo"><b>' + nameOf(S, id) + '</b> ' + list.map((x) => cellName(x.cell) + (x.hit ? ' ✕' : ' •')).join(' ') + '</li>').join('') : '';
+    return '<section class="sv-panel sv-log"><h3>' + T('Gefechtsprotokoll') + '</h3>' + (rows.length ? '<ol>' + salvo + rows.map((m) => '<li class="' + (/versenkt/i.test(m.t) ? 'sunk' : /treffer/i.test(m.t) ? 'hit' : '') + '"><b>' + esc(m.n) + '</b> ' + esc(m.t) + '</li>').join('') + '</ol>' : '<p class="hint">' + T('Noch kein Schuss.') + '</p>') + '</section>';
+  }
+  const tabsHTML = () => '<div class="sv-tabs" role="group" aria-label="' + T('Ansicht') + '">' + [['target', 'Zielsektor'], ['own', 'Eigene Flotte']].map(([k, label]) => '<button type="button" class="sv-tab" data-g="svtab" data-tab="' + k + '" aria-pressed="' + (svTab === k) + '">' + T(label) + '</button>').join('') + '</div>';
   // Flottenliste beim Setzen: das Schiff als kleines Bild (waagerecht)
-  const fleetIconHTML = (size) => { const fit = navalFit(size, 0); return '<span class="sv-hull sv-hull-img" style="--len:' + fit.len + ';--wid:' + fit.wid + '" aria-hidden="true"><img src="' + NAVAL_ART + 'stahl-' + fit.m + '-h.webp" alt="" decoding="async" draggable="false"></span>'; };
+  const fleetIconHTML = (size, wreck = false) => { if (skinNow === 'space') return '<span class="sv-hull sv-hull-img sv-hull-space" style="--n:' + size + '" aria-hidden="true"><img src="' + spaceImg(size, false, wreck) + '" alt="" decoding="async" draggable="false"></span>'; const fit = navalFit(size, 0); return '<span class="sv-hull sv-hull-img" style="--len:' + fit.len + ';--wid:' + fit.wid + '" aria-hidden="true"><img src="' + NAVAL_ART + 'stahl-' + fit.m + '-h.webp" alt="" decoding="async" draggable="false"></span>'; };
 
   // Gleiche Prüfung wie auf dem Server (der entscheidet am Ende trotzdem selbst)
   function shipCells(cell, size, horizontal) {
@@ -171,7 +208,7 @@
       const W = WorldKit, t = W.t, g1 = S.g, over1 = S.phase === 'over', mine1 = meIn(S);
       const chips = [g1.step === 'place' && !over1 ? W.chip('⚓', mine1?.ready ? t('Flotte steht – warte auf den Gegner', 'Fleet ready – waiting for the opponent') : t('Phase: Schiffe setzen', 'Phase: placing ships'), mine1?.ready ? 'good' : 'warn') : over1 ? W.chip('🏁', t('Partie vorbei – beide Meere aufgedeckt', 'Game over – both seas revealed')) : W.chip('🎯', S.turnId === S.you?.id ? t('Du schießt', 'You are firing') : t('Der Gegner schießt', 'The opponent is firing'), S.turnId === S.you?.id ? 'good' : ''), S.variant === 'salvo' ? W.chip('✦', t('Salve-Variante', 'Salvo variant')) : ''].filter(Boolean);
       applySkin(S);
-      return `<div class="wk-stage sv-stage" data-skin="${skinOf(S)}">${W.head({ eyebrow: t('Seekarte', 'Sea chart'), title: g1.step === 'place' && !over1 ? t('Flotte aufstellen', 'Deploy your fleet') : t('Seeschlacht', 'Sea battle'), chips })}${this.mainBody(S)}</div>`;
+      return `<div class="wk-stage sv-stage" data-skin="${skinOf(S)}">${W.head({ eyebrow: skinOf(S) === 'space' ? t('Taktik-Konsole', 'Tactical console') : t('Seekarte', 'Sea chart'), title: g1.step === 'place' && !over1 ? (skinOf(S) === 'space' ? t('Flotte ausrichten', 'Align your fleet') : t('Flotte aufstellen', 'Deploy your fleet')) : (skinOf(S) === 'space' ? t('Gefechtsstand', 'Battle station') : t('Seeschlacht', 'Sea battle')), chips })}${this.mainBody(S)}</div>`;
     },
     mainBody(S) {
       const g = S.g;
@@ -183,19 +220,21 @@
       if (g.step === 'place' && !over) {
         if (!mine) return I18n.html`<div class="kg-table sv-wrap"><p class="hint">Die beiden setzen gerade ihre Schiffe – gleich geht es los.</p></div>`;
         const ships = mine.ready ? shipList(mine.ships) : draftCells(g.fleet);
-        return `<div class="kg-table sv-wrap">${board(mine, { ships, place: !mine.ready, title: 'Dein Meer', label: mine.ready ? '✓ bereit' : '', owner: me })}</div>`;
+        return `<div class="kg-table sv-wrap">${board(mine, { ships, place: !mine.ready, title: skinNow === 'space' ? T('Eigener Sektor') : 'Dein Meer', label: mine.ready ? '✓ bereit' : '', owner: me })}</div>`;
       }
       // Zuschauer oder Spielende: beide Meere (nach Spielende mit allen Schiffen)
       if (!mine || over) {
-        return `<div class="kg-table sv-wrap"><div class="sv-two">${ids.map((id) => board(g.seas[id], { ships: shipList(g.seas[id].ships || g.seas[id].sunk), small: true, title: I18n.html`Meer von ${nameOf(S, id)}`, label: over ? 'aufgedeckt' : '', owner: id })).join('')}</div></div>`;
+        return `<div class="kg-table sv-wrap"><div class="sv-two">${ids.map((id) => board(g.seas[id], { ships: shipList(g.seas[id].ships || g.seas[id].sunk), small: true, title: skinNow === 'space' ? I18n.html`Sektor von ${nameOf(S, id)}` : I18n.html`Meer von ${nameOf(S, id)}`, label: over ? 'aufgedeckt' : '', owner: id })).join('')}</div></div>`;
       }
       const foe = foeOf(S, me);
       const salvo = S.variant === 'salvo';
       const myTurn = salvo ? !g.salvoReady?.[me] : S.turnId === me;
-      return `<div class="kg-table sv-wrap"><div class="sv-two">
-        ${board(g.seas[foe], { ships: shipList(g.seas[foe].sunk), target: myTurn, sel: salvo ? volley : aim, title: I18n.html`Meer von ${nameOf(S, foe)}`, label: myTurn ? 'du schießt' : '', owner: foe })}
-        ${board(mine, { ships: shipList(mine.ships), small: true, title: 'Dein Meer', owner: me })}
-      </div></div>`;
+      const space = skinNow === 'space';
+      const targetBoard = board(g.seas[foe], { ships: shipList(g.seas[foe].sunk), target: myTurn, sel: salvo ? volley : aim, title: space ? I18n.html`Zielsektor · Gegner ${nameOf(S, foe)}` : I18n.html`Meer von ${nameOf(S, foe)}`, label: myTurn ? 'du schießt' : '', owner: foe });
+      const ownBoard = board(mine, { ships: shipList(mine.ships), small: true, title: space ? T('Eigener Sektor') : 'Dein Meer', owner: me });
+      // Taktik-Konsole: eigener Sektor und Flotte links, Zielsektor in der Mitte, Gegnerflotte und Protokoll rechts; auf dem Handy zwei Reiter
+      if (space) return `<div class="kg-table sv-wrap sv-console" data-tab="${svTab}">${tabsHTML()}<div class="sv-two sv-three"><div class="sv-col sv-col-own">${ownBoard}${ownFleetHTML(mine)}</div><div class="sv-col sv-col-target">${targetBoard}</div><div class="sv-col sv-col-info">${foeFleetHTML(S, foe)}${logHTML(S)}</div></div></div>`;
+      return `<div class="kg-table sv-wrap"><div class="sv-two">${targetBoard}${ownBoard}</div></div>`;
     },
     dock(S, myTurn) {
       const g = S.g;
@@ -204,7 +243,7 @@
       if (g.step === 'place') {
         if (mine.ready) return I18n.html('<button class="btn" data-g="unplace">Doch nochmal umstellen</button>');
         const ships = g.fleet.map((size, k) => `<button type="button" class="sv-ship ${selShip === k ? 'sel' : ''} ${draft[k] ? 'set' : ''}" data-g="ship" data-k="${k}" data-drag="ship${k}" aria-pressed="${selShip === k}">
-            ${fleetIconHTML(size)}<span>${SHIP[size]}${draft[k] ? ' ✓' : ''}</span></button>`).join('');
+            ${fleetIconHTML(size)}<span>${skinNow === 'space' ? T(spaceNames(g.fleet)[k]) : SHIP[size]}${draft[k] ? ' ✓' : ''}</span></button>`).join('');
         const done = draft.every(Boolean);
         return I18n.html`<div class="sv-ships" role="group" aria-label="Deine Flotte">${ships}</div>
           <div class="kg-acts"><button class="btn" data-g="turn">Drehen (${horizontal ? 'quer' : 'längs'})</button>
@@ -225,6 +264,7 @@
     onClick(t, S) {
       const g = t.dataset.g;
       const fleet = S.g.fleet;
+      if (g === 'svtab') { svTab = t.dataset.tab === 'own' ? 'own' : 'target'; kit.render(); return; }
       if (g === 'ship') { const k = Number(t.dataset.k); selShip = selShip === k ? null : k; if (selShip !== null && draft[selShip]) horizontal = draft[selShip].horizontal; kit.render(); }
       else if (g === 'cell') {
         const i = Number(t.dataset.i);

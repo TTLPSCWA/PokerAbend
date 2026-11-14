@@ -5,6 +5,7 @@ export const DEFAULT_SKIN = 'naval';
 
 export const SKINS = [
   { id: 'naval', name: 'Klassisch', description: 'Dunkle Seekarte mit Schiffen von oben: Wasser mit Raster, Treffer als Stern, versenkte Schiffe als Wrack.', preview: '/games/schiffe/art/preview-naval.webp' },
+  { id: 'space', name: 'Taktik-Konsole', description: 'Dunkle Weltraum-Konsole: Sektoren mit Radarringen, Raumschiffe von oben, Treffer glühen bernsteinfarben, versenkte Schiffe als rotes Wrack.', preview: '/games/schiffe/art/preview-space.webp' },
 ];
 
 export const skinIds = () => SKINS.map((s) => s.id);

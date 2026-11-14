@@ -2,6 +2,12 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.4.0 – 14. November 2026
+
+* **Schiffe versenken, zweites Design „Taktik-Konsole“:** Beim Erstellen eines Tisches kann der Host jetzt zwischen „Klassisch“ und „Taktik-Konsole“ wählen (zwei Vorschaukarten, getrennt von der Spielvariante Klassisch/Salvo). Die Taktik-Konsole ist eine dunkle Weltraum-Konsole: Raumschiffe von oben, Radarringe mit langsamem Schwenk, Treffer glühen bernsteinfarben, versenkte Schiffe sind rote Wracks. Dazu zeigt sie den Zustand der eigenen Flotte (Rumpfintegrität), die Gegnerflotte (nur „Position unbekannt“ oder „vernichtet“) und ein Gefechtsprotokoll; auf dem Handy wechselt man per Reiter zwischen Zielsektor und eigener Flotte.
+* **Alles gleich für alle am Tisch:** Das Design gehört zum Tisch, auch Zuschauer sehen es, und es bleibt nach dem Neuladen erhalten. Zwei Tische können gleichzeitig verschiedene Designs haben. Regeln, Schüsse, Timer und Punkte ändern sich nicht; Positionen gegnerischer Schiffe bleiben bis zum Versenken verborgen.
+* Der Name des Vorbilds für die Konsole steht nicht in der Oberfläche; die Herkunft der Zeichnungen steht in `docs/design/SCHIFFE_SKINS.md` und `docs/design/ART_LICENSES.md`.
+
 ## 3.3.0 – 14. November 2026
 
 * **Schiffe versenken, neues Aussehen:** Auf dem Meer fahren jetzt echte Schiffe von oben (Ozeandampfer, Frachter, Schlepper statt grauer Blöcke). Das Wasser hat Wellen und ein goldenes Gitter, ein Treffer ist ein orangener Stern, Wasser ein Ring, ein versenktes Schiff liegt dunkel als Wrack unter dem Stern und sinkt kurz. Alles gilt für klassische Regeln und Salvo, die Regeln selbst sind unverändert.

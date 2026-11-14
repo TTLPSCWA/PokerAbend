@@ -67,9 +67,11 @@ async function noShipLeak(page, ben) {
 
 // Liegt jedes Schiffsbild genau über den Zellen seines Schiffs? (Gitterbereich = Vereinigung der Zellen)
 async function vesselsMatchShips(page) {
+  // Taktik-Konsole auf dem Handy: das eigene Meer liegt hinter dem Reiter „Eigene Flotte“
+  if (await page.locator('.sv-tabs').isVisible()) await page.locator('[data-g=svtab][data-tab=own]').click();
   return page.evaluate(() => {
     const me = lastState.you.id, ships = lastState.g.seas[me].ships;
-    const board = [...document.querySelectorAll('.sv-sea')].find((s) => /Dein Meer/.test(s.querySelector('h3')?.textContent || '')).querySelector('.sv-board');
+    const board = (document.querySelector('.sv-sea.small') || document.querySelector('.sv-sea')).querySelector('.sv-board'); // im Gefecht das kleine eigene Meer, beim Setzen das einzige
     const cell = (i) => board.querySelector(`.sv-cell[aria-label^="${'ABCDEFGHIJ'[i % 10]}${Math.floor(i / 10) + 1} "]`).getBoundingClientRect();
     const vessels = [...board.querySelectorAll('.sv-vessel')], out = [];
     for (const s of ships) {
@@ -276,4 +278,68 @@ test('ART-013: zwei Räume mit verschiedenen Designs gleichzeitig, kein Zustand 
     await page.evaluate((c) => joinAndEnter(c, 'watch'), codeB);
     await expect(page.locator('#kg')).toHaveAttribute('data-sv-skin', SKIN_IDS.at(-1));
   } finally { await context.close(); }
+});
+
+// ---------- Taktik-Konsole (space): Flottenstatus, Gegnerflotte, Protokoll, Reiter, Zielerfassung ----------
+test.describe('Taktik-Konsole', () => {
+  test.skip(!SKIN_IDS.includes('space'), 'Design space nicht vorhanden');
+  test('ART-013 space: Flottenstatus mit Rumpfintegrität, Gegnerflotte nur „unbekannt“ oder „vernichtet“, Protokoll – nichts Verdecktes', async ({ page, app }, info) => {
+    test.setTimeout(90000);
+    const code = await host(page, app, { skin: 'space' });
+    const ben = await startGame(page, app, code);
+    try {
+      await placeOwn(page);
+      if (info.project.name === 'mobil') await page.locator('[data-g=svtab][data-tab=own]').click(); // Flottenstatus und Protokoll liegen hinter dem Reiter
+      await expect(page.locator('.sv-console')).toHaveCount(1);
+      await expect(page.locator('.sv-own-fleet .sv-fl')).toHaveCount(5);
+      await expect(page.locator('.sv-foe-fleet .sv-fl')).toHaveCount(5);
+      await expect(page.locator('.sv-foe-fleet .sv-fl small', { hasText: 'Position unbekannt' })).toHaveCount(5);
+      await expect(page.locator('.sv-foe-fleet .sv-fl.dead')).toHaveCount(0);
+      await expect(page.locator('.sv-log')).toBeVisible(); // Protokoll: öffentliche Züge (z. B. „bereit“)
+      await expect(page.locator('.sv-own-fleet .sv-sec i.hit')).toHaveCount(0);
+      await annaShoots(page, ben, 99); // Wasser
+      // Bens erster Schuss: Zelle 0 trifft Annas Schiff nur zufällig – Rumpfintegrität stimmt in jedem Fall mit den Schüssen überein
+      const mine = await page.evaluate(() => { const me = lastState.you.id, sea = lastState.g.seas[me]; const hits = Object.keys(sea.shots).filter((c) => sea.shots[c] === 'hit').length; return { hits }; });
+      await expect(page.locator('.sv-own-fleet .sv-sec i.hit')).toHaveCount(mine.hits);
+      await expect(page.locator('.sv-log li')).not.toHaveCount(0);
+      await annaShoots(page, ben, 85); await annaShoots(page, ben, 86); // 2er versenkt
+      await expect(page.locator('.sv-foe-fleet .sv-fl.dead')).toHaveCount(1);
+      await expect(page.locator('.sv-foe-fleet .sv-fl small', { hasText: 'Position unbekannt' })).toHaveCount(4);
+      await expect(page.locator('.sv-foe-fleet .sv-fl.dead small')).toHaveText(/VERNICHTET/);
+      // Die Gegnerflotte verrät keine Lage: kein Hinweis auf Zellen in der Liste, nur Name, Zustand und die Schiffsklasse als Bild
+      const panel = await page.locator('.sv-foe-fleet').innerHTML();
+      for (const s of FLEET_B) expect(panel).not.toMatch(new RegExp('\b' + s.cell + '\b'));
+      await noShipLeak(page, ben);
+      await capture(page, info, 'space-konsole');
+    } finally { await ben.close(); }
+  });
+
+  test('ART-013 space: Reiter „Zielsektor / Eigene Flotte“ nur auf dem Handy, Zielerfassung vor dem Schuss', async ({ page, app }, info) => {
+    test.setTimeout(90000);
+    const code = await host(page, app, { skin: 'space' });
+    const ben = await startGame(page, app, code);
+    try {
+      await placeOwn(page);
+      const mobile = info.project.name === 'mobil';
+      await expect(page.locator('.sv-tabs')).toBeVisible({ visible: mobile });
+      if (mobile) {
+        await expect(page.locator('.sv-col-target')).toBeVisible(); await expect(page.locator('.sv-col-own')).toBeHidden();
+        await page.locator('[data-g=svtab][data-tab=own]').click();
+        await expect(page.locator('.sv-col-own')).toBeVisible(); await expect(page.locator('.sv-col-target')).toBeHidden(); await expect(page.locator('.sv-col-info')).toBeVisible();
+        await page.locator('[data-g=svtab][data-tab=target]').click();
+        await expect(page.locator('.sv-col-target')).toBeVisible();
+      } else { await expect(page.locator('.sv-col-own')).toBeVisible(); await expect(page.locator('.sv-col-target')).toBeVisible(); await expect(page.locator('.sv-col-info')).toBeVisible(); }
+      // Zielen: Handy = Feld wählen (Klammern), dann „Feuer“; Maus = ein Klick schießt
+      await expect.poll(() => page.evaluate(() => lastState.turnId === lastState.you.id)).toBe(true);
+      const cell = page.locator('.sv-sea:not(.small) button.sv-cell').nth(7);
+      await cell.scrollIntoViewIfNeeded(); await cell.click();
+      if (mobile) {
+        await expect(page.locator('.sv-sea:not(.small) .sv-cell.aim')).toHaveCount(1);
+        const aim = await page.locator('.sv-sea:not(.small) .sv-cell.aim').evaluate((el) => getComputedStyle(el, '::after').backgroundImage);
+        expect(aim).toMatch(/mark-aim.svg/);
+        await page.locator('[data-g=fire]').click();
+      }
+      await expect.poll(() => page.evaluate(() => { const foe = Object.keys(lastState.g.seas).find((x) => x !== lastState.you.id); return Object.keys(lastState.g.seas[foe].shots).length; })).toBe(1);
+    } finally { await ben.close(); }
+  });
 });
