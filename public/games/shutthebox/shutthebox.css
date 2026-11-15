@@ -47,3 +47,11 @@ button.sb-flap:disabled { cursor: default; opacity: .55; }
 .sb-flap.shut small { color:#c9a679; }
 .sb-flap.sel small { color:#3a2410; }
 @media (max-width:640px) { .sb-flap small { font-size:10px; } .sb-scores { padding:4px 6px; } }
+/* Prepared ambientCG Wood051 (CC0); frame only, original gradient below is the image-failure fallback. */
+.kg-shutthebox .sb-wood {
+  background-image: url('/games/shutthebox/art/Wood051_1K-JPG_Color.webp'), linear-gradient(180deg, #8A5A33, #6A4224);
+  background-size: 512px 512px, auto;
+  background-position: center, 0 0;
+  background-repeat: repeat, no-repeat;
+  background-blend-mode: soft-light, normal;
+}

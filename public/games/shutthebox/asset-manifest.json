@@ -1,0 +1,27 @@
+{
+  "game": "shutthebox",
+  "selection": "B",
+  "file": "Wood051_1K-JPG_Color.webp",
+  "path": "public/games/shutthebox/art/Wood051_1K-JPG_Color.webp",
+  "package": "ambientCG Wood051",
+  "sourceFile": "originals/wood051/Wood051_1K-JPG_Color.jpg",
+  "sourceUrl": "https://ambientcg.com/view?id=Wood051",
+  "author": "ambientCG (Anbieter)",
+  "license": "CC0-1.0",
+  "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "licenseSource": "https://docs.ambientcg.com/license/",
+  "licenseEvidenceSha256": "86d690c1384e979c84fcb607c66dcd4802ff75f917a2fbef1658add632d1b11b",
+  "originalSha256": "f3c6c5456457e8d05c1fee4d2f186f41d0aea2b8a06859b69ce2934e11aa8798",
+  "sha256": "b5c9ef08b000a1c42bfd42924e46f2a2181363978168c61d3937baf5e0346c22",
+  "bytes": 25602,
+  "width": 512,
+  "height": 512,
+  "changes": "Prepared Color JPG 1024×1024 resized to 512×512 and encoded as WebP in existing asset research; copied byte-for-byte. CSS soft-light blending with the original brown gradient. No new image generated or image pixels edited.",
+  "fallback": "Original linear-gradient(180deg, #8A5A33, #6A4224), below the image layer.",
+  "rejectedAlternative": {
+    "package": "Poly Haven Wood Table 001",
+    "bytes": 48800,
+    "sha256": "f4a26150f0dd9247d0a73898eb2a9ba7d3190113adae904d9615b870c14f9034",
+    "reason": "Stronger red tint and fine vertical grain compete more with the existing warm design; larger transfer. Actual A/B/original comparison retained in documentation; A is not shipped in public."
+  }
+}

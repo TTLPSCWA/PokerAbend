@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.15.0 – 15. November 2026
+
+* **Shut the Box:** Echte ambientCG-Holzmaserung ergänzt den bestehenden Boxhintergrund. Klappen, Auswahl, Würfel und Bedienung bleiben erhalten; bei fehlendem Bild erscheint der bisherige Holzverlauf. Ausgewählt im direkten Vergleich mit Original und Poly Haven.
+
 ## 3.14.0 – 15. November 2026
 
 * **Würfelspiele, vier Themenwelten:** In allen 13 Würfelspielen kann der Host im Host-Menü unter „Themenwelt“ wählen: **Saloon** (Knochenwürfel, Lederbecher, Holzdielen), **Piratenbucht** (Walbein-Würfel, Holzbecher mit Eisenringen, Kneipentisch mit Seekarte), **Runen & Nordlicht** (Runensteine, Hornbecher, Langhaus) oder **Neon-Arcade** (leuchtende Augen, Neonbecher, Raster). Würfel, Becher, Klappen und Tisch ändern nur ihr Aussehen; Augen, Zahlen und Markierungen bleiben deutlich lesbar, Regeln bleiben gleich. „Standard“ bringt die bisherige Optik zurück.

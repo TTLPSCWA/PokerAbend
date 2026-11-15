@@ -1,0 +1,872 @@
+{
+  "captureCommit": "54d43b7de664e30d2ab0c93e766082045a38c718",
+  "method": "Actual local application, native Room state, same pending dice/closed/selected flaps; original CSS versus prepared A/B through private route overrides. WebP q=.90 exports from original PNG, no resizing. Screenshots are documentation, never gameplay assets.",
+  "selected": "B",
+  "fullComparisonScenes": 78,
+  "images": [
+    {
+      "key": "1p-9",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "variant": "original",
+      "kind": "screen",
+      "file": "1p-9-1920x1080-original.webp",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 61458,
+      "sha256": "5af1d12a6eed3592819bfa6c2abb1dbe5559180041f6535f132b39d6bcda26d5",
+      "originalPngSha256": "0cc5600e99200bb6e3d8a7159bf428c6e181ca93d4d47e1618587702b3f80d21",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "variant": "A",
+      "kind": "screen",
+      "file": "1p-9-1920x1080-A.webp",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 68942,
+      "sha256": "5c77f33894f76642cad6616effc4b5676709472d8a6e0894e49c566b7de25f69",
+      "originalPngSha256": "77a9c5dee3c9bc5fcc0e50fb22d088ca17c9e94e51f3c80623c90f5e7fe2c471",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "variant": "B",
+      "kind": "screen",
+      "file": "1p-9-1920x1080-B.webp",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 65064,
+      "sha256": "5d6d9a178f24c8fe52166fd606a5f5b6c48ac96d16a359ad2d0c528fd9e5e5f5",
+      "originalPngSha256": "dedec43ac5e323a89c3ab48885085fa18afcb7f8192331a58444f8ac9a6ff81a",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        1440,
+        900
+      ],
+      "variant": "original",
+      "kind": "screen",
+      "file": "1p-9-1440x900-original.webp",
+      "width": 1440,
+      "height": 900,
+      "bytes": 56184,
+      "sha256": "14b5ac755e6a9484f8339a2e54e5e7a57b0a32f71de985850ecd9d81b3662148",
+      "originalPngSha256": "cde74d767b397961a634d396272177bc2b4f39304b9e818c378b47ccf0665c36",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        1440,
+        900
+      ],
+      "variant": "original",
+      "kind": "box",
+      "file": "1p-9-1440x900-original-box.webp",
+      "width": 710,
+      "height": 169,
+      "bytes": 9556,
+      "sha256": "96eeb05c6dac12cead570464fd2e508bdbb8e52d3ca96c8e553519e3c4553668",
+      "originalPngSha256": "c1c420557042996b7842bb08ff5e4e700816ce88f9713b94ec703c3a6a807b27",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        1440,
+        900
+      ],
+      "variant": "A",
+      "kind": "screen",
+      "file": "1p-9-1440x900-A.webp",
+      "width": 1440,
+      "height": 900,
+      "bytes": 62508,
+      "sha256": "dc2dcd086537a9a02e475264813da696e94c1ea9ec17333eb65b74464b87bda3",
+      "originalPngSha256": "cdbd9856f1fc8dc8a43485c01d0f02dd1c7baa1985fed1e001f79745dfbbcb88",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        1440,
+        900
+      ],
+      "variant": "A",
+      "kind": "box",
+      "file": "1p-9-1440x900-A-box.webp",
+      "width": 710,
+      "height": 169,
+      "bytes": 16034,
+      "sha256": "b57389dcb10576f76ac22a5dad35e98b05eb6dd2cf3632716a704fb577a0b8f2",
+      "originalPngSha256": "32203a77fd3519a238444aaa121b33ca877a6bffb6640d445fea054068fe64ff",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        1440,
+        900
+      ],
+      "variant": "B",
+      "kind": "screen",
+      "file": "1p-9-1440x900-B.webp",
+      "width": 1440,
+      "height": 900,
+      "bytes": 59448,
+      "sha256": "39fc1c0d87fba5b5c7118c2563e49bfcd1cbf15d97c14cf10f906ab353a30661",
+      "originalPngSha256": "c8c424e3e55ab73b38b5dfc0803edb203b1a517829c71e1a64cc8cdc2ac5189c",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        1440,
+        900
+      ],
+      "variant": "B",
+      "kind": "box",
+      "file": "1p-9-1440x900-B-box.webp",
+      "width": 710,
+      "height": 169,
+      "bytes": 12624,
+      "sha256": "033f8240bce7605c7ac06855fc02a08e6273faee4d4d3ab7723fec6895b8ba61",
+      "originalPngSha256": "b322701d8bbb97ac43c6bf6972e534a8f03ad4b2792edbe9cec027b1d1890780",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        768,
+        1024
+      ],
+      "variant": "original",
+      "kind": "screen",
+      "file": "1p-9-768x1024-original.webp",
+      "width": 768,
+      "height": 1024,
+      "bytes": 49412,
+      "sha256": "f93f3ea87bc3e770acac561ccb14602dc6d1a2f60839d38bc0a71ea1462cb4ad",
+      "originalPngSha256": "0f0af510edde3d83d449fc9721c3852b975b3357d6b58f69d3eda5b2217e2121",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        768,
+        1024
+      ],
+      "variant": "A",
+      "kind": "screen",
+      "file": "1p-9-768x1024-A.webp",
+      "width": 768,
+      "height": 1024,
+      "bytes": 55126,
+      "sha256": "0ca4594ce4302c821cf13f5d586ef883c90e96815f391f4fd7bc3ba0979ef4d2",
+      "originalPngSha256": "1defc386087d6fddf667e1258490c58c8f0a2238d543d1581cdec94906c056bd",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        768,
+        1024
+      ],
+      "variant": "B",
+      "kind": "screen",
+      "file": "1p-9-768x1024-B.webp",
+      "width": 768,
+      "height": 1024,
+      "bytes": 52610,
+      "sha256": "e72a7956d3779636b3defcbab64d5cdb49f674feab56830c793a23ddbec2f958",
+      "originalPngSha256": "497beac41178876bbaeac35c879ed480e11548ed06b4942a53be2e8600e02e0e",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        390,
+        844
+      ],
+      "variant": "original",
+      "kind": "screen",
+      "file": "1p-9-390x844-original.webp",
+      "width": 390,
+      "height": 844,
+      "bytes": 40190,
+      "sha256": "2a0bd1b65129fb40d986e6ea5954c134520ac40aa44ade32dd68f7f69a2905d7",
+      "originalPngSha256": "c9a39c1cd22964f6a59919d11e48326e5622e45cf18e877777ba1b25108a344e",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        390,
+        844
+      ],
+      "variant": "original",
+      "kind": "box",
+      "file": "1p-9-390x844-original-box.webp",
+      "width": 340,
+      "height": 201,
+      "bytes": 8520,
+      "sha256": "b897f76543864f5abde9b9cff47c2150dea3c11faa63cf6936be655bebb8dff5",
+      "originalPngSha256": "b2b7e8e876cb138cdbca643e5c7ed4ea54758d655eb8e3712bac9a29d5070a28",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        390,
+        844
+      ],
+      "variant": "A",
+      "kind": "screen",
+      "file": "1p-9-390x844-A.webp",
+      "width": 390,
+      "height": 844,
+      "bytes": 42920,
+      "sha256": "d194532263786168e78c495e7a5fb41483841caa4a4fe5389b758ccf07546f77",
+      "originalPngSha256": "daf525b8f792679d44619a516684a24476d70f60f1815ae4250d29fa0f8aafaf",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        390,
+        844
+      ],
+      "variant": "A",
+      "kind": "box",
+      "file": "1p-9-390x844-A-box.webp",
+      "width": 340,
+      "height": 201,
+      "bytes": 11580,
+      "sha256": "a8dbaaf31e9b7c24165faa461f518773fe868dbeefa63c28953e8db83a9711b0",
+      "originalPngSha256": "59b2d43a26f74bb2dadb37cf012227529f306815b24b56029e4334888f934c39",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        390,
+        844
+      ],
+      "variant": "B",
+      "kind": "screen",
+      "file": "1p-9-390x844-B.webp",
+      "width": 390,
+      "height": 844,
+      "bytes": 41244,
+      "sha256": "1a6056707f41077eb831b1d79c72ca923bfc160d8e3393292a3ad343f17c9662",
+      "originalPngSha256": "93b9d2025e5a8fb7348b9af10cccdae963974b2ef8e40f2ccc4ebb4db200c9c2",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        390,
+        844
+      ],
+      "variant": "B",
+      "kind": "box",
+      "file": "1p-9-390x844-B-box.webp",
+      "width": 340,
+      "height": 201,
+      "bytes": 9790,
+      "sha256": "e955f497ba0be0547e7e5150d72fb4939f245fb4714f3dbce1bddefaea301b0f",
+      "originalPngSha256": "ef373fff220e9bf4b132d6aacbc1214141daf522620c0fc01501ae60d0f611e6",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        360,
+        800
+      ],
+      "variant": "original",
+      "kind": "screen",
+      "file": "1p-9-360x800-original.webp",
+      "width": 360,
+      "height": 800,
+      "bytes": 39966,
+      "sha256": "26db4aee1d0456b1cd779c736ef157a6afd0ab62f0d26d8f0efa8ab58bc4dc10",
+      "originalPngSha256": "fe0ce16b3ccab6cd00a96ca775811ae9f1daed23c7d2618994dc8dfe5f044319",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        360,
+        800
+      ],
+      "variant": "A",
+      "kind": "screen",
+      "file": "1p-9-360x800-A.webp",
+      "width": 360,
+      "height": 800,
+      "bytes": 42882,
+      "sha256": "2368c49674717d9abccdeb8bc626e4af0c021b9e0da7a74a2e74f070c24d9348",
+      "originalPngSha256": "6148aaf4fdd8202bfb4f44503c9f9f01049a7552615a0c506b61afe6761a653f",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        360,
+        800
+      ],
+      "variant": "B",
+      "kind": "screen",
+      "file": "1p-9-360x800-B.webp",
+      "width": 360,
+      "height": 800,
+      "bytes": 41096,
+      "sha256": "3a721173e407bfcdf74771d5b33db7d07d7c478d53f399a165c1a403ba142405",
+      "originalPngSha256": "19b618c41c8ac7b50f2b449abace48f365fb66262c35ca43c170fa59f0f1f0d0",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        900,
+        450
+      ],
+      "variant": "original",
+      "kind": "screen",
+      "file": "1p-9-900x450-original.webp",
+      "width": 900,
+      "height": 450,
+      "bytes": 41702,
+      "sha256": "438cf0c759ae3dd56c76e2491f29710560fc28740b397b824996e60be37d7641",
+      "originalPngSha256": "c39ae157b7955a98aadfea1a0cb76908988ec2276b3a7a635303a751115b7161",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        900,
+        450
+      ],
+      "variant": "A",
+      "kind": "screen",
+      "file": "1p-9-900x450-A.webp",
+      "width": 900,
+      "height": 450,
+      "bytes": 45330,
+      "sha256": "9a90f6661c4de79de2ad775589658eab62f4d9cae87840dd07a9b1fc90910990",
+      "originalPngSha256": "f12e92b602dd7768e69ef13404dc44065d3b038f80768260c5976b2ad454e1e1",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "1p-9",
+      "viewport": [
+        900,
+        450
+      ],
+      "variant": "B",
+      "kind": "screen",
+      "file": "1p-9-900x450-B.webp",
+      "width": 900,
+      "height": 450,
+      "bytes": 43830,
+      "sha256": "a32145b87f51031c942cbc21e306f4a6b2357e8e557c59dc5a896e851ee1f46d",
+      "originalPngSha256": "5ccf5587216fdca16aee6d8a060df7829a6b6203698d3fedb038ce8ac722f75c",
+      "stateSha256": "cc452c54bddfa05494e43d12bcf8b336cc609f6a53d4e2847b41671cbf3e628f",
+      "flapDomSha256": "ab0fe46d208e76f2aead6f5f82cc65693a978e31be338fbd2eb7d9353d941e72",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "variant": "original",
+      "kind": "screen",
+      "file": "8p-12-1920x1080-original.webp",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 85136,
+      "sha256": "ab0261b3ba7e9ef1142a4d4dfcdd5b34d8de88041b73a961c8ff71dc1bdef527",
+      "originalPngSha256": "727821777f34a19f61e493122014ee61385e4218983b8d93a1a07daef6e21287",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "variant": "A",
+      "kind": "screen",
+      "file": "8p-12-1920x1080-A.webp",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 91502,
+      "sha256": "4507fcc5707816dec20110dbc31e4a1997743bda571803138c8d88614c2627b0",
+      "originalPngSha256": "c264593ed847d93af65f60d39d10b8ac8d7351110ed1b53fd8541356b3413835",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "variant": "B",
+      "kind": "screen",
+      "file": "8p-12-1920x1080-B.webp",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 88018,
+      "sha256": "5ef4f4162a28e8b670c26a75e8e7e66f6a3422d849d540ab3b9c5c97e7da9de9",
+      "originalPngSha256": "4129477022255e3ba02d98ca57a5dfa5a8b4e074fa95ae8f75806e9708072324",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        1440,
+        900
+      ],
+      "variant": "original",
+      "kind": "screen",
+      "file": "8p-12-1440x900-original.webp",
+      "width": 1440,
+      "height": 900,
+      "bytes": 78374,
+      "sha256": "d96f15bf3e0dd6caf903660bf36e9e55a9319c9b4363b09579b9f3f9711d8c22",
+      "originalPngSha256": "05296627af224aacd8a06671eab1e7ab7e2fd0ccff1a7e2de4fef6356c7fda78",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        1440,
+        900
+      ],
+      "variant": "original",
+      "kind": "box",
+      "file": "8p-12-1440x900-original-box.webp",
+      "width": 710,
+      "height": 169,
+      "bytes": 11376,
+      "sha256": "fb4f41d7d38a0c73c69d21e2d890c55b086c7c7768710122f29ac0fc74a636ba",
+      "originalPngSha256": "8c61fa5b133718e5bfc18fc7ce936da4fb2c4ca62febc85df4f6bbeebe12746b",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        1440,
+        900
+      ],
+      "variant": "A",
+      "kind": "screen",
+      "file": "8p-12-1440x900-A.webp",
+      "width": 1440,
+      "height": 900,
+      "bytes": 85212,
+      "sha256": "4e587ffe50c1ace7f4efe9915602cfc73a67c44e2e278c07ae8598dd671dc850",
+      "originalPngSha256": "e1c324fc831f8a0f74b86169083d9c2a15e2877ed552efb025b8408494a95850",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        1440,
+        900
+      ],
+      "variant": "A",
+      "kind": "box",
+      "file": "8p-12-1440x900-A-box.webp",
+      "width": 710,
+      "height": 169,
+      "bytes": 18054,
+      "sha256": "ab39c1e9e3334df5bfcf3e9997910e92710943d0732d02df909009fd477534e0",
+      "originalPngSha256": "bbec60a12cd41e024d1a826fece1429647005ac0fa2bd07cbb7f6ac4eb4d9a53",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        1440,
+        900
+      ],
+      "variant": "B",
+      "kind": "screen",
+      "file": "8p-12-1440x900-B.webp",
+      "width": 1440,
+      "height": 900,
+      "bytes": 81472,
+      "sha256": "05da1d47aba684e8a19691012ae6b92acbcd51ca82aea34cf86ca0819ffa3a8a",
+      "originalPngSha256": "1557f9bb955cc954db88ea8b850f4ec26cb4332c81a351585b9a768f597751a5",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        1440,
+        900
+      ],
+      "variant": "B",
+      "kind": "box",
+      "file": "8p-12-1440x900-B-box.webp",
+      "width": 710,
+      "height": 169,
+      "bytes": 14340,
+      "sha256": "6f613833bfb3452d65741a4128b85c2afc16d00f596abdc329809a9164dacd14",
+      "originalPngSha256": "c6d652dd5332edf6d2f43182b3c0e5202d871f66f9b69a240be71470cca40ab5",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        768,
+        1024
+      ],
+      "variant": "original",
+      "kind": "screen",
+      "file": "8p-12-768x1024-original.webp",
+      "width": 768,
+      "height": 1024,
+      "bytes": 54568,
+      "sha256": "d298ddc72f32bd3ec6bc9f5f9b3ea085de1bce107c19c888a858a6a2bf4b5157",
+      "originalPngSha256": "f7aed68755044115d192f34cc540331c941a94b315e844031c76985fbe91388c",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        768,
+        1024
+      ],
+      "variant": "A",
+      "kind": "screen",
+      "file": "8p-12-768x1024-A.webp",
+      "width": 768,
+      "height": 1024,
+      "bytes": 60570,
+      "sha256": "fcdf2c6679022bbe69cca39a2612a7ecab6b30358f8d6dc394d05ad9a25e4921",
+      "originalPngSha256": "acb8755cfea763c51ee5c9a3e63b1b622f3a92c8575ff10a3e98c95413146fe4",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        768,
+        1024
+      ],
+      "variant": "B",
+      "kind": "screen",
+      "file": "8p-12-768x1024-B.webp",
+      "width": 768,
+      "height": 1024,
+      "bytes": 57910,
+      "sha256": "c37a43eefc0b6aa03e3f791f13a69ff66c046b695b6ea8e61446d08084be887d",
+      "originalPngSha256": "7eaed3a9bc7649f0174b9dace715e9268e6e80edbf6b5b681f181a2aad3fd027",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        390,
+        844
+      ],
+      "variant": "original",
+      "kind": "screen",
+      "file": "8p-12-390x844-original.webp",
+      "width": 390,
+      "height": 844,
+      "bytes": 42576,
+      "sha256": "715e1886bba315bcdd1623b95518ac1af5cf76dc01acb90b5545fae00163c0ed",
+      "originalPngSha256": "99323b5c35b097bd3cd654874395bfc9ee5056f868fc10d9b97cc7751ee9ef98",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        390,
+        844
+      ],
+      "variant": "original",
+      "kind": "box",
+      "file": "8p-12-390x844-original-box.webp",
+      "width": 340,
+      "height": 201,
+      "bytes": 9248,
+      "sha256": "020dca6400666cf6fc67e4adec895e8bb4bbd9c249369a8cf7aa8494c91b8397",
+      "originalPngSha256": "940dc98be5657eb5df4e5d2788e47855ee585e551571a716d39c9b2f918960d3",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        390,
+        844
+      ],
+      "variant": "A",
+      "kind": "screen",
+      "file": "8p-12-390x844-A.webp",
+      "width": 390,
+      "height": 844,
+      "bytes": 45612,
+      "sha256": "fc09cc8bb89f1f190fd2a1753d7d34d7860c6d22249f438e83ad756c87f3090e",
+      "originalPngSha256": "fe2195524fddd14256d82076516f9312696cdbc2946e6d3ccc060747a149d1e7",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        390,
+        844
+      ],
+      "variant": "A",
+      "kind": "box",
+      "file": "8p-12-390x844-A-box.webp",
+      "width": 340,
+      "height": 201,
+      "bytes": 12324,
+      "sha256": "bb7cb08d91ff945c4676be93590abbc8ed6a710d30cc28d3e20ec64aa65b2658",
+      "originalPngSha256": "1200edb346d1b2038ada9b0427b7c1d779ca1a4313f33f6b3da59d00ae299e50",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        390,
+        844
+      ],
+      "variant": "B",
+      "kind": "screen",
+      "file": "8p-12-390x844-B.webp",
+      "width": 390,
+      "height": 844,
+      "bytes": 43958,
+      "sha256": "a9ccd5709b9017cdbfe9a52b55f9736f22613edbe8bc60b122f0f543dc9676e7",
+      "originalPngSha256": "fc5138efa6516f656b5f2ab302cb58f4c49ca944215fbf102dcf4412fd94152b",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        390,
+        844
+      ],
+      "variant": "B",
+      "kind": "box",
+      "file": "8p-12-390x844-B-box.webp",
+      "width": 340,
+      "height": 201,
+      "bytes": 10542,
+      "sha256": "cb0aecb02fda42b75de6d8e82869cf2c78cc2eab0a9ddf23a14233e29f8407a5",
+      "originalPngSha256": "e71cb0197b8e45550d9b45718daff0fbf03f03b79f2ac09eff196ede7b457619",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        360,
+        800
+      ],
+      "variant": "original",
+      "kind": "screen",
+      "file": "8p-12-360x800-original.webp",
+      "width": 360,
+      "height": 800,
+      "bytes": 41136,
+      "sha256": "8c7fc39ced85ab87a56f4d7de90ccdb5d83617998503d01d1b2340514ca1704e",
+      "originalPngSha256": "14b96236727b33b244a267311cc1bc688049bff48791e488bfa8c74ab9cf26b6",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        360,
+        800
+      ],
+      "variant": "A",
+      "kind": "screen",
+      "file": "8p-12-360x800-A.webp",
+      "width": 360,
+      "height": 800,
+      "bytes": 44108,
+      "sha256": "744ecf705a20a9f485d87b2f1ab40ffff04c318b0864d3bf02505677cd181cc5",
+      "originalPngSha256": "d65e5702eb5f5136118c72acfd112e40bc255cb1892ee3f25fbb02d56cd03bba",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        360,
+        800
+      ],
+      "variant": "B",
+      "kind": "screen",
+      "file": "8p-12-360x800-B.webp",
+      "width": 360,
+      "height": 800,
+      "bytes": 42438,
+      "sha256": "6d5d105d412eb815da3dabb202e8acae7051dc06c502d1ba164d3fbd85eba090",
+      "originalPngSha256": "b3bb309c3698e095cb67315c202079e0ade07b0e2de2f3d579a3ba99612b8acf",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        900,
+        450
+      ],
+      "variant": "original",
+      "kind": "screen",
+      "file": "8p-12-900x450-original.webp",
+      "width": 900,
+      "height": 450,
+      "bytes": 45754,
+      "sha256": "608becbf93d2968016893d517a39b942e479adc8347e91975cb097e4a18234c2",
+      "originalPngSha256": "ce0991d10bfe8ad3faf354f2c2e58c6fa667b765b6abfb5fe0e2c5147e14a290",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        900,
+        450
+      ],
+      "variant": "A",
+      "kind": "screen",
+      "file": "8p-12-900x450-A.webp",
+      "width": 900,
+      "height": 450,
+      "bytes": 49440,
+      "sha256": "90f2000de61c1d03d1d9fd306d55c74ab8cda9b8cb509879898d41f3c8cb7aef",
+      "originalPngSha256": "3e1923c64f152cf05d153823b6836f70152c2d228c9e5e83cbda7d1ba4599f28",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    },
+    {
+      "key": "8p-12",
+      "viewport": [
+        900,
+        450
+      ],
+      "variant": "B",
+      "kind": "screen",
+      "file": "8p-12-900x450-B.webp",
+      "width": 900,
+      "height": 450,
+      "bytes": 47988,
+      "sha256": "e21fa6d8cc582da1d6ac958f1e990c2f69e7764d174c03f3760b5f36c48213f8",
+      "originalPngSha256": "232be50b42ccbdb4e4918ffee874e9acc880cfb3773a4d4f26b7b7d23c8ef9d6",
+      "stateSha256": "fe5f73cbcc6e1f539076be5adc12ddf4ca8aa1e7acb89db4491f1433a38da98d",
+      "flapDomSha256": "bf97d722c09ce2b7569e7a1f9323b26956ff04fadab6ebbb0e51d2bf9f927230",
+      "geometryAndTypographyEqual": true
+    }
+  ]
+}

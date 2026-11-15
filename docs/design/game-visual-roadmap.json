@@ -3552,7 +3552,7 @@
       "source_audit": [
         {
           "path": "public/games/shutthebox/shutthebox.css",
-          "sha256": "793bf47929f855ce1be74252c9465df49de872b59c070c755e4c3d7340d1831b",
+          "sha256": "e1e07ed6c68394890c46f286086d38eeee2bcad0f30a3c6e065fe61e2b979d65",
           "css_classes": [
             "kg-shutthebox",
             "kg-main",
@@ -3577,7 +3577,7 @@
         },
         {
           "path": "public/games/shutthebox/shutthebox.js",
-          "sha256": "43148f06c83733526588b1a60594edee1bdd33cd5be8f216e97677caf228b504"
+          "sha256": "1dd557e9092523ba75cf06286fe810429aaa28078e6e1ce0258abdffc3fa67e7"
         }
       ],
       "current_design": "Shut the Box: Holzbox mit beschrifteten Klappen (zu/offen/passt/gewählt), Scharnierleiste und Summen-Chips.",
@@ -3669,7 +3669,53 @@
         "c27b5911f24f56f7a32dd73cae13b7cfda47a339"
       ],
       "implementation_commit": "c27b5911f24f56f7a32dd73cae13b7cfda47a339",
-      "completed_at": "2026-11-07"
+      "completed_at": "2026-11-07",
+      "asset_followup": {
+        "date": "2026-11-15",
+        "version": "3.15.0",
+        "report": "docs/design/SHUTTHEBOX_HOLZ.md",
+        "manifest": "public/games/shutthebox/asset-manifest.json",
+        "screenshot_manifest": "docs/design/screenshots/shutthebox/wood-2026-11/screenshots.json",
+        "scope": "Prepared ambientCG Wood051 frame texture only. Original renderer/server/rules and flap/dice styles unchanged. Original/A/B actual screenshots; no complete ART-015 package claim.",
+        "integration_base": "251e07eaa96682c2290f5a1d3d725a3bcc588b74",
+        "implementation_commit": null,
+        "tests": [
+          {
+            "command": "node --test test/shutthebox.test.js test/shutthebox-texture.test.js",
+            "passed": 9,
+            "failed": 0,
+            "note": "16 complete native 1–8-player × 9/12-flap games inside one test; individual asset hash and license check."
+          },
+          {
+            "command": "npm run test:fast",
+            "passed": 2090,
+            "failed": 0,
+            "skipped": 3
+          },
+          {
+            "command": "Chromium: shutthebox-texture + existing game-flow (excluding known English expected failures) + ART-W2 shutthebox",
+            "passed": 38,
+            "failed": 0,
+            "note": "After integration onto 251e07eaa96682c2290f5a1d3d725a3bcc588b74"
+          },
+          {
+            "command": "Firefox targeted 1/8 players × 9/12 flaps and missing image, desktop/narrow",
+            "passed": 10,
+            "failed": 0
+          },
+          {
+            "command": "WebKit targeted 1/8 players × 9/12 flaps and missing image, desktop/mobile",
+            "passed": 10,
+            "failed": 0
+          }
+        ],
+        "limits": [
+          "Firefox narrow is responsive viewport, not mobile/touch emulation.",
+          "No physical Safari/device or network benchmark.",
+          "Existing incomplete English labels unchanged; known expected-failure tests excluded.",
+          "Reconnect to live room tested, no new mid-game process-restart persistence."
+        ]
+      }
     },
     {
       "id": "VIS-016",
