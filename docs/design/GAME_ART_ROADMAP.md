@@ -176,4 +176,7 @@ Spielübergreifendes Fundament für Themenwelten (Brett-, Karten-, Würfel- und 
 - **Spiele:** `monopoly`
 - **Ziel:** Erste vollständige Themenwelt auf dem ART-W0-Fundament: neblige Hafenstadt der 1920er für Monopoly (Standard und Tempowürfel, nicht Junior), Auswahl im Host-Menü, Rückkehr zu „Standard“ ohne Rückstände. Spielregeln, Preise, Mieten, Kartenwirkungen, Socket-Ereignisse und Spiel-IDs unverändert.
 - **Material:** eigene SVG-Grafiken (Tisch, Brettmitte, Kartenrücken, acht Figuren, Fischerhütte, Leuchtturm, Vorschau) aus `scripts/build-tw01-art.mjs`, eigene Feld-, Karten- und Figurennamen; keine fremden Dateien.
-- **Status:** in Arbeit
+- **Status:** done
+- **Implementierungscommit:** `154a30e05b4ae4ec7271e3df5d2dbfdd07c22df8`
+- **Umsetzung:** Welt `TW-01` in `public/games/theme-worlds/tw-01.js` (Darstellungstexte für 40 Felder, 32 Karten, 8 Figuren), Grafiken und Stylesheet in `public/games/theme-worlds/tw-01/`, Namensauflösung über die Welt des Raums in `games/monopoly/room.js` und `public/games/monopoly/themes.js`, Anzeige-Attribute in `public/games/monopoly/monopoly.js`; Version 3.13.0.
+- **Nachweise:** `test/art-w1-tw01.test.js`, `test/ui/art-w1-tw01.spec.js`, `docs/design/THEME_WORLDS.md`, `docs/design/art/ART-W1/README.md`, `docs/design/art/ART-W1/standard-desktop.jpg`, `docs/design/art/ART-W1/tw-01-desktop.jpg`, `docs/design/art/ART-W1/standard-mobil.jpg`, `docs/design/art/ART-W1/tw-01-mobil.jpg`
