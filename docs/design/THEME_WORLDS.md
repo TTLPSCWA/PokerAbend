@@ -12,9 +12,10 @@ Stand: 15. November 2026. Fachliche Grundlage ist das ursprüngliche Konzept „
 |---|---|---|
 | TW-01 Schatten über Neuengland | **Monopoly umgesetzt** (Standard und Tempowürfel, 3.13.0); Monopoly Deal offen | Commit `154a30e`, `test/art-w1-tw01.test.js`, `test/ui/art-w1-tw01.spec.js`, [art/ART-W1/](art/ART-W1/) |
 | TW-14 Saloon, TW-11 Piratenbucht, TW-09 Runen & Nordlicht, TW-13 Neon-Arcade | **Würfelwelten umgesetzt** für alle 13 Würfelspiele (ART-W2, 3.14.0); andere Spielgruppen dieser Welten (z. B. Kartenspiele, Bretter) nicht | Abschnitt 5a, `test/art-w2-dice-worlds.test.js`, `test/ui/art-w2-dice-worlds.spec.js`, [art/ART-W2/](art/ART-W2/) |
-| übrige Welten (TW-02 bis TW-08, TW-10, TW-12, TW-15, TW-16) | nur Konzept, keine Implementierungsfreigabe, keine Assets | – |
+| TW-08 Götterberg, TW-09 Runen & Nordlicht (Brett), TW-10 Tafelrunde | **Brettwelten umgesetzt** für sieben klassische Brettspiele (ART-W3, 3.16.0); TW-09 ist dieselbe Welt wie bei den Würfelspielen (Facette, keine zweite ID) | Abschnitt 5b, `test/art-w3-board-worlds.test.js`, `test/ui/art-w3-board-worlds.spec.js`, [art/ART-W3/](art/ART-W3/) |
+| übrige Welten (TW-02 bis TW-07, TW-12, TW-15, TW-16) | nur Konzept, keine Implementierungsfreigabe, keine Assets | – |
 
-Die zentrale Registry (`public/games/theme-worlds/registry.js`, ART-W0) enthält heute die 40 Kartenwelten, TW-01 und die vier Würfelwelten TW-14, TW-11, TW-09, TW-13. Weitere Welten kommen erst nach Freigabe hinzu.
+Die zentrale Registry (`public/games/theme-worlds/registry.js`, ART-W0) enthält heute die 40 Kartenwelten, TW-01, die vier Würfelwelten TW-14, TW-11, TW-09, TW-13 und die Brettwelten TW-08 und TW-10; TW-09 trägt zusätzlich eine Brett-Facette. Weitere Welten kommen erst nach Freigabe hinzu.
 
 ---
 
@@ -41,9 +42,9 @@ Spalte „Quelle“ zeigt, woher Namen und Motive kommen dürfen. Schriften: „
 | TW-05 | **Hereva** | Pepper&Carrot, CC BY 4.0 | Junge Hexen, Zauberschulen, Tränke, Katzen, hell und freundlich | Kürbisorange, Himmelblau, Pflaumenlila | Fredoka, Lilita One (im Repo) | Konzept |
 | TW-06 | **Wunderland** | Carroll / Baum, gemeinfrei | Spielkarten-Soldaten, Teeparty, Smaragdstadt, gelber Ziegelweg | Pastell, Smaragd, Gold | Fredoka, Righteous (im Repo) | Konzept |
 | TW-07 | **Märchenwald** | Grimm, Andersen, gemeinfrei | Hexenhaus, Wolf, Schloss, Spiegel, Bohnenranke | Waldgrün, Rotkäppchen-Rot, Honig | Lilita One (im Repo) | Konzept |
-| TW-08 | **Götterberg** | griechische Sagen | Tempel, Olymp, Minotaurus-Labyrinth, Odyssee-Schiff | Marmorweiß, Ägäisblau, Gold | Cinzel (im Repo) | Konzept |
-| TW-09 | **Runen & Nordlicht** | nordische Sagen | Langhäuser, Drachenboote, Runensteine, Polarlicht | Eisblau, Holz, Polarlicht-Grün | Cinzel, Black Ops One (Titel) (im Repo) | Würfelspiele umgesetzt (ART-W2) |
-| TW-10 | **Tafelrunde** | Artus-Sagen, gemeinfrei | Burgen, Ritter, Gral, Schwert im Stein, Banner | Wappenrot, Königsblau, Gold | Cinzel (im Repo) | Konzept |
+| TW-08 | **Götterberg** | griechische Sagen | Tempel, Olymp, Minotaurus-Labyrinth, Odyssee-Schiff | Marmorweiß, Ägäisblau, Gold | Cinzel (im Repo) | Brettspiele umgesetzt (ART-W3) |
+| TW-09 | **Runen & Nordlicht** | nordische Sagen | Langhäuser, Drachenboote, Runensteine, Polarlicht | Eisblau, Holz, Polarlicht-Grün | Cinzel, Black Ops One (Titel) (im Repo) | Würfelspiele (ART-W2) und Brettspiele (ART-W3) umgesetzt |
+| TW-10 | **Tafelrunde** | Artus-Sagen, gemeinfrei | Burgen, Ritter, Gral, Schwert im Stein, Banner | Wappenrot, Königsblau, Gold | Cinzel (im Repo) | Brettspiele umgesetzt (ART-W3) |
 | TW-11 | **Piratenbucht** | Stevenson „Die Schatzinsel“, gemeinfrei | Galeonen, Karten mit X, Rum-Fässer, Papagei, Kanonen | Teak, Segeltuch, Karibikblau | Pirata One, Rye (OFL geprüft) | Würfelspiele umgesetzt (ART-W2) |
 | TW-12 | **Raumhafen** | nur Stimmung (Space Opera), eigene Namen | Raumschiffe, Planeten, Sternenkarten, Andockbuchten | Nachtblau, Neon-Cyan, Warnorange | Orbitron (im Repo) | Konzept |
 | TW-13 | **Neon-Arcade** | nur Stimmung (Synthwave, 80er) | Raster-Horizont, Palmen, Kassetten, Spielautomaten | Magenta, Cyan, Violett | Press Start 2P, Righteous (im Repo) | Würfelspiele umgesetzt (ART-W2) |
@@ -208,6 +209,24 @@ TW-14 Saloon, TW-11 Piratenbucht, TW-09 Runen & Nordlicht und TW-13 Neon-Arcade 
 
 **Grenzen:** kein Wurfgeräusch je Welt (das Konzept nennt es; die vorhandenen Spielklänge bleiben unverändert, eine eigene Tonquelle wäre gesondert zu prüfen); keine Welt-Animation (nichts blinkt, reduzierte Bewegung braucht keine Sonderregel); Symbole und Bedeutungsfarben einzelner Spiele (z. B. Monsterwürfel, Würfelduell, Risiko-Würfeln) bleiben. Nachweise: [art/ART-W2/](art/ART-W2/).
 
+## 5b. Brettwelten (ART-W3, Version 3.16.0)
+
+TW-08 Götterberg, TW-09 Runen & Nordlicht und TW-10 Tafelrunde gelten für die sieben klassischen Brettspiele `schach`, `muehle`, `dame`, `reversi`, `hex`, `viergewinnt`, `backgammon` (alle Varianten, auch Chess960). Registry: `public/games/theme-worlds/board-worlds.js`, Art `board`.
+
+**Gemeinsamer Baustein:** `public/games/theme-worlds/board/board-worlds.css` mit je einem eng begrenzten Adapter pro Spiel (jede Regel beginnt mit `body[data-theme-kind="board"] #kg.kg-<spiel>`): Tisch (`.kg-main`), Bühne (`.wk-stage`), Brettrahmen, helle/dunkle Felder, Linien, Steine beider Seiten, Schachfiguren (Füllung und Kontur), Backgammon-Zungen, Leiste, Verdopplungswürfel und Würfel. Die Welt-Dateien `board/tw-08.css`, `tw-09.css`, `tw-10.css` setzen nur Variablen und Texturen (Marmor, Holz, Runenstein als kleine eigene SVG-Kacheln).
+
+**Schach als Referenz:** Die sechs Figurenarten behalten ihre Umrisse (Wiedererkennung, auch mobil), die Welt legt eigene Zierformen darüber (`art.chess` in der Registry, beim Laden auf sichere SVG-Fragmente geprüft): Götterberg mit Mäanderband, Lorbeer und Helmbusch; Runen & Nordlicht mit Runenband und Runenzeichen; Tafelrunde mit Zickzackborte, Wappenschilden und Wimpel. Weiß und Schwarz unterscheiden sich durch Helligkeit **und** Kontur (Gold, Polarlicht-Grün bzw. Gold auf Königsblau), nicht nur durch Farbton. Auswahl, Zielfelder, letzter Zug und Schachmarkierung bleiben die bisherigen.
+
+| Welt | Brett und Felder | Steine und Figuren | Tisch |
+|---|---|---|---|
+| TW-08 Götterberg | Marmor hell/dunkel, Goldrahmen | Marmorweiß gegen Ägäis-Dunkelblau mit Goldkontur | Steinplatten mit Mäanderfries |
+| TW-09 Runen & Nordlicht | helles Holz und Runenstein, Holzrahmen | Bein gegen Schiefer mit Polarlicht-Kontur | Langhausdielen mit Runenritzung |
+| TW-10 Tafelrunde | helles Holz und königsblaues Holz, Eichenrahmen | Elfenbein gegen Königsblau (Schach) bzw. Wappenrot (Steine), Goldkontur | Burgholz mit Eisenbeschlag |
+
+**TW-09 als eine Welt mit zwei Ausprägungen (Entscheidung):** Statt einer zweiten ID trägt TW-09 ein optionales Feld `facets` (Art, Spiele, Assets, Palette, Schrift, Zier je Ausprägung). Die Registry liefert mit `worldForGame(spiel, id)` die passende Ausprägung: Würfelspiele erhalten unverändert `dice/dice-worlds.css` + `dice/tw-09.css`, Brettspiele nur `board/board-worlds.css` + `board/tw-09.css`. `worldFor` bleibt wie in ART-W2 (nur Hauptform), deshalb laufen die ART-W2-Tests unverändert. Server-Prüfung, Host-Menü und Lebenszyklus nutzen dieselbe Abfrage; es gibt keine zweite Themenverwaltung. Ein Spielwechsel Kniffel ↔ Schach behält TW-09 und tauscht die Dateien.
+
+**Bewusste Grenzen:** Bedeutungsfarben bleiben (Hex Rot/Blau mit Zielrändern, Vier gewinnt Rot/Gelb); nur Rahmen, Felder und Löcher wechseln das Material. Keine Animation, keine Klänge, kein WebGL. Säulen und Ornamente des Konzepts erscheinen als Rahmen, Tischkachel und Figurenzier, nicht als zusätzliche Dekoration im Spielfeld. Domino aus Abschnitt 3.1 gehört nicht zu ART-W3. Nachweise: [art/ART-W3/](art/ART-W3/).
+
 ## 6. Grafik- und Soundquellen (aus dem Konzept, mit Prüfstand)
 
 „Bestätigt“ nur, wenn die Lizenz am 14./15.11.2026 an der Quelle bzw. in einem bereits im Repository dokumentierten Paket geprüft wurde; alles andere ist **ungeprüft** und vor Verwendung je Datei zu belegen.
@@ -238,8 +257,8 @@ Die fachliche Zuordnung folgt dem Konzept. Abgeschlossene Pakete behalten ID und
 |---|---|---|
 | ART-W0 | Fundament: zentrale Registry, Host-Auswahl für Brett-, Karten- und Würfelspiele, Lebenszyklus, Server-Prüfung, Tests | **umgesetzt** (3.12.0, `a997131`) |
 | ART-W1 | Monopoly + Monopoly Deal: TW-01 Schatten über Neuengland | **teilweise:** Monopoly umgesetzt (3.13.0, `154a30e`); Monopoly Deal offen |
-| ART-W2 | Würfelbecher-Welten: TW-14, TW-11, TW-09, TW-13 für alle Würfelspiele | **umgesetzt** (3.14.0) |
-| ART-W3 | Klassische Bretter: Schach, Mühle, Dame, Reversi, Hex, Vier gewinnt, Backgammon mit TW-08, TW-09, TW-10 | geplant |
+| ART-W2 | Würfelbecher-Welten: TW-14, TW-11, TW-09, TW-13 für alle Würfelspiele | **umgesetzt** (3.14.0, `badf3e9`) |
+| ART-W3 | Klassische Bretter: Schach, Mühle, Dame, Reversi, Hex, Vier gewinnt, Backgammon mit TW-08, TW-09, TW-10 | **umgesetzt** (3.16.0) |
 | ART-W4 | Kartenrücken-Welten für die Kartenspiele außerhalb von ART-T | geplant |
 | ART-W5 … | weitere Monopoly-Editionen und Einzelwelten nach Bedarf | Idee |
 

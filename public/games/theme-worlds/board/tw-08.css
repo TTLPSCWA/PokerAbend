@@ -1,0 +1,14 @@
+/* ART-W3 · TW-08 Götterberg: Marmor hell/dunkel, Gold, Ägäisblau, Steinplatten mit Mäander. Schrift Cinzel (im Repository, OFL). */
+body[data-theme-world="TW-08"] {
+  --twb-table: #1d2a36 url('/games/theme-worlds/board/table-tw-08.svg') 0 0 / 240px 240px repeat;
+  --twb-stage: linear-gradient(165deg, #24384a, #121c26); --twb-stage-edge: #c9a24a66; --twb-accent: #e1c27a; --twb-font: 'Cinzel', Georgia, serif; --twb-ink: #f4f1ea; --twb-muted: #cfd6dc;
+  --twb-frame: #c9a24a; --twb-light: #f2efe8 url('/games/theme-worlds/board/light-tw-08.svg') 0 0 / 120px 120px; --twb-dark: #3d4650 url('/games/theme-worlds/board/dark-tw-08.svg') 0 0 / 120px 120px; --twb-line: #e1c27a;
+  --twb-a: radial-gradient(circle at 35% 30%, #ffffff, #e6e1d6 60%, #c9c2b3); --twb-a-ink: #1f5f8b;
+  --twb-b: radial-gradient(circle at 35% 30%, #4f6a85, #1f3446 60%, #0f1c27); --twb-b-ink: #e1c27a;
+  --twb-chess-a: #f6f2ea; --twb-chess-a-edge: #2b3440; --twb-chess-b: #1f3446; --twb-chess-b-edge: #e1c27a; --twb-orn-a: #a8802a; --twb-orn-b: #e1c27a;
+  --twb-rv-cell: #1f5f8b; --twb-vg-frame: #1f5f8b; --twb-hole: #0f2233;
+  --twb-hex-bg: #e9e4d8 url('/games/theme-worlds/board/light-tw-08.svg') 0 0 / 120px 120px; --twb-hex-empty: #f6f2ea; --twb-hex-ink: #3d4650;
+  --twb-bgm-bg: #24384a; --twb-bgm-half: #2c4152; --twb-point-a: #8fa9bd; --twb-point-b: #c9a24a; --twb-bgm-bar: #1d2a36;
+  --twb-chk-a: radial-gradient(ellipse, #ffffff, #d9d3c6); --twb-chk-a-edge: #8a8172; --twb-chk-b: radial-gradient(ellipse, #3a5470, #13212e); --twb-chk-b-edge: #c9a24a;
+  --twb-cube-bg: #f2efe8; --twb-cube-ink: #1d2a36; --twb-die-face: #f6f2ea; --twb-die-pip: #1f3446;
+}

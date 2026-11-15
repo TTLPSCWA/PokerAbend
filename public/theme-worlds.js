@@ -41,7 +41,7 @@ const ThemeWorlds = (() => {
   const forTable = (S) => (S && typeof session !== 'undefined' && session && (!S.code || S.code === session.code) && !(typeof parked !== 'undefined' && parked) ? S : null);
   const resolve = (S) => {
     if (!reg || !S || !S.cardWorld) return null;
-    const w = reg.worldFor(S.game, S.cardWorld);
+    const w = reg.worldForGame(S.game, S.cardWorld); // Ausprägung für dieses Spiel (Facetten: z. B. TW-09 Würfel oder Brett)
     return w && reg.appliesTo(w, S.game, S.variant) && !failed.has(w.id) ? w : null;
   };
 
@@ -92,7 +92,7 @@ const ThemeWorlds = (() => {
     last = S;
     const world = resolve(S);
     if (!world) { deactivate(); return; }
-    if (active && active.world.id === world.id) { update(S); return; }
+    if (active && active.world === world) { update(S); return; } // gleiche Ausprägung; eine andere Facette derselben Welt wird neu aktiviert
     const keep = new Set(world.effects.map((e) => e.type));
     const carried = deactivate({ keep });
     activate(world, S, carried);
@@ -121,7 +121,7 @@ const ThemeWorlds = (() => {
   // Host-Menü für Spiele ohne eigene Kartenwelt-Auswahl: alle freigegebenen Themenwelten, die für Spiel und Variante gelten
   function controlsHTML(S) {
     if (!reg || !S?.you?.isHost) return '';
-    const list = reg.worldsFor(S.game).filter((w) => reg.appliesTo(w, S.game, S.variant)); if (!list.length) return '';
+    const list = reg.worldsForGame(S.game).filter((w) => reg.appliesTo(w, S.game, S.variant)); if (!list.length) return '';
     const sel = S.cardWorld || '', lang = typeof I18n !== 'undefined' && I18n.language === 'en' ? 'en' : 'de';
     const art = (src) => (src ? `<span class="cwp-card twp-preview" style="background-image:url('${esc(src)}')"></span>` : '<span class="cwp-card cwp-none"></span>');
     const pick = (id, name, desc, on, src) => `<button type="button" class="cwp-pick" data-card-world-pick="${esc(id)}" aria-pressed="${on}">${art(src)}<span class="cwp-txt"><b>${esc(name)}</b><small>${esc(desc)}</small></span></button>`;
@@ -136,7 +136,7 @@ const ThemeWorlds = (() => {
     cleanup: () => apply(null),
     refresh: () => apply(last),
     current: () => active?.world || null,
-    worldsFor: (game) => reg?.worldsFor(game) || [],
+    worldsFor: (game) => reg?.worldsForGame(game) || [],
     kind: (name, impl) => { kinds.set(name, impl); if (active?.world.kind === name) apply(last); },
     effect: (type, impl) => { effects.set(type, impl); if (active) apply(last); },
     createScope,

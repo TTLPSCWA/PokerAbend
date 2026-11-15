@@ -21,8 +21,8 @@ test('Registry: die 40 Kartenwelten sind unverändert eingebunden und gelten gen
   const cards = reg.list().filter((w) => w.kind === 'card');
   assert.equal(cards.length, 40); assert.deepEqual(cards.map((w) => w.id), WORLDS.map((w) => w.id));
   assert.ok(cards.every((w) => w.released && w.fallback === 'standard'));
-  // ART-W1: TW-01 (Monopoly); ART-W2: vier Würfelwelten für die 13 Würfelspiele
-  assert.deepEqual(reg.list().filter((w) => w.kind !== 'card').map((w) => [w.id, w.kind, w.games.length]), [['TW-01', 'board', 1], ['TW-14', 'dice', 13], ['TW-11', 'dice', 13], ['TW-09', 'dice', 13], ['TW-13', 'dice', 13]]);
+  // ART-W1: TW-01 (Monopoly); ART-W2: vier Würfelwelten für die 13 Würfelspiele; ART-W3: TW-08 und TW-10 für sieben Brettspiele (TW-09 Brett als Facette)
+  assert.deepEqual(reg.list().filter((w) => w.kind !== 'card').map((w) => [w.id, w.kind, w.games.length]), [['TW-01', 'board', 1], ['TW-14', 'dice', 13], ['TW-11', 'dice', 13], ['TW-09', 'dice', 13], ['TW-13', 'dice', 13], ['TW-08', 'board', 7], ['TW-10', 'board', 7]]);
   // Für jedes Spiel und jede ID dieselbe Entscheidung wie die bisherige Server-Prüfung worldOf()
   for (const game of gameIds) for (const id of [...WORLDS.map((w) => w.id), 'gibts-nicht', '', null, 42]) assert.equal(reg.worldFor(game, id)?.id ?? null, worldOf(game, id)?.id ?? null, `${game}/${id}`);
   for (const game of CARD_WORLD_GAMES) assert.deepEqual(reg.worldsFor(game).map((w) => w.id).sort(), worldsFor(game).map((w) => w.id).sort());
@@ -71,7 +71,7 @@ test('Datenvalidierung: Art, Namen, Spiele, Varianten, Assets, Farben, Schriften
 test('Auswahl: kompatible Welt wird gefunden, inkompatible, unbekannte und nicht freigegebene ergeben den Standard (null)', () => {
   const reg = createRegistry([...BUILTIN, generic(), generic({ id: 'TW-ENTWURF', released: false, games: ['viergewinnt', 'muehle'] })], { gameIds });
   assert.equal(reg.worldFor('viergewinnt', 'TW-TEST').id, 'TW-TEST'); assert.equal(reg.worldFor('muehle', 'TW-TEST'), null, 'anderes Spiel');
-  assert.equal(reg.worldFor('viergewinnt', 'TW-ENTWURF'), null, 'Entwurf'); assert.deepEqual(reg.worldsFor('viergewinnt').map((w) => w.id), ['TW-TEST']);
+  assert.equal(reg.worldFor('viergewinnt', 'TW-ENTWURF'), null, 'Entwurf'); assert.deepEqual(reg.worldsFor('viergewinnt').map((w) => w.id).filter((id) => id.startsWith('TW-T')), ['TW-TEST']);
   assert.equal(reg.worldFor('viergewinnt', 'U-01'), null); assert.equal(reg.worldFor('farbenchaos', 'TW-TEST'), null); assert.equal(reg.worldFor('viergewinnt', { id: 'TW-TEST' }), null);
   assert.ok(Object.isFrozen(reg.worldFor('viergewinnt', 'TW-TEST')), 'Welten sind unveränderlich');
 });
@@ -163,7 +163,7 @@ test('Roadmap: ART-W0 steht als Themenwelt-Paket in der Grafik-Roadmap, die Kart
   // Paketstruktur nach dem Konzept (THEME_WORLDS.md): W0 umgesetzt, W1 teilweise (Monopoly ja, Monopoly Deal offen), W2–W4 geplant; alle Spiel-IDs existieren
   const st = Object.fromEntries(roadmap.theme_packages.map((p) => [p.id, p.status]));
   assert.deepEqual(Object.keys(st), ['ART-W0', 'ART-W1', 'ART-W2', 'ART-W3', 'ART-W4']);
-  assert.equal(st['ART-W0'], 'done'); assert.equal(st['ART-W1'], 'partial'); assert.ok(['in_progress', 'done'].includes(st['ART-W2'])); assert.equal(st['ART-W3'], 'planned'); assert.equal(st['ART-W4'], 'planned');
+  assert.equal(st['ART-W0'], 'done'); assert.equal(st['ART-W1'], 'partial'); assert.ok(['in_progress', 'done'].includes(st['ART-W2'])); assert.ok(['in_progress', 'done'].includes(st['ART-W3'])); assert.equal(st['ART-W4'], 'planned');
   for (const p of roadmap.theme_packages) for (const g of p.games) assert.ok(gameIds.includes(g), p.id + ': ' + g);
   assert.ok(roadmap.theme_packages.find((p) => p.id === 'ART-W1').implementation_commit);
 });

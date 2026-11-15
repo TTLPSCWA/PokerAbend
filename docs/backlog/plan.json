@@ -5885,7 +5885,7 @@
         },
         {
           "path": "public/games/schach/schach.js",
-          "sha256": "50067ff59eeae2a7194ef1e70cc4ee9ddc53e6f7e011591d5d568d256d206d9b"
+          "sha256": "aded7cbdcfa0e5940272dfe852ecea1b0c6e17e499dfa16cec0f1296431a1341"
         }
       ],
       "source_audit_commit": "67bae9724c7d88f76e0432b13b954f32c996fe4b",

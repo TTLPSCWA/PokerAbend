@@ -1,0 +1,14 @@
+/* ART-W3 · TW-10 Tafelrunde: Burgholz, Wappenrot, Königsblau und Gold, Schilde und Banner. Schrift Cinzel (im Repository, OFL). */
+body[data-theme-world="TW-10"] {
+  --twb-table: #2a1d14 url('/games/theme-worlds/board/table-tw-10.svg') 0 0 / 240px 240px repeat;
+  --twb-stage: linear-gradient(165deg, #3a2618, #1c120b); --twb-stage-edge: #d4a83c66; --twb-accent: #e6c46a; --twb-font: 'Cinzel', Georgia, serif; --twb-ink: #f6ead2; --twb-muted: #dccbaa;
+  --twb-frame: #6b4a2a; --twb-light: #e9dcc0 url('/games/theme-worlds/board/light-tw-10.svg') 0 0 / 120px 120px; --twb-dark: #2a2f45 url('/games/theme-worlds/board/dark-tw-10.svg') 0 0 / 120px 120px; --twb-line: #d4a83c;
+  --twb-a: radial-gradient(circle at 35% 30%, #fff8e6, #e9dcc0 60%, #c9b48a); --twb-a-ink: #9e2a2b;
+  --twb-b: radial-gradient(circle at 35% 30%, #c4474a, #9e2a2b 60%, #5e1617); --twb-b-ink: #f6e7b8;
+  --twb-chess-a: #f4ead2; --twb-chess-a-edge: #3a2618; --twb-chess-b: #23408e; --twb-chess-b-edge: #e6c46a; --twb-orn-a: #9e2a2b; --twb-orn-b: #e6c46a;
+  --twb-rv-cell: #23408e; --twb-vg-frame: #23408e; --twb-hole: #121a33;
+  --twb-hex-bg: #e9dcc0 url('/games/theme-worlds/board/light-tw-10.svg') 0 0 / 120px 120px; --twb-hex-empty: #f4ead2; --twb-hex-ink: #2a2f45;
+  --twb-bgm-bg: #3a2618; --twb-bgm-half: #2a1d14; --twb-point-a: #9e2a2b; --twb-point-b: #c9b48a; --twb-bgm-bar: #1c120b;
+  --twb-chk-a: radial-gradient(ellipse, #fff8e6, #e2d2ad); --twb-chk-a-edge: #6b4a2a; --twb-chk-b: radial-gradient(ellipse, #3a5bb0, #172b62); --twb-chk-b-edge: #e6c46a;
+  --twb-cube-bg: #f4ead2; --twb-cube-ink: #2a1d14; --twb-die-face: #f4ead2; --twb-die-pip: #2a1d14;
+}

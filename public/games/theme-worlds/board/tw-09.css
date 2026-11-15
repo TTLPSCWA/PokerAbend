@@ -1,0 +1,15 @@
+/* ART-W3 · TW-09 Runen & Nordlicht (Brett-Ausprägung): helles und dunkles Holz, Runenstein, Eisblau und Polarlicht-Grün. Schrift Cinzel (im Repository, OFL).
+   Die Würfel-Ausprägung derselben Welt liegt unabhängig in /games/theme-worlds/dice/tw-09.css und wird hier nicht geladen. */
+body[data-theme-world="TW-09"] {
+  --twb-table: #1d2226 url('/games/theme-worlds/board/table-tw-09.svg') 0 0 / 240px 240px repeat;
+  --twb-stage: linear-gradient(165deg, #2b3a3a, #14191b); --twb-stage-edge: #6fe0b066; --twb-accent: #8fe8c6; --twb-font: 'Cinzel', Georgia, serif; --twb-ink: #eef2ee; --twb-muted: #c8d3cf;
+  --twb-frame: #6b4a2e; --twb-light: #d9d2c3 url('/games/theme-worlds/board/light-tw-09.svg') 0 0 / 120px 120px; --twb-dark: #2b3236 url('/games/theme-worlds/board/dark-tw-09.svg') 0 0 / 120px 120px; --twb-line: #8fd3c4;
+  --twb-a: radial-gradient(circle at 35% 30%, #f3eee2, #d9d2c3 60%, #b8ad97); --twb-a-ink: #2b3236;
+  --twb-b: radial-gradient(circle at 35% 30%, #5d6b72, #2b3236 60%, #161b1e); --twb-b-ink: #8fe8c6;
+  --twb-chess-a: #ece6d8; --twb-chess-a-edge: #2b2622; --twb-chess-b: #2b3236; --twb-chess-b-edge: #8fd3c4; --twb-orn-a: #4a6f7f; --twb-orn-b: #6fe0b0;
+  --twb-rv-cell: #2f4a44; --twb-vg-frame: #2f4a5a; --twb-hole: #11181b;
+  --twb-hex-bg: #d9d2c3 url('/games/theme-worlds/board/light-tw-09.svg') 0 0 / 120px 120px; --twb-hex-empty: #ece6d8; --twb-hex-ink: #2b3236;
+  --twb-bgm-bg: #3a2a1c; --twb-bgm-half: #2a2018; --twb-point-a: #a08a66; --twb-point-b: #4c6a72; --twb-bgm-bar: #1d2226;
+  --twb-chk-a: radial-gradient(ellipse, #f3eee2, #cfc5ae); --twb-chk-a-edge: #6b4a2e; --twb-chk-b: radial-gradient(ellipse, #3d474c, #161b1e); --twb-chk-b-edge: #8fd3c4;
+  --twb-cube-bg: #ece6d8; --twb-cube-ink: #2b3236; --twb-die-face: #e2e5e1; --twb-die-pip: #16232b;
+}

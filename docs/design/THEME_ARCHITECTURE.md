@@ -132,6 +132,12 @@ Freigegeben als erste vollständige Welt auf dem ART-W0-Fundament: TW-01 „Scha
 - Server (`games/monopoly/room.js`): die Welt des Raums (`cardWorld`) liefert Feld-, Karten- und Figurennamen; Rangfolge eigenes Brett → Welt → Monopoly-Theme → Standard (`public/games/monopoly/themes.js`). Regeln, Ereignisse und IDs unverändert.
 - Browser: Welt-Stylesheet `tw-01.css` wird nur während der Welt geladen (Scope entfernt den `<link>`); der Monopoly-Client trägt dafür reine Anzeige-Attribute (`data-group`, `data-type`, `data-level`, `data-token`). Allgemeine Auswahl im Host-Menü mit Vorschaubild und Variantenprüfung.
 
+## 8a. ART-W3: Facetten und Brettwelten (Stand 3.16.0)
+
+- **Facetten:** Eine Welt kann neben ihrer Hauptform weitere Ausprägungen für andere Spielgruppen tragen (`facets: [{ kind, games, variants, assets, palette, fonts, art, source }]`, Art nie `card`, Spiele disjunkt zur Hauptform und zueinander). `worldForGame`/`worldsForGame` liefern je Spiel die passende, eingefrorene und zwischengespeicherte Ansicht mit derselben ID; `worldFor`/`worldsFor` bleiben unverändert (nur Hauptform). Server (`setCardWorld`, Spielwechsel), Host-Menü und Lebenszyklus nutzen `worldForGame`; wechselt die Ausprägung bei gleicher ID (Kniffel → Schach), aktiviert der Lebenszyklus neu und tauscht die Stylesheets.
+- **Zierformen:** optionales Feld `art` mit kurzen SVG-Fragmenten (nur `path`, `circle`, `ellipse`, `rect`, `polygon`, `polyline`, `line`, `g` mit Geometrie- und Klassenattributen; keine Skripte, Ereignisattribute, Verweise oder Stile). Schach fügt sie als `<g class="tw-ornament">` in jede Figur ein; ohne Welt entsteht exakt die bisherige Ausgabe.
+- **Scoping:** `board-worlds.css` gilt nur unter `body[data-theme-kind="board"]` und je Spiel unter `#kg.kg-<spiel>`; TW-01 (Monopoly, ebenfalls Art `board`) wird dadurch nicht berührt.
+
 ## 9. Paketstruktur (an das Konzept angeglichen)
 
 Die fachliche Zuordnung folgt dem ursprünglichen Konzept (`THEME_WORLDS.md`, Abschnitt 7). Eine frühere Fassung dieses Dokuments hatte ART-W2 als Asset-/Klangpipeline und ART-W3/W4 als allgemeines Ausrollen gedeutet; diese Deutung ist **ersetzt**. Abgeschlossene Pakete behalten ID und Inhalt.
@@ -141,7 +147,7 @@ Die fachliche Zuordnung folgt dem ursprünglichen Konzept (`THEME_WORLDS.md`, Ab
 | **ART-W0** | Fundament: Registry, Host-Auswahl, Lebenszyklus, Server-Prüfung | umgesetzt (3.12.0) | – |
 | **ART-W1** | Monopoly + Monopoly Deal mit TW-01 | teilweise: Monopoly umgesetzt (3.13.0), Monopoly Deal offen | Deal: Kartenfronten-Renderer mit Anzeige-Attributen; Darstellungstexte für Deal-Karten |
 | **ART-W2** | Würfelbecher-Welten TW-14, TW-11, TW-09, TW-13 für alle 13 Würfelspiele | umgesetzt (3.14.0): gemeinsamer Baustein `dice/dice-worlds.css`, Welt-Dateien nur mit Variablen | gemeinsamer Würfel-/Becher-Baustein statt Einzelanpassungen; Wurfgeräusch nur als Effekt mit Schalter (Standard aus), Lebenszyklus-Tests wie Wintermusik |
-| **ART-W3** | Klassische Bretter (Schach, Mühle, Dame, Reversi, Hex, Vier gewinnt, Backgammon) mit TW-08, TW-09, TW-10 | geplant | je Spiel Anzeige-Attribute im Renderer; Figurensätze für Schach als eigene oder geprüfte CC0-Grafiken; Lesbarkeit der Steine (Farbe nie allein) |
+| **ART-W3** | Klassische Bretter (Schach, Mühle, Dame, Reversi, Hex, Vier gewinnt, Backgammon) mit TW-08, TW-09, TW-10 | umgesetzt (3.16.0): Baustein `board/board-worlds.css` mit Adapter je Spiel, Welt-Dateien nur mit Variablen, TW-09 als Facette | je Spiel Anzeige-Attribute im Renderer; Figurensätze für Schach als eigene oder geprüfte CC0-Grafiken; Lesbarkeit der Steine (Farbe nie allein) |
 | **ART-W4** | Kartenrücken-Welten für Kartenspiele außerhalb von ART-T | geplant | gemeinsamer Kartenrücken-Baustein; Einzelspieler (`solitaire`, `mahjong-solitaire`) brauchen eine persönliche Auswahl ohne Raum (Registry-Erweiterung) |
 | **ART-W5 …** | weitere Monopoly-Editionen und Einzelwelten nach Bedarf | Idee | – |
 
@@ -154,6 +160,7 @@ Die Asset-Pipeline aus ART-046 Paket F (`MONOPOLY_THEME_ASSETS.md`) und Schrifte
 | Registry gilt nur für Mehrspieler-Tische (`GAMES`, Raumfeld `cardWorld`) | Welten für Einzelspieler (Abschnitt 3.5 des Konzepts) nicht möglich | eigene Erweiterung mit persönlicher Auswahl, gesondert freigeben |
 | Jede Spieloberfläche braucht Anzeige-Attribute (wie `data-group`, `data-level`, `data-token` bei Monopoly) | Aufwand je Spiel, Gefahr unbeabsichtigter Änderungen | nur Attribute, keine Logik; Regressionstests je Spiel |
 | Feldnamen-Auflösung ist Monopoly-spezifisch (`room.js`, `themes.js`) | Darstellungstexte anderer Spiele brauchen eigene Anbindung | pro Spiel klein halten, Texte nur über `texts` der Registry |
+| Brettwelten ändern Farben über überschriebene Klassen der Spiele (ART-W3) | Umbenennungen in einem Spiel-Stylesheet lassen den Adapter ins Leere laufen (Standardoptik) | `test/ui/art-w3-board-worlds.spec.js` prüft je Spiel, dass sich die kennzeichnenden Elemente ändern |
 | Asset-Fallback prüft nur Vorschau-/Vorladedateien | fehlende, nur per CSS geladene Dateien fallen nicht auf Standard zurück | wichtige Dateien in `assets.preload` aufnehmen |
 | Webfonts pro Welt (Konzept: IM Fell English, Limelight, Playfair Display, Rye, Pirata One) | Ladezeit, Lizenzdateien | selbst hosten, nur bei aktiver Welt laden, Lizenztext neben die Datei |
 | Firefox: „Platz behalten“ während das Spielmodul lädt, holt zurück an den Tisch (`core.js`, vorbestehend) | Welt erscheint wieder | eigener Fehlerauftrag für `core.js` |

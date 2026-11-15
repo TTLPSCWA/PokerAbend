@@ -161,7 +161,7 @@ Der Host wählt für **UNO (Classic), Skip-Bo und Phase 10** eine Kartenwelt; si
 
 ## Themenwelten (ART-W)
 
-Themenwelten für Brett-, Karten-, Würfel- und weitere Spiele nach dem Konzept in `docs/design/THEME_WORLDS.md` (TW-01 bis TW-16, Paketzuordnung dort in Abschnitt 7). Grundsätze: `docs/design/THEME_ARCHITECTURE.md`, Prüfliste: `docs/design/THEME_QUALITY_CHECKLIST.md`. Die Kartenwelten (ART-T) laufen unverändert darüber. ART-W2 bis ART-W4 sind nur geplant; ART-W5 und höher (weitere Monopoly-Editionen und Einzelwelten) bleiben Ideen ohne Eintrag.
+Themenwelten für Brett-, Karten-, Würfel- und weitere Spiele nach dem Konzept in `docs/design/THEME_WORLDS.md` (TW-01 bis TW-16, Paketzuordnung dort in Abschnitt 7). Grundsätze: `docs/design/THEME_ARCHITECTURE.md`, Prüfliste: `docs/design/THEME_QUALITY_CHECKLIST.md`. Die Kartenwelten (ART-T) laufen unverändert darüber. ART-W0 und ART-W2 sind umgesetzt, ART-W1 teilweise (Monopoly), ART-W3 umgesetzt; ART-W4 ist nur geplant; ART-W5 und höher (weitere Monopoly-Editionen und Einzelwelten) bleiben Ideen ohne Eintrag.
 
 #### ART-W0 · Themenwelten-Fundament · P1
 - **Spiele:** `farbenchaos`, `stapelrennen`, `zehnetappen`
@@ -194,7 +194,9 @@ Themenwelten für Brett-, Karten-, Würfel- und weitere Spiele nach dem Konzept 
 - **Spiele:** `schach`, `muehle`, `dame`, `reversi`, `hex`, `viergewinnt`, `backgammon`
 - **Ziel:** TW-08 Götterberg, TW-09 Runen & Nordlicht und TW-10 Tafelrunde: Brettmaterial, Steine und Figurensätze. Nur Aussehen.
 - **Material:** eigene Grafiken; Schachsätze nur eigene oder geprüfte CC0-Quellen.
-- **Status:** planned
+- **Status:** in Arbeit
+- **Umsetzung:** Registry `public/games/theme-worlds/board-worlds.js` (TW-08, TW-10, Brett-Facette von TW-09; Art board, 7 Spiele), Facetten und Zierformen in `registry.js` (`worldForGame`), gemeinsamer Baustein `public/games/theme-worlds/board/board-worlds.css` mit Adapter je Spiel, Welt-Dateien `board/tw-08.css`, `tw-09.css`, `tw-10.css`, eigene SVG-Kacheln (`scripts/build-board-worlds-art.mjs`), Schach: Zierformen je Figur (nur Darstellung); Version 3.16.0.
+- **Nachweise:** `test/art-w3-board-worlds.test.js`, `test/ui/art-w3-board-worlds.spec.js`, `docs/design/THEME_WORLDS.md`, `docs/design/art/ART-W3/README.md`, `docs/design/art/ART-W3/schach-standard-desktop.jpg`, `docs/design/art/ART-W3/schach-tw-08-desktop.jpg`, `docs/design/art/ART-W3/schach-tw-09-desktop.jpg`, `docs/design/art/ART-W3/schach-tw-10-desktop.jpg`, `docs/design/art/ART-W3/schach-tw-08-mobil.jpg`, `docs/design/art/ART-W3/schach-tw-09-mobil.jpg`, `docs/design/art/ART-W3/schach-tw-10-mobil.jpg`
 
 #### ART-W4 · Kartenrücken-Welten · P3
 - **Spiele:** `poker`, `omaha`, `omaha-hi-lo`, `seven-card-stud`, `short-deck`, `five-card-draw`, `blackjack`, `skat`, `doppelkopf`, `schwimmen`, `maumau`, `durak`, `hearts`, `stichmeister`, `praesident`, `mogeln`

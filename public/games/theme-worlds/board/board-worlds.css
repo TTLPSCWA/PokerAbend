@@ -1,0 +1,63 @@
+/* ART-W3 · gemeinsamer Baustein der Brettwelten (TW-08, TW-09 Brett, TW-10) für sieben klassische Brettspiele.
+   Wird nur geladen, solange eine Brettwelt gilt; alle Regeln hängen an body[data-theme-kind="board"] und am jeweiligen Spiel (#kg.kg-<spiel>),
+   damit z. B. Schach-Regeln nie Backgammon oder Würfelspiele treffen. Die Welt-Dateien setzen nur Variablen und Texturen.
+   Nur Material und Farbe: Feldgeometrie, Markierungen (Auswahl, Ziel, letzter Zug, Schach) und Bedeutungsfarben
+   (Hex: Rot/Blau mit Zielrändern, Vier gewinnt: Rot/Gelb) bleiben unverändert. Keine Animationen. */
+
+/* Schrift der drei Brettwelten (im Repository, OFL); wird nur mit diesem Baustein geladen */
+@font-face { font-family: 'Cinzel'; src: url('/fonts/worlds/cinzel.woff2') format('woff2'); font-display: swap; }
+
+/* ---------- Tisch und Bühne (alle sieben Spiele) ---------- */
+body[data-theme-kind="board"] #kg:is(.kg-schach, .kg-muehle, .kg-dame, .kg-reversi, .kg-hex, .kg-viergewinnt, .kg-backgammon) .kg-main { background: var(--twb-table); }
+body[data-theme-kind="board"] #kg:is(.kg-schach, .kg-muehle, .kg-dame, .kg-reversi, .kg-hex, .kg-viergewinnt, .kg-backgammon) .wk-stage { --wk-bg: var(--twb-stage); --wk-edge: var(--twb-stage-edge); --wk-accent: var(--twb-accent); --wk-font: var(--twb-font); --wk-ink: var(--twb-ink); --wk-muted: var(--twb-muted); }
+body[data-theme-kind="board"] #kg:is(.kg-schach, .kg-muehle, .kg-dame, .kg-reversi, .kg-hex, .kg-viergewinnt, .kg-backgammon) :is(.wk-title, .bgm-heading h2) { font-family: var(--twb-font); }
+
+/* ---------- Schach: Felder, Rahmen, Figuren (Silhouette bleibt), Zierformen der Welt ---------- */
+body[data-theme-kind="board"] #kg.kg-schach .ch-board { border-color: var(--twb-frame); background: var(--twb-frame); }
+body[data-theme-kind="board"] #kg.kg-schach .ch-cell { background: var(--twb-light); }
+body[data-theme-kind="board"] #kg.kg-schach .ch-cell.dark { background: var(--twb-dark); }
+body[data-theme-kind="board"] #kg.kg-schach .ch-piece > g:first-child { fill: var(--twb-chess-a); stroke: var(--twb-chess-a-edge); }
+body[data-theme-kind="board"] #kg.kg-schach .ch-piece.black > g:first-child { fill: var(--twb-chess-b); stroke: var(--twb-chess-b-edge); }
+body[data-theme-kind="board"] #kg.kg-schach .tw-ornament .tw-o { fill: var(--twb-orn-a); stroke: none; }
+body[data-theme-kind="board"] #kg.kg-schach .tw-ornament .tw-l { fill: none; stroke: var(--twb-orn-a); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+body[data-theme-kind="board"] #kg.kg-schach .ch-piece.black .tw-ornament .tw-o { fill: var(--twb-orn-b); }
+body[data-theme-kind="board"] #kg.kg-schach .ch-piece.black .tw-ornament .tw-l { stroke: var(--twb-orn-b); }
+
+/* ---------- Mühle: Brettfläche, Linien, Steine ---------- */
+body[data-theme-kind="board"] #kg.kg-muehle .mu-board { background: var(--twb-dark); box-shadow: inset 0 0 0 6px var(--twb-frame), 0 10px 26px #0008; }
+body[data-theme-kind="board"] #kg.kg-muehle .mu-lines { stroke: var(--twb-line); }
+body[data-theme-kind="board"] #kg.kg-muehle :is(.mu-stone, .mu-dot).mu-0 { background: var(--twb-a); }
+body[data-theme-kind="board"] #kg.kg-muehle :is(.mu-stone, .mu-dot).mu-1 { background: var(--twb-b); box-shadow: inset 0 0 0 2px var(--twb-b-ink); } /* Ring: dunkle Steine auch auf dunklem Grund */
+
+/* ---------- Dame: Felder, Rahmen, Steine (Krone bleibt lesbar) ---------- */
+body[data-theme-kind="board"] #kg.kg-dame .dm-board { border-color: var(--twb-frame); }
+body[data-theme-kind="board"] #kg.kg-dame .dm-cell.light { background: var(--twb-light); }
+body[data-theme-kind="board"] #kg.kg-dame .dm-cell.dark { background: var(--twb-dark); }
+body[data-theme-kind="board"] #kg.kg-dame :is(.dm-piece, .dm-dot).dm-0 { background: var(--twb-a); color: var(--twb-a-ink); }
+body[data-theme-kind="board"] #kg.kg-dame :is(.dm-piece, .dm-dot).dm-1 { background: var(--twb-b); color: var(--twb-b-ink); }
+
+/* ---------- Reversi: einheitliche Spielfläche, Steine ---------- */
+body[data-theme-kind="board"] #kg.kg-reversi .rv-board { background: var(--twb-frame); }
+body[data-theme-kind="board"] #kg.kg-reversi .rv-cell { background: var(--twb-rv-cell); }
+body[data-theme-kind="board"] #kg.kg-reversi :is(.rv-disc, .rv-dot).rv-0 { background: var(--twb-b); box-shadow: inset 0 0 0 2px var(--twb-b-ink); }
+body[data-theme-kind="board"] #kg.kg-reversi :is(.rv-disc, .rv-dot).rv-1 { background: var(--twb-a); }
+
+/* ---------- Hex: Brettgrund und leere Felder; Rot/Blau und Zielränder bleiben ---------- */
+body[data-theme-kind="board"] #kg.kg-hex .hx-viewport { background: var(--twb-hex-bg); border-color: var(--twb-frame); }
+body[data-theme-kind="board"] #kg.kg-hex .hx-cell:not(.blue):not(.red):not(.win) { background: var(--twb-hex-empty); color: var(--twb-hex-ink); }
+
+/* ---------- Vier gewinnt: Rahmen und Löcher; Rot/Gelb der Spieler bleibt ---------- */
+body[data-theme-kind="board"] #kg.kg-viergewinnt .vg-board { background: var(--twb-vg-frame); }
+body[data-theme-kind="board"] #kg.kg-viergewinnt .vg-cell { background: var(--twb-hole); }
+
+/* ---------- Backgammon: Brett, Zungen, Steine, Leiste, Verdopplungswürfel, Würfel ---------- */
+body[data-theme-kind="board"] #kg.kg-backgammon .bgm-board { border-color: var(--twb-frame); background: var(--twb-bgm-bg); }
+body[data-theme-kind="board"] #kg.kg-backgammon .bgm-half { background: var(--twb-bgm-half); }
+body[data-theme-kind="board"] #kg.kg-backgammon .bgm-point::before { background: var(--twb-point-a); }
+body[data-theme-kind="board"] #kg.kg-backgammon .bgm-point.oak::before { background: var(--twb-point-b); }
+body[data-theme-kind="board"] #kg.kg-backgammon .bgm-checker.white { background: var(--twb-chk-a); border-color: var(--twb-chk-a-edge); }
+body[data-theme-kind="board"] #kg.kg-backgammon .bgm-checker.black { background: var(--twb-chk-b); border-color: var(--twb-chk-b-edge); }
+body[data-theme-kind="board"] #kg.kg-backgammon :is(.bgm-bar, .bgm-off) { background: var(--twb-bgm-bar); }
+body[data-theme-kind="board"] #kg.kg-backgammon .bgm-cube { background: var(--twb-cube-bg); color: var(--twb-cube-ink); }
+body[data-theme-kind="board"] #kg.kg-backgammon .bgm-dice .die { background: var(--twb-die-face); }
+body[data-theme-kind="board"] #kg.kg-backgammon .bgm-dice .die i.on { background: var(--twb-die-pip); }

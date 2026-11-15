@@ -414,10 +414,11 @@
         "viergewinnt",
         "backgammon"
       ],
-      "status": "planned",
+      "status": "in_progress",
       "implementation_commit": null,
       "goal": "TW-08 Götterberg, TW-09 Runen & Nordlicht und TW-10 Tafelrunde: Brettmaterial, Steine und Figurensätze. Nur Aussehen.",
-      "material": "eigene Grafiken; Schachsätze nur eigene oder geprüfte CC0-Quellen."
+      "material": "eigene Grafiken; Schachsätze nur eigene oder geprüfte CC0-Quellen.",
+      "implementation_note": "Registry `public/games/theme-worlds/board-worlds.js` (TW-08, TW-10, Brett-Facette von TW-09; Art board, 7 Spiele), Facetten und Zierformen in `registry.js` (`worldForGame`), gemeinsamer Baustein `public/games/theme-worlds/board/board-worlds.css` mit Adapter je Spiel, Welt-Dateien `board/tw-08.css`, `tw-09.css`, `tw-10.css`, eigene SVG-Kacheln (`scripts/build-board-worlds-art.mjs`), Schach: Zierformen je Figur (nur Darstellung); Version 3.16.0."
     },
     {
       "id": "ART-W4",
