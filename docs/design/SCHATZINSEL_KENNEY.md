@@ -1,6 +1,6 @@
 # Schatzinsel – Kenney-Inselgrafiken (VIS-069)
 
-Stand: 15. November 2026. Version **3.9.0**. Ausschließlich die grafische Verbesserung von `schatzinsel` wurde freigegeben. Ausgangsstand: `c1a3ae6f7286d95c794317bb3ed88620c997c389`, Version 3.8.0; lokales `main`, `origin/main` und GitHub waren identisch und die vorherige CI erfolgreich. Der tatsächliche Implementierungscommit wird nach Erstellung ergänzt.
+Stand: 15. November 2026. Version **3.9.0**. Ausschließlich die grafische Verbesserung von `schatzinsel` wurde freigegeben. Ausgangsstand: `c1a3ae6f7286d95c794317bb3ed88620c997c389`, Version 3.8.0; lokales `main`, `origin/main` und GitHub waren identisch und die vorherige CI erfolgreich. Implementierungscommit dieser Grafikergänzung: `7a0698b65a36878898f0c85d50b4424c8bc922d0`.
 
 ## Ergebnis
 
