@@ -194,7 +194,8 @@ Themenwelten für Brett-, Karten-, Würfel- und weitere Spiele nach dem Konzept 
 - **Spiele:** `schach`, `muehle`, `dame`, `reversi`, `hex`, `viergewinnt`, `backgammon`
 - **Ziel:** TW-08 Götterberg, TW-09 Runen & Nordlicht und TW-10 Tafelrunde: Brettmaterial, Steine und Figurensätze. Nur Aussehen.
 - **Material:** eigene Grafiken; Schachsätze nur eigene oder geprüfte CC0-Quellen.
-- **Status:** in Arbeit
+- **Status:** done
+- **Implementierungscommit:** `1ae5d0bfe16ee1e68fb22eeb9f5675e62703e41b`
 - **Umsetzung:** Registry `public/games/theme-worlds/board-worlds.js` (TW-08, TW-10, Brett-Facette von TW-09; Art board, 7 Spiele), Facetten und Zierformen in `registry.js` (`worldForGame`), gemeinsamer Baustein `public/games/theme-worlds/board/board-worlds.css` mit Adapter je Spiel, Welt-Dateien `board/tw-08.css`, `tw-09.css`, `tw-10.css`, eigene SVG-Kacheln (`scripts/build-board-worlds-art.mjs`), Schach: Zierformen je Figur (nur Darstellung); Version 3.16.0.
 - **Nachweise:** `test/art-w3-board-worlds.test.js`, `test/ui/art-w3-board-worlds.spec.js`, `docs/design/THEME_WORLDS.md`, `docs/design/art/ART-W3/README.md`, `docs/design/art/ART-W3/schach-standard-desktop.jpg`, `docs/design/art/ART-W3/schach-tw-08-desktop.jpg`, `docs/design/art/ART-W3/schach-tw-09-desktop.jpg`, `docs/design/art/ART-W3/schach-tw-10-desktop.jpg`, `docs/design/art/ART-W3/schach-tw-08-mobil.jpg`, `docs/design/art/ART-W3/schach-tw-09-mobil.jpg`, `docs/design/art/ART-W3/schach-tw-10-mobil.jpg`
 

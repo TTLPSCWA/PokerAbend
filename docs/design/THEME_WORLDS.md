@@ -258,7 +258,7 @@ Die fachliche Zuordnung folgt dem Konzept. Abgeschlossene Pakete behalten ID und
 | ART-W0 | Fundament: zentrale Registry, Host-Auswahl für Brett-, Karten- und Würfelspiele, Lebenszyklus, Server-Prüfung, Tests | **umgesetzt** (3.12.0, `a997131`) |
 | ART-W1 | Monopoly + Monopoly Deal: TW-01 Schatten über Neuengland | **teilweise:** Monopoly umgesetzt (3.13.0, `154a30e`); Monopoly Deal offen |
 | ART-W2 | Würfelbecher-Welten: TW-14, TW-11, TW-09, TW-13 für alle Würfelspiele | **umgesetzt** (3.14.0, `badf3e9`) |
-| ART-W3 | Klassische Bretter: Schach, Mühle, Dame, Reversi, Hex, Vier gewinnt, Backgammon mit TW-08, TW-09, TW-10 | **umgesetzt** (3.16.0) |
+| ART-W3 | Klassische Bretter: Schach, Mühle, Dame, Reversi, Hex, Vier gewinnt, Backgammon mit TW-08, TW-09, TW-10 | **umgesetzt** (3.16.0, `1ae5d0b`) |
 | ART-W4 | Kartenrücken-Welten für die Kartenspiele außerhalb von ART-T | geplant |
 | ART-W5 … | weitere Monopoly-Editionen und Einzelwelten nach Bedarf | Idee |
 
