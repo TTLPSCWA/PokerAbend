@@ -167,4 +167,7 @@ Spielübergreifendes Fundament für Themenwelten (Brett-, Karten-, Würfel- und 
 - **Spiele:** `farbenchaos`, `stapelrennen`, `zehnetappen`
 - **Ziel:** Zentrale, datengetriebene Registry für Themenwelten mit Validierung (Spiele, Varianten, Assets, Farben, Schriften, Effekte, Fallback), Lebenszyklus activate → update → deactivate → cleanup mit vollständigem Aufräumen von Audio, Effekten, Zeitgebern, Listenern, Attributen und DOM, serverseitig autorisierte und raumbezogene Auswahl, Standard-Rückfall bei unbekannten IDs und fehlenden Assets. Keine neue Welt.
 - **Material:** keine neuen Grafiken oder Klänge; die 40 Kartenwelten und ihre Effekte (Schnee, Wintermusik) werden über die Registry eingebunden.
-- **Status:** in Arbeit
+- **Status:** done
+- **Implementierungscommit:** `a99713120c444e9c3c0e405fa00970ee34839836`
+- **Umsetzung:** Registry `public/games/theme-worlds/registry.js` (40 Kartenwelten als Art card, Prüfung von Spielen, Varianten, Assets, Farben, Schriften, Effekten, Fallback), Server prüft `setCardWorld` über die Registry, Lebenszyklus `public/theme-worlds.js` mit Scopes für DOM, Attribute, Listener, Zeitgeber, Audio; Schnee und Wintermusik als Effekte in `public/card-worlds.js`; Version 3.12.0.
+- **Nachweise:** `test/theme-worlds.test.js`, `test/ui/theme-worlds.spec.js`, `test/card-worlds.test.js`, `test/ui/art-t6-winter-lebenszyklus.spec.js`, `docs/design/THEME_ARCHITECTURE.md`
