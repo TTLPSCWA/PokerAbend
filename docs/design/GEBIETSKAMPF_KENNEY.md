@@ -40,7 +40,7 @@ Unabhängige gespeicherte Vergleichszustände enthalten tatsächlich unterschied
 
 [Galerie öffnen](screenshots/gebietskampf/kenney-2026-11/index.html) · [Manifest mit Original-/Export-Prüfsummen](screenshots/gebietskampf/kenney-2026-11/screenshots.json).
 
-Vorher: `a3ecf09456e99311bf94f25fdfbe744d40966a27` / 3.10.0. Nachher: 3.11.0, endgültige Implementierungsreferenz im Dokumentationsnachtrag. Die SHA-256-Werte der tatsächlich geprüften JS-/CSS-Stände und unveränderten fünf autoritativen Quelldateien sind im Manifest festgehalten.
+Vorher: `a3ecf09456e99311bf94f25fdfbe744d40966a27` / 3.10.0. Nachher: 3.11.0, Implementierungscommit `4c22e08aae7ee4e0f8a25a1e7dafb610da5cb6f3`. Die SHA-256-Werte der tatsächlich geprüften JS-/CSS-Stände und unveränderten fünf autoritativen Quelldateien sind im Manifest festgehalten.
 
 40 dauerhaft gespeicherte Exporte, zusammen **3.046.088 Byte**. Jeweils echte Vorher-/Nachher-Kartenansichten bei **1920×1080, 1440×900, 768×1024, 390×844, 360×800 und zusätzlich 900×450**, für Klein-Meridia mit zwei Spielern und Meridia mit sechs Spielern. Da der Auftrag die Seitenleiste betrifft, wird für diese Vergleiche zur eigenen Kartenhand gescrollt. Weitere Aufnahmen zeigen Übersicht, Angriffsauswahl, Kampf, Englisch nach Reconnect und Zuschauer. Keine Montage oder Retusche; WebP-Exporte mit unveränderten Abmessungen und Qualität 0,90, ursprüngliche PNG-Dateien privat erhalten.
 
@@ -69,4 +69,4 @@ Tatsächliches Safari/iOS und physische Touch-/Screenreader-Hardware sind hier n
 
 **Version 3.11.0.** Änderungen nur im Gebietskampf-Frontend, drei verwendeten WebPs samt Manifest/Lizenz/Grafiknachweisen, unmittelbar nötigen Test-/Versions-/Design-/Bildnachweisen. Keine neuen Abhängigkeiten. Vaults und private Originalauswahl bleiben unverändert. Kein Serverdeployment.
 
-Tatsächliche Commit-, Push- und CI-Nachweise folgen nach deren Durchführung im Dokumentationsnachtrag.
+Implementierung: [`4c22e08`](https://github.com/TTLPSCWA/PokerAbend/commit/4c22e08aae7ee4e0f8a25a1e7dafb610da5cb6f3), gezielt auf `main` gepusht. Der Commit enthält ausschließlich die 61 abgegrenzten Paketdateien; die laufenden ART-W0-Arbeitsdateien wurden nicht aufgenommen. [CI-Lauf 43700155768](https://github.com/TTLPSCWA/PokerAbend/actions/runs/43700155768) ist vollständig erfolgreich: 2.069 Node-Tests bestanden, drei bekannte Zeichenspiel-/Bot-Fälle übersprungen, sechs Browser-Rauchproben bestanden und GHCR-Image gebaut/veröffentlicht. Die geplanten Nachtläufe wurden bei diesem Push wie vorgesehen nicht gestartet. Der reine Dokumentationsnachtrag ändert weder Anwendung noch Versionsnummer; sein automatischer CI-Lauf wird vor dem Abschluss ebenfalls kontrolliert.

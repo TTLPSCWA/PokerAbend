@@ -15511,7 +15511,8 @@
         "Kenney icon follow-up 3.11.0: 18 existing + 3 new Node tests, 26 browser cases, isolated test:fast 2069 passed / 3 skipped; see docs/design/GEBIETSKAMPF_KENNEY.md."
       ],
       "commits": [
-        "628cd1129dedb800078b99bc3ad74e167f5ea6c3"
+        "628cd1129dedb800078b99bc3ad74e167f5ea6c3",
+        "4c22e08aae7ee4e0f8a25a1e7dafb610da5cb6f3"
       ],
       "implementation_commit": "628cd1129dedb800078b99bc3ad74e167f5ea6c3",
       "completed_at": "2026-11-07",
@@ -15553,9 +15554,28 @@
             "note": "Each: ten 2–6-player/map combinations, real trade/reinforcement/attack/reload/spectator, six sizes on small/2 and full/6, 80 real screenshots."
           }
         ],
-        "implementation_commit": null,
-        "validation_base": "42e994dff583786389a18b6372896b87c5b1f126"
-      }
+        "implementation_commit": "4c22e08aae7ee4e0f8a25a1e7dafb610da5cb6f3",
+        "validation_base": "42e994dff583786389a18b6372896b87c5b1f126",
+        "ci": {
+          "run_id": 43700155768,
+          "url": "https://github.com/TTLPSCWA/PokerAbend/actions/runs/43700155768",
+          "commit": "4c22e08aae7ee4e0f8a25a1e7dafb610da5cb6f3",
+          "result": "success",
+          "fast_tests": {
+            "passed": 2069,
+            "failed": 0,
+            "skipped": 3
+          },
+          "smoke_tests": {
+            "passed": 6,
+            "failed": 0
+          },
+          "image": "built and published to GHCR",
+          "nightly": "not triggered by push",
+          "server_deployment": false
+        }
+      },
+      "source_audit_commit": "4c22e08aae7ee4e0f8a25a1e7dafb610da5cb6f3"
     },
     {
       "id": "VIS-091",

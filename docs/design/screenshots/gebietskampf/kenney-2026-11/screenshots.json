@@ -2,7 +2,7 @@
   "game": "gebietskampf",
   "date": "2026-11-15",
   "before_commit": "a3ecf09456e99311bf94f25fdfbe744d40966a27",
-  "after_commit": null,
+  "after_commit": "4c22e08aae7ee4e0f8a25a1e7dafb610da5cb6f3",
   "source_hash_format": "UTF-8 LF source files; exact WebP and PNG bytes",
   "source_before": [
     {
@@ -691,5 +691,6 @@
         "sha256": "8898f99818efdbc34b03306ba3adcb6c9d8c34a9c3b90d09255f2eb5a0562e68"
       }
     }
-  ]
+  ],
+  "validation_base": "42e994dff583786389a18b6372896b87c5b1f126"
 }
