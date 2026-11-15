@@ -15268,7 +15268,8 @@
       ],
       "commits": [
         "c76f68e79a2a106d59cd10f7a161778b55084b6e",
-        "aef22f30ca7a26df93ba6b2511d90f482ecb59c2"
+        "aef22f30ca7a26df93ba6b2511d90f482ecb59c2",
+        "cad3ead05a89df06bb8eebc03baf3a966ed46290"
       ],
       "implementation_commit": "c76f68e79a2a106d59cd10f7a161778b55084b6e",
       "completed_at": "2026-11-07",
@@ -15315,6 +15316,25 @@
           "url": "https://github.com/TTLPSCWA/PokerAbend/actions/runs/43691540388",
           "result": "failure",
           "reason": "Existing server/bot restore test timed out waiting for human turn. Reproducible required discard on another player turn handled by a test-only correction; no engine change."
+        },
+        "test_correction_commit": "cad3ead05a89df06bb8eebc03baf3a966ed46290",
+        "ci": {
+          "run_id": 43692125061,
+          "url": "https://github.com/TTLPSCWA/PokerAbend/actions/runs/43692125061",
+          "commit": "cad3ead05a89df06bb8eebc03baf3a966ed46290",
+          "result": "success",
+          "fast_tests": {
+            "passed": 2066,
+            "failed": 0,
+            "skipped": 3
+          },
+          "smoke_tests": {
+            "passed": 6,
+            "failed": 0
+          },
+          "image": "built and published to GHCR",
+          "nightly": "not triggered by push",
+          "server_deployment": false
         }
       },
       "source_audit_commit": "aef22f30ca7a26df93ba6b2511d90f482ecb59c2"

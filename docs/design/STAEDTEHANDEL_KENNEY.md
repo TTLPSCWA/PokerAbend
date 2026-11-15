@@ -1,4 +1,4 @@
-﻿# Städtehandel – Kenney-Gebäude, Version 3.10.0
+# Städtehandel – Kenney-Gebäude, Version 3.10.0
 
 Stand: 15. November 2026. Umsetzung ausschließlich für `staedtehandel`. Die bestehende Aurelia-Karte und die autoritative Spiellogik bleiben erhalten.
 
@@ -45,7 +45,7 @@ Original-PNGs bleiben im privaten Prüfverzeichnis. Die 44 eingecheckten Aufnahm
 | `playwright test test/ui/staedtehandel-art.spec.js test/ui/staedtehandel.spec.js` | **14 bestanden**, Desktop und natives Touch-Profil; tatsächliche Spiel-/Botabläufe, alle Eigentümerfarben/-symbole, Nachbargebäude, Bau per Tastatur/Touch, Zoom/Pan, Rechts-/Zuschauergrenzen, Sprache, Pause und Reconnect |
 | Gezielte Netzwerkfehlerprüfung nach Test-Cache-Korrektur | **2 bestanden** (Desktop/Mobil), jeweils 404, beschädigte Bilddaten, partieller Ausfall und tatsächlicher SVG-Ladefehler nach erfolgreichem Vorladen; ursprünglicher Marker bleibt funktional |
 | Lokale Vergleichsprüfung Chromium / Firefox / WebKit | Jeweils 3/4/5/6-Spieler-Speicherstände, beide Kartengrößen, fünf Größen für Standard/XL, zusätzliche Stadtausbau-/Reconnect-/Zuschauerfälle und fehlende/beschädigte Bilder erfolgreich; keine beobachteten JavaScript-Ausnahmen |
-| `npm run test:fast` | **2.066 bestanden, 0 fehlgeschlagen, 3 übersprungen**; 2.069 Tests insgesamt, letzter vollständiger Lauf 55,129 s |
+| `npm run test:fast` | **2.066 bestanden, 0 fehlgeschlagen, 3 übersprungen**; 2.069 Tests insgesamt, protokollierter lokaler Freigabelauf 55,129 s |
 
 Die neuen Browserprüfungen messen auch, dass Gebäude keine Zahlen, Rohstoffsymbole, Hafensymbole oder anderen Gebäude überdecken. Dekoration hat `pointer-events:none`; der tatsächliche Bauplatz am Gebäudepunkt bleibt erreichbar. Native Touch-Verschiebung und die zugängliche Bauliste werden geprüft. Die vorhandenen Straßen bleiben geometrisch unverändert und schließen am Baupunkt an; ihre Verbindung unter dem Gebäudesockel ist beabsichtigt.
 
@@ -66,4 +66,6 @@ Der erste [CI-Lauf 43691540388](https://github.com/TTLPSCWA/PokerAbend/actions/r
 
 Geändert: ausschließlich Städtehandel-Frontend und seine zwei neuen Bilder/Manifest/Lizenz/Grafiknachweise; unmittelbar nötige Testdateien, Versionsdateien, Lizenz-/Design-/Screenshotdokumentation. Die SHA-256-Werte von `games/staedtehandel/{map,room,rules,index}.js` sind gegenüber dem Ausgangscommit identisch und im Aufnahme-Manifest festgehalten. Keine Änderungen an anderen Spielen, Serverregeln, gemeinsamen Laufzeitdateien, Abhängigkeiten, Vaults oder privaten Quellpaketen.
 
-Version **3.10.0**. Implementierung: [`aef22f3`](https://github.com/TTLPSCWA/PokerAbend/commit/aef22f30ca7a26df93ba6b2511d90f482ecb59c2), auf `main` gepusht. Der erste CI-Lauf und die Testkorrektur sind oben dokumentiert; der CI-Nachlauf der Korrektur wird nach dem Push kontrolliert. Kein Serverdeployment.
+Version **3.10.0**. Implementierung: [`aef22f3`](https://github.com/TTLPSCWA/PokerAbend/commit/aef22f30ca7a26df93ba6b2511d90f482ecb59c2), auf `main` gepusht. Testkorrektur und Nachweise: [`cad3ead`](https://github.com/TTLPSCWA/PokerAbend/commit/cad3ead05a89df06bb8eebc03baf3a966ed46290), ebenfalls auf `main` gepusht. [CI-Lauf 43692125061](https://github.com/TTLPSCWA/PokerAbend/actions/runs/43692125061) vollständig erfolgreich: 2.066 Node-Tests bestanden, drei bekannte Zeichenspiel-/Bot-Fälle übersprungen, sechs Browser-Rauchproben bestanden; Image gebaut und in GHCR veröffentlicht. Die geplanten Nachtprüfungen waren bei diesem Push wie vorgesehen nicht aktiviert. Kein Serverdeployment.
+
+Dokumentationsnachtrag: tatsächliche Commit- und erfolgreiche CI-Nachweise ergänzt; keine Änderung der Anwendung und keine zusätzliche Versionsänderung. Die anschließende reine Dokumentations-CI wird vor dem Abschluss ebenfalls kontrolliert.
