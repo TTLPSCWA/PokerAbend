@@ -1,8 +1,10 @@
 # Themenwelten: Architektur und verbindliche Grundsätze
 
-Stand: 15. November 2026. **Nur Planung und Dokumentation, keine Implementierung.** Nichts in diesem Dokument gibt ein Arbeitspaket frei; gebaut wird nur nach ausdrücklicher Freigabe einer ID (CLAUDE.md/AGENTS.md). Prüfliste für jede neue Welt: [THEME_QUALITY_CHECKLIST.md](THEME_QUALITY_CHECKLIST.md). Lizenzen: [ART_LICENSES.md](ART_LICENSES.md), [SOUND_LICENSES.md](SOUND_LICENSES.md).
+Stand: 15. November 2026 (zuletzt abgeglichen nach ART-W1, Version 3.13.0). Nichts in diesem Dokument gibt ein Arbeitspaket frei; gebaut wird nur nach ausdrücklicher Freigabe einer ID (CLAUDE.md/AGENTS.md). Weltenkatalog und Paketzuordnung: [THEME_WORLDS.md](THEME_WORLDS.md). Prüfliste für jede neue Welt: [THEME_QUALITY_CHECKLIST.md](THEME_QUALITY_CHECKLIST.md). Lizenzen: [ART_LICENSES.md](ART_LICENSES.md), [SOUND_LICENSES.md](SOUND_LICENSES.md).
 
-> **Hinweis zur Quelle:** Das im Auftrag genannte Konzept `docs/design/THEME_WORLDS.md` mit den Themenwelten **TW-01 bis TW-16** und den Paketen ART-W0 bis ART-W4 lag bei dieser Prüfung **nicht vor** – weder auf `main` noch in der Git-Historie, in den Pull-Request-Zweigen des Remotes oder im privaten Vault. Die Einzelprüfung von TW-01 bis TW-16 und ihrer vorgeschlagenen Grafikquellen ist deshalb **offen**. Dieses Dokument legt die Grundsätze fest, die für jede Themenwelt gelten, unabhängig von ihrem Inhalt; IDs und Inhalte des Konzepts werden übernommen, sobald es vorliegt.
+> **Aktueller Stand:** Das ursprüngliche Konzept mit TW-01 bis TW-16 liegt seit dem 15.11.2026 vor und ist in `THEME_WORLDS.md` vollständig übernommen. Umgesetzt sind ART-W0 (zentrale Registry und Lebenszyklus, 3.12.0) und von ART-W1 der Monopoly-Teil von TW-01 (3.13.0).
+>
+> **Historischer Hinweis (Erstfassung dieses Dokuments, vor ART-W0):** Damals lag das Konzept nicht vor – weder auf `main` noch in der Git-Historie, in den Pull-Request-Zweigen des Remotes oder im privaten Vault; die Einzelprüfung von TW-01 bis TW-16 war offen. Abschnitte 1 und 6 beschreiben teilweise diesen damaligen Zustand und sind entsprechend gekennzeichnet.
 
 ## 1. Bestand: fünf getrennte Gestaltungsmechanismen
 
@@ -14,7 +16,7 @@ Stand: 15. November 2026. **Nur Planung und Dokumentation, keine Implementierung
 | **Klangszenen** (EXP-F5) | alle Spiele, Standardszene je Spiel | Spieler (Mixer, Standard 0 %) | lokal pro Gerät | `public/sound/ambient/worlds.js`, `scenes.js` |
 | **Anzeige-Thema** | ganze Seite | jeder Spieler für sich | Kontoeinstellung `display.theme` (`classic`/`night`) | `server/settings.js` |
 
-**Befund:** Eine zentrale Theme-Registry gibt es nicht. Jede Lösung hat eigene Auswahl, eigene Speicherung und eigene Prüfung. Die Kartenwelten sind am weitesten (spielübergreifend, Hostauswahl auch mitten in der Runde, Lebenszyklus getestet); Monopoly hat die strengste Asset- und Freigabekette. Neue Themenwelten sollen beides vereinen, ohne die bestehenden Mechanismen zu brechen: Die vorhandenen IDs (`U-01` … `X-10`, `naval`/`space`, `modern`/`classic`) und Raumfelder bleiben unverändert.
+**Befund (Stand vor ART-W0; seit 3.12.0 gibt es die zentrale Registry `public/games/theme-worlds/registry.js` für Kartenwelten und Themenwelten, siehe Abschnitt 7 – Schiffe-Skins, Monopoly-Themes, Klangszenen und Anzeige-Thema laufen weiterhin getrennt):** Eine zentrale Theme-Registry gab es nicht. Jede Lösung hat eigene Auswahl, eigene Speicherung und eigene Prüfung. Die Kartenwelten sind am weitesten (spielübergreifend, Hostauswahl auch mitten in der Runde, Lebenszyklus getestet); Monopoly hat die strengste Asset- und Freigabekette. Neue Themenwelten sollen beides vereinen, ohne die bestehenden Mechanismen zu brechen: Die vorhandenen IDs (`U-01` … `X-10`, `naval`/`space`, `modern`/`classic`) und Raumfelder bleiben unverändert.
 
 ## 2. Verbindliche Grundsätze für Themenwelten
 
@@ -99,12 +101,12 @@ Zusätzlich verbindlich: genau ein Audio-Element pro Welt, Pause bei verdecktem 
 
 ## 6. Risiken und Unklarheiten
 
-1. **Konzept fehlt:** TW-01 bis TW-16 und die dort genannten Quellen sind ungeprüft (siehe Hinweis oben).
+1. **Konzept (erledigt am 15.11.2026):** Das Konzept TW-01 bis TW-16 liegt vor und ist in `THEME_WORLDS.md` übernommen; der Prüfstand der Quellen steht dort in den Abschnitten 4.1 und 6. Weiterhin fehlt der TW-01-Entwurf `ART-046-mythos-weltkonzept.md`. *(Ursprünglicher Eintrag: „Konzept fehlt: TW-01 bis TW-16 und die dort genannten Quellen sind ungeprüft.“)*
 2. **Vorbilder aus geschützten Marken:** Die interne Vorbild-Tabelle der Kartenwelten nennt u. a. Harry Potter, The Witcher, Minecraft, Pokémon, Super Mario, Fortnite. Stil und Stimmung sind nicht geschützt, Namen, Logos, Figuren, typische Gestaltung und wörtliche Übersetzungen von Marken können es sein (z. B. „Taschenmonster“ ≈ „Pocket Monsters“, „Hauswahl“ im „Zaubersaal“). Das Repository ist öffentlich. Empfehlung: für neue Welten keine Marken als Vorbild nennen und Namen auf Verwechslungsgefahr prüfen; bestehende Welten gesondert prüfen lassen (keine Rechtsberatung in diesem Dokument).
 3. **Pixabay-Musik:** Die Pixabay-Inhaltslizenz (Nutzungsbedingungen, Stand 20. Oktober 2026) verbietet die Weitergabe „on a Standalone basis“, definiert als Inhalt ohne kreative Bearbeitung „in substantially the same form“. Die fünf Stücke liegen nach Neukodierung, Lautheitsangleich und Blenden im **öffentlichen** Repository und sind dort einzeln abrufbar. Ob das als eigenständige Weitergabe gilt, ist **ungeprüft**; Alternative: durch CC0-Stücke ersetzen oder nicht im öffentlichen Repository führen.
 4. **Unvollständige Musiknachweise:** „Winter Wind Loop“ ohne Urheber; die OpenGameArt-Seiten waren bei dieser Prüfung nicht abrufbar (HTTP 403), die CC0-Angaben der fünf OpenGameArt-Stücke sind deshalb **nicht erneut geprüft**.
 5. **Projektlizenz:** `package.json` nennt `UNLICENSED`, eine `LICENSE`-Datei fehlt. „Eigene Grafiken, gleiche Lizenz wie das Projekt“ heißt damit: alle Rechte vorbehalten, keine Lizenz an Dritte. Für eigene Weltgrafiken genügt das; eine Weitergabe an andere wäre gesondert zu regeln.
-6. **Fünf Mechanismen:** Ohne Registry drohen doppelte Auswahl, widersprüchliche Fallbacks und verschiedene Lebenszyklen. Die Registry soll das schrittweise lösen, ohne bestehende Räume zu brechen.
+6. **Fünf Mechanismen:** Ohne Registry drohten doppelte Auswahl, widersprüchliche Fallbacks und verschiedene Lebenszyklen. Seit ART-W0 laufen Karten- und Themenwelten über eine Registry; Schiffe-Skins, Monopoly-Themes (`settings.theme`), Klangszenen und Anzeige-Thema sind weiterhin eigene Mechanismen.
 7. **Performance:** Mehrere Effekt-Ebenen (Schnee, Szenen-Renderer, Welt-CSS) gleichzeitig sind nicht gemessen; jede Welt braucht eine Bildratenmessung (Grafik-Roadmap: ≥ 90 % bei 4× CPU-Drosselung).
 8. **KI-generierte Bilder:** Herkunft und Nutzungsbedingungen des Generators müssen je Datei belegt sein; Darstellungen geschützter Figuren oder Orte bleiben auch als KI-Bild geschützt (siehe ART-046).
 
@@ -130,12 +132,30 @@ Freigegeben als erste vollständige Welt auf dem ART-W0-Fundament: TW-01 „Scha
 - Server (`games/monopoly/room.js`): die Welt des Raums (`cardWorld`) liefert Feld-, Karten- und Figurennamen; Rangfolge eigenes Brett → Welt → Monopoly-Theme → Standard (`public/games/monopoly/themes.js`). Regeln, Ereignisse und IDs unverändert.
 - Browser: Welt-Stylesheet `tw-01.css` wird nur während der Welt geladen (Scope entfernt den `<link>`); der Monopoly-Client trägt dafür reine Anzeige-Attribute (`data-group`, `data-type`, `data-level`, `data-token`). Allgemeine Auswahl im Host-Menü mit Vorschaubild und Variantenprüfung.
 
-## 9. Weitere Pakete (Vorschlag, nicht freigegeben)
+## 9. Paketstruktur (an das Konzept angeglichen)
 
-Mit dem ursprünglichen Konzept (TW-02 bis TW-16) abzugleichen, sobald es vorliegt. Alle Pakete bleiben `planned`; Monopoly Deal braucht eine eigene Freigabe.
+Die fachliche Zuordnung folgt dem ursprünglichen Konzept (`THEME_WORLDS.md`, Abschnitt 7). Eine frühere Fassung dieses Dokuments hatte ART-W2 als Asset-/Klangpipeline und ART-W3/W4 als allgemeines Ausrollen gedeutet; diese Deutung ist **ersetzt**. Abgeschlossene Pakete behalten ID und Inhalt.
 
-| Paket | Inhalt | Voraussetzung | Abnahme |
+| Paket | Inhalt (Konzept) | Stand | Technische Voraussetzungen (Teil des jeweiligen Pakets, keine eigene Freigabe) |
 |---|---|---|---|
-| **ART-W2** – Asset- und Klangpipeline für Welten | Paket-F-Pipeline auf Welten verallgemeinern (Manifest je Welt, Lizenzfelder Pflicht, ungeklärte Dateien blockiert); Klang optional, Standard aus; Rechte- und Quellenprüfung je Welt | Freigabe W2 | Manifest-/Dateiprüfung, Budgets gemessen |
-| **ART-W3** – Welten für weitere Spiele | Welten für Karten-, Würfel- oder Brettspiele nach Konzept | W2, Rechte geklärt | vollständige Prüfliste, Screenshots, Bildrate |
-| **ART-W4** – Ausrollen | weitere Welten einzeln nach Prüfliste | W3, Freigabe je Welt | je Welt eigene Abnahme |
+| **ART-W0** | Fundament: Registry, Host-Auswahl, Lebenszyklus, Server-Prüfung | umgesetzt (3.12.0) | – |
+| **ART-W1** | Monopoly + Monopoly Deal mit TW-01 | teilweise: Monopoly umgesetzt (3.13.0), Monopoly Deal offen | Deal: Kartenfronten-Renderer mit Anzeige-Attributen; Darstellungstexte für Deal-Karten |
+| **ART-W2** | Würfelbecher-Welten TW-14, TW-11, TW-09, TW-13 für alle 13 Würfelspiele | geplant | gemeinsamer Würfel-/Becher-Baustein statt Einzelanpassungen; Wurfgeräusch nur als Effekt mit Schalter (Standard aus), Lebenszyklus-Tests wie Wintermusik |
+| **ART-W3** | Klassische Bretter (Schach, Mühle, Dame, Reversi, Hex, Vier gewinnt, Backgammon) mit TW-08, TW-09, TW-10 | geplant | je Spiel Anzeige-Attribute im Renderer; Figurensätze für Schach als eigene oder geprüfte CC0-Grafiken; Lesbarkeit der Steine (Farbe nie allein) |
+| **ART-W4** | Kartenrücken-Welten für Kartenspiele außerhalb von ART-T | geplant | gemeinsamer Kartenrücken-Baustein; Einzelspieler (`solitaire`, `mahjong-solitaire`) brauchen eine persönliche Auswahl ohne Raum (Registry-Erweiterung) |
+| **ART-W5 …** | weitere Monopoly-Editionen und Einzelwelten nach Bedarf | Idee | – |
+
+Die Asset-Pipeline aus ART-046 Paket F (`MONOPOLY_THEME_ASSETS.md`) und Schriften als selbst gehostete OFL-Dateien (wie bei den Kartenwelten) werden **innerhalb** dieser Pakete genutzt, wenn eine Welt Rastergrafiken oder Webfonts braucht.
+
+## 10. Technische Risiken (Stand 3.13.0)
+
+| Risiko | Auswirkung | Umgang |
+|---|---|---|
+| Registry gilt nur für Mehrspieler-Tische (`GAMES`, Raumfeld `cardWorld`) | Welten für Einzelspieler (Abschnitt 3.5 des Konzepts) nicht möglich | eigene Erweiterung mit persönlicher Auswahl, gesondert freigeben |
+| Jede Spieloberfläche braucht Anzeige-Attribute (wie `data-group`, `data-level`, `data-token` bei Monopoly) | Aufwand je Spiel, Gefahr unbeabsichtigter Änderungen | nur Attribute, keine Logik; Regressionstests je Spiel |
+| Feldnamen-Auflösung ist Monopoly-spezifisch (`room.js`, `themes.js`) | Darstellungstexte anderer Spiele brauchen eigene Anbindung | pro Spiel klein halten, Texte nur über `texts` der Registry |
+| Asset-Fallback prüft nur Vorschau-/Vorladedateien | fehlende, nur per CSS geladene Dateien fallen nicht auf Standard zurück | wichtige Dateien in `assets.preload` aufnehmen |
+| Webfonts pro Welt (Konzept: IM Fell English, Limelight, Playfair Display, Rye, Pirata One) | Ladezeit, Lizenzdateien | selbst hosten, nur bei aktiver Welt laden, Lizenztext neben die Datei |
+| Firefox: „Platz behalten“ während das Spielmodul lädt, holt zurück an den Tisch (`core.js`, vorbestehend) | Welt erscheint wieder | eigener Fehlerauftrag für `core.js` |
+| WebKit: Test-Hilfe `openTable` startet gelegentlich zu früh; `page.route` fängt Bildanfragen nicht ab | sporadische Fehlschläge nur in Tests | Hilfe härten (gesondert), Fallback-Test in WebKit übersprungen |
+| Mehrere Effekt-Ebenen gleichzeitig nicht gemessen | Bildrate auf schwachen Geräten | Bildratenmessung je Welt (Grafik-Roadmap) |

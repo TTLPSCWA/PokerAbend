@@ -34,6 +34,12 @@ const themePackages = blocks.filter((b) => b.startsWith('ART-W')).map((block) =>
     entry.implementation_commit = body.match(/^- \*\*Implementierungscommit:\*\* `([a-f0-9]{40})`$/m)?.[1] || null;
     entry.evidence = [...(body.match(/^- \*\*Nachweise:\*\* (.+)$/m)?.[1] || '').matchAll(/`([^`]+)`/g)].map((x) => x[1]);
     if (!entry.implementation_commit || !entry.evidence.length) throw new Error(entry.id + ': done braucht Commit und Nachweise');
+  } else if (/^- \*\*Status:\*\* teilweise$/m.test(body)) {
+    // teilweise umgesetzt: wie done mit Commit und Nachweisen, aber ausdrücklich nicht abgeschlossen
+    entry.status = 'partial';
+    entry.implementation_commit = body.match(/^- \*\*Implementierungscommit:\*\* `([a-f0-9]{40})`$/m)?.[1] || null;
+    entry.evidence = [...(body.match(/^- \*\*Nachweise:\*\* (.+)$/m)?.[1] || '').matchAll(/`([^`]+)`/g)].map((x) => x[1]);
+    if (!entry.implementation_commit || !entry.evidence.length) throw new Error(entry.id + ': teilweise braucht Commit und Nachweise');
   } else if (/^- \*\*Status:\*\* in Arbeit$/m.test(body)) entry.status = 'in_progress';
   return entry;
 });

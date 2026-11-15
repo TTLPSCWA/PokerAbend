@@ -34,7 +34,7 @@ Einordnung der Lizenzarten (geprüft am 15.11.2026 an den offiziellen Texten):
 | OpenGameArt-Musik (fünf Stücke unten) | **ungeprüft:** Die Quellseiten waren bei der Prüfung nicht abrufbar (HTTP 403); die CC0-Angaben stammen aus der ursprünglichen Erfassung. |
 | `winter-wind.mp3` | **unvollständig:** Urheber fehlt. |
 | Vorbild-Tabelle der Kartenwelten (`CARD_WORLDS.md`) | Namen geschützter Titel als Vorbild im öffentlichen Repository; einzelne Weltnamen nah an Marken (z. B. „Taschenmonster“). Gesonderte Prüfung empfohlen, siehe `THEME_ARCHITECTURE.md`, Abschnitt 6. |
-| Themenwelten TW-01 bis TW-16 | Konzept `THEME_WORLDS.md` lag nicht vor; vorgeschlagene Quellen **ungeprüft**. |
+| Themenwelten TW-01 bis TW-16 | Konzept liegt seit 15.11.2026 vor (`THEME_WORLDS.md`). Prüfstand je Quelle dort in Abschnitt 6: bestätigt sind Kenney (CC0), game-icons.net (CC BY 3.0), Pepper&Carrot (CC BY 4.0, ohne „MiniFantasyTheater“, das CC BY-SA ist) und die OFL-Angabe von IM Fell English, Limelight, Playfair Display, Rye und Pirata One; alle übrigen Quellen (u. a. Poly Haven, ambientCG, Glitch, Blender Studio, Kartensets, Schachsätze, Quaternius, KayKit) sind **ungeprüft**. Umgesetzt ist nur TW-01 mit ausschließlich eigenen Grafiken (Zeile ART-W1 oben). *(Stand vor dem 15.11.2026: Konzept lag nicht vor.)* |
 
 ## Eigene Grafiken (Spieleabend, gleiche Lizenz wie das Projekt)
 

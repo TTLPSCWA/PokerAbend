@@ -161,7 +161,7 @@ Der Host wählt für **UNO (Classic), Skip-Bo und Phase 10** eine Kartenwelt; si
 
 ## Themenwelten (ART-W)
 
-Spielübergreifendes Fundament für Themenwelten (Brett-, Karten-, Würfel- und weitere Spiele). Grundsätze: `docs/design/THEME_ARCHITECTURE.md`, Prüfliste: `docs/design/THEME_QUALITY_CHECKLIST.md`. Die Kartenwelten (ART-T) laufen unverändert darüber.
+Themenwelten für Brett-, Karten-, Würfel- und weitere Spiele nach dem Konzept in `docs/design/THEME_WORLDS.md` (TW-01 bis TW-16, Paketzuordnung dort in Abschnitt 7). Grundsätze: `docs/design/THEME_ARCHITECTURE.md`, Prüfliste: `docs/design/THEME_QUALITY_CHECKLIST.md`. Die Kartenwelten (ART-T) laufen unverändert darüber. ART-W2 bis ART-W4 sind nur geplant; ART-W5 und höher (weitere Monopoly-Editionen und Einzelwelten) bleiben Ideen ohne Eintrag.
 
 #### ART-W0 · Themenwelten-Fundament · P1
 - **Spiele:** `farbenchaos`, `stapelrennen`, `zehnetappen`
@@ -173,10 +173,28 @@ Spielübergreifendes Fundament für Themenwelten (Brett-, Karten-, Würfel- und 
 - **Nachweise:** `test/theme-worlds.test.js`, `test/ui/theme-worlds.spec.js`, `test/card-worlds.test.js`, `test/ui/art-t6-winter-lebenszyklus.spec.js`, `docs/design/THEME_ARCHITECTURE.md`
 
 #### ART-W1 · Referenzwelt TW-01 „Schatten über Neuengland“ · P1
-- **Spiele:** `monopoly`
+- **Spiele:** `monopoly`, `monopoly-deal`
 - **Ziel:** Erste vollständige Themenwelt auf dem ART-W0-Fundament: neblige Hafenstadt der 1920er für Monopoly (Standard und Tempowürfel, nicht Junior), Auswahl im Host-Menü, Rückkehr zu „Standard“ ohne Rückstände. Spielregeln, Preise, Mieten, Kartenwirkungen, Socket-Ereignisse und Spiel-IDs unverändert.
 - **Material:** eigene SVG-Grafiken (Tisch, Brettmitte, Kartenrücken, acht Figuren, Fischerhütte, Leuchtturm, Vorschau) aus `scripts/build-tw01-art.mjs`, eigene Feld-, Karten- und Figurennamen; keine fremden Dateien.
-- **Status:** done
+- **Status:** teilweise
 - **Implementierungscommit:** `154a30e05b4ae4ec7271e3df5d2dbfdd07c22df8`
-- **Umsetzung:** Welt `TW-01` in `public/games/theme-worlds/tw-01.js` (Darstellungstexte für 40 Felder, 32 Karten, 8 Figuren), Grafiken und Stylesheet in `public/games/theme-worlds/tw-01/`, Namensauflösung über die Welt des Raums in `games/monopoly/room.js` und `public/games/monopoly/themes.js`, Anzeige-Attribute in `public/games/monopoly/monopoly.js`; Version 3.13.0.
+- **Umsetzung:** Monopoly umgesetzt (Standard und Tempowürfel); Monopoly Deal offen (gesonderte Freigabe). Welt `TW-01` in `public/games/theme-worlds/tw-01.js` (Darstellungstexte für 40 Felder, 32 Karten, 8 Figuren), Grafiken und Stylesheet in `public/games/theme-worlds/tw-01/`, Namensauflösung über die Welt des Raums in `games/monopoly/room.js` und `public/games/monopoly/themes.js`, Anzeige-Attribute in `public/games/monopoly/monopoly.js`; Version 3.13.0.
 - **Nachweise:** `test/art-w1-tw01.test.js`, `test/ui/art-w1-tw01.spec.js`, `docs/design/THEME_WORLDS.md`, `docs/design/art/ART-W1/README.md`, `docs/design/art/ART-W1/standard-desktop.jpg`, `docs/design/art/ART-W1/tw-01-desktop.jpg`, `docs/design/art/ART-W1/standard-mobil.jpg`, `docs/design/art/ART-W1/tw-01-mobil.jpg`
+
+#### ART-W2 · Würfelbecher-Welten · P2
+- **Spiele:** `kniffel`, `maexchen`, `schocken`, `zehntausend`, `wuerfelpoker`, `luegenwuerfel`, `chicago`, `wuerfelduell`, `risiko-wuerfeln`, `wuerfeljagd`, `monsterwuerfel`, `wuerfel-auktion`, `shutthebox`
+- **Ziel:** TW-14 Saloon, TW-11 Piratenbucht, TW-09 Runen & Nordlicht und TW-13 Neon-Arcade für alle Würfelspiele: Würfelbecher, Würfelmaterial, Tischfläche, Wurfgeräusch (abschaltbar). Nur Aussehen.
+- **Material:** eigene Grafiken; freie Quellen laut `THEME_WORLDS.md` Abschnitt 6 erst nach Prüfung je Datei.
+- **Status:** planned
+
+#### ART-W3 · Klassische Bretter · P2
+- **Spiele:** `schach`, `muehle`, `dame`, `reversi`, `hex`, `viergewinnt`, `backgammon`
+- **Ziel:** TW-08 Götterberg, TW-09 Runen & Nordlicht und TW-10 Tafelrunde: Brettmaterial, Steine und Figurensätze. Nur Aussehen.
+- **Material:** eigene Grafiken; Schachsätze nur eigene oder geprüfte CC0-Quellen.
+- **Status:** planned
+
+#### ART-W4 · Kartenrücken-Welten · P3
+- **Spiele:** `poker`, `omaha`, `omaha-hi-lo`, `seven-card-stud`, `short-deck`, `five-card-draw`, `blackjack`, `skat`, `doppelkopf`, `schwimmen`, `maumau`, `durak`, `hearts`, `stichmeister`, `praesident`, `mogeln`
+- **Ziel:** Kartenrücken, Bildkarten-Stil und Tisch in passenden Welten (u. a. TW-02, TW-03, TW-09, TW-10, TW-13, TW-14) für Kartenspiele außerhalb von ART-T. Einzelspieler-Kartenspiele brauchen eine eigene Erweiterung. Nur Aussehen.
+- **Material:** eigene Grafiken; Kartensets laut Konzept erst nach Prüfung.
+- **Status:** planned

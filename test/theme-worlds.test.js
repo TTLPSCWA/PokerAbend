@@ -160,4 +160,8 @@ test('Roadmap: ART-W0 steht als Themenwelt-Paket in der Grafik-Roadmap, die Kart
   assert.ok(w0); assert.deepEqual(w0.games, ['farbenchaos', 'stapelrennen', 'zehnetappen']); assert.ok(['in_progress', 'done'].includes(w0.status));
   assert.deepEqual(roadmap.world_packages.map((p) => p.id), ['ART-T1', 'ART-T2a', 'ART-T2b', 'ART-T2c', 'ART-T3', 'ART-T4', 'ART-T5', 'ART-T6']);
   assert.ok(roadmap.world_packages.every((p) => p.status === 'done'));
+  // Paketstruktur nach dem Konzept (THEME_WORLDS.md): W0 umgesetzt, W1 teilweise (Monopoly ja, Monopoly Deal offen), W2–W4 geplant; alle Spiel-IDs existieren
+  assert.deepEqual(roadmap.theme_packages.map((p) => [p.id, p.status]), [['ART-W0', 'done'], ['ART-W1', 'partial'], ['ART-W2', 'planned'], ['ART-W3', 'planned'], ['ART-W4', 'planned']]);
+  for (const p of roadmap.theme_packages) for (const g of p.games) assert.ok(gameIds.includes(g), p.id + ': ' + g);
+  assert.ok(roadmap.theme_packages.find((p) => p.id === 'ART-W1').implementation_commit);
 });

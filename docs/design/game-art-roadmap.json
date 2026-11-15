@@ -346,13 +346,14 @@
       "name": "Referenzwelt TW-01 „Schatten über Neuengland“",
       "priority": "P1",
       "games": [
-        "monopoly"
+        "monopoly",
+        "monopoly-deal"
       ],
-      "status": "done",
+      "status": "partial",
       "implementation_commit": "154a30e05b4ae4ec7271e3df5d2dbfdd07c22df8",
       "goal": "Erste vollständige Themenwelt auf dem ART-W0-Fundament: neblige Hafenstadt der 1920er für Monopoly (Standard und Tempowürfel, nicht Junior), Auswahl im Host-Menü, Rückkehr zu „Standard“ ohne Rückstände. Spielregeln, Preise, Mieten, Kartenwirkungen, Socket-Ereignisse und Spiel-IDs unverändert.",
       "material": "eigene SVG-Grafiken (Tisch, Brettmitte, Kartenrücken, acht Figuren, Fischerhütte, Leuchtturm, Vorschau) aus `scripts/build-tw01-art.mjs`, eigene Feld-, Karten- und Figurennamen; keine fremden Dateien.",
-      "implementation_note": "Welt `TW-01` in `public/games/theme-worlds/tw-01.js` (Darstellungstexte für 40 Felder, 32 Karten, 8 Figuren), Grafiken und Stylesheet in `public/games/theme-worlds/tw-01/`, Namensauflösung über die Welt des Raums in `games/monopoly/room.js` und `public/games/monopoly/themes.js`, Anzeige-Attribute in `public/games/monopoly/monopoly.js`; Version 3.13.0.",
+      "implementation_note": "Monopoly umgesetzt (Standard und Tempowürfel); Monopoly Deal offen (gesonderte Freigabe). Welt `TW-01` in `public/games/theme-worlds/tw-01.js` (Darstellungstexte für 40 Felder, 32 Karten, 8 Figuren), Grafiken und Stylesheet in `public/games/theme-worlds/tw-01/`, Namensauflösung über die Welt des Raums in `games/monopoly/room.js` und `public/games/monopoly/themes.js`, Anzeige-Attribute in `public/games/monopoly/monopoly.js`; Version 3.13.0.",
       "evidence": [
         "test/art-w1-tw01.test.js",
         "test/ui/art-w1-tw01.spec.js",
@@ -363,6 +364,75 @@
         "docs/design/art/ART-W1/standard-mobil.jpg",
         "docs/design/art/ART-W1/tw-01-mobil.jpg"
       ]
+    },
+    {
+      "id": "ART-W2",
+      "name": "Würfelbecher-Welten",
+      "priority": "P2",
+      "games": [
+        "kniffel",
+        "maexchen",
+        "schocken",
+        "zehntausend",
+        "wuerfelpoker",
+        "luegenwuerfel",
+        "chicago",
+        "wuerfelduell",
+        "risiko-wuerfeln",
+        "wuerfeljagd",
+        "monsterwuerfel",
+        "wuerfel-auktion",
+        "shutthebox"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "goal": "TW-14 Saloon, TW-11 Piratenbucht, TW-09 Runen & Nordlicht und TW-13 Neon-Arcade für alle Würfelspiele: Würfelbecher, Würfelmaterial, Tischfläche, Wurfgeräusch (abschaltbar). Nur Aussehen.",
+      "material": "eigene Grafiken; freie Quellen laut `THEME_WORLDS.md` Abschnitt 6 erst nach Prüfung je Datei."
+    },
+    {
+      "id": "ART-W3",
+      "name": "Klassische Bretter",
+      "priority": "P2",
+      "games": [
+        "schach",
+        "muehle",
+        "dame",
+        "reversi",
+        "hex",
+        "viergewinnt",
+        "backgammon"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "goal": "TW-08 Götterberg, TW-09 Runen & Nordlicht und TW-10 Tafelrunde: Brettmaterial, Steine und Figurensätze. Nur Aussehen.",
+      "material": "eigene Grafiken; Schachsätze nur eigene oder geprüfte CC0-Quellen."
+    },
+    {
+      "id": "ART-W4",
+      "name": "Kartenrücken-Welten",
+      "priority": "P3",
+      "games": [
+        "poker",
+        "omaha",
+        "omaha-hi-lo",
+        "seven-card-stud",
+        "short-deck",
+        "five-card-draw",
+        "blackjack",
+        "skat",
+        "doppelkopf",
+        "schwimmen",
+        "maumau",
+        "durak",
+        "hearts",
+        "stichmeister",
+        "praesident",
+        "mogeln"
+      ],
+      "status": "planned",
+      "implementation_commit": null,
+      "goal": "Kartenrücken, Bildkarten-Stil und Tisch in passenden Welten (u. a. TW-02, TW-03, TW-09, TW-10, TW-13, TW-14) für Kartenspiele außerhalb von ART-T. Einzelspieler-Kartenspiele brauchen eine eigene Erweiterung. Nur Aussehen.",
+      "material": "eigene Grafiken; Kartensets laut Konzept erst nach Prüfung."
     }
   ]
 }
