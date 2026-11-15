@@ -340,6 +340,18 @@
         "test/ui/art-t6-winter-lebenszyklus.spec.js",
         "docs/design/THEME_ARCHITECTURE.md"
       ]
+    },
+    {
+      "id": "ART-W1",
+      "name": "Referenzwelt TW-01 „Schatten über Neuengland“",
+      "priority": "P1",
+      "games": [
+        "monopoly"
+      ],
+      "status": "in_progress",
+      "implementation_commit": null,
+      "goal": "Erste vollständige Themenwelt auf dem ART-W0-Fundament: neblige Hafenstadt der 1920er für Monopoly (Standard und Tempowürfel, nicht Junior), Auswahl im Host-Menü, Rückkehr zu „Standard“ ohne Rückstände. Spielregeln, Preise, Mieten, Kartenwirkungen, Socket-Ereignisse und Spiel-IDs unverändert.",
+      "material": "eigene SVG-Grafiken (Tisch, Brettmitte, Kartenrücken, acht Figuren, Fischerhütte, Leuchtturm, Vorschau) aus `scripts/build-tw01-art.mjs`, eigene Feld-, Karten- und Figurennamen; keine fremden Dateien."
     }
   ]
 }

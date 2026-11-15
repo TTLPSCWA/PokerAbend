@@ -35,7 +35,7 @@ Neues Theme einbauen: Eintrag in `BUILTIN` (themes.js) mit `released: false`; er
 Der Server löst die 40 Namen auf (`Room.fieldNames()`) und sendet sie als `g.names` im Spielzustand. Brett, Dialoge, Protokoll (`landet auf …`, `Kauf …`, Steuer) und Kartentexte nutzen dieselbe Quelle, damit nichts auseinanderläuft. Rangfolge je Feld:
 
 1. Name aus einem **eigenen Brett** (nur die 28 Grundstücke) – eigene Bretter werden nie überschrieben oder umbenannt, die Dateien bleiben unverändert;
-2. Name aus dem Theme;
+2. Name aus der gewählten Themenwelt (ART-W1, z. B. TW-01, Raumfeld `cardWorld`; siehe `THEME_WORLDS.md`), danach aus dem Theme;
 3. Name des Standardbretts („Spieleabend-Stadt“) bzw. aus `data.js`.
 
 Die zwölf Nicht-Grundstücke (Los, Gefängnis, Frei Parken, Gehe ins Gefängnis, Gemeinschaft, Ereignis, Steuern) sind in eigenen Brettern nicht editierbar; dort gilt der Theme-Name.

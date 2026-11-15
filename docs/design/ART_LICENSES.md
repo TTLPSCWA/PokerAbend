@@ -51,6 +51,7 @@ Einordnung der Lizenzarten (geprüft am 15.11.2026 an den offiziellen Texten):
 | ART-013 | `public/games/schiffe/art/preview-space.webp` | Bildschirmfoto des laufenden Spiels (Designauswahl), erzeugt mit `node scripts/capture-schiffe-skins.mjs` |
 | ART-013 | `public/games/schiffe/art/preview-naval.webp` | Bildschirmfoto des laufenden Spiels (Designauswahl), erzeugt mit `node scripts/capture-schiffe-skins.mjs` |
 | ART-046 (Paket F) | `test/fixtures/monopoly-theme/dist/assets/*.webp` (nur Testdaten, nie ausgeliefert) | eigene abstrakte Testgrafik (Farbverläufe, Polygone, Kreise), prozedural erzeugt mit `node scripts/monopoly-test-art.mjs`, optimiert mit `node scripts/build-monopoly-theme.mjs`; keine Vorlage, keine Figur, keine Marke |
+| ART-W1 · TW-01 „Schatten über Neuengland“ | `public/games/theme-worlds/tw-01/preview.svg`, `table.svg`, `center.svg`, `card-back.svg`, `house.svg`, `lighthouse.svg`, `token-hat.svg`, `token-car.svg`, `token-dog.svg`, `token-ship.svg`, `token-thimble.svg`, `token-barrow.svg`, `token-shoe.svg`, `token-cat.svg`, dazu `tw-01.css` | eigene Zeichnungen (Leuchtturm-Hafenszene, Hafenplanken, Kartenrücken mit Kompassrose, Fischerhütte, Leuchtturm, acht Messingfiguren), erzeugt mit `node scripts/build-tw01-art.mjs`; keine Vorlage, keine fremde Schrift (Georgia/serif aus dem System), keine Namen, Figuren oder Zeichen aus fremden Werken; Feld-, Karten- und Figurennamen eigene Texte in `public/games/theme-worlds/tw-01.js` |
 
 ## Fremde Grafiken
 

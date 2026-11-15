@@ -122,13 +122,20 @@ Der Projektinhaber hat ART-W0 als technisches Fundament freigegeben (Registry, L
 
 Neue Welt (ab ART-W1): Eintrag in `BUILTIN` der Registry mit `released: false`, Effekt-Umsetzungen über `ThemeWorlds.effect(typ, { activate, update, suspend, deactivate })`, Art-Darstellung über `ThemeWorlds.kind(art, { activate, update, deactivate })`; alle Ressourcen nur über den übergebenen Scope anlegen. Freischalten erst nach der Prüfliste.
 
-## 8. Weitere Pakete ART-W1 bis ART-W4 (Vorschlag, nicht freigegeben)
+## 8. ART-W1: Referenzwelt TW-01 für Monopoly (Stand 3.13.0)
 
-Mit dem Konzept `THEME_WORLDS.md` abzugleichen, sobald es vorliegt. Alle Pakete bleiben `planned`.
+Freigegeben als erste vollständige Welt auf dem ART-W0-Fundament: TW-01 „Schatten über Neuengland“ (Konzept, Palette und Grenzen in [THEME_WORLDS.md](THEME_WORLDS.md)). Erweiterungen dafür:
+
+- Registry: optionales Feld `texts` (Darstellungstexte `fields`, `cards`, `tokens`; nur Text, nie Wirkung), Welt-Art `board`, Varianten `monopoly: classic, speed`.
+- Server (`games/monopoly/room.js`): die Welt des Raums (`cardWorld`) liefert Feld-, Karten- und Figurennamen; Rangfolge eigenes Brett → Welt → Monopoly-Theme → Standard (`public/games/monopoly/themes.js`). Regeln, Ereignisse und IDs unverändert.
+- Browser: Welt-Stylesheet `tw-01.css` wird nur während der Welt geladen (Scope entfernt den `<link>`); der Monopoly-Client trägt dafür reine Anzeige-Attribute (`data-group`, `data-type`, `data-level`, `data-token`). Allgemeine Auswahl im Host-Menü mit Vorschaubild und Variantenprüfung.
+
+## 9. Weitere Pakete (Vorschlag, nicht freigegeben)
+
+Mit dem ursprünglichen Konzept (TW-02 bis TW-16) abzugleichen, sobald es vorliegt. Alle Pakete bleiben `planned`; Monopoly Deal braucht eine eigene Freigabe.
 
 | Paket | Inhalt | Voraussetzung | Abnahme |
 |---|---|---|---|
-| **ART-W1** – Grundlagen, Rechte und Pilotwahl | Konzept TW-01–TW-16 bereitstellen und prüfen; Quellen je Welt mit Lizenztext belegen; Entscheidung zu den Risiken in Abschnitt 6; Pilotwelt und Zielspiele festlegen | Freigabe W1 | Nachweisliste je Welt vollständig |
-| **ART-W2** – Asset- und Klangpipeline für Welten | Paket-F-Pipeline auf Welten verallgemeinern (Manifest je Welt, Lizenzfelder Pflicht, ungeklärte Dateien blockiert); Klang optional, Standard aus | W1 | Manifest-/Dateiprüfung, Budgets gemessen |
-| **ART-W3** – Pilotwelt | eine Welt für zwei bis drei Spiele vollständig, auch ein Brett- oder Würfelspiel | W2, Rechte geklärt | vollständige Prüfliste, Screenshots, Bildrate |
+| **ART-W2** – Asset- und Klangpipeline für Welten | Paket-F-Pipeline auf Welten verallgemeinern (Manifest je Welt, Lizenzfelder Pflicht, ungeklärte Dateien blockiert); Klang optional, Standard aus; Rechte- und Quellenprüfung je Welt | Freigabe W2 | Manifest-/Dateiprüfung, Budgets gemessen |
+| **ART-W3** – Welten für weitere Spiele | Welten für Karten-, Würfel- oder Brettspiele nach Konzept | W2, Rechte geklärt | vollständige Prüfliste, Screenshots, Bildrate |
 | **ART-W4** – Ausrollen | weitere Welten einzeln nach Prüfliste | W3, Freigabe je Welt | je Welt eigene Abnahme |

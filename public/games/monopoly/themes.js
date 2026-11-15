@@ -69,10 +69,10 @@ export function useThemeRegistry(registry) { const previous = active; active = r
 
 // Anzeigenamen aller 40 Felder, in dieser Rangfolge:
 //   1. Name aus einem eigenen Brett (nur die 28 Grundstücke) – eigene Bretter werden nie überschrieben,
-//   2. Name aus dem Theme (Feld-ID 0–39),
+//   2. Name aus der gewählten Themenwelt (ART-W, `world.fields`), dann aus dem Theme (Feld-ID 0–39),
 //   3. Name des gewählten Bretts bzw. der Grundstandard aus data.js.
-export function fieldNames({ theme = DEFAULT_THEME, board = null, registry = active } = {}) {
-  const own = registry.get(theme)?.fields || {};
+export function fieldNames({ theme = DEFAULT_THEME, board = null, registry = active, world = null } = {}) {
+  const own = { ...(registry.get(theme)?.fields || {}), ...(world?.fields || {}) };
   const names = board && Array.isArray(board.names) && board.names.length === PROPERTIES.length ? board.names : null; // ein unvollständiges Brett wird ignoriert
   const custom = board?.id !== 'default' ? names : null;
   return BOARD.map((f) => {
@@ -84,7 +84,7 @@ export function fieldNames({ theme = DEFAULT_THEME, board = null, registry = act
 }
 
 // Kartentext: Theme-Text, sonst der Standardtext. Die Wirkung der Karte (Geld, Zielfeld …) steht allein in data.js.
-export function cardText(deck, index, { theme = DEFAULT_THEME, board = null, registry = active } = {}) {
-  const text=registry.get(theme)?.cards?.[deck]?.[index] ?? (deck === 'event' ? EVENTS : CHEST)[index].text;
-  return text.replace(/\{field:(\d{1,2})\}/g,(_,i)=>fieldNames({theme,board,registry})[Number(i)]||'?');
+export function cardText(deck, index, { theme = DEFAULT_THEME, board = null, registry = active, world = null } = {}) {
+  const text = world?.cards?.[deck]?.[index] ?? registry.get(theme)?.cards?.[deck]?.[index] ?? (deck === 'event' ? EVENTS : CHEST)[index].text;
+  return text.replace(/\{field:(\d{1,2})\}/g,(_,i)=>fieldNames({theme,board,registry,world})[Number(i)]||'?');
 }

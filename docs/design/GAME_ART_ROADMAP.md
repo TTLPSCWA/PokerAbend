@@ -171,3 +171,9 @@ Spielübergreifendes Fundament für Themenwelten (Brett-, Karten-, Würfel- und 
 - **Implementierungscommit:** `a99713120c444e9c3c0e405fa00970ee34839836`
 - **Umsetzung:** Registry `public/games/theme-worlds/registry.js` (40 Kartenwelten als Art card, Prüfung von Spielen, Varianten, Assets, Farben, Schriften, Effekten, Fallback), Server prüft `setCardWorld` über die Registry, Lebenszyklus `public/theme-worlds.js` mit Scopes für DOM, Attribute, Listener, Zeitgeber, Audio; Schnee und Wintermusik als Effekte in `public/card-worlds.js`; Version 3.12.0.
 - **Nachweise:** `test/theme-worlds.test.js`, `test/ui/theme-worlds.spec.js`, `test/card-worlds.test.js`, `test/ui/art-t6-winter-lebenszyklus.spec.js`, `docs/design/THEME_ARCHITECTURE.md`
+
+#### ART-W1 · Referenzwelt TW-01 „Schatten über Neuengland“ · P1
+- **Spiele:** `monopoly`
+- **Ziel:** Erste vollständige Themenwelt auf dem ART-W0-Fundament: neblige Hafenstadt der 1920er für Monopoly (Standard und Tempowürfel, nicht Junior), Auswahl im Host-Menü, Rückkehr zu „Standard“ ohne Rückstände. Spielregeln, Preise, Mieten, Kartenwirkungen, Socket-Ereignisse und Spiel-IDs unverändert.
+- **Material:** eigene SVG-Grafiken (Tisch, Brettmitte, Kartenrücken, acht Figuren, Fischerhütte, Leuchtturm, Vorschau) aus `scripts/build-tw01-art.mjs`, eigene Feld-, Karten- und Figurennamen; keine fremden Dateien.
+- **Status:** in Arbeit

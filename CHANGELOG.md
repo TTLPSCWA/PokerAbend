@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.13.0 – 15. November 2026
+
+* **Monopoly, Themenwelt „Schatten über Neuengland“:** Der Host kann im Host-Menü unter „Themenwelt“ eine neblige Hafenstadt der 1920er wählen: dunkle Hafenplanken, Leuchtturm in der Brettmitte, Felder auf altem Papier mit Messingrahmen, eigene Figuren (Laterne, Kompass, Rabe, Anker, Taschenuhr, Schlüssel, Fernrohr, Schwarze Katze), Fischerhütten und Leuchtturm statt Häusern und Hotel, eigene Feld- und Kartennamen. Regeln, Preise, Mieten und Kartenwirkungen bleiben genau gleich, eigene Bretter behalten ihre Namen. „Standard“ bringt die bisherige Optik zurück. Gilt für Standard und Tempowürfel, nicht für Junior.
+
 ## 3.12.0 – 15. November 2026
 
 * **Themenwelten, gemeinsames Fundament:** Alle Welten eines Tisches laufen jetzt über eine zentrale, geprüfte Liste und einen gemeinsamen Ablauf zum Einschalten und Abräumen. Schnee, Wintermusik und andere Effekte verschwinden beim Weltwechsel, Verlassen, Parken, Schließen des Tisches oder Verlassen der Seite vollständig; bei einem Verbindungsabbruch pausiert die Musik und läuft nach der Wiederverbindung weiter. Fehlt eine Weltdatei, gilt das Standarddesign. Die Kartenwelten bleiben, wie sie sind; neue Welten gibt es noch nicht.

@@ -1,0 +1,78 @@
+/* ART-W1 · TW-01 „Schatten über Neuengland“ (Monopoly). Wird nur geladen, solange die Welt gilt (ThemeWorlds entfernt den <link> beim Abschalten);
+   alle Regeln hängen zusätzlich an body[data-theme-world="TW-01"]. Nur Aussehen: Felder, Werte und Bedienung bleiben, wo sie sind.
+   Grafiken: eigene SVG aus scripts/build-tw01-art.mjs. Schrift: Systemschrift Georgia/serif (keine fremde Schriftdatei). */
+body[data-theme-world="TW-01"] {
+  --tw1-ink: #1d1a15; --tw1-paper: #e6dcc3; --tw1-paper2: #d9cdb0; --tw1-brass: #c8a462; --tw1-brass-d: #8c6a33; --tw1-sea: #1b2a33; --tw1-fog: #cfd6d4;
+}
+/* Tisch: dunkle Hafenplanken */
+body[data-theme-world="TW-01"] .kg-monopoly .kg-main { background: #11191e url('/games/theme-worlds/tw-01/table.svg') repeat; background-size: 240px 240px; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-board-viewport { background: #0d1418; box-shadow: inset 0 0 0 1px #2a3a40; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-toolbar { color: #e9dfc6; font-family: Georgia, 'Times New Roman', serif; }
+
+/* Brett: Messingrahmen um verwittertes Papier */
+body[data-theme-world="TW-01"] .kg-monopoly .mo-board { background: #2a2018; border: 3px solid var(--tw1-brass); box-shadow: 0 14px 34px #000a, inset 0 0 0 2px #00000060; color: var(--tw1-ink); }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field { background: linear-gradient(160deg, var(--tw1-paper), var(--tw1-paper2)); border-color: #3b2f22; color: var(--tw1-ink); font-family: Georgia, 'Times New Roman', serif; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field b { font-weight: 700; letter-spacing: .01em; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field small { color: #3a2e20; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field.mo-mortgage { background: repeating-linear-gradient(45deg, #b9ae95 0 4px, #d8ccb0 4px 8px); }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field:focus-visible { outline: 3px solid #1f6fb2; }
+/* Bezirke: gedeckte, gut unterscheidbare Farben (Reihenfolge der Gruppen wie im Standard) */
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field[data-group="brown"] .mo-color { background: #6b4a33; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field[data-group="lightblue"] .mo-color { background: #79a9bd; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field[data-group="pink"] .mo-color { background: #a8567a; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field[data-group="orange"] .mo-color { background: #c27a36; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field[data-group="red"] .mo-color { background: #9b3328; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field[data-group="yellow"] .mo-color { background: #cfa93a; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field[data-group="green"] .mo-color { background: #3e6a4a; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field[data-group="blue"] .mo-color { background: #2c4f7a; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field[data-type="rail"] .mo-color { background: repeating-linear-gradient(90deg, #2a2420 0 6px, var(--tw1-brass) 6px 8px); }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field[data-type="utility"] .mo-color { background: linear-gradient(90deg, var(--tw1-brass-d), var(--tw1-brass)); }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field[data-type="event"] .mo-color,
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field[data-type="chest"] .mo-color { background: #3a2a22 url('/games/theme-worlds/tw-01/card-back.svg') center/cover; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field[data-type="tax"] .mo-color { background: #4b4f52; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-corner { background: linear-gradient(160deg, #d9cdb0, #c9bb98); }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-corner svg { color: #2a2018; }
+
+/* Gebäude: Fischerhütten (1–4) und Leuchtturm (Hotel) statt Zeichen; Anzahl bleibt sichtbar */
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field[data-level] small { font-size: 0; height: clamp(8px, calc(var(--mo-size, 500px) * .022), 16px); background: url('/games/theme-worlds/tw-01/house.svg') left center / auto 100% repeat-x; justify-self: center; align-self: center; margin: 0 auto; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field[data-level="1"] small { width: calc(clamp(8px, calc(var(--mo-size, 500px) * .022), 16px) * 1); }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field[data-level="2"] small { width: calc(clamp(8px, calc(var(--mo-size, 500px) * .022), 16px) * 2); }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field[data-level="3"] small { width: calc(clamp(8px, calc(var(--mo-size, 500px) * .022), 16px) * 3); }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field[data-level="4"] small { width: calc(clamp(8px, calc(var(--mo-size, 500px) * .022), 16px) * 4); }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-field[data-level="5"] small { width: calc(clamp(8px, calc(var(--mo-size, 500px) * .022), 16px) * 1.1); background-image: url('/games/theme-worlds/tw-01/lighthouse.svg'); }
+
+/* Brettmitte: Hafen bei Nacht, Nebel und ruhiges Leuchtfeuer; Text auf dunkler Tafel für Lesbarkeit */
+body[data-theme-world="TW-01"] .kg-monopoly .mo-center { position: relative; overflow: hidden; background: #0f171c url('/games/theme-worlds/tw-01/center.svg') center/cover; color: #efe6cf; isolation: isolate; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-center > * { position: relative; z-index: 1; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-center::before { content: ''; position: absolute; inset: -20% -40%; z-index: 0; pointer-events: none; background: radial-gradient(60% 18% at 30% 62%, #cfd6d455, transparent 70%), radial-gradient(50% 14% at 70% 74%, #cfd6d440, transparent 70%); animation: tw1-fog 28s ease-in-out infinite alternate; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-center::after { content: ''; position: absolute; left: 27%; top: 33%; width: 160%; height: 160%; z-index: 0; pointer-events: none; transform-origin: 0 0; background: conic-gradient(from 80deg at 0 0, transparent 0deg, #ffe7a326 6deg, transparent 14deg); animation: tw1-beam 16s linear infinite; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-center h2 { color: #f1e6c8; font-family: Georgia, 'Times New Roman', serif; letter-spacing: .04em; max-width: 94%; text-align: center; text-shadow: 0 2px 6px #000; background: #0b1216b8; padding: 4px 14px; border: 1px solid var(--tw1-brass); border-radius: 4px; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-center p,
+body[data-theme-world="TW-01"] .kg-monopoly .mo-center small { color: #efe6cf; background: #0b1216b0; padding: 2px 8px; border-radius: 4px; text-shadow: 0 1px 3px #000; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-center .mo-event { color: var(--tw1-ink); background: url('/games/theme-worlds/tw-01/card-back.svg') left center / 18px 100% no-repeat, linear-gradient(170deg, #efe3c4, #dccfae); border: 1px solid var(--tw1-brass-d); padding: 9px 10px 9px 26px; box-shadow: 0 4px 10px #000a; text-shadow: none; font-family: Georgia, 'Times New Roman', serif; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-decks > span { background: #3a2a22 url('/games/theme-worlds/tw-01/card-back.svg') center/cover; color: #f1e6c8; border-color: var(--tw1-brass); box-shadow: 3px 3px 0 #0008; text-shadow: 0 1px 3px #000; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-decks svg { display: none; }
+@keyframes tw1-fog { from { transform: translateX(-6%); } to { transform: translateX(6%); } }
+@keyframes tw1-beam { from { transform: rotate(-12deg); } 50% { transform: rotate(12deg); } to { transform: rotate(-12deg); } }
+@media (prefers-reduced-motion: reduce) {
+  body[data-theme-world="TW-01"] .kg-monopoly .mo-center::before,
+  body[data-theme-world="TW-01"] .kg-monopoly .mo-center::after { animation: none; }
+}
+
+/* Figuren: eigene Messingfiguren auf dem Farbring des Spielers (Spielerfarbe bleibt sichtbar) */
+body[data-theme-world="TW-01"] .kg-monopoly .mo-token[data-token] { background: var(--mo-owner); border-color: #11191e; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-token[data-token] svg { opacity: 0; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-token[data-token]::after { content: ''; position: absolute; inset: 15%; border-radius: 50%; background: #11191e center/78% no-repeat; }
+body[data-theme-world="TW-01"] .mo-token-picker [data-token] svg { display: none; }
+body[data-theme-world="TW-01"] .mo-token-picker [data-token]::before { content: ''; width: 32px; height: 32px; border-radius: 50%; background: #11191e center/80% no-repeat; }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-token[data-token="hat"]::after, body[data-theme-world="TW-01"] .mo-token-picker [data-token="hat"]::before { background-image: url('/games/theme-worlds/tw-01/token-hat.svg'); }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-token[data-token="car"]::after, body[data-theme-world="TW-01"] .mo-token-picker [data-token="car"]::before { background-image: url('/games/theme-worlds/tw-01/token-car.svg'); }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-token[data-token="dog"]::after, body[data-theme-world="TW-01"] .mo-token-picker [data-token="dog"]::before { background-image: url('/games/theme-worlds/tw-01/token-dog.svg'); }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-token[data-token="ship"]::after, body[data-theme-world="TW-01"] .mo-token-picker [data-token="ship"]::before { background-image: url('/games/theme-worlds/tw-01/token-ship.svg'); }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-token[data-token="thimble"]::after, body[data-theme-world="TW-01"] .mo-token-picker [data-token="thimble"]::before { background-image: url('/games/theme-worlds/tw-01/token-thimble.svg'); }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-token[data-token="barrow"]::after, body[data-theme-world="TW-01"] .mo-token-picker [data-token="barrow"]::before { background-image: url('/games/theme-worlds/tw-01/token-barrow.svg'); }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-token[data-token="shoe"]::after, body[data-theme-world="TW-01"] .mo-token-picker [data-token="shoe"]::before { background-image: url('/games/theme-worlds/tw-01/token-shoe.svg'); }
+body[data-theme-world="TW-01"] .kg-monopoly .mo-token[data-token="cat"]::after, body[data-theme-world="TW-01"] .mo-token-picker [data-token="cat"]::before { background-image: url('/games/theme-worlds/tw-01/token-cat.svg'); }
+
+/* Besitzkarte (Dialog): Pergament mit Messingrand */
+body[data-theme-world="TW-01"] .mo-deed { background: linear-gradient(170deg, #efe3c4, #dccfae); border-color: var(--tw1-brass-d); font-family: Georgia, 'Times New Roman', serif; }

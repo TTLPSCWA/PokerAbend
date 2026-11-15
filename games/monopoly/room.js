@@ -4,6 +4,7 @@ import { BOARD, COLORS, PROPERTIES, group, EVENTS, CHEST, redemption } from '../
 import { boardStore } from './boards.js';
 import { TOKENS } from '../../public/games/monopoly/tokens.js';
 import { DEFAULT_THEME, themeRegistry, fieldNames, cardText } from '../../public/games/monopoly/themes.js';
+import { themeRegistry as worldRegistry } from '../../public/games/theme-worlds/registry.js';
 export { BOARD, COLORS, PROPERTIES, group, EVENTS, CHEST };
 const integer = (n) => Number.isSafeInteger(n) && n >= 0;
 
@@ -35,7 +36,9 @@ export class Room extends TurnRoom {
   }
   validateStart() { this.board = boardStore().get(this.settings.board); }
   // Anzeigenamen aller 40 Felder (eigenes Brett vor Theme vor Standard, siehe themes.js); gemeinsame Quelle für Brett, Protokoll und Karten
-  fieldNames() { const key = this.settings.theme + '|' + this.board.id; if (this.namesCache?.key !== key) this.namesCache = { key, list: fieldNames({ theme: this.settings.theme, board: this.board }) }; return this.namesCache.list; }
+  // ART-W1: Darstellungstexte der Themenwelt des Raums (Raumfeld cardWorld, vom Server über die Registry geprüft); nur Namen, nie Wirkung
+  worldTexts() { return (this.cardWorld && worldRegistry().worldFor('monopoly', this.cardWorld)?.texts) || null; }
+  fieldNames() { const key = this.settings.theme + '|' + this.board.id + '|' + (this.cardWorld || ''); if (this.namesCache?.key !== key) this.namesCache = { key, list: fieldNames({ theme: this.settings.theme, board: this.board, world: this.worldTexts() }) }; return this.namesCache.list; }
   fieldName(i) { return this.fieldNames()[i]; }
   chooseBoard(id, board) { this.requireHost(id); if (this.busy) throw new Error('Brettwechsel nur zwischen Partien'); this.board = boardStore().get(board); this.settings.board = board; this.say(`Brett: ${this.board.title}`); }
   saveBoard(id, input) { this.requireHost(id); if (this.busy) throw new Error('Bretter zwischen Partien anlegen'); const b = boardStore().save(input, this.players.get(id)?.accountId); this.chooseBoard(id, b.id); return b; }
@@ -55,7 +58,7 @@ export class Room extends TurnRoom {
   chooseToken(id, token) {
     if (!this.players.has(id) || !TOKENS[token]) throw new Error('Unbekannte Spielfigur');
     if (Object.entries(this.tokens).some(([p, t]) => p !== id && t === token && this.seats.includes(p))) throw new Error('Diese Figur ist schon gewählt');
-    this.tokens[id] = token; this.act(id, `wählt ${themeRegistry().get(this.settings.theme)?.presentation?.tokenNames?.[token] || TOKENS[token].name}`);
+    this.tokens[id] = token; this.act(id, `wählt ${this.worldTexts()?.tokens?.[token] || themeRegistry().get(this.settings.theme)?.presentation?.tokenNames?.[token] || TOKENS[token].name}`);
   }
   saveExtra() { return { tokens: this.tokens }; }
   loadExtra(x) { this.tokens = x.tokens || {}; }
@@ -129,7 +132,7 @@ export class Room extends TurnRoom {
   drawCard(id, deck, depth = 0) {
     const index = this.decks[deck].shift(), c = (deck === 'event' ? EVENTS : CHEST)[index];
     if (c.kind !== 'free') this.decks[deck].push(index); else this.people[id].free.push({ deck, index });
-    const text = cardText(deck, index, { theme: this.settings.theme, board:this.board }); this.card = { deck, index, text }; this.say(text, 'street');
+    const text = cardText(deck, index, { theme: this.settings.theme, board: this.board, world: this.worldTexts() }); this.card = { deck, index, text }; this.say(text, 'street');
     if (c.kind === 'move') this.walk(id, (c.field - this.people[id].position + 40) % 40, null, depth);
     else if (c.kind === 'back') this.walk(id, -c.steps, null, depth);
     else if (c.kind === 'jail') this.jail(id);

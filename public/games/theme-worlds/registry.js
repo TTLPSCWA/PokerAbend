@@ -4,6 +4,7 @@
 // ihre IDs, das Raumfeld `cardWorld` und das Ereignis `setCardWorld` bleiben die eine Weltauswahl des Raums.
 // Neue Welten (Brett, Würfel, Party …) kommen als weitere Einträge dazu und erscheinen erst mit `released: true`.
 import { WORLDS as CARD_WORLDS, FONTS, CARD_WORLD_GAMES } from '../card-worlds/worlds.js';
+import { TW01 } from './tw-01.js';
 
 export const KINDS = ['card', 'board', 'dice', 'party', 'generic'];
 export const EFFECTS = ['snow', 'music']; // bekannte Effekttypen; der Browser registriert ihre Umsetzung (ThemeWorlds.effect)
@@ -16,7 +17,7 @@ const FORBIDDEN = /^(rules?|price|prices|rent|rents|score|scores|timer|turnTime|
 export function validateWorld(w, { gameIds = null } = {}) {
   const errors = [], err = (t) => errors.push(`${w?.id ?? '?'}: ${t}`);
   if (!isObj(w)) return ['Welt ist kein Objekt'];
-  const allowed = ['id', 'kind', 'name', 'description', 'games', 'variants', 'assets', 'palette', 'fonts', 'effects', 'fallback', 'released', 'source', 'card'];
+  const allowed = ['id', 'kind', 'name', 'description', 'games', 'variants', 'assets', 'palette', 'fonts', 'effects', 'fallback', 'released', 'source', 'card', 'texts'];
   for (const k of Object.keys(w)) { if (FORBIDDEN.test(k)) err(`"${k}" ist Spielmechanik und gehört nicht in eine Welt`); else if (!allowed.includes(k)) err(`unbekannter Schlüssel "${k}"`); }
   if (typeof w.id !== 'string' || !ID.test(w.id)) err('ID ungültig');
   if (!KINDS.includes(w.kind)) err(`Art ${w.kind} unbekannt`);
@@ -45,6 +46,17 @@ export function validateWorld(w, { gameIds = null } = {}) {
   if (typeof w.released !== 'boolean') err('released muss wahr oder falsch sein');
   if (typeof w.source !== 'string' || !w.source) err('source (Paket-ID) fehlt');
   if (w.kind === 'card') { if (!isObj(w.card) || typeof w.card.frame !== 'string') err('card.frame fehlt'); } else if (w.card !== undefined) err('card nur für Kartenwelten');
+  // Darstellungstexte (z. B. Feld-, Karten- und Figurennamen): nur Text, nie Wirkung; das Spiel prüft Anzahl und Bezug selbst
+  if (w.texts !== undefined) {
+    const tx = w.texts;
+    if (!isObj(tx)) err('texts muss ein Objekt sein');
+    else {
+      for (const k of Object.keys(tx)) if (!['fields', 'cards', 'tokens'].includes(k)) err(`texts: unbekannter Schlüssel "${k}"`);
+      if (tx.fields !== undefined) { if (!isObj(tx.fields)) err('texts.fields muss ein Objekt sein'); else for (const [k, v] of Object.entries(tx.fields)) if (!/^\d{1,2}$/.test(k) || !text(v, 40)) err(`texts.fields.${k} ungültig`); }
+      if (tx.cards !== undefined) { if (!isObj(tx.cards)) err('texts.cards muss ein Objekt sein'); else for (const [k, list] of Object.entries(tx.cards)) if (!/^[a-z]{1,20}$/.test(k) || !Array.isArray(list) || !list.length || list.some((t) => !text(t, 200))) err(`texts.cards.${k} ungültig`); }
+      if (tx.tokens !== undefined) { if (!isObj(tx.tokens)) err('texts.tokens muss ein Objekt sein'); else for (const [k, v] of Object.entries(tx.tokens)) if (!/^[a-z]{1,20}$/.test(k) || !text(v, 30)) err(`texts.tokens.${k} ungültig`); }
+    }
+  }
   return errors;
 }
 
@@ -77,7 +89,8 @@ export const cardWorldDefinition = (w) => ({
   effects: w.game === 'all' ? [{ type: 'snow', motion: true }, { type: 'music', sound: true }] : [],
   fallback: 'standard', released: true, source: w.game === 'all' ? 'ART-T5' : 'ART-T1', card: { frame: w.frame },
 });
-export const BUILTIN = CARD_WORLDS.map(cardWorldDefinition);
+// ART-W1: TW-01 „Schatten über Neuengland“ für Monopoly (eigener Entwurf, siehe docs/design/THEME_WORLDS.md)
+export const BUILTIN = [...CARD_WORLDS.map(cardWorldDefinition), TW01];
 
 let active = createRegistry(BUILTIN);
 export const themeRegistry = () => active;

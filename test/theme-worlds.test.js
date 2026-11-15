@@ -18,14 +18,17 @@ const has = (list, p) => assert.ok(list.some((e) => p.test(e)), `erwartet ${p}, 
 
 test('Registry: die 40 Kartenwelten sind unverändert eingebunden und gelten genau wie bisher', () => {
   const reg = themeRegistry();
-  assert.equal(reg.list().length, 40); assert.deepEqual(reg.list().map((w) => w.id), WORLDS.map((w) => w.id));
-  assert.ok(reg.list().every((w) => w.kind === 'card' && w.released && w.fallback === 'standard'));
+  const cards = reg.list().filter((w) => w.kind === 'card');
+  assert.equal(cards.length, 40); assert.deepEqual(cards.map((w) => w.id), WORLDS.map((w) => w.id));
+  assert.ok(cards.every((w) => w.released && w.fallback === 'standard'));
+  // ART-W1: einzige weitere Welt ist TW-01 (Monopoly)
+  assert.deepEqual(reg.list().filter((w) => w.kind !== 'card').map((w) => [w.id, w.kind, w.games.join()]), [['TW-01', 'board', 'monopoly']]);
   // Für jedes Spiel und jede ID dieselbe Entscheidung wie die bisherige Server-Prüfung worldOf()
   for (const game of gameIds) for (const id of [...WORLDS.map((w) => w.id), 'gibts-nicht', '', null, 42]) assert.equal(reg.worldFor(game, id)?.id ?? null, worldOf(game, id)?.id ?? null, `${game}/${id}`);
   for (const game of CARD_WORLD_GAMES) assert.deepEqual(reg.worldsFor(game).map((w) => w.id).sort(), worldsFor(game).map((w) => w.id).sort());
-  assert.equal(reg.worldsFor('maumau').length, 0); assert.equal(reg.worldsFor('monopoly').length, 0);
+  assert.equal(reg.worldsFor('maumau').length, 0); assert.deepEqual(reg.worldsFor('monopoly').map((w) => w.id), ['TW-01']);
   // Winterwelten: Schnee und Musik als Effekte, eigene Welten ohne Effekte
-  for (const w of reg.list()) assert.deepEqual(w.effects.map((e) => e.type), WORLDS.find((x) => x.id === w.id).game === 'all' ? ['snow', 'music'] : []);
+  for (const w of cards) assert.deepEqual(w.effects.map((e) => e.type), WORLDS.find((x) => x.id === w.id).game === 'all' ? ['snow', 'music'] : []);
   assert.equal(reg.worldFor('farbenchaos', 'U-01').card.frame, WORLDS[0].frame);
 });
 

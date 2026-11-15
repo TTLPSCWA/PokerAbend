@@ -118,13 +118,14 @@ const ThemeWorlds = (() => {
   // Seite verlassen: alles abräumen (Rückkehr aus dem Zurück-Cache lädt core.js ohnehin neu)
   window.addEventListener('pagehide', () => apply(null));
 
-  // Host-Menü für Spiele ohne eigene Kartenwelt-Auswahl: alle freigegebenen Themenwelten des Spiels (heute keine)
+  // Host-Menü für Spiele ohne eigene Kartenwelt-Auswahl: alle freigegebenen Themenwelten, die für Spiel und Variante gelten
   function controlsHTML(S) {
     if (!reg || !S?.you?.isHost) return '';
-    const list = reg.worldsFor(S.game); if (!list.length) return '';
+    const list = reg.worldsFor(S.game).filter((w) => reg.appliesTo(w, S.game, S.variant)); if (!list.length) return '';
     const sel = S.cardWorld || '', lang = typeof I18n !== 'undefined' && I18n.language === 'en' ? 'en' : 'de';
-    const pick = (id, name, desc, on) => `<button type="button" class="cwp-pick" data-card-world-pick="${esc(id)}" aria-pressed="${on}"><span class="cwp-txt"><b>${esc(name)}</b><small>${esc(desc)}</small></span></button>`;
-    return `<section class="cwp twp"><h3>${t('Themenwelt', 'Theme world')}</h3><p class="hint">${t('Nur Aussehen, für alle am Tisch.', 'Looks only, for everyone at the table.')}</p><div class="cwp-grid">${pick('', t('Standard', 'Standard'), t('Bisheriges Aussehen', 'Current look'), !sel)}${list.map((w) => pick(w.id, w.name[lang], w.description[lang], w.id === sel)).join('')}</div></section>`;
+    const art = (src) => (src ? `<span class="cwp-card twp-preview" style="background-image:url('${esc(src)}')"></span>` : '<span class="cwp-card cwp-none"></span>');
+    const pick = (id, name, desc, on, src) => `<button type="button" class="cwp-pick" data-card-world-pick="${esc(id)}" aria-pressed="${on}">${art(src)}<span class="cwp-txt"><b>${esc(name)}</b><small>${esc(desc)}</small></span></button>`;
+    return `<section class="cwp twp"><h3>${t('Themenwelt', 'Theme world')}</h3><p class="hint">${t('Nur Aussehen, für alle am Tisch. Geht auch mitten in der Runde.', 'Looks only, for everyone at the table. Works mid-round too.')}</p><div class="cwp-grid">${pick('', t('Standard', 'Standard'), t('Bisheriges Aussehen', 'Current look'), !sel, null)}${list.map((w) => pick(w.id, w.name[lang], w.description[lang], w.id === sel, w.assets.preview)).join('')}</div></section>`;
   }
 
   return {
