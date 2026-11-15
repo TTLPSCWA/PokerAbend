@@ -36,10 +36,24 @@ function client() {
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 async function until(fn, ms = 8000) {
   const end = Date.now() + ms;
-  while (Date.now() < end) { if (fn()) return; await wait(25); }
+  while (Date.now() < end) { if (await fn()) return; await wait(25); }
   throw new Error('Zeitüberschreitung');
 }
 const saved = (code) => { try { return JSON.parse(readFileSync(join(dataDir, 'rooms.json'), 'utf8')).find((r) => r.code === code); } catch { return null; } };
+async function discardIfRequired(c) {
+  const g = c.state?.g, id = c.state?.you.id;
+  let n = g?.discard?.[id] || 0;
+  if (!n) return;
+  const cards = {};
+  for (const [res, count] of Object.entries(g.hand)) {
+    const take = Math.min(n, count);
+    if (take) cards[res] = take;
+    n -= take;
+  }
+  assert.equal(n, 0, 'enough actual hand cards for the required discard');
+  const reply = await c.ask('ssDiscard', { cards });
+  assert.equal(reply.ok, true, reply.error);
+}
 
 test('Städtehandel: Spielstand mitten im Spiel überlebt einen Serverneustart, Geheimes bleibt geheim, danach geht es weiter', async () => {
   const a = client();
@@ -65,12 +79,14 @@ test('Städtehandel: Spielstand mitten im Spiel überlebt einen Serverneustart, 
   await until(() => a.state.g.stage !== 'setup', 40000);
   // Ein paar eigene Züge: Würfeln und beenden, bis genug passiert ist
   for (let turn = 0; turn < 3; turn++) {
-    await until(() => a.state.turnId === a.state.you.id, 40000);
+    // A bot's seven can require the human to discard before that bot can end
+    // its turn. Waiting only for our own turn would deadlock the test.
+    await until(async () => { await discardIfRequired(a); return a.state.turnId === a.state.you.id; }, 40000);
     if (a.state.g.stage === 'roll') assert.equal((await a.ask('ssRoll')).ok, true);
     await until(() => a.state.turnId !== a.state.you.id || ['main', 'robber', 'discard', 'steal'].includes(a.state.g.stage), 15000);
     for (let i = 0; i < 6 && a.state.turnId === a.state.you.id; i++) {
       const g = a.state.g;
-      if (g.stage === 'discard' && g.discard[a.state.you.id]) { const cards = {}; let n = g.discard[a.state.you.id]; for (const r of Object.keys(g.hand)) while (n > 0 && (cards[r] || 0) < g.hand[r]) { cards[r] = (cards[r] || 0) + 1; n--; } await a.ask('ssDiscard', { cards }); }
+      if (g.stage === 'discard' && g.discard[a.state.you.id]) await discardIfRequired(a);
       else if (g.stage === 'robber') await a.ask('ssRobber', { hex: g.legal.robber[0] });
       else if (g.stage === 'steal') await a.ask('ssSteal', { victim: g.legal.victims[0] });
       else if (g.stage === 'main') { assert.equal((await a.ask('ssEnd')).ok, true); break; }
@@ -112,7 +128,7 @@ test('Städtehandel: Spielstand mitten im Spiel überlebt einen Serverneustart, 
   assert.ok(Object.keys(g.buildings).length >= 6);
   // Es geht weiter: entweder ist ein Bot dran und zieht, oder der Mensch kann würfeln/beenden
   const turnBefore = g.turnNo;
-  await until(() => again.state.g.turnNo > turnBefore || again.state.turnId === again.state.you.id, 40000);
+  await until(async () => { await discardIfRequired(again); return again.state.g.turnNo > turnBefore || again.state.turnId === again.state.you.id; }, 40000);
   if (again.state.turnId === again.state.you.id && again.state.g.stage === 'roll') assert.equal((await again.ask('ssRoll')).ok, true);
   // Fremde Eingriffe bleiben nach dem Neustart wirkungslos
   const intruder = client();

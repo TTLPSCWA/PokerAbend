@@ -28,7 +28,7 @@ Dekorative Bild- und Sockelelemente fangen keine Zeigerereignisse ab. Bauplätze
 
 [Galerie mit 44 Aufnahmen](screenshots/staedtehandel/kenney-2026-11/index.html), [Aufnahme-Manifest mit Prüfsummen](screenshots/staedtehandel/kenney-2026-11/screenshots.json).
 
-Vorher: `798469be062d278a09e37b15069e57f0496ddb5e` / 3.9.0. Nachher: 3.10.0, Implementierungscommit wird nach dem Commit nachgetragen. Die normalisierten SHA-256-Werte der tatsächlich geprüften Frontenddateien stehen für beide Stände im Manifest.
+Vorher: `798469be062d278a09e37b15069e57f0496ddb5e` / 3.9.0. Nachher: 3.10.0, Implementierungscommit `aef22f30ca7a26df93ba6b2511d90f482ecb59c2`. Die normalisierten SHA-256-Werte der tatsächlich geprüften Frontenddateien stehen für beide Stände im Manifest.
 
 Für Standardkarte (drei Spieler, 19 Hexfelder) und Großkarte (sechs Spieler, 30 Hexfelder) jeweils echte Vorher-/Nachher-Aufnahmen bei **1920×1080, 1440×900, 768×1024, 390×844 und 360×800**. Zusätzlich Bauplätze, tatsächlicher Stadtausbau, Wiederverbindung/Englisch, Zuschauer, vier/fünf Spieler, Firefox/WebKit und SVG-Fallbacks.
 
@@ -45,13 +45,15 @@ Original-PNGs bleiben im privaten Prüfverzeichnis. Die 44 eingecheckten Aufnahm
 | `playwright test test/ui/staedtehandel-art.spec.js test/ui/staedtehandel.spec.js` | **14 bestanden**, Desktop und natives Touch-Profil; tatsächliche Spiel-/Botabläufe, alle Eigentümerfarben/-symbole, Nachbargebäude, Bau per Tastatur/Touch, Zoom/Pan, Rechts-/Zuschauergrenzen, Sprache, Pause und Reconnect |
 | Gezielte Netzwerkfehlerprüfung nach Test-Cache-Korrektur | **2 bestanden** (Desktop/Mobil), jeweils 404, beschädigte Bilddaten, partieller Ausfall und tatsächlicher SVG-Ladefehler nach erfolgreichem Vorladen; ursprünglicher Marker bleibt funktional |
 | Lokale Vergleichsprüfung Chromium / Firefox / WebKit | Jeweils 3/4/5/6-Spieler-Speicherstände, beide Kartengrößen, fünf Größen für Standard/XL, zusätzliche Stadtausbau-/Reconnect-/Zuschauerfälle und fehlende/beschädigte Bilder erfolgreich; keine beobachteten JavaScript-Ausnahmen |
-| `npm run test:fast` | **2.066 bestanden, 0 fehlgeschlagen, 3 übersprungen**; 2.069 Tests insgesamt, letzter vollständiger Lauf 87,803 s |
+| `npm run test:fast` | **2.066 bestanden, 0 fehlgeschlagen, 3 übersprungen**; 2.069 Tests insgesamt, letzter vollständiger Lauf 55,129 s |
 
 Die neuen Browserprüfungen messen auch, dass Gebäude keine Zahlen, Rohstoffsymbole, Hafensymbole oder anderen Gebäude überdecken. Dekoration hat `pointer-events:none`; der tatsächliche Bauplatz am Gebäudepunkt bleibt erreichbar. Native Touch-Verschiebung und die zugängliche Bauliste werden geprüft. Die vorhandenen Straßen bleiben geometrisch unverändert und schließen am Baupunkt an; ihre Verbindung unter dem Gebäudesockel ist beabsichtigt.
 
 Für simulierte Bildausfälle ist der Service Worker **nur im Testkontext** blockiert, damit eine vorhandene gültige Cache-Kopie den absichtlich erzeugten Netzwerkfehler nicht verdeckt. Normale Spiel-/Aufnahmetests verwenden die unveränderte App. Firefox benötigte hier die normale Ausführung außerhalb des eingeschränkten Windows-Testkontos; innerhalb dieses Kontos stürzte schon eine leere Browserseite ab. Alle Aussagen über Gameplay stammen aus tatsächlich ausgeführten Tests oder dem unveränderten Originalcode; ein bloßes Renderbild gilt nicht als Beweis für eine vollständige Partie.
 
 Die Versionsprüfung verglich bisher Arrays/Text statt numerischer Versionsbestandteile und lehnte dadurch 3.10.0 nach 3.9.0 ab. Ausschließlich dieser unmittelbar erforderliche gemeinsame Test wurde auf numerischen Vergleich korrigiert. Die übrigen gemeinsamen Laufzeitkomponenten sind unverändert.
+
+Der erste [CI-Lauf 43691540388](https://github.com/TTLPSCWA/PokerAbend/actions/runs/43691540388) scheiterte ausschließlich an einer Zeitüberschreitung im vorhandenen Speicher-/Bot-Servertest beim Warten auf den nächsten menschlichen Zug (2.065 bestanden, einer fehlgeschlagen, drei übersprungen). Im Test ließ sich ein Regelzustand reproduzieren, in dem eine Sieben während eines fremden Zugs erst sieben menschliche Handkarten zum Abwerfen verlangt; bloßes Warten kann dann nicht fortfahren. Die genaue CI-Würfelsequenz wurde nicht protokolliert. Der Servertest beantwortet solche Abwurfpflichten nun auch zwischen eigenen Zügen und nach Wiederverbindung, mit geprüfter Kartenanzahl und geprüftem Server-Ack. Keine Engine-Änderung und keine bloße Verlängerung des Zeitlimits. Der vollständige lokale Nachlauf einschließlich des korrigierten Servertests ist grün.
 
 ## Grenzen und Restpunkte
 
@@ -64,4 +66,4 @@ Die Versionsprüfung verglich bisher Arrays/Text statt numerischer Versionsbesta
 
 Geändert: ausschließlich Städtehandel-Frontend und seine zwei neuen Bilder/Manifest/Lizenz/Grafiknachweise; unmittelbar nötige Testdateien, Versionsdateien, Lizenz-/Design-/Screenshotdokumentation. Die SHA-256-Werte von `games/staedtehandel/{map,room,rules,index}.js` sind gegenüber dem Ausgangscommit identisch und im Aufnahme-Manifest festgehalten. Keine Änderungen an anderen Spielen, Serverregeln, gemeinsamen Laufzeitdateien, Abhängigkeiten, Vaults oder privaten Quellpaketen.
 
-Version **3.10.0**. Commit-/Push- und CI-Nachweise werden im Dokumentationsnachtrag nach tatsächlich erfolgter Veröffentlichung ergänzt. Kein Serverdeployment.
+Version **3.10.0**. Implementierung: [`aef22f3`](https://github.com/TTLPSCWA/PokerAbend/commit/aef22f30ca7a26df93ba6b2511d90f482ecb59c2), auf `main` gepusht. Der erste CI-Lauf und die Testkorrektur sind oben dokumentiert; der CI-Nachlauf der Korrektur wird nach dem Push kontrolliert. Kein Serverdeployment.

@@ -2,7 +2,7 @@
   "game": "staedtehandel",
   "date": "2026-11-15",
   "before_commit": "798469be062d278a09e37b15069e57f0496ddb5e",
-  "after_commit": null,
+  "after_commit": "aef22f30ca7a26df93ba6b2511d90f482ecb59c2",
   "source_hash_format": "UTF-8, LF for source files; exact binary bytes for PNG/WebP",
   "source_before": [
     {

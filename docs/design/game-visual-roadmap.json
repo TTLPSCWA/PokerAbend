@@ -15267,7 +15267,8 @@
         "Kenney building follow-up 3.10.0: 32 existing game/server + 4 new art/privacy Node tests; 14 UI cases; Chromium/Firefox/WebKit; test:fast 2066 passed, 3 skipped. See docs/design/STAEDTEHANDEL_KENNEY.md."
       ],
       "commits": [
-        "c76f68e79a2a106d59cd10f7a161778b55084b6e"
+        "c76f68e79a2a106d59cd10f7a161778b55084b6e",
+        "aef22f30ca7a26df93ba6b2511d90f482ecb59c2"
       ],
       "implementation_commit": "c76f68e79a2a106d59cd10f7a161778b55084b6e",
       "completed_at": "2026-11-07",
@@ -15305,11 +15306,18 @@
             "passed": 2066,
             "failed": 0,
             "skipped": 3,
-            "duration_seconds": 87.803
+            "duration_seconds": 55.129
           }
         ],
-        "implementation_commit": null
-      }
+        "implementation_commit": "aef22f30ca7a26df93ba6b2511d90f482ecb59c2",
+        "ci_initial": {
+          "run_id": 43691540388,
+          "url": "https://github.com/TTLPSCWA/PokerAbend/actions/runs/43691540388",
+          "result": "failure",
+          "reason": "Existing server/bot restore test timed out waiting for human turn. Reproducible required discard on another player turn handled by a test-only correction; no engine change."
+        }
+      },
+      "source_audit_commit": "aef22f30ca7a26df93ba6b2511d90f482ecb59c2"
     },
     {
       "id": "VIS-090",
