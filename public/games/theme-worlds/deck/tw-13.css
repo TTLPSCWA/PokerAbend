@@ -1,0 +1,9 @@
+/* ART-W4 · TW-13 Neon-Arcade (Karten): dunkle Spielfläche, Neonrand; Pixelkrone auf Bildkarten. Nur Variablen und eigene Grafiken (scripts/build-deck-worlds-art.mjs). */
+body[data-theme-world="TW-13"] {
+  --twk-table: #0d0b1f url('/games/theme-worlds/deck/table-tw-13.svg') 0 0 / 240px 240px repeat;
+  --twk-felt: radial-gradient(ellipse at 50% 40%, #241e5a, #1a1640 60%, #0d0b1f); --twk-rail: #2de2e6; --twk-rail-bg: linear-gradient(180deg, #1a1640, #0d0b1f); --twk-rail-inner: linear-gradient(90deg, #ff3fb4, #2de2e6 50%, #ff3fb4);
+  --twk-face: #f4f6ff; --twk-ink: #14122e; --twk-red: #c4004f;
+  --twk-frame: url('/games/theme-worlds/deck/frame-tw-13.svg'); --twk-emblem: url('/games/theme-worlds/deck/emblem-tw-13.svg');
+  --twk-back: url('/games/theme-worlds/deck/back-tw-13.svg') center / 100% 100% no-repeat, #1a1640; --twk-back-edge: #2de2e6; --twk-back-ink: #f4f6ff;
+  --twk-turn: #2de2e6;
+}

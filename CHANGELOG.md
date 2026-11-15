@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.17.0 – 15. November 2026
+
+* **Kartenspiele, Themenwelten:** In Poker, Omaha, Omaha Hi/Lo, Seven Card Stud, Short Deck, Five Card Draw und Blackjack wählt der Host unter „Themenwelt“ **Saloon**, **Dampf & Messing**, **Neon-Arcade** oder **Schatten über Neuengland**; in Skat, Doppelkopf, Schwimmen, Mau-Mau, Durak, Hearts, Stichmeister, Präsident und Mogeln **Baker Street**, **Runen & Nordlicht**, **Tafelrunde** oder **Saloon**. Jede Welt bringt eigenen Kartenrücken, Kartenrahmen, ein blasses Emblem auf Bube, Dame und König sowie Tisch und Filz. Werte, Farben, Auswahl, Ziehen und Ablegen bleiben unverändert, verdeckte Karten bleiben verdeckt. Bei Poker steht die Auswahl im Host-Menü unter „Spiel“. „Standard“ zeigt alles wie bisher.
+
 ## 3.16.0 – 15. November 2026
 
 * **Klassische Brettspiele, drei Themenwelten:** In Schach, Mühle, Dame, Reversi, Hex, Vier gewinnt und Backgammon wählt der Host im Host-Menü unter „Themenwelt“: **Götterberg** (Marmor hell und dunkel, Gold, Ägäisblau, Mäander), **Runen & Nordlicht** (Holz, Runenstein, Eisblau, Polarlicht-Grün; dieselbe Welt wie bei den Würfelspielen, mit eigener Brett-Gestaltung) und **Tafelrunde** (Burgholz, Wappenrot, Königsblau, Gold). Schachfiguren behalten ihre bekannten Umrisse und bekommen je Welt eigene Zier (Lorbeer, Runen, Wappenschilde). Regeln, Züge, Bots und Markierungen bleiben unverändert; Hex behält Rot/Blau, Vier gewinnt Rot/Gelb. „Standard“ zeigt alles wie bisher.

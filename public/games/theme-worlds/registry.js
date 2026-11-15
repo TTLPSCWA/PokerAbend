@@ -7,8 +7,9 @@ import { WORLDS as CARD_WORLDS, FONTS, CARD_WORLD_GAMES } from '../card-worlds/w
 import { TW01 } from './tw-01.js';
 import { DICE_WORLDS } from './dice-worlds.js';
 import { TW08, TW10, TW09_BOARD_FACET } from './board-worlds.js';
+import { TW02, TW03, DECK_FACETS } from './deck-worlds.js';
 
-export const KINDS = ['card', 'board', 'dice', 'party', 'generic'];
+export const KINDS = ['card', 'board', 'dice', 'party', 'generic', 'deck']; // deck (ART-W4): klassisches Blatt und Poker, getrennt von den ART-T-Kartenwelten (card)
 export const EFFECTS = ['snow', 'music']; // bekannte Effekttypen; der Browser registriert ihre Umsetzung (ThemeWorlds.effect)
 const ID = /^[A-Za-z][A-Za-z0-9-]{0,23}$/, GAME = /^[a-z][a-z0-9-]{1,40}$/, URL_ = /^\/(?!\/)[A-Za-z0-9/_.-]+\.(svg|webp|png|css|woff2|mp3)$/ /* nur eigene Pfade, kein //fremder-host */, HEX = /^#[0-9a-fA-F]{6}$/;
 const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
@@ -151,7 +152,9 @@ export const cardWorldDefinition = (w) => ({
 // ART-W1: TW-01 „Schatten über Neuengland“ für Monopoly (eigener Entwurf, siehe docs/design/THEME_WORLDS.md)
 // ART-W2: Würfelwelten TW-14, TW-11, TW-09, TW-13 für alle Würfelspiele
 // ART-W3: Brettwelten TW-08, TW-10 und TW-09 als Brett-Facette der Würfelwelt (gleiche ID, eigene Dateien)
-export const BUILTIN = [...CARD_WORLDS.map(cardWorldDefinition), TW01, ...DICE_WORLDS.map((w) => (w.id === 'TW-09' ? { ...w, facets: [TW09_BOARD_FACET] } : w)), TW08, TW10];
+// ART-W4: Kartenwelten TW-02, TW-03 neu; TW-01, TW-09, TW-10, TW-13, TW-14 erhalten eine Karten-Facette (gleiche ID, eigene Dateien)
+const withFacets = (w, ...extra) => { const facets = [...(w.facets || []), ...extra, DECK_FACETS[w.id]].filter(Boolean); return facets.length ? { ...w, facets } : w; };
+export const BUILTIN = [...CARD_WORLDS.map(cardWorldDefinition), withFacets(TW01), ...DICE_WORLDS.map((w) => (w.id === 'TW-09' ? withFacets(w, TW09_BOARD_FACET) : withFacets(w))), TW08, withFacets(TW10), TW02, TW03];
 
 let active = createRegistry(BUILTIN);
 export const themeRegistry = () => active;

@@ -1,0 +1,9 @@
+/* ART-W4 · TW-03 Dampf & Messing (Karten): Kupfer, Messing, Ozeanblau; Zahnrad auf Bildkarten. Nur Variablen und eigene Grafiken (scripts/build-deck-worlds-art.mjs). */
+body[data-theme-world="TW-03"] {
+  --twk-table: #13262f url('/games/theme-worlds/deck/table-tw-03.svg') 0 0 / 240px 240px repeat;
+  --twk-felt: radial-gradient(ellipse at 50% 40%, #2a6178, #1d4e63 60%, #12313f); --twk-rail: #9a5b28; --twk-rail-bg: linear-gradient(180deg, #8a5226, #4a2a12); --twk-rail-inner: linear-gradient(90deg, #7a4a1c, #e0b45a 50%, #7a4a1c);
+  --twk-face: #f1e7d0; --twk-ink: #2a2018; --twk-red: #a3261c;
+  --twk-frame: url('/games/theme-worlds/deck/frame-tw-03.svg'); --twk-emblem: url('/games/theme-worlds/deck/emblem-tw-03.svg');
+  --twk-back: url('/games/theme-worlds/deck/back-tw-03.svg') center / 100% 100% no-repeat, #1d4e63; --twk-back-edge: #e2c189; --twk-back-ink: #f1e7d0;
+  --twk-turn: #f0a85a;
+}

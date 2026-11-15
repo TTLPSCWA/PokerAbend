@@ -1,0 +1,9 @@
+/* ART-W4 · TW-02 Baker Street: Ruß, Backstein, Gaslicht; Lupe auf Bildkarten. Nur Variablen und eigene Grafiken (scripts/build-deck-worlds-art.mjs). */
+body[data-theme-world="TW-02"] {
+  --twk-table: #3a2420 url('/games/theme-worlds/deck/table-tw-02.svg') 0 0 / 240px 240px repeat;
+  --twk-felt: radial-gradient(ellipse at 50% 40%, #4a423a, #2a2622 60%, #1d1b19); --twk-rail: #7a3b2e; --twk-rail-bg: linear-gradient(180deg, #5a2e24, #2a1612); --twk-rail-inner: linear-gradient(90deg, #5a4636, #e8c766 50%, #5a4636);
+  --twk-face: #efe6d2; --twk-ink: #1d1b19; --twk-red: #9a2418;
+  --twk-frame: url('/games/theme-worlds/deck/frame-tw-02.svg'); --twk-emblem: url('/games/theme-worlds/deck/emblem-tw-02.svg');
+  --twk-back: url('/games/theme-worlds/deck/back-tw-02.svg') center / 100% 100% no-repeat, #2a2622; --twk-back-edge: #efe6d2; --twk-back-ink: #efe6d2;
+  --twk-turn: #e8c766;
+}

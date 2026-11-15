@@ -1,0 +1,9 @@
+/* ART-W4 · TW-01 Schatten über Neuengland (Karten): Hafen bei Nacht, dunkles Leder, Messing, altes Papier; Leuchtturm auf Bildkarten. Nur Variablen und eigene Grafiken (scripts/build-deck-worlds-art.mjs). */
+body[data-theme-world="TW-01"] {
+  --twk-table: #0f1716 url('/games/theme-worlds/deck/table-tw-01.svg') 0 0 / 240px 240px repeat;
+  --twk-felt: radial-gradient(ellipse at 50% 40%, #2a3b38, #1d2a2a 60%, #0f1716); --twk-rail: #6b5530; --twk-rail-bg: linear-gradient(180deg, #3b2a1f, #1c140e); --twk-rail-inner: linear-gradient(90deg, #5a4626, #b08d4a 50%, #5a4626);
+  --twk-face: #efe3c6; --twk-ink: #1a1712; --twk-red: #8f1d1d;
+  --twk-frame: url('/games/theme-worlds/deck/frame-tw-01.svg'); --twk-emblem: url('/games/theme-worlds/deck/emblem-tw-01.svg');
+  --twk-back: url('/games/theme-worlds/deck/back-tw-01.svg') center / 100% 100% no-repeat, #1d2a2a; --twk-back-edge: #d9c79a; --twk-back-ink: #efe3c6;
+  --twk-turn: #d9b45a;
+}

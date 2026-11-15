@@ -1,0 +1,9 @@
+/* ART-W4 · TW-14 Saloon (Karten): dunkler Filz, Holz, Leder, Messing; Sheriffstern auf Bildkarten. Nur Variablen und eigene Grafiken (scripts/build-deck-worlds-art.mjs). */
+body[data-theme-world="TW-14"] {
+  --twk-table: #2b1a10 url('/games/theme-worlds/deck/table-tw-14.svg') 0 0 / 240px 240px repeat;
+  --twk-felt: radial-gradient(ellipse at 50% 40%, #2c5a3f, #1f3b2c 60%, #142a1f); --twk-rail: #7a4a1c; --twk-rail-bg: linear-gradient(180deg, #5a3a22, #2b1a10); --twk-rail-inner: linear-gradient(90deg, #6b4a26, #c79a4a 50%, #6b4a26);
+  --twk-face: #f3e6c8; --twk-ink: #2b1a10; --twk-red: #9e1c1c;
+  --twk-frame: url('/games/theme-worlds/deck/frame-tw-14.svg'); --twk-emblem: url('/games/theme-worlds/deck/emblem-tw-14.svg');
+  --twk-back: url('/games/theme-worlds/deck/back-tw-14.svg') center / 100% 100% no-repeat, #5a1f1c; --twk-back-edge: #f3e6c8; --twk-back-ink: #f3e6c8;
+  --twk-turn: #e0b45a;
+}

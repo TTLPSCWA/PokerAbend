@@ -1,0 +1,9 @@
+/* ART-W4 · TW-10 Tafelrunde (Karten): Burgholz, Wappenrot, Königsblau, Gold; Wappenschild auf Bildkarten. Nur Variablen und eigene Grafiken (scripts/build-deck-worlds-art.mjs). */
+body[data-theme-world="TW-10"] {
+  --twk-table: #2a1d14 url('/games/theme-worlds/deck/table-tw-10.svg') 0 0 / 240px 240px repeat;
+  --twk-felt: radial-gradient(ellipse at 50% 40%, #2f4fa0, #23408e 60%, #172b62); --twk-rail: #6b4a2a; --twk-rail-bg: linear-gradient(180deg, #4a3220, #241810); --twk-rail-inner: linear-gradient(90deg, #8a6a2a, #d4a83c 50%, #8a6a2a);
+  --twk-face: #f4ead2; --twk-ink: #2a1d14; --twk-red: #9e2a2b;
+  --twk-frame: url('/games/theme-worlds/deck/frame-tw-10.svg'); --twk-emblem: url('/games/theme-worlds/deck/emblem-tw-10.svg');
+  --twk-back: url('/games/theme-worlds/deck/back-tw-10.svg') center / 100% 100% no-repeat, #23408e; --twk-back-edge: #f4ead2; --twk-back-ink: #f4ead2;
+  --twk-turn: #e6c46a;
+}

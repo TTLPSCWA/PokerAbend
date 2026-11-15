@@ -1,0 +1,9 @@
+/* ART-W4 · TW-09 Runen & Nordlicht (Karten): Langhausholz, Runenstein, Polarlicht; Runenknoten auf Bildkarten. Nur Variablen und eigene Grafiken (scripts/build-deck-worlds-art.mjs). */
+body[data-theme-world="TW-09"] {
+  --twk-table: #1d2226 url('/games/theme-worlds/deck/table-tw-09.svg') 0 0 / 240px 240px repeat;
+  --twk-felt: radial-gradient(ellipse at 50% 40%, #2f4a44, #2b3a3a 60%, #1d2226); --twk-rail: #6b4a2e; --twk-rail-bg: linear-gradient(180deg, #4a3420, #241a10); --twk-rail-inner: linear-gradient(90deg, #4a6f7f, #8fe8c6 50%, #4a6f7f);
+  --twk-face: #ece6d8; --twk-ink: #1d2226; --twk-red: #a3242b;
+  --twk-frame: url('/games/theme-worlds/deck/frame-tw-09.svg'); --twk-emblem: url('/games/theme-worlds/deck/emblem-tw-09.svg');
+  --twk-back: url('/games/theme-worlds/deck/back-tw-09.svg') center / 100% 100% no-repeat, #2b3236; --twk-back-edge: #d9d2c3; --twk-back-ink: #ece6d8;
+  --twk-turn: #6fe0b0;
+}

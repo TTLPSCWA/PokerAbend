@@ -13,9 +13,10 @@ Stand: 15. November 2026. Fachliche Grundlage ist das ursprüngliche Konzept „
 | TW-01 Schatten über Neuengland | **Monopoly umgesetzt** (Standard und Tempowürfel, 3.13.0); Monopoly Deal offen | Commit `154a30e`, `test/art-w1-tw01.test.js`, `test/ui/art-w1-tw01.spec.js`, [art/ART-W1/](art/ART-W1/) |
 | TW-14 Saloon, TW-11 Piratenbucht, TW-09 Runen & Nordlicht, TW-13 Neon-Arcade | **Würfelwelten umgesetzt** für alle 13 Würfelspiele (ART-W2, 3.14.0); andere Spielgruppen dieser Welten (z. B. Kartenspiele, Bretter) nicht | Abschnitt 5a, `test/art-w2-dice-worlds.test.js`, `test/ui/art-w2-dice-worlds.spec.js`, [art/ART-W2/](art/ART-W2/) |
 | TW-08 Götterberg, TW-09 Runen & Nordlicht (Brett), TW-10 Tafelrunde | **Brettwelten umgesetzt** für sieben klassische Brettspiele (ART-W3, 3.16.0); TW-09 ist dieselbe Welt wie bei den Würfelspielen (Facette, keine zweite ID) | Abschnitt 5b, `test/art-w3-board-worlds.test.js`, `test/ui/art-w3-board-worlds.spec.js`, [art/ART-W3/](art/ART-W3/) |
-| übrige Welten (TW-02 bis TW-07, TW-12, TW-15, TW-16) | nur Konzept, keine Implementierungsfreigabe, keine Assets | – |
+| TW-14, TW-03, TW-13, TW-01 (Poker-Familie, Blackjack); TW-02, TW-09, TW-10, TW-14 (klassische Kartenspiele) | **Kartenwelten umgesetzt** für 16 Kartenspiele (ART-W4, 3.17.0); TW-02 und TW-03 neu, die übrigen als Karten-Facette ihrer vorhandenen Welt (gleiche ID) | Abschnitt 5c, `test/art-w4-deck-worlds.test.js`, `test/ui/art-w4-deck-worlds.spec.js`, [art/ART-W4/](art/ART-W4/) |
+| übrige Welten (TW-04 bis TW-07, TW-12, TW-15, TW-16) | nur Konzept, keine Implementierungsfreigabe, keine Assets | – |
 
-Die zentrale Registry (`public/games/theme-worlds/registry.js`, ART-W0) enthält heute die 40 Kartenwelten, TW-01, die vier Würfelwelten TW-14, TW-11, TW-09, TW-13 und die Brettwelten TW-08 und TW-10; TW-09 trägt zusätzlich eine Brett-Facette. Weitere Welten kommen erst nach Freigabe hinzu.
+Die zentrale Registry (`public/games/theme-worlds/registry.js`, ART-W0) enthält heute die 40 Kartenwelten, TW-01, die vier Würfelwelten TW-14, TW-11, TW-09, TW-13 die Brettwelten TW-08 und TW-10 sowie die Kartenwelten TW-02 und TW-03. Facetten (gleiche ID, eigene Dateien): TW-09 Brett und Karten, TW-10 Karten, TW-01, TW-13 und TW-14 Karten. Weitere Welten kommen erst nach Freigabe hinzu.
 
 ---
 
@@ -35,20 +36,20 @@ Spalte „Quelle“ zeigt, woher Namen und Motive kommen dürfen. Schriften: „
 
 | ID | Welt | Quelle | Stimmung und Motive | Farben | Schrift (Konzept) | Stand |
 |---|---|---|---|---|---|---|
-| TW-01 | **Schatten über Neuengland** | Lovecraft, gemeinfrei (EU) | 1920er Küste, Nebel, Leuchttürme, verbotene Bücher, Tentakel nur angedeutet | Sepia, Petrol, Messing, Akzent Giftgrün | IM Fell English (OFL geprüft), Limelight (OFL geprüft) | Monopoly umgesetzt (Abschnitt 5) |
-| TW-02 | **Baker Street** | Conan Doyle, gemeinfrei | Viktorianisches London, Gaslaternen, Kutschen, Zeitungen, Lupe | Ruß, Backstein, Gaslicht-Gelb | IM Fell English, Playfair Display (beide OFL geprüft) | Konzept |
-| TW-03 | **Dampf & Messing** | Jules Verne, gemeinfrei | Luftschiffe, U-Boot, Mondkanone, Weltreise, Zahnräder | Kupfer, Messing, Ozeanblau | Cinzel (im Repo), Rye (OFL geprüft) | Konzept |
+| TW-01 | **Schatten über Neuengland** | Lovecraft, gemeinfrei (EU) | 1920er Küste, Nebel, Leuchttürme, verbotene Bücher, Tentakel nur angedeutet | Sepia, Petrol, Messing, Akzent Giftgrün | IM Fell English (OFL geprüft), Limelight (OFL geprüft) | Monopoly (ART-W1) und Poker-Familie (ART-W4) umgesetzt |
+| TW-02 | **Baker Street** | Conan Doyle, gemeinfrei | Viktorianisches London, Gaslaternen, Kutschen, Zeitungen, Lupe | Ruß, Backstein, Gaslicht-Gelb | IM Fell English, Playfair Display (beide OFL geprüft) | Kartenspiele umgesetzt (ART-W4) |
+| TW-03 | **Dampf & Messing** | Jules Verne, gemeinfrei | Luftschiffe, U-Boot, Mondkanone, Weltreise, Zahnräder | Kupfer, Messing, Ozeanblau | Cinzel (im Repo), Rye (OFL geprüft) | Poker-Familie umgesetzt (ART-W4) |
 | TW-04 | **Hexerpfad** | nur Stimmung (dunkle Fantasy), eigene Namen | Sümpfe, Ruinen, Monsterverträge, Tränke, slawische Sagengestalten (Leschi, Striga, Rusalka, Baba Jaga) | Moosgrün, Stahl, Blut-Rot sparsam | Cinzel (im Repo), Pirata One (OFL geprüft) | Konzept |
 | TW-05 | **Hereva** | Pepper&Carrot, CC BY 4.0 | Junge Hexen, Zauberschulen, Tränke, Katzen, hell und freundlich | Kürbisorange, Himmelblau, Pflaumenlila | Fredoka, Lilita One (im Repo) | Konzept |
 | TW-06 | **Wunderland** | Carroll / Baum, gemeinfrei | Spielkarten-Soldaten, Teeparty, Smaragdstadt, gelber Ziegelweg | Pastell, Smaragd, Gold | Fredoka, Righteous (im Repo) | Konzept |
 | TW-07 | **Märchenwald** | Grimm, Andersen, gemeinfrei | Hexenhaus, Wolf, Schloss, Spiegel, Bohnenranke | Waldgrün, Rotkäppchen-Rot, Honig | Lilita One (im Repo) | Konzept |
 | TW-08 | **Götterberg** | griechische Sagen | Tempel, Olymp, Minotaurus-Labyrinth, Odyssee-Schiff | Marmorweiß, Ägäisblau, Gold | Cinzel (im Repo) | Brettspiele umgesetzt (ART-W3) |
-| TW-09 | **Runen & Nordlicht** | nordische Sagen | Langhäuser, Drachenboote, Runensteine, Polarlicht | Eisblau, Holz, Polarlicht-Grün | Cinzel, Black Ops One (Titel) (im Repo) | Würfelspiele (ART-W2) und Brettspiele (ART-W3) umgesetzt |
-| TW-10 | **Tafelrunde** | Artus-Sagen, gemeinfrei | Burgen, Ritter, Gral, Schwert im Stein, Banner | Wappenrot, Königsblau, Gold | Cinzel (im Repo) | Brettspiele umgesetzt (ART-W3) |
+| TW-09 | **Runen & Nordlicht** | nordische Sagen | Langhäuser, Drachenboote, Runensteine, Polarlicht | Eisblau, Holz, Polarlicht-Grün | Cinzel, Black Ops One (Titel) (im Repo) | Würfel- (ART-W2), Brett- (ART-W3) und Kartenspiele (ART-W4) umgesetzt |
+| TW-10 | **Tafelrunde** | Artus-Sagen, gemeinfrei | Burgen, Ritter, Gral, Schwert im Stein, Banner | Wappenrot, Königsblau, Gold | Cinzel (im Repo) | Brett- (ART-W3) und Kartenspiele (ART-W4) umgesetzt |
 | TW-11 | **Piratenbucht** | Stevenson „Die Schatzinsel“, gemeinfrei | Galeonen, Karten mit X, Rum-Fässer, Papagei, Kanonen | Teak, Segeltuch, Karibikblau | Pirata One, Rye (OFL geprüft) | Würfelspiele umgesetzt (ART-W2) |
 | TW-12 | **Raumhafen** | nur Stimmung (Space Opera), eigene Namen | Raumschiffe, Planeten, Sternenkarten, Andockbuchten | Nachtblau, Neon-Cyan, Warnorange | Orbitron (im Repo) | Konzept |
-| TW-13 | **Neon-Arcade** | nur Stimmung (Synthwave, 80er) | Raster-Horizont, Palmen, Kassetten, Spielautomaten | Magenta, Cyan, Violett | Press Start 2P, Righteous (im Repo) | Würfelspiele umgesetzt (ART-W2) |
-| TW-14 | **Saloon** | nur Stimmung (Wilder Westen) | Holzdielen, Pokertisch, Steckbriefe, Postkutsche | Whiskybraun, Wüstenocker | Rye (OFL geprüft) | Würfelspiele umgesetzt (ART-W2) |
+| TW-13 | **Neon-Arcade** | nur Stimmung (Synthwave, 80er) | Raster-Horizont, Palmen, Kassetten, Spielautomaten | Magenta, Cyan, Violett | Press Start 2P, Righteous (im Repo) | Würfelspiele (ART-W2) und Poker-Familie (ART-W4) umgesetzt |
+| TW-14 | **Saloon** | nur Stimmung (Wilder Westen) | Holzdielen, Pokertisch, Steckbriefe, Postkutsche | Whiskybraun, Wüstenocker | Rye (OFL geprüft) | Würfel- (ART-W2) und Kartenspiele (ART-W4) umgesetzt |
 | TW-15 | **Kunterbunt** | Glitch, CC0 | Verspielte Figuren, Pflanzen, Tiere, schräge Gegenstände | Bonbonfarben | Fredoka (im Repo) | Konzept |
 | TW-16 | **Tiefsee** | Verne + nur Stimmung | Korallen, Quallen, Tauchglocke, versunkene Stadt | Tiefblau, Biolumineszenz-Türkis | Righteous (im Repo) | Konzept |
 
@@ -227,6 +228,33 @@ TW-08 Götterberg, TW-09 Runen & Nordlicht und TW-10 Tafelrunde gelten für die 
 
 **Bewusste Grenzen:** Bedeutungsfarben bleiben (Hex Rot/Blau mit Zielrändern, Vier gewinnt Rot/Gelb); nur Rahmen, Felder und Löcher wechseln das Material. Keine Animation, keine Klänge, kein WebGL. Säulen und Ornamente des Konzepts erscheinen als Rahmen, Tischkachel und Figurenzier, nicht als zusätzliche Dekoration im Spielfeld. Domino aus Abschnitt 3.1 gehört nicht zu ART-W3. Nachweise: [art/ART-W3/](art/ART-W3/).
 
+## 5c. Kartenwelten (ART-W4, Version 3.17.0)
+
+Art `deck` (klassisches Blatt und Poker), getrennt von der Art `card` der ART-T-Kartenwelten, die UNO, Skip-Bo und Phase 10 unverändert gestalten. Registry: `public/games/theme-worlds/deck-worlds.js`.
+
+| Spielgruppe | Welten (Reihenfolge im Host-Menü) |
+|---|---|
+| Poker-Familie und Blackjack: `poker`, `omaha`, `omaha-hi-lo`, `seven-card-stud`, `short-deck`, `five-card-draw`, `blackjack` | TW-01 Schatten über Neuengland, TW-14 Saloon, TW-13 Neon-Arcade, TW-03 Dampf & Messing |
+| Klassische Kartenspiele: `skat`, `doppelkopf`, `schwimmen`, `maumau`, `durak`, `hearts`, `stichmeister`, `praesident`, `mogeln` | TW-14 Saloon, TW-09 Runen & Nordlicht, TW-10 Tafelrunde, TW-02 Baker Street |
+
+**Wiederverwendung der IDs:** TW-02 und TW-03 sind neue Welten (Hauptform Karten). TW-01 (Monopoly), TW-09 (Würfel, Brett), TW-10 (Brett), TW-13 und TW-14 (Würfel) erhalten je eine Karten-Facette mit derselben ID; ihre bisherigen Ausprägungen sind unverändert. TW-14 gilt als einzige Welt in beiden Kartengruppen (eine Facette für alle 16 Spiele). Beim Spielwechsel (z. B. TW-09: Kniffel → Schach → Skat) lädt der Lebenszyklus nur die Dateien der passenden Ausprägung (`dice/`, `board/` bzw. `deck/`).
+
+**Gemeinsamer Baustein:** `public/games/theme-worlds/deck/deck-worlds.css` mit zwei Adaptern: Spiel-Kit (`#kg`: Kartenfront `.kc` französisch und deutsch, Rückseite `.kc-back`, Fächer der Mitspieler `.fan`, Mau-Mau-Flugkarte, Filze von Skat, Doppelkopf, Hearts, Stichmeister, Poker-Varianten und Blackjack-Dealer, Zugmarkierung `.ks.turn`) und der eigene Poker-/Omaha-Tisch (`#game`: `.card`, `.card.back`, Armauflage, Holzring und Filz, auch über der ART-002-Optik, Zugmarkierung `.seat.turn`). Jede Welt setzt nur Variablen (`deck/tw-xx.css`). Bildkarten (Bube/Unter, Dame/Ober, König) tragen auf **offenen** Karten das Attribut `data-face` und zeigen ein blasses Emblem der Welt; verdeckte Karten tragen keine Kartendaten.
+
+| Welt | Rücken | Bildkarten-Emblem | Tisch |
+|---|---|---|---|
+| TW-14 Saloon | Weinrot mit Messing-Rautengitter | Sheriffstern | grüner Filz, Holz und Messing |
+| TW-03 Dampf & Messing | Ozeanblau mit Zahnkränzen | Zahnrad | Seekarte, Ozeanfilz, Kupferkante |
+| TW-13 Neon-Arcade | Violett mit Neonraster | Pixelkrone | dunkles Raster, Neonrand |
+| TW-01 Schatten über Neuengland | Petrol mit Hafenwellen | Leuchtturm | dunkles Hafenwasser, Leder, Messing |
+| TW-02 Baker Street | Ruß mit Gaslicht-Fugen | Lupe | Backstein, Rußfilz |
+| TW-09 Runen & Nordlicht | Schiefer mit Runenband und Polarlicht | Runenknoten | Langhausdielen, Schieferfilz |
+| TW-10 Tafelrunde | geviertet Königsblau/Wappenrot | Wappenschild | Burgholz, königsblauer Filz |
+
+**Bewusste Grenzen:** keine Weltschrift auf Karten (Werte bleiben in der gewohnten Schrift); keine Chips je Welt (ART-002-Chips bleiben); keine Animation, kein Klang. Konzeptschriften IM Fell English und Playfair Display (TW-02) wurden nicht gebraucht. Einzelspieler-Kartenspiele (`solitaire`) bleiben außerhalb (eigene Erweiterung nötig).
+
+**Beobachtungen außerhalb des Pakets (nicht geändert, eigenes Arbeitspaket nötig):** Poker mobil blendet die verdeckten Karten der Mitspieler am Platz aus (nur Anzahl erkennbar); bei Dame (ART-W3) ist die Reihe der ziehbaren Steine höher gezogen. Nachweise: [art/ART-W4/](art/ART-W4/).
+
 ## 6. Grafik- und Soundquellen (aus dem Konzept, mit Prüfstand)
 
 „Bestätigt“ nur, wenn die Lizenz am 14./15.11.2026 an der Quelle bzw. in einem bereits im Repository dokumentierten Paket geprüft wurde; alles andere ist **ungeprüft** und vor Verwendung je Datei zu belegen.
@@ -259,7 +287,7 @@ Die fachliche Zuordnung folgt dem Konzept. Abgeschlossene Pakete behalten ID und
 | ART-W1 | Monopoly + Monopoly Deal: TW-01 Schatten über Neuengland | **teilweise:** Monopoly umgesetzt (3.13.0, `154a30e`); Monopoly Deal offen |
 | ART-W2 | Würfelbecher-Welten: TW-14, TW-11, TW-09, TW-13 für alle Würfelspiele | **umgesetzt** (3.14.0, `badf3e9`) |
 | ART-W3 | Klassische Bretter: Schach, Mühle, Dame, Reversi, Hex, Vier gewinnt, Backgammon mit TW-08, TW-09, TW-10 | **umgesetzt** (3.16.0, `1ae5d0b`) |
-| ART-W4 | Kartenrücken-Welten für die Kartenspiele außerhalb von ART-T | geplant |
+| ART-W4 | Kartenrücken-Welten für die 16 Kartenspiele außerhalb von ART-T | **umgesetzt** (3.17.0) |
 | ART-W5 … | weitere Monopoly-Editionen und Einzelwelten nach Bedarf | Idee |
 
 ART-013 (Schiffe versenken) und ART-044 (6 nimmt!) bleiben eigene Pakete; sie können die Welten später nutzen.

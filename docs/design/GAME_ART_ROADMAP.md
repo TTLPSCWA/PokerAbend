@@ -161,7 +161,7 @@ Der Host wählt für **UNO (Classic), Skip-Bo und Phase 10** eine Kartenwelt; si
 
 ## Themenwelten (ART-W)
 
-Themenwelten für Brett-, Karten-, Würfel- und weitere Spiele nach dem Konzept in `docs/design/THEME_WORLDS.md` (TW-01 bis TW-16, Paketzuordnung dort in Abschnitt 7). Grundsätze: `docs/design/THEME_ARCHITECTURE.md`, Prüfliste: `docs/design/THEME_QUALITY_CHECKLIST.md`. Die Kartenwelten (ART-T) laufen unverändert darüber. ART-W0 und ART-W2 sind umgesetzt, ART-W1 teilweise (Monopoly), ART-W3 umgesetzt; ART-W4 ist nur geplant; ART-W5 und höher (weitere Monopoly-Editionen und Einzelwelten) bleiben Ideen ohne Eintrag.
+Themenwelten für Brett-, Karten-, Würfel- und weitere Spiele nach dem Konzept in `docs/design/THEME_WORLDS.md` (TW-01 bis TW-16, Paketzuordnung dort in Abschnitt 7). Grundsätze: `docs/design/THEME_ARCHITECTURE.md`, Prüfliste: `docs/design/THEME_QUALITY_CHECKLIST.md`. Die Kartenwelten (ART-T) laufen unverändert darüber. ART-W0, ART-W2, ART-W3 und ART-W4 sind umgesetzt, ART-W1 teilweise (Monopoly); ART-W5 und höher (weitere Monopoly-Editionen und Einzelwelten) bleiben Ideen ohne Eintrag.
 
 #### ART-W0 · Themenwelten-Fundament · P1
 - **Spiele:** `farbenchaos`, `stapelrennen`, `zehnetappen`
@@ -203,4 +203,6 @@ Themenwelten für Brett-, Karten-, Würfel- und weitere Spiele nach dem Konzept 
 - **Spiele:** `poker`, `omaha`, `omaha-hi-lo`, `seven-card-stud`, `short-deck`, `five-card-draw`, `blackjack`, `skat`, `doppelkopf`, `schwimmen`, `maumau`, `durak`, `hearts`, `stichmeister`, `praesident`, `mogeln`
 - **Ziel:** Kartenrücken, Bildkarten-Stil und Tisch in passenden Welten (u. a. TW-02, TW-03, TW-09, TW-10, TW-13, TW-14) für Kartenspiele außerhalb von ART-T. Einzelspieler-Kartenspiele brauchen eine eigene Erweiterung. Nur Aussehen.
 - **Material:** eigene Grafiken; Kartensets laut Konzept erst nach Prüfung.
-- **Status:** planned
+- **Status:** in Arbeit
+- **Umsetzung:** Registry `public/games/theme-worlds/deck-worlds.js` (Art deck; TW-02, TW-03 neu; Karten-Facetten für TW-01, TW-09, TW-10, TW-13, TW-14), Art `deck` und Facetten-Zusammenbau in `registry.js`, gemeinsamer Baustein `public/games/theme-worlds/deck/deck-worlds.css` (Spiel-Kit- und Poker-Adapter), Welt-Dateien `deck/tw-xx.css`, eigene SVG (`scripts/build-deck-worlds-art.mjs`), `data-face` auf offenen Bildkarten (`kit.js`, `poker.js`), Themenwelt-Auswahl im Poker-Host-Menü; Version 3.17.0.
+- **Nachweise:** `test/art-w4-deck-worlds.test.js`, `test/ui/art-w4-deck-worlds.spec.js`, `docs/design/THEME_WORLDS.md`, `docs/design/art/ART-W4/README.md`, `docs/design/art/ART-W4/poker-standard-desktop.jpg`, `docs/design/art/ART-W4/poker-tw-14-desktop.jpg`, `docs/design/art/ART-W4/poker-tw-03-desktop.jpg`, `docs/design/art/ART-W4/poker-tw-13-desktop.jpg`, `docs/design/art/ART-W4/poker-tw-01-desktop.jpg`, `docs/design/art/ART-W4/skat-standard-desktop.jpg`, `docs/design/art/ART-W4/skat-tw-02-desktop.jpg`, `docs/design/art/ART-W4/skat-tw-09-desktop.jpg`, `docs/design/art/ART-W4/skat-tw-10-desktop.jpg`, `docs/design/art/ART-W4/skat-tw-14-desktop.jpg`

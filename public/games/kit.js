@@ -82,11 +82,13 @@ function fanHTML(n) {
 
 const SUIT_SIGN = { c: '♣', s: '♠', h: '♥', d: '♦' };
 const RANK_DE = { T: '10', J: 'B', Q: 'D', K: 'K', A: 'A' };
+// ART-W4: offene Bildkarte (Bube/Unter, Dame/Ober, König) für die Gestaltung der Kartenwelten; nur sichtbare Karten, nie verdeckte
+const faceAttr = (c) => ('JQK'.includes(c[0]) ? ' data-face' : '');
 // Französische Karte (Mau-Mau): "Th" → 10♥
 function frenchCard(c, { cls = '', attrs = '' } = {}) {
   const red = c[1] === 'h' || c[1] === 'd';
   const r = RANK_DE[c[0]] || c[0];
-  return `<button type="button" class="kc kc-fr ${red ? 'red' : ''} ${cls}" ${attrs} aria-label="${esc(r + ' ' + SUIT_SIGN[c[1]])}"><span class="r">${r}</span><span class="s">${SUIT_SIGN[c[1]]}</span></button>`;
+  return `<button type="button" class="kc kc-fr ${red ? 'red' : ''} ${cls}"${faceAttr(c)} ${attrs} aria-label="${esc(r + ' ' + SUIT_SIGN[c[1]])}"><span class="r">${r}</span><span class="s">${SUIT_SIGN[c[1]]}</span></button>`;
 }
 // Würfel mit Augen (3 × 3 Raster)
 const PIPS = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
@@ -122,7 +124,7 @@ const DECK = (() => {
   // Deutsches Blatt: Wert in der Ecke, große Farbe in der Mitte
   function germanCard(c, { cls = '', attrs = '' } = {}) {
     const r = DE_RANK[c[0]] || c[0];
-    return `<button type="button" class="kc kc-de ${cls}" ${attrs} aria-label="${esc(`${NAME.de[c[1]]} ${DE_RANK_NAME[c[0]] || c[0]}`)}"><span class="r">${r}</span>${deSuit(c[1], 'big-suit')}</button>`;
+    return `<button type="button" class="kc kc-de ${cls}"${faceAttr(c)} ${attrs} aria-label="${esc(`${NAME.de[c[1]]} ${DE_RANK_NAME[c[0]] || c[0]}`)}"><span class="r">${r}</span>${deSuit(c[1], 'big-suit')}</button>`;
   }
   const card = (c, o) => (german() ? germanCard(c, o) : frenchCard(c, o));
 

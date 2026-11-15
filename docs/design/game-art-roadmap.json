@@ -455,10 +455,11 @@
         "praesident",
         "mogeln"
       ],
-      "status": "planned",
+      "status": "in_progress",
       "implementation_commit": null,
       "goal": "Kartenrücken, Bildkarten-Stil und Tisch in passenden Welten (u. a. TW-02, TW-03, TW-09, TW-10, TW-13, TW-14) für Kartenspiele außerhalb von ART-T. Einzelspieler-Kartenspiele brauchen eine eigene Erweiterung. Nur Aussehen.",
-      "material": "eigene Grafiken; Kartensets laut Konzept erst nach Prüfung."
+      "material": "eigene Grafiken; Kartensets laut Konzept erst nach Prüfung.",
+      "implementation_note": "Registry `public/games/theme-worlds/deck-worlds.js` (Art deck; TW-02, TW-03 neu; Karten-Facetten für TW-01, TW-09, TW-10, TW-13, TW-14), Art `deck` und Facetten-Zusammenbau in `registry.js`, gemeinsamer Baustein `public/games/theme-worlds/deck/deck-worlds.css` (Spiel-Kit- und Poker-Adapter), Welt-Dateien `deck/tw-xx.css`, eigene SVG (`scripts/build-deck-worlds-art.mjs`), `data-face` auf offenen Bildkarten (`kit.js`, `poker.js`), Themenwelt-Auswahl im Poker-Host-Menü; Version 3.17.0."
     }
   ]
 }

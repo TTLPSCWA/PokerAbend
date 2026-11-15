@@ -126,7 +126,7 @@ function cardHTML(c, extra = '') {
   const r = c[0] === 'T' ? '10' : c[0];
   const s = c[1];
   const red = s === 'h' || s === 'd' ? 'red' : '';
-  return `<div class="card ${red} ${s} ${extra}" aria-label="${r}${SUIT[s]}"><span class="r">${r}</span><span class="s">${SUIT[s]}</span></div>`;
+  return `<div class="card ${red} ${s} ${extra}"${'JQK'.includes(c[0]) ? ' data-face' : ''} aria-label="${r}${SUIT[s]}"><span class="r">${r}</span><span class="s">${SUIT[s]}</span></div>`;
 }
 const {chipClass,chipStack,animateChips}=PokerChips.create({getState:()=>S,$,$$});
 
@@ -1044,6 +1044,7 @@ function renderPanel(force = false) {
       <p class="hint" style="margin:0">„Sofort anhalten“ friert alles ein, auch den Zug-Timer. „Pause nach dieser Hand“ lässt die laufende Hand zu Ende spielen.</p>
       ${programControlsHTML(S)}
       ${botControlsHTML(S, programBusy(S) || programRunning(S))}
+      ${typeof CardWorlds !== 'undefined' ? CardWorlds.controlsHTML(S) : ''}
       ${unlistedSwitchHTML(S)}
       ${switchGameHTML('poker', !!(S.hand && !S.hand.done))}
       ${endGameHTML(!!(S.hand && !S.hand.done))}`;
