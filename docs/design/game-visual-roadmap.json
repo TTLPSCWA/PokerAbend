@@ -3678,7 +3678,7 @@
         "screenshot_manifest": "docs/design/screenshots/shutthebox/wood-2026-11/screenshots.json",
         "scope": "Prepared ambientCG Wood051 frame texture only. Original renderer/server/rules and flap/dice styles unchanged. Original/A/B actual screenshots; no complete ART-015 package claim.",
         "integration_base": "251e07eaa96682c2290f5a1d3d725a3bcc588b74",
-        "implementation_commit": null,
+        "implementation_commit": "dc2f59047c34582370bd4be502667832169ed947",
         "tests": [
           {
             "command": "node --test test/shutthebox.test.js test/shutthebox-texture.test.js",
@@ -3714,8 +3714,22 @@
           "No physical Safari/device or network benchmark.",
           "Existing incomplete English labels unchanged; known expected-failure tests excluded.",
           "Reconnect to live room tested, no new mid-game process-restart persistence."
-        ]
-      }
+        ],
+        "ci": {
+          "sha": "dc2f59047c34582370bd4be502667832169ed947",
+          "id": 43713498830,
+          "url": "https://github.com/TTLPSCWA/PokerAbend/actions/runs/43713498830",
+          "conclusion": "success",
+          "fastPassed": 2090,
+          "fastSkipped": 3,
+          "smokePassed": 6,
+          "jobs": {
+            "tests": 132809968679,
+            "image": 132810889298
+          }
+        }
+      },
+      "source_audit_commit": "dc2f59047c34582370bd4be502667832169ed947"
     },
     {
       "id": "VIS-016",

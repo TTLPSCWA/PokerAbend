@@ -69,3 +69,9 @@ Die Box bleibt ein bewusst dezentes Material; Zahlenklappen und Würfel bleiben 
 * Chromium auf der integrierten Basis: **38 bestanden**, einschließlich der zwei zusätzlichen Desktop-/Mobil-Prüfungen aller vier ART-W2-Themenwelten in Shut the Box.
 * Galerie: alle 48 Dateien dekodiert, Dateigrößen und SHA-256 geprüft, keine fehlenden Bilder und kein horizontaler Überlauf.
 * Versionsbasis 3.14.0 → **3.15.0**. Implementierungscommit und CI werden nach dem tatsächlichen Push dokumentiert.
+
+## Veröffentlichungsnachweis
+
+Implementierung: [`dc2f59047c34582370bd4be502667832169ed947`](https://github.com/TTLPSCWA/PokerAbend/commit/dc2f59047c34582370bd4be502667832169ed947), Version **3.15.0**, auf main gepusht. [GitHub Actions](https://github.com/TTLPSCWA/PokerAbend/actions/runs/43713498830): **erfolgreich**; Schnelltests und Rauchprobe sowie GHCR-Image-Build erfolgreich, reguläre Nachtjobs nicht angefordert. CI: 2090 Schnelltests bestanden, 3 übersprungen; 6 Rauchproben bestanden. Kein Serverdeployment.
+
+Quelleninventur auf diesen Commit aktualisiert, einschließlich des zuvor älteren JS-Hash-Eintrags. Das Renderer-JavaScript selbst wurde durch dieses Paket nicht verändert. Der historische VIS-015-Implementierungscommit bleibt erhalten; die Textur ist als gesonderte Nacharbeit dokumentiert. Der abschließende Nachweis-Commit verändert keine Anwendung und erhält daher keine weitere Versionsnummer.
