@@ -44,7 +44,10 @@ import { createAchievements } from './achievements.js';
 import { createProfiles, createProfileAPI } from './profile.js';
 import { createMeAPI } from './settings-api.js';
 import { variantOf, variantName, scoreKey } from '../games/variants.js';
-import { worldOf } from '../public/games/card-worlds/worlds.js';
+import { themeRegistry } from '../public/games/theme-worlds/registry.js';
+// ART-W0: zentrale Themenwelten-Registry (enthält die Kartenwelten ART-T); nennt eine Welt ein unbekanntes Spiel, startet der Server nicht
+themeRegistry().assertGames(Object.keys(GAMES));
+const worldOf = (game, id) => themeRegistry().worldFor(game, id);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -851,10 +854,12 @@ io.on('connection', (socket) => {
   // ART-T1: Host wählt die Kartenwelt (nur Darstellung, für alle am Tisch, auch mitten in der Runde)
   on('setCardWorld', ({ world }, room, p) => {
     room.requireHost(p.id);
-    if (world === '' || world === null || world === undefined) { if (room.cardWorld) room.say('Kartenwelt: Standard'); room.cardWorld = null; save(); return; }
+    // ART-W0: dasselbe Ereignis wählt jede Themenwelt; die Registry prüft Spiel und Freigabe, unbekannte IDs werden abgelehnt
+    const label = (kind) => (kind === 'card' || !kind ? 'Kartenwelt' : 'Themenwelt');
+    if (world === '' || world === null || world === undefined) { if (room.cardWorld) room.say(`${label(themeRegistry().worldFor(room.game, room.cardWorld)?.kind)}: Standard`); room.cardWorld = null; save(); return; }
     const w = worldOf(room.game, world);
     if (!w) throw new Error('Diese Kartenwelt gibt es für dieses Spiel nicht');
-    if (room.cardWorld !== w.id) room.say(`Kartenwelt: ${w.name}`);
+    if (room.cardWorld !== w.id) room.say(`${label(w.kind)}: ${w.name.de}`);
     room.cardWorld = w.id; save();
   });
 

@@ -11,7 +11,7 @@ Herkunft: Entwurfsrunde 5 (40 Welten), Auswahl der Pilotwelten durch Tobi: U-04,
 | Motive (eigene Zeichnungen, 60 × 60) | `scripts/card-worlds/motifs.mjs` |
 | Erzeugung von Bildern und Variablen | `node scripts/build-card-worlds.mjs` → `public/games/card-worlds/art/<Welt>/*.svg`, `public/games/card-worlds/worlds.css` |
 | Gemeinsame Kartenvorlage und Rahmen | `public/games/card-worlds/template.css` (über `public/games/card-worlds.css` geladen) |
-| Host-Auswahl und Umschalten | `public/card-worlds.js`, `public/card-worlds.css`, Einbindung in `public/games/kit.js` |
+| Host-Auswahl und Umschalten | `public/card-worlds.js`, `public/card-worlds.css`, Einbindung in `public/games/kit.js`; seit ART-W0 (3.12.0) Registry `public/games/theme-worlds/registry.js` und Lebenszyklus `public/theme-worlds.js` (Schnee und Musik als Effekte), siehe `THEME_ARCHITECTURE.md` |
 | Server | Ereignis `setCardWorld` in `server/index.js` (nur Host, auch in Runde und Pause), gespeichert als `cardWorld`; beim Spielwechsel bleibt eine Welt nur, wenn sie im neuen Spiel gilt (Winterwelten) |
 | Tests | `test/card-worlds.test.js`, `test/ui/art-card-worlds.spec.js` |
 

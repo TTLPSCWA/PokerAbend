@@ -19,7 +19,7 @@ Stand: 15. November 2026. **Nur Planung und Dokumentation, keine Implementierung
 ## 2. Verbindliche Grundsätze für Themenwelten
 
 ### 2.1 Zentrale Theme-Registry
-- Eine Datei als einzige Quelle für alle Themenwelten (Vorschlag: `public/games/theme-worlds/registry.js`, von Server und Browser geteilt wie `card-worlds/worlds.js`). Pro Welt: stabile ID, Name (DE/EN), `released`, kompatible Spiele/Varianten, Pfad zum Asset-Manifest, Klang (optional), Lizenzstatus.
+- Eine Datei als einzige Quelle für alle Themenwelten (`public/games/theme-worlds/registry.js`, seit ART-W0 umgesetzt, von Server und Browser geteilt wie `card-worlds/worlds.js`). Pro Welt: stabile ID, Name (DE/EN), `released`, kompatible Spiele/Varianten, Pfad zum Asset-Manifest, Klang (optional), Lizenzstatus.
 - Der Server prüft jede Auswahl gegen die Registry (wie `worldOf()`); unbekannte, nicht freigegebene oder für das Spiel ungeeignete IDs ergeben **Standard**.
 - Vorhandene Mechanismen werden **nicht** umgebaut. Die Registry darf sie später als Adapter einbinden (z. B. Kartenwelten als Welten mit `games: ['farbenchaos', …]`); jede solche Zusammenführung ist ein eigenes Paket.
 - IDs werden nie umnummeriert oder wiederverwendet; entfernte Welten bleiben als „zurückgezogen“ eingetragen, damit gespeicherte Räume sicher auf Standard fallen.
@@ -108,14 +108,27 @@ Zusätzlich verbindlich: genau ein Audio-Element pro Welt, Pause bei verdecktem 
 7. **Performance:** Mehrere Effekt-Ebenen (Schnee, Szenen-Renderer, Welt-CSS) gleichzeitig sind nicht gemessen; jede Welt braucht eine Bildratenmessung (Grafik-Roadmap: ≥ 90 % bei 4× CPU-Drosselung).
 8. **KI-generierte Bilder:** Herkunft und Nutzungsbedingungen des Generators müssen je Datei belegt sein; Darstellungen geschützter Figuren oder Orte bleiben auch als KI-Bild geschützt (siehe ART-046).
 
-## 7. Implementierungsplan ART-W0 bis ART-W4 (Vorschlag, nicht freigegeben)
+## 7. Umsetzung ART-W0: Themenwelten-Fundament (Stand 3.12.0)
 
-Vorschlag auf Grundlage der vorhandenen Architektur. Er ist mit dem Konzept `THEME_WORLDS.md` abzugleichen, sobald es vorliegt; bei Abweichungen gilt nach Entscheidung des Projektinhabers dessen Paketzuschnitt. Alle Pakete bleiben `planned`.
+Der Projektinhaber hat ART-W0 als technisches Fundament freigegeben (Registry, Lebenszyklus, Synchronisierung). Das bestehende System wurde erweitert, keine parallele Auswahl geschaffen:
+
+| Teil | Datei | Aufgabe |
+|---|---|---|
+| Registry | `public/games/theme-worlds/registry.js` (Server und Browser) | Weltdefinition (ID, Art, Name/Beschreibung DE/EN, Spiele, Varianten, Assets, Farben, Schriften, Effekte, Fallback, Freigabe, Herkunft), strenge Prüfung (`validateWorld`, `createRegistry`; Spielmechanik-Schlüssel und fremde Pfade abgelehnt), `worldFor`, `worldsFor`, `appliesTo`, `assertGames`. Die 40 Kartenwelten sind als Art `card` eingebunden (`cardWorldDefinition`). |
+| Server | `server/index.js` | Startprüfung `assertGames` (Welt nennt nur vorhandene Spiele), Ereignis `setCardWorld` und Raumfeld `cardWorld` bleiben die eine Weltauswahl: nur der Host, Prüfung über die Registry, unbekannte/inkompatible IDs abgelehnt, beim Neustart und Spielwechsel auf Standard zurück. |
+| Lebenszyklus | `public/theme-worlds.js` (`ThemeWorlds`) | activate → update → deactivate → cleanup. Je Welt und je Effekt ein Scope (DOM, `data-*`, Klassen, Listener, Zeitgeber, `requestAnimationFrame`, Beobachter, Audio); erledigte Einträge verschwinden sofort, `cleanup()` ist beliebig oft aufrufbar. Gemeinsame Effekte bleiben beim Weltwechsel bestehen. Nur der aktuelle Tisch zählt (Sitzung, nicht geparkt); Verbindungsabbruch hält den Ton an, der nächste Raumstand setzt fort; `pagehide` räumt ab; fehlende oder unbrauchbare Vorschau-/Vorladedateien → Standard. |
+| Kartenwelten | `public/card-worlds.js` | meldet Art `card` und die Effekte `snow` und `music` an (IDs, Attribute, Speicherschlüssel und Verhalten unverändert); Host-Menü wie bisher, für andere Spiele die allgemeine Auswahl (heute leer). |
+| Tests | `test/theme-worlds.test.js`, `test/ui/theme-worlds.spec.js` | Registry und Validierung, Gleichwertigkeit mit der bisherigen Prüfung, zwei Räume, Rechte, späte Spieler, Wiederverbindung, Neustart; im Browser mehrfacher Wechsel ohne Rückstände, Abbruch/Wiederverbindung, fehlende und unbrauchbare Dateien, andere Weltart, Tisch geschlossen, Seite verlassen, Parken, reduzierte Bewegung, Mobil. |
+
+Neue Welt (ab ART-W1): Eintrag in `BUILTIN` der Registry mit `released: false`, Effekt-Umsetzungen über `ThemeWorlds.effect(typ, { activate, update, suspend, deactivate })`, Art-Darstellung über `ThemeWorlds.kind(art, { activate, update, deactivate })`; alle Ressourcen nur über den übergebenen Scope anlegen. Freischalten erst nach der Prüfliste.
+
+## 8. Weitere Pakete ART-W1 bis ART-W4 (Vorschlag, nicht freigegeben)
+
+Mit dem Konzept `THEME_WORLDS.md` abzugleichen, sobald es vorliegt. Alle Pakete bleiben `planned`.
 
 | Paket | Inhalt | Voraussetzung | Abnahme |
 |---|---|---|---|
-| **ART-W0** – Grundlagen und Rechte | Konzept TW-01–TW-16 bereitstellen und prüfen; Quellen je Welt mit Lizenztext belegen; Entscheidung zu Risiko 2–4; Pilotwelt(en) und Zielspiele festlegen | Freigabe W0 | Nachweisliste je Welt vollständig, offene Punkte entschieden |
-| **ART-W1** – Registry und Lebenszyklus | zentrale Registry (Daten + Serverprüfung), Raumfeld, Hostauswahl, Kompatibilität, Standard-Fallback, ein Lebenszyklus-Besitzer im Browser mit idempotentem `clear()`; noch keine Welt freigegeben | W0 | Unit-Tests Registry/Server, Lebenszyklus-UI-Tests (Betreten, Verlassen, verspäteter Stand, Parken, Ersetzt, Spielwechsel), keine Änderung an Kartenwelten/Skins/Monopoly |
-| **ART-W2** – Asset- und Klangpipeline für Welten | Paket-F-Pipeline auf Welten verallgemeinern (Manifest je Welt, Lizenzfelder Pflicht, `--publish` blockiert ungeklärte Dateien); Klang optional, Standard aus | W1 | Manifest-/Dateiprüfung, Budgets gemessen, Lizenzprüfung im Build |
-| **ART-W3** – Pilotwelt | eine Welt für zwei bis drei Spiele vollständig: Grafik, Lesbarkeit, Effekte mit Schaltern, reduzierte Bewegung, Mobil | W2, Rechte der Pilot-Assets geklärt | vollständige Prüfliste, Screenshots, Bildratenmessung |
-| **ART-W4** – Ausrollen | weitere Welten einzeln nach Prüfliste; optional Adapter für bestehende Kartenwelten | W3, Freigabe je Welt | je Welt eigene Abnahme und eigener Commit |
+| **ART-W1** – Grundlagen, Rechte und Pilotwahl | Konzept TW-01–TW-16 bereitstellen und prüfen; Quellen je Welt mit Lizenztext belegen; Entscheidung zu den Risiken in Abschnitt 6; Pilotwelt und Zielspiele festlegen | Freigabe W1 | Nachweisliste je Welt vollständig |
+| **ART-W2** – Asset- und Klangpipeline für Welten | Paket-F-Pipeline auf Welten verallgemeinern (Manifest je Welt, Lizenzfelder Pflicht, ungeklärte Dateien blockiert); Klang optional, Standard aus | W1 | Manifest-/Dateiprüfung, Budgets gemessen |
+| **ART-W3** – Pilotwelt | eine Welt für zwei bis drei Spiele vollständig, auch ein Brett- oder Würfelspiel | W2, Rechte geklärt | vollständige Prüfliste, Screenshots, Bildrate |
+| **ART-W4** – Ausrollen | weitere Welten einzeln nach Prüfliste | W3, Freigabe je Welt | je Welt eigene Abnahme |

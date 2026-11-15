@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.12.0 – 15. November 2026
+
+* **Themenwelten, gemeinsames Fundament:** Alle Welten eines Tisches laufen jetzt über eine zentrale, geprüfte Liste und einen gemeinsamen Ablauf zum Einschalten und Abräumen. Schnee, Wintermusik und andere Effekte verschwinden beim Weltwechsel, Verlassen, Parken, Schließen des Tisches oder Verlassen der Seite vollständig; bei einem Verbindungsabbruch pausiert die Musik und läuft nach der Wiederverbindung weiter. Fehlt eine Weltdatei, gilt das Standarddesign. Die Kartenwelten bleiben, wie sie sind; neue Welten gibt es noch nicht.
+
 ## 3.11.0 – 15. November 2026
 
 * **Gebietskampf:** Vorbereitete Kenney-Fahnen-, Schild- und Schwertsymbole für Karten, Kartentausch und Aktionsanzeigen. Kartentyp und Gebietsname sind klar getrennt; Fackel und Joker behalten ihre bisherigen Zeichen. Meridia, geheime Informationen und Regeln bleiben erhalten; lesbare Ersatzdarstellung bei fehlenden Bildern und Grafiknachweise im Spiel.

@@ -317,5 +317,21 @@
         "docs/design/art/ART-T6/musik-schalter.webp"
       ]
     }
+  ],
+  "theme_packages": [
+    {
+      "id": "ART-W0",
+      "name": "Themenwelten-Fundament",
+      "priority": "P1",
+      "games": [
+        "farbenchaos",
+        "stapelrennen",
+        "zehnetappen"
+      ],
+      "status": "in_progress",
+      "implementation_commit": null,
+      "goal": "Zentrale, datengetriebene Registry für Themenwelten mit Validierung (Spiele, Varianten, Assets, Farben, Schriften, Effekte, Fallback), Lebenszyklus activate → update → deactivate → cleanup mit vollständigem Aufräumen von Audio, Effekten, Zeitgebern, Listenern, Attributen und DOM, serverseitig autorisierte und raumbezogene Auswahl, Standard-Rückfall bei unbekannten IDs und fehlenden Assets. Keine neue Welt.",
+      "material": "keine neuen Grafiken oder Klänge; die 40 Kartenwelten und ihre Effekte (Schnee, Wintermusik) werden über die Registry eingebunden."
+    }
   ]
 }

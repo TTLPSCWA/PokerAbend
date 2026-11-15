@@ -158,3 +158,13 @@ Der Host wählt für **UNO (Classic), Skip-Bo und Phase 10** eine Kartenwelt; si
 - **Implementierungscommit:** `860498945273de5b1a05ddf6d9721330939795a4`
 - **Umsetzung:** `public/card-worlds.js` (Wiedergabeliste, ♪-Schalter, Standard aus, pro Gerät gespeichert, nur Winterwelten, 30 % Lautstärke, Tab verborgen = Pause, Start nach erster Berührung falls der Browser sperrt), `pilot-winter.css` (Knopf), zehn MP3 in `public/games/card-worlds/music/` (zusammen etwa 11 MB), Herkunft in `ART_LICENSES.md`.
 - **Nachweise:** `test/ui/art-t6-wintermusik.spec.js`, `test/card-worlds-music.test.js`, `docs/design/art/ART-T6/README.md`, `docs/design/art/ART-T6/musik-schalter.webp`
+
+## Themenwelten (ART-W)
+
+Spielübergreifendes Fundament für Themenwelten (Brett-, Karten-, Würfel- und weitere Spiele). Grundsätze: `docs/design/THEME_ARCHITECTURE.md`, Prüfliste: `docs/design/THEME_QUALITY_CHECKLIST.md`. Die Kartenwelten (ART-T) laufen unverändert darüber.
+
+#### ART-W0 · Themenwelten-Fundament · P1
+- **Spiele:** `farbenchaos`, `stapelrennen`, `zehnetappen`
+- **Ziel:** Zentrale, datengetriebene Registry für Themenwelten mit Validierung (Spiele, Varianten, Assets, Farben, Schriften, Effekte, Fallback), Lebenszyklus activate → update → deactivate → cleanup mit vollständigem Aufräumen von Audio, Effekten, Zeitgebern, Listenern, Attributen und DOM, serverseitig autorisierte und raumbezogene Auswahl, Standard-Rückfall bei unbekannten IDs und fehlenden Assets. Keine neue Welt.
+- **Material:** keine neuen Grafiken oder Klänge; die 40 Kartenwelten und ihre Effekte (Schnee, Wintermusik) werden über die Registry eingebunden.
+- **Status:** in Arbeit
