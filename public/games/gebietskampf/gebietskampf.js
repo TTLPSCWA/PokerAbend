@@ -7,6 +7,23 @@
   const GLYPH = ['●', '▲', '■', '◆', '★', '✚'];
   const COLOR_NAMES = [['Rot', 'Red'], ['Blau', 'Blue'], ['Gelb', 'Yellow'], ['Grün', 'Green'], ['Violett', 'Purple'], ['Orange', 'Orange']];
   const SYMBOL = [['⚑', 'Fahne', 'Banner'], ['⛨', 'Schild', 'Shield'], ['♨', 'Fackel', 'Torch']];
+  const ART = { flag: 'flag_triangle.webp', shield: 'shield.webp', attack: 'sword.webp' }, failedArt = new Set();
+  // Decorative HTML images: text/old glyphs remain available during loading or failure.
+  const artIcon = (key, glyph) => {
+    const src = ART[key] ? `/games/gebietskampf/art/${ART[key]}` : null;
+    return `<span class="gk-icon" aria-hidden="true"><span class="gk-icon-fallback">${glyph}</span>${src && !failedArt.has(src) ? `<img class="gk-asset" src="${src}" width="64" height="64" alt="" draggable="false">` : ''}</span>`;
+  };
+  document.addEventListener('load', (e) => {
+    if (e.target.matches?.('.kg-gebietskampf .gk-asset')) e.target.closest('.gk-icon')?.classList.add('loaded');
+  }, true);
+  document.addEventListener('error', (e) => {
+    if (!e.target.matches?.('.kg-gebietskampf .gk-asset')) return;
+    failedArt.add(e.target.getAttribute('src'));
+    e.target.closest('.gk-icon')?.classList.remove('loaded');
+    e.target.remove();
+  }, true);
+  const cardType = (c) => c.t === null ? tx('Joker', 'Wild') : tx(SYMBOL[c.s][1], SYMBOL[c.s][2]);
+  const cardIcon = (c) => c.t === null ? artIcon(null, '★') : artIcon(['flag', 'shield', null][c.s], SYMBOL[c.s][0]);
   const NEUTRAL = '#8b8f99';
   let sel = { from: null, to: null }, amt = 1, dice = 3, zoom = null, pan = null, panKey = null, lastKey = '';
 
@@ -78,7 +95,8 @@
   }
 
   const stageName = (st) => ({ reinforce: tx('Verstärken', 'Reinforce'), attack: tx('Angreifen', 'Attack'), fortify: tx('Verschieben', 'Fortify') }[st]);
-  const cardLabel = (g, c) => (c.t === null ? `★ ${tx('Joker', 'Wild')}` : `${SYMBOL[c.s][0]} ${terr(g, c.t)?.name || ''}`);
+  const cardLabel = (g, c) => c.t === null ? cardType(c) : `${cardType(c)}: ${terr(g, c.t)?.name || ''}`;
+  const tradeCards = (g, set) => `<span class="gk-trade-icons" aria-hidden="true">${set.map((i) => cardIcon(g.hand[i])).join('')}</span>`;
 
   function sidePanel(S) {
     const g = S.g, me = S.you?.id;
@@ -94,12 +112,12 @@
       const l = g.last, face = (v, k) => `<i class="gk-die ${k}">${v}</i>`;
       battle = `<section class="gk-battle" aria-label="${tx('Letzter Kampf', 'Last battle')}"><h3>${tx('Letzter Kampf', 'Last battle')}</h3>
         <p>${esc(terr(g, l.from).name)} → ${esc(terr(g, l.to).name)}</p>
-        <div class="gk-dice"><span>${tx('Angriff', 'Attack')}</span>${l.att.map((v) => face(v, 'att')).join('')}<span>${tx('Abwehr', 'Defence')}</span>${l.def.map((v) => face(v, 'def')).join('')}</div>
+        <div class="gk-dice"><span class="gk-battle-label">${artIcon('attack', '⚔')}${tx('Angriff', 'Attack')}</span>${l.att.map((v) => face(v, 'att')).join('')}<span class="gk-battle-label">${artIcon('shield', '⛨')}${tx('Abwehr', 'Defence')}</span>${l.def.map((v) => face(v, 'def')).join('')}</div>
         <p>${tx(`Verluste: Angreifer ${l.atkLoss}, Verteidiger ${l.defLoss}`, `Losses: attacker ${l.atkLoss}, defender ${l.defLoss}`)}${l.conquered ? ` · <b>${tx('erobert!', 'conquered!')}</b>` : ''}</p></section>`;
     }
-    const hand = g.hand?.length ? `<section class="gk-hand" aria-label="${tx('Deine Karten', 'Your cards')}"><h3>${tx('Deine Karten', 'Your cards')} (${g.hand.length})</h3><ul>${g.hand.map((c) => `<li class="${c.t === null ? 'wild' : ''}">${esc(cardLabel(g, c))}</li>`).join('')}</ul><small>${tx('Nächster Tausch', 'Next trade')}: +${g.nextTrade}</small></section>` : '';
+    const hand = g.hand?.length ? `<section class="gk-hand" aria-label="${tx('Deine Karten', 'Your cards')}"><h3>${tx('Deine Karten', 'Your cards')} (${g.hand.length})</h3><ul>${g.hand.map((c) => `<li class="gk-card ${c.t === null ? 'wild' : ''}">${cardIcon(c)}<span class="gk-card-copy"><small class="gk-card-type">${esc(cardType(c))}</small><b>${c.t === null ? tx('Beliebiges Symbol', 'Any symbol') : esc(terr(g, c.t)?.name || '')}</b></span></li>`).join('')}</ul><small>${tx('Nächster Tausch', 'Next trade')}: +${g.nextTrade}</small><p class="gk-card-note">${tx('Kartensätze geben Verstärkung, keine Kampfboni.', 'Card sets grant reinforcements, not combat bonuses.')}</p></section>` : '';
     const mission = g.mission ? `<section class="gk-mission ${g.mission.done ? 'done' : ''}"><h3>${tx('Deine geheime Mission', 'Your secret mission')}</h3><p>${esc(tx(g.mission.de, g.mission.en))}</p></section>` : '';
-    return `<aside class="gk-side"><section><h3>${tx('Spieler', 'Players')}</h3><ul class="gk-players">${rows}</ul></section>${mission}${hand}${battle}${territoryList(S)}<section><h3>${tx('Landmassen', 'Continents')}</h3><ul class="gk-conts">${own}</ul></section></aside>`;
+    return `<aside class="gk-side"><section><h3>${tx('Spieler', 'Players')}</h3><ul class="gk-players">${rows}</ul></section>${mission}${hand}${battle}${territoryList(S)}<section><h3>${tx('Landmassen', 'Continents')}</h3><ul class="gk-conts">${own}</ul><small><a href="/games/gebietskampf/credits.html" target="_blank" rel="noopener">${tx('Grafiknachweise', 'Artwork credits')}</a></small></section></aside>`;
   }
 
   // Alternative zur Karte: alle Gebiete als zugängliche Liste (Tastatur, Screenreader, schmale Handys) – antippen wirkt wie auf der Karte
@@ -119,7 +137,7 @@
   function statusStrip(S) {
     const g = S.g, mine = S.turnId === S.you?.id, steps = ['reinforce', 'attack', 'fortify'];
     const parts = g.reinforcement ? `${g.reinforcement.territories} ${tx('aus Gebieten', 'from territories')}${g.reinforcement.continents.length ? ` + ${g.reinforcement.continents.map((c) => c.bonus).join(' + ')} ${tx('Landmasse', 'continent')}` : ''}` : '';
-    return `<div class="gk-strip" role="status"><ol class="gk-steps">${steps.map((st) => `<li class="${g.stage === st ? 'on' : ''}">${stageName(st)}</li>`).join('')}</ol>
+    return `<div class="gk-strip" role="status"><ol class="gk-steps">${steps.map((st) => `<li class="${g.stage === st ? 'on' : ''}">${st === 'reinforce' ? artIcon('flag', '⚑') : st === 'attack' ? artIcon('attack', '⚔') : ''}${stageName(st)}</li>`).join('')}</ol>
       <span class="gk-chipline"><b>${esc(nameOf(S, S.turnId))}</b> ${mine ? '' : tx('ist dran', 'is playing')}</span>
       ${g.stage === 'reinforce' ? `<span class="gk-reserve" title="${esc(parts)}">${tx('Verstärkung', 'Reserve')}: <b>${g.reserve}</b></span>` : ''}
       <span class="gk-zoom" role="group" aria-label="Zoom"><button type="button" class="btn" data-g="gk-zoom" data-z="-" aria-label="${tx('Verkleinern', 'Zoom out')}">−</button><button type="button" class="btn" data-g="gk-zoom" data-z="fit" aria-label="${tx('Ganze Karte', 'Fit map')}">⤢</button><button type="button" class="btn" data-g="gk-zoom" data-z="+" aria-label="${tx('Vergrößern', 'Zoom in')}">+</button></span></div>`;
@@ -174,7 +192,7 @@
       const row = (inner) => `<div class="kg-acts gk-acts">${inner}</div>`;
       const amounts = (max) => `<span class="gk-amts" role="group" aria-label="${tx('Menge', 'Amount')}">${[1, 5, 'all'].map((a) => `<button type="button" class="btn ${String(amt) === String(a) ? 'btn-brass' : ''}" data-g="gk-amt" data-a="${a}" aria-pressed="${String(amt) === String(a)}">${a === 'all' ? tx('Alle', 'All') : a}</button>`).join('')}</span>`;
       if (g.needTrade) {
-        return row(g.sets.slice(0, 4).map((set) => btn(`data-g="gk-trade" data-cards="${set.join(',')}"`, `${tx('Tauschen', 'Trade')}: ${set.map((i) => (g.hand[i].t === null ? '★' : SYMBOL[g.hand[i].s][0])).join(' ')} (+${g.nextTrade})`, 'btn btn-brass')).join(''));
+        return row(g.sets.slice(0, 4).map((set) => btn(`data-g="gk-trade" data-cards="${set.join(',')}"`, `${tx('Tauschen', 'Trade')}: ${tradeCards(g, set)} (+${g.nextTrade})`, 'btn btn-brass', `aria-label="${esc(`${tx('Tauschen', 'Trade')}: ${set.map((i) => cardLabel(g, g.hand[i])).join(', ')} (+${g.nextTrade})`)}"`)).join(''));
       }
       if (g.pending) {
         const e = g.pending.extra, half = Math.ceil(e / 2);
@@ -182,7 +200,7 @@
       }
       if (g.stage === 'reinforce') {
         const trade = g.canTrade && g.sets.length ? btn(`data-g="gk-trade" data-cards="${g.sets[0].join(',')}"`, `${tx('Karten tauschen', 'Trade cards')} (+${g.nextTrade})`) : '';
-        return row(`${g.reserve ? amounts(g.reserve) : ''}${trade}${btn('data-g="gk-next"', tx('Zum Angriff', 'Start attack'), 'btn btn-brass', g.reserve ? 'disabled' : '')}`);
+        return row(`${g.reserve ? amounts(g.reserve) : ''}${trade}${btn('data-g="gk-next"', `${artIcon('attack', '⚔')}${tx('Zum Angriff', 'Start attack')}`, 'btn btn-brass', g.reserve ? 'disabled' : '')}`);
       }
       if (g.stage === 'attack') {
         const max = sel.from === null ? 0 : Math.min(3, g.armies[sel.from] - 1), d = Math.min(dice, max || 1);

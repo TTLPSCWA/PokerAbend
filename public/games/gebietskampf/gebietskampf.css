@@ -68,3 +68,19 @@
 .gk-li small { grid-column: 2; color: #cdd8d6; }
 .gk-li.pick { border-color: #8fd3a2; border-style: dashed; } .gk-li.hit { border-color: #ff7a6b; border-width: 2px; } .gk-li.from, .gk-li.to { border-color: #fff; border-width: 2px; }
 .gk-li[aria-disabled='true'] { opacity: .8; cursor: default; }
+/* ART-090: prepared CC0 icons; the Meridia SVG and all map styles stay intact. */
+.gk-icon{display:inline-grid;place-items:center;flex:none;width:30px;height:30px;vertical-align:middle;border-radius:7px;background:#174054;color:#fff;line-height:1;font:700 23px system-ui;pointer-events:none}
+.gk-icon>*{grid-area:1/1;pointer-events:none}
+.gk-icon img{display:block;width:100%;height:100%;object-fit:contain;padding:4px;box-sizing:border-box;opacity:0}
+.gk-icon.loaded img{opacity:1}
+.gk-icon.loaded .gk-icon-fallback{opacity:0}
+.gk-hand .gk-card{display:grid;grid-template-columns:36px minmax(0,1fr);align-items:center;gap:10px;min-height:52px;padding:6px 8px;border:1px solid #fff7;box-sizing:border-box}
+.gk-card>.gk-icon{width:36px;height:36px;font-size:25px}
+.gk-card-copy{display:grid;gap:2px;min-width:0;line-height:1.25;overflow-wrap:anywhere}
+.gk-card-type{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#4b4538}
+.gk-hand .gk-card-note{font-size:11px;line-height:1.4;color:#cdd8d6;margin:6px 0 0}
+.gk-trade-icons,.gk-battle-label{display:inline-flex;gap:4px;align-items:center;vertical-align:middle}
+.gk-trade-icons .gk-icon,.gk-battle-label .gk-icon,.gk-steps .gk-icon{width:20px;height:20px;font-size:16px;border-radius:4px}
+.gk-trade-icons .gk-icon img,.gk-battle-label .gk-icon img,.gk-steps .gk-icon img{padding:2px}
+.gk-steps li{display:flex;align-items:center;gap:5px}
+.gk-acts .btn>.gk-icon{width:22px;height:22px;margin-right:5px;font-size:17px}

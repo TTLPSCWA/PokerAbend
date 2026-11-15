@@ -1,0 +1,695 @@
+{
+  "game": "gebietskampf",
+  "date": "2026-11-15",
+  "before_commit": "a3ecf09456e99311bf94f25fdfbe744d40966a27",
+  "after_commit": null,
+  "source_hash_format": "UTF-8 LF source files; exact WebP and PNG bytes",
+  "source_before": [
+    {
+      "path": "public/games/gebietskampf/gebietskampf.js",
+      "sha256": "14172e6248fa345a1a86b08cb8de5d764004c8549a906929a101513a6eca2635"
+    },
+    {
+      "path": "public/games/gebietskampf/gebietskampf.css",
+      "sha256": "2ce46b9a6d60b6b54d427e4e6eaf8ca3bec7f1b83d713d85b74e3ab1222e95a7"
+    }
+  ],
+  "source_after": [
+    {
+      "path": "public/games/gebietskampf/gebietskampf.js",
+      "sha256": "3fd1c4fa89a7af7ae801d3bccbd8095e85e693dd77cdf8685d1c34231b57e349"
+    },
+    {
+      "path": "public/games/gebietskampf/gebietskampf.css",
+      "sha256": "3158977724915bc738d2ee4c019ea41707f9ab0a6ac3db99b93d309c4a68e1dd"
+    }
+  ],
+  "unchanged_authoritative_sources": [
+    {
+      "path": "games/gebietskampf/map.js",
+      "sha256": "6cbd93504c34657fef15f2e12a414c289dae78a1c644e45da6a183f2e9a85469"
+    },
+    {
+      "path": "games/gebietskampf/room.js",
+      "sha256": "3afc8e72c9942ed0e4d28ca0a6e45f77601708e339dd64d38a814a5e6b211d30"
+    },
+    {
+      "path": "games/gebietskampf/rules.js",
+      "sha256": "e84bf3b3c3bc5fe5bb7bdbd7c60b2710339aaab88f983cb65480fa2d5f796e85"
+    },
+    {
+      "path": "games/gebietskampf/bot.js",
+      "sha256": "d993eaf2f091fdffcdc7ebffadf82e17257436e0d34d6a3ead3237f75e4fac44"
+    },
+    {
+      "path": "games/gebietskampf/index.js",
+      "sha256": "00e949482b5fd18c0d362988ee4546e762e51c58cc0f1ae6807658c42213ecba"
+    }
+  ],
+  "map_renderer_unchanged": true,
+  "target_logic_unchanged": true,
+  "original_map_css_preserved": true,
+  "method": "Real loopback app, 2–6 human-seat fixtures on both maps; native map/setup and saved-game restore, controlled card hands taken from the original deck and explicit territory missions. No browser lastState replacement. Original PNGs retained privately; committed exports preserve dimensions, WebP quality .90, no crop/retouch/montage. Cards-focused shots are produced by scrolling to the hand; overview/attack/battle/English/spectator shots are separate actual states. Battle rolls are real server rolls and not claimed to match between before/after runs.",
+  "captures": [
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/before/small-2p-1920x1080-cards.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "bytes": 153666,
+      "sha256": "ec6e6ffa33bdde0b3e01ab87b44b4c51b57ee1235258c118dcf0cb25f7304b53",
+      "originalPng": {
+        "file": "before/small-2p-1920x1080-cards.png",
+        "bytes": 605233,
+        "sha256": "fc8d782b9cb8ebc48db01ef9e03cc0a726d6723d167c464878b1edd99548f2d4"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/before/small-2p-1440x900-cards.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 94086,
+      "sha256": "3e43871efb2d1e1becc151ae4c9771b3913188be2e6091fa6441ebb90dfe9afe",
+      "originalPng": {
+        "file": "before/small-2p-1440x900-cards.png",
+        "bytes": 337575,
+        "sha256": "4589304f8b7be64959147ee75022b7e2fb2ef3147472efe246edec0ac6acb62f"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/before/small-2p-768x1024-cards.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        768,
+        1024
+      ],
+      "bytes": 46860,
+      "sha256": "d3fb89538508b69360bf410b267078d31ad20adc24b3e6ad1e5cf1b102c698ea",
+      "originalPng": {
+        "file": "before/small-2p-768x1024-cards.png",
+        "bytes": 204975,
+        "sha256": "2ae6bac7bc6c747ef49b2a72ace1bed4006c861fcb09d57d09f7573267b05209"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/before/small-2p-390x844-cards.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        390,
+        844
+      ],
+      "bytes": 31502,
+      "sha256": "0a0096db20e4d34c8701e7d8d4b95455c4768e8921c5f764ca57e2fa0db53f1b",
+      "originalPng": {
+        "file": "before/small-2p-390x844-cards.png",
+        "bytes": 120429,
+        "sha256": "6a032c3b6d79fa3808ea042f7655a46c2caf392adbc9563f9ec1aaeff4ee5e77"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/before/small-2p-360x800-cards.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        360,
+        800
+      ],
+      "bytes": 28414,
+      "sha256": "38605bb6c5c613ed0044033dfcc62d06d7dce219cdcf1d2cfd6d11a09abfc5d7",
+      "originalPng": {
+        "file": "before/small-2p-360x800-cards.png",
+        "bytes": 96953,
+        "sha256": "d68a1dd7c116729ef343b544d45a733386ab8a31d85cdee8c06c8b31e5c6d87e"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/before/small-2p-900x450-cards.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        900,
+        450
+      ],
+      "bytes": 30980,
+      "sha256": "5be24314095f8ef985017e54235046e43ee09506e4f11a115d4d4c2b7e274c01",
+      "originalPng": {
+        "file": "before/small-2p-900x450-cards.png",
+        "bytes": 95354,
+        "sha256": "328d4c3387fc5583e5cc5c16fd78bdefefb505c6e65ca6f47d5f017d702255b9"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/before/small-2p-1440x900.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 126548,
+      "sha256": "66723bdc4ec5f95d0995117bd210a4aa415b328ee227c1e3667f80bf624afbcb",
+      "originalPng": {
+        "file": "before/small-2p-1440x900.png",
+        "bytes": 391057,
+        "sha256": "e115cd558104de884d7ce96fd721109a77103c0c0d7725c51100238ac95e6a3c"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/before/full-6p-1920x1080-cards.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "bytes": 96864,
+      "sha256": "434f6034a9905f386397ed886624722e635b84c70aea239f4e3d2b7f86a0f851",
+      "originalPng": {
+        "file": "before/full-6p-1920x1080-cards.png",
+        "bytes": 535920,
+        "sha256": "66770b9cc5095768c938f421846a6a31da1dc2c3a187512346b77b33491ff8ee"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/before/full-6p-1440x900-cards.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 75920,
+      "sha256": "56103750b0c21a7e93689be60941b8f4f236041079050f8e07c38f4f55f4a025",
+      "originalPng": {
+        "file": "before/full-6p-1440x900-cards.png",
+        "bytes": 370907,
+        "sha256": "da497f0577eba2413eab91153abf6ce977cab86141bfc65daff8e4c9ca486a6f"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/before/full-6p-768x1024-cards.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        768,
+        1024
+      ],
+      "bytes": 44614,
+      "sha256": "e74e123d889d0cb4be09cfe461e73fbdab0cce4ae751b93a57ed70f1229f3664",
+      "originalPng": {
+        "file": "before/full-6p-768x1024-cards.png",
+        "bytes": 207403,
+        "sha256": "3bbdf0d7c542c276558831e95250053fd175dfd9b4229bf02f9923c1d4880647"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/before/full-6p-390x844-cards.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        390,
+        844
+      ],
+      "bytes": 30752,
+      "sha256": "6e9a8142653f76a66fd6f4dd409f5de000ac58d66dc75c0045c7579d718327cf",
+      "originalPng": {
+        "file": "before/full-6p-390x844-cards.png",
+        "bytes": 119748,
+        "sha256": "3f34853f3a02f52d692334ecb7db266b39269678fc4e762c0081940546bf52b0"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/before/full-6p-360x800-cards.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        360,
+        800
+      ],
+      "bytes": 28232,
+      "sha256": "753739c0e943c3f8a950b9a144e67f4c61d1e72cb25cc556aaa825ab02b336c7",
+      "originalPng": {
+        "file": "before/full-6p-360x800-cards.png",
+        "bytes": 96310,
+        "sha256": "5d1e15f5446690a0fa820774dd9a84b34946fc3fe56820a43df146e36a5e6f4d"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/before/full-6p-900x450-cards.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        900,
+        450
+      ],
+      "bytes": 32558,
+      "sha256": "dc11b5413b7774d9909c79dd687ede83173ee6c0a4612d5ed781b8f4df207d2b",
+      "originalPng": {
+        "file": "before/full-6p-900x450-cards.png",
+        "bytes": 102026,
+        "sha256": "8b6e37830cb54b30b1ef0f54fc2769cdef82dfc1b540c5feac745c2a32298b68"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/before/full-6p-1440x900.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 158822,
+      "sha256": "fc8b716f722b2860b4a5525a37f4e009712d23cd7ce55ef79ba145072186f177",
+      "originalPng": {
+        "file": "before/full-6p-1440x900.png",
+        "bytes": 530885,
+        "sha256": "c97a17cb630545d44bd0e52ef9da90e981812bd0871e7926efd2d7ca53640097"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-1920x1080-cards.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "bytes": 129116,
+      "sha256": "85fd56a42afdbd60fbef1dd17f31cbc535340d3a4ac4b131c23d248484281381",
+      "originalPng": {
+        "file": "after/small-2p-1920x1080-cards.png",
+        "bytes": 547165,
+        "sha256": "b4303329dd5640135344e3091f170e005f3425bcedcddf7e7e114d1afc49bcb9"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-1440x900-cards.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 95536,
+      "sha256": "02020c03b7787c05ed51d7d946b342ee381d65c2eb3ba89759cb24d3b089ed7b",
+      "originalPng": {
+        "file": "after/small-2p-1440x900-cards.png",
+        "bytes": 325188,
+        "sha256": "fe84f670b391dd77ea9873cf00acf6f6de18ad8fd9cb0a4795e8846706efa347"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-768x1024-cards.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        768,
+        1024
+      ],
+      "bytes": 48552,
+      "sha256": "781c17b3ad354493fb6e75f71e70c69537666dd8599fbadac01edc264eb07ecf",
+      "originalPng": {
+        "file": "after/small-2p-768x1024-cards.png",
+        "bytes": 182214,
+        "sha256": "15b77fa58ed706eddf1c647ce637c156f16b7992c27196c24a5843fbe0462fea"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-390x844-cards.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        390,
+        844
+      ],
+      "bytes": 34428,
+      "sha256": "ad0fa1b5d52d3bb3410bc2f5e745714da6fdefeda5492e44cf5a29f6159fb905",
+      "originalPng": {
+        "file": "after/small-2p-390x844-cards.png",
+        "bytes": 103328,
+        "sha256": "b8fa65652c6f5242cb27df41f99abd832b228d3848224d13fa6c7908f2ec28e6"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-360x800-cards.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        360,
+        800
+      ],
+      "bytes": 33710,
+      "sha256": "cb2c2992b3fbae7ed7d0c6686df7f7f7c63e3cbb01ccf69370e656e1edc11086",
+      "originalPng": {
+        "file": "after/small-2p-360x800-cards.png",
+        "bytes": 94906,
+        "sha256": "520396539b5d3c75fd7865b9aea21e4db2b958868176e389fdfc76e28770684e"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-900x450-cards.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        900,
+        450
+      ],
+      "bytes": 33188,
+      "sha256": "2b8c0b476aa5b1d98655feb6cf534affdbfba7a5753fe64b765b8ec185f4613b",
+      "originalPng": {
+        "file": "after/small-2p-900x450-cards.png",
+        "bytes": 86592,
+        "sha256": "0ef1164d5cb9a98d926a32e4b85d24c291e058772efaa8925cc372380905e5d8"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-1440x900.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 130960,
+      "sha256": "0125795ffc612689d180001cecd3e673128fe0a0983824c916c24d17921f7be5",
+      "originalPng": {
+        "file": "after/small-2p-1440x900.png",
+        "bytes": 387576,
+        "sha256": "f0861a79237ebf865d2e32f3e8129311f95244625fa4fa8b0c67425caaa54c7f"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-1920x1080-cards.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "bytes": 91236,
+      "sha256": "494e72ed3219c4c76c695e1a7e2f3bdfc00424af2ae4c1ff8bd695996f41dfe4",
+      "originalPng": {
+        "file": "after/full-6p-1920x1080-cards.png",
+        "bytes": 520322,
+        "sha256": "23a8f5e7f53cc2e898265d854f9502ec3d996a273a65060a2b0376ec186b46e4"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-1440x900-cards.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 79864,
+      "sha256": "03a43c70a4048439f6e070fb0b229da19d2f94b58a2385357f3c5d358c135531",
+      "originalPng": {
+        "file": "after/full-6p-1440x900-cards.png",
+        "bytes": 370773,
+        "sha256": "7b70694b400abfae595142bdc5d065c9e0f27dc3ed6737c04251812e508de82e"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-768x1024-cards.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        768,
+        1024
+      ],
+      "bytes": 46858,
+      "sha256": "9942f92fe6306ece640c63df34c88e046c2f932c342935fd6803ad23d2ee25e0",
+      "originalPng": {
+        "file": "after/full-6p-768x1024-cards.png",
+        "bytes": 185985,
+        "sha256": "daeaac4ff39e8257d70c5a59ceef4795e94034ac42e1f3b66872fa735688bf0a"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-390x844-cards.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        390,
+        844
+      ],
+      "bytes": 34080,
+      "sha256": "acfe6fc5cf29ac7eaf31a56222145a7742ece7ff097d4efa859e2fe225048577",
+      "originalPng": {
+        "file": "after/full-6p-390x844-cards.png",
+        "bytes": 102415,
+        "sha256": "dd2c90fe5552264d8171023c35c9e970d549f214bb582fe2a051bae0d81aad6e"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-360x800-cards.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        360,
+        800
+      ],
+      "bytes": 33516,
+      "sha256": "1e5b633090bc5d100cb3768aecc97329ab55aabcf968e27ecb48655f496cb3c9",
+      "originalPng": {
+        "file": "after/full-6p-360x800-cards.png",
+        "bytes": 94200,
+        "sha256": "7b262f3e6cd4b188731bfb67f3b2ae49b5dc29598036335f4b0e6db3d7862cfe"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-900x450-cards.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        900,
+        450
+      ],
+      "bytes": 34734,
+      "sha256": "396e6df5ec5cc4a160c638e4b2bdf2c9d43962632d2a53f5353063237f328269",
+      "originalPng": {
+        "file": "after/full-6p-900x450-cards.png",
+        "bytes": 92546,
+        "sha256": "10ca033cc476fd1676c0aea43261b131c95fab6ee6996893692742271579235c"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-1440x900.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 158860,
+      "sha256": "ecfcd66d53f185ce276c20e5e44add7c02881a47887292176eeccd81b7fdb695",
+      "originalPng": {
+        "file": "after/full-6p-1440x900.png",
+        "bytes": 528611,
+        "sha256": "61874d05788cc1cefdeec0f0f7172f28b598ca0ea1e03dbfe8f854c91d0f7bb3"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-attack.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 129358,
+      "sha256": "45e3fbebe658cc1fbce57b73b4bf3d2bda261460eed23ab7b07dcae7f6b7112b",
+      "originalPng": {
+        "file": "after/small-2p-attack.png",
+        "bytes": 392235,
+        "sha256": "f4c310163d7d931dbcf9a2fad28c5b9d35d476dc92293323927c5952c8cf2ff9"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-battle.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 65014,
+      "sha256": "a231b841a8e3c01996a6a3984161f8c6dbe27d974d3e5a574198cfb078a915d4",
+      "originalPng": {
+        "file": "after/small-2p-battle.png",
+        "bytes": 318401,
+        "sha256": "f695613a2622450dacb574f54e44db2b9c2f3d72797f79de3837a28e5c6f659b"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-reconnect-en.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 91050,
+      "sha256": "d2751ba7bf1c4af6884e4b68c424bd32680a9f8a5182ece47302a07f263a0e04",
+      "originalPng": {
+        "file": "after/small-2p-reconnect-en.png",
+        "bytes": 335763,
+        "sha256": "366206fd57aca875a905a2f3b35768e752e2f3078b81cf157d7f45b0016581f9"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-spectator.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 114420,
+      "sha256": "a0116941171b377529bcec1600ae987112acacdfb6ac3af0f8e93b9e4bb9dc37",
+      "originalPng": {
+        "file": "after/small-2p-spectator.png",
+        "bytes": 394102,
+        "sha256": "a4359ed1c71b0c02c5323815c1b8f010dcf2b015babff72dcd84cde3d2a3b0e8"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-attack.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 158108,
+      "sha256": "945eb7d8da713d1887c65ad8e7177bd44599e0588debf15e3a52c52396714360",
+      "originalPng": {
+        "file": "after/full-6p-attack.png",
+        "bytes": 523501,
+        "sha256": "140fbf246a3b5009277d67fdbd92c79b21430754d0faf113c608e7ba5d6712b2"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-battle.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 52506,
+      "sha256": "f8218125ab55cc4cec850f54233be17d9f85d3bfcca86651259bb99b167997ae",
+      "originalPng": {
+        "file": "after/full-6p-battle.png",
+        "bytes": 346028,
+        "sha256": "2ee41c66224eff4f44b1db08a7e3b9b8ba27c1a487e12cc4341f305a65886ea1"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-reconnect-en.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 78876,
+      "sha256": "adb437ecb04ffa2f88ac62993423f75e83b27078f7fe4431cd4c0183911933ab",
+      "originalPng": {
+        "file": "after/full-6p-reconnect-en.png",
+        "bytes": 359705,
+        "sha256": "8426068ab5e00ce41fc96e3a1fc012d399ac0431cdac8a99d4057d5351fe3bf9"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-spectator.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 148020,
+      "sha256": "f9df6b99d98bf04bbd702682c89ffb1e04a0c88bf5925704aa52ec9cd2a18b50",
+      "originalPng": {
+        "file": "after/full-6p-spectator.png",
+        "bytes": 526276,
+        "sha256": "d91a04be30967b66259e9755ef77acc1ca81bf7fad4138763d64a0d45589c439"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after-firefox/small-2p-1440x900-cards.webp",
+      "engine": "firefox",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 88736,
+      "sha256": "5d63e73d005de23ffb05e4d56de1a2a832faf3151b879bfc471a0dfb35b595eb",
+      "originalPng": {
+        "file": "after-firefox/small-2p-1440x900-cards.png",
+        "bytes": 244666,
+        "sha256": "da6ec344cd1640ad03489ecfdd14c5d218fd82d05ff0404b642fa58e744b1f81"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after-firefox/full-6p-390x844-cards.webp",
+      "engine": "firefox",
+      "phase": "after",
+      "viewport": [
+        390,
+        844
+      ],
+      "bytes": 32066,
+      "sha256": "90d1de305e41862ca0b7139b1680caab735c472495fa09439917fab5bef5cce6",
+      "originalPng": {
+        "file": "after-firefox/full-6p-390x844-cards.png",
+        "bytes": 77652,
+        "sha256": "32f9862b663c5806d64d612c69989eb4b286ab4889e2d7742805b810b6d13d45"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after-webkit/small-2p-1440x900-cards.webp",
+      "engine": "webkit",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 90784,
+      "sha256": "d02078d65947186c94d131739f690a8cd5d2e54b4831b10a86fe2ba82c1dff9f",
+      "originalPng": {
+        "file": "after-webkit/small-2p-1440x900-cards.png",
+        "bytes": 210101,
+        "sha256": "3bd606b2c66a284c77dfdf787ef5e70eb8afddcf48c135bf77b2cf79ef333662"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/gebietskampf/kenney-2026-11/after-webkit/full-6p-390x844-cards.webp",
+      "engine": "webkit",
+      "phase": "after",
+      "viewport": [
+        390,
+        844
+      ],
+      "bytes": 32694,
+      "sha256": "6d1268c233d4db5b7085ea8caf3158b17114d9f85bd1770762e64d81d94400d4",
+      "originalPng": {
+        "file": "after-webkit/full-6p-390x844-cards.png",
+        "bytes": 68404,
+        "sha256": "8898f99818efdbc34b03306ba3adcb6c9d8c34a9c3b90d09255f2eb5a0562e68"
+      }
+    }
+  ]
+}

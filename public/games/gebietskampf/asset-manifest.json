@@ -1,0 +1,90 @@
+{
+  "game": "gebietskampf",
+  "package": "Kenney Board Game Icons 1.1",
+  "source": "https://kenney.nl/assets/board-game-icons",
+  "mirror": "https://github.com/eturner58/game-assets/tree/main/kenney/Icons/Board%20Game%20Icons",
+  "licenseEvidence": {
+    "sourceFile": "License.txt",
+    "originalSha256": "ee984bc143c380c108199620d18bfdf55001a566951bbda485c2a5d94254350a",
+    "path": "public/games/gebietskampf/kenney-LICENSE.txt",
+    "canonicalSha256": "a1b5bd6306c13be78b6903684086bd97c35194318bc5001153f4bc8ffeccc332",
+    "changes": "Line endings normalized to LF; trailing whitespace removed; wording unchanged."
+  },
+  "assets": [
+    {
+      "file": "flag_triangle.webp",
+      "path": "public/games/gebietskampf/art/flag_triangle.webp",
+      "uses": [
+        "banner card",
+        "reinforcement phase"
+      ],
+      "sourceFile": "PNG/Default (64px)/flag_triangle.png",
+      "sourceUrl": "https://kenney.nl/assets/board-game-icons",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "bytes": 940,
+      "width": 64,
+      "height": 64,
+      "sha256": "e4c92914de0e0f8396185f33ead7169d796b2b80880ea335f5f5537b26d0c536",
+      "originalSha256": "87dedf6f5667daefcc5dc41df9c089fa6bae26411026052bf38e35a197718a3c",
+      "changes": "Existing prepared 64×64 WebP conversion from 64×64 PNG; copied byte-for-byte. Dark CSS badge behind original white foreground; no image recoloring."
+    },
+    {
+      "file": "shield.webp",
+      "path": "public/games/gebietskampf/art/shield.webp",
+      "uses": [
+        "shield card",
+        "defence label"
+      ],
+      "sourceFile": "PNG/Default (64px)/shield.png",
+      "sourceUrl": "https://kenney.nl/assets/board-game-icons",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "bytes": 982,
+      "width": 64,
+      "height": 64,
+      "sha256": "fc67e30d0b7902a4e90a6e5333d4c2878d9454f132bfded5882a3571c0a9cb91",
+      "originalSha256": "b33a110feb7bd0d9ae50573e4c1d584214c44ff33a806edd7ef1e50798930794",
+      "changes": "Existing prepared 64×64 WebP conversion from 64×64 PNG; copied byte-for-byte. Dark CSS badge behind original white foreground; no image recoloring."
+    },
+    {
+      "file": "sword.webp",
+      "path": "public/games/gebietskampf/art/sword.webp",
+      "uses": [
+        "attack phase",
+        "attack label"
+      ],
+      "sourceFile": "PNG/Default (64px)/sword.png",
+      "sourceUrl": "https://kenney.nl/assets/board-game-icons",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "bytes": 890,
+      "width": 64,
+      "height": 64,
+      "sha256": "b5f05712811481c601623cc9442213987fb72f5d195e106e9df4c13ec49f6c3a",
+      "originalSha256": "07a44a155f1b284b578c731f21a16442959bd753cae008ca39d7965e72f0d372",
+      "changes": "Existing prepared 64×64 WebP conversion from 64×64 PNG; copied byte-for-byte. Dark CSS badge behind original white foreground; no image recoloring."
+    }
+  ],
+  "reviewedButNotUsed": [
+    {
+      "file": "flag_square.webp",
+      "reason": "Triangle flag matches existing banner glyph; no duplicate motif needed."
+    },
+    {
+      "file": "arrow_clockwise.webp",
+      "reason": "Rotation is not reinforcement or fortification."
+    },
+    {
+      "file": "dice_3D.webp",
+      "reason": "Decorative hollow dice do not represent the actual combat rolls; numeric results preserved."
+    }
+  ],
+  "nativeFallbacks": {
+    "torch": "Existing ♨ glyph plus explicit Fackel/Torch text; no prepared torch motif. Lantern is not a torch.",
+    "wild": "Existing ★ glyph plus Joker/Wild text; no prepared joker motif selected. No forced treasure-star reassignment."
+  }
+}

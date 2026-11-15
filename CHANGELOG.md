@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.11.0 – 15. November 2026
+
+* **Gebietskampf:** Vorbereitete Kenney-Fahnen-, Schild- und Schwertsymbole für Karten, Kartentausch und Aktionsanzeigen. Kartentyp und Gebietsname sind klar getrennt; Fackel und Joker behalten ihre bisherigen Zeichen. Meridia, geheime Informationen und Regeln bleiben erhalten; lesbare Ersatzdarstellung bei fehlenden Bildern und Grafiknachweise im Spiel.
+
 ## 3.10.0 – 15. November 2026
 
 * **Städtehandel:** Kenney-Gebäude für Siedlungen und Städte mit eindeutigen Eigentümerfarben und Symbolen. Aurelia-Karte, Spielregeln, Zoom und Bauplätze bleiben erhalten; bei fehlenden Bildern erscheinen die bisherigen SVG-Marker. Grafiknachweise direkt im Spiel.

@@ -15369,14 +15369,14 @@
       "source_audit": [
         {
           "path": "public/games/gebietskampf/gebietskampf.js",
-          "sha256": "78b69db350d4d9d471fea81201795925e394eb400501ede2af746b6df5bef476"
+          "sha256": "3fd1c4fa89a7af7ae801d3bccbd8095e85e693dd77cdf8685d1c34231b57e349"
         },
         {
           "path": "public/games/gebietskampf/gebietskampf.css",
-          "sha256": "9356d006a70518250a1a685396a2383d5df32895cfb6341ca75215fa8d4fe6aa"
+          "sha256": "3158977724915bc738d2ee4c019ea41707f9ab0a6ac3db99b93d309c4a68e1dd"
         }
       ],
-      "current_design": "Eigene Seekarte Meridia (Gebiete und Nachbarschaften unverändert); alle Gebiete zusätzlich als zugängliche, nach Landmassen gegliederte Liste mit Besitzer, Truppen, Nachbarzahl und Aktionshinweis – gleiche Bedienung wie die Karte.",
+      "current_design": "Eigene Seekarte Meridia (Gebiete und Nachbarschaften unverändert); alle Gebiete zusätzlich als zugängliche, nach Landmassen gegliederte Liste mit Besitzer, Truppen, Nachbarzahl und Aktionshinweis – gleiche Bedienung wie die Karte. Kenney-Fahne/Schild für klar beschriftete eigene Karten und Tauschsätze; Schwert/Schild für öffentliche Aktions-/Kampfanzeigen, bestehende Fackel-/Jokerzeichen als Fallback.",
       "known_visual_weaknesses": [
         "Weitere Feinpolitur und optionale Varianten sind nicht Teil dieser Umsetzung."
       ],
@@ -15462,18 +15462,100 @@
         "docs/design/screenshots/vis-gebietskampf/mobil-reinforce.jpg",
         "docs/design/screenshots/vis-gebietskampf/mobil-spectator.jpg",
         "docs/design/screenshots/vis-gebietskampf/mobil-waiting.jpg",
-        "docs/design/screenshots/vis-gebietskampf/mobil-zoomed.jpg"
+        "docs/design/screenshots/vis-gebietskampf/mobil-zoomed.jpg",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/before/small-2p-1920x1080-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/before/small-2p-1440x900-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/before/small-2p-768x1024-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/before/small-2p-390x844-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/before/small-2p-360x800-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/before/small-2p-900x450-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/before/small-2p-1440x900.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/before/full-6p-1920x1080-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/before/full-6p-1440x900-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/before/full-6p-768x1024-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/before/full-6p-390x844-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/before/full-6p-360x800-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/before/full-6p-900x450-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/before/full-6p-1440x900.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-1920x1080-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-1440x900-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-768x1024-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-390x844-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-360x800-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-900x450-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-1440x900.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-1920x1080-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-1440x900-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-768x1024-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-390x844-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-360x800-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-900x450-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-1440x900.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-attack.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-battle.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-reconnect-en.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/small-2p-spectator.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-attack.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-battle.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-reconnect-en.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after/full-6p-spectator.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after-firefox/small-2p-1440x900-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after-firefox/full-6p-390x844-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after-webkit/small-2p-1440x900-cards.webp",
+        "docs/design/screenshots/gebietskampf/kenney-2026-11/after-webkit/full-6p-390x844-cards.webp"
       ],
       "test_results": [
         "npx playwright test test/ui/visual-p1.spec.js (desktop + mobil, sauberer Checkout): bestanden, sechs Viewports ohne seitliches Überlaufen, Lobby/eigene Aktion/Zuschauer/Wartend/Pause/Wiederverbindung/Englisch (+ Ergebnis, wo schnell erreichbar).",
         "Bestehende Specs der betroffenen Spiele (sauberer Checkout, 2026-11-07): siehe Abschlussbericht.",
-        "node --test \"test/*.test.js\": bestanden (sauberer Checkout)."
+        "node --test \"test/*.test.js\": bestanden (sauberer Checkout).",
+        "Kenney icon follow-up 3.11.0: 18 existing + 3 new Node tests, 26 browser cases, isolated test:fast 2069 passed / 3 skipped; see docs/design/GEBIETSKAMPF_KENNEY.md."
       ],
       "commits": [
         "628cd1129dedb800078b99bc3ad74e167f5ea6c3"
       ],
       "implementation_commit": "628cd1129dedb800078b99bc3ad74e167f5ea6c3",
-      "completed_at": "2026-11-07"
+      "completed_at": "2026-11-07",
+      "asset_followup": {
+        "date": "2026-11-15",
+        "version": "3.11.0",
+        "report": "docs/design/GEBIETSKAMPF_KENNEY.md",
+        "manifest": "public/games/gebietskampf/asset-manifest.json",
+        "screenshot_manifest": "docs/design/screenshots/gebietskampf/kenney-2026-11/screenshots.json",
+        "scope": "Prepared CC0 icons and own-card/action presentation only; unchanged Meridia map renderer, targets, authoritative game files and other games.",
+        "tests": [
+          {
+            "command": "node --test test/gebietskampf.test.js",
+            "passed": 18,
+            "failed": 0
+          },
+          {
+            "command": "node --test test/gebietskampf-art.test.js",
+            "passed": 3,
+            "failed": 0
+          },
+          {
+            "command": "playwright test test/ui/gebietskampf-art.spec.js test/ui/gebietskampf.spec.js",
+            "passed": 26,
+            "failed": 0,
+            "context": "Isolated published 42e994d + authorized game files; no pending theme-world files."
+          },
+          {
+            "command": "npm run test:fast",
+            "passed": 2069,
+            "failed": 0,
+            "skipped": 3,
+            "duration_seconds": 161.057,
+            "context": "Isolated published 42e994d + authorized game files; concurrent shared worktree failures retained separately."
+          },
+          {
+            "command": "Local Chromium/Firefox/WebKit comparison audits",
+            "passed": true,
+            "note": "Each: ten 2–6-player/map combinations, real trade/reinforcement/attack/reload/spectator, six sizes on small/2 and full/6, 80 real screenshots."
+          }
+        ],
+        "implementation_commit": null,
+        "validation_base": "42e994dff583786389a18b6372896b87c5b1f126"
+      }
     },
     {
       "id": "VIS-091",
