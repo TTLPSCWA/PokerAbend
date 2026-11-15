@@ -24,7 +24,9 @@ test('Version: package.json, package-lock.json, CHANGELOG, README und Betriebsan
   assert.match(read('README.md'), new RegExp(`jetzt \\*\\*${pkg.version.replaceAll('.', '[.]')}\\*\\*`), 'README nennt die aktuelle Version');
   assert.match(read('docs/betrieb.md'), new RegExp(`Version \\*\\*${pkg.version.replaceAll('.', '[.]')}\\*\\*`), 'docs/betrieb.md nennt die aktuelle Version');
   const versions = [...read('CHANGELOG.md').matchAll(/^## ([0-9]+[.][0-9]+[.][0-9]+) /gm)].map((m) => m[1].split('.').map(Number));
-  for (let i = 1; i < versions.length; i++) assert.ok(versions[i - 1] > versions[i] || versions[i - 1].join() > versions[i].join(), 'CHANGELOG: neueste Version zuerst');
+  // Compare numeric components: text/array comparison incorrectly puts 3.10 below 3.9.
+  const compare = (a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2];
+  for (let i = 1; i < versions.length; i++) assert.ok(compare(versions[i - 1], versions[i]) > 0, 'CHANGELOG: neueste Version zuerst');
 });
 
 test('Spielezahlen: README, CHANGELOG und Katalog nennen dieselben Zahlen', () => {

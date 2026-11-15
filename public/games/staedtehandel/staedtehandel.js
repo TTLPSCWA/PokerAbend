@@ -24,6 +24,25 @@
   };
   const icon = (r, size = 18, cls = '') => `<svg class="st-ic ${cls}" viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true" fill="currentColor">${ICON[r]}</svg>`;
   const NEUTRAL = '#8b8f99';
+  // Two prepared Kenney CC0 markers. The original SVG stays visible until the
+  // decorative image loads, and remains the replacement after a load failure.
+  const BUILDING_ART = { s: '/games/staedtehandel/art/buildingTiles_000.webp', c: '/games/staedtehandel/art/buildingTiles_003.webp' };
+  const loadedArt = new Set(), requestedArt = new Set();
+  function loadBuildingArt() {
+    for (const src of Object.values(BUILDING_ART)) {
+      if (requestedArt.has(src)) continue;
+      requestedArt.add(src);
+      // HTML Image decoding also works for cached files across SVG engines.
+      // On failure the original SVG remains; retry on the next page load.
+      const image = new Image();
+      image.onload = async () => {
+        try { await image.decode(); } catch { return; }
+        loadedArt.add(src);
+        if (document.querySelector('.st-svg')) kit.render();
+      };
+      image.src = src;
+    }
+  }
 
   let tool = null, panel = null, tab = 'bank', zoom = null, pan = null, panKey = null, lastKey = '';
   let draft = { give: {}, want: {} }, bankDraft = { give: null, get: null }, dropDraft = {}, plenty = [], monoPick = null, devMode = null;
@@ -77,8 +96,11 @@
     const builds = Object.entries(g.buildings).map(([v, bd]) => {
       const [x, y] = vsPts[v], idx = g.colors[bd.o], city = bd.t === 'c', col = colorOf(g, bd.o);
       const shape = city ? 'M-15 10V-3h9v-9l8-7 8 7v9h5v13z' : 'M-11 9V-2l11-10 11 10v11z';
-      return `<g class="st-bld ${city ? 'city' : ''}" transform="translate(${x} ${y})"><title>${city ? tx('Stadt', 'City') : tx('Siedlung', 'Settlement')} – ${esc(nameOf(S, bd.o))}</title>
-        <path d="${shape}" fill="${col}" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/><text y="${city ? 7 : 6}" text-anchor="middle" class="st-glyph">${GLYPH[idx] ?? ''}</text></g>`;
+      const art = BUILDING_ART[bd.t], width = city ? 32 : 28, height = city ? 30.75 : 24.04;
+      return `<g class="st-bld ${city ? 'city' : ''} ${loadedArt.has(art) ? 'art-ready' : ''}" transform="translate(${x} ${y})"><title>${city ? tx('Stadt', 'City') : tx('Siedlung', 'Settlement')} – ${esc(nameOf(S, bd.o))}</title>
+        <g class="st-building-fallback"><path d="${shape}" fill="${col}" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/><text y="${city ? 7 : 6}" text-anchor="middle" class="st-glyph">${GLYPH[idx] ?? ''}</text></g>
+        ${art && loadedArt.has(art) ? `<g class="st-building-illustration" aria-hidden="true"><image class="st-building-art" href="${art}" x="${-width / 2}" y="${6 - height}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet"/>
+        <ellipse cx="0" cy="7" rx="${city ? 14 : 12}" ry="6" fill="${col}" stroke="#fff" stroke-width="1.5"/><text y="11" text-anchor="middle" class="st-glyph">${GLYPH[idx] ?? ''}</text></g>` : ''}</g>`;
     }).join('');
     let spots = '';
     if (t === 'settlement') spots = g.legal.settlement.map((v) => spotIcon(v, 'settlement')).join('');
@@ -116,7 +138,7 @@
     const awards = `<p class="st-awards">🛣 ${g.longest.holder ? `${esc(nameOf(S, g.longest.holder))} (${g.longest.len})` : tx('längste Handelsstraße: ab 5', 'longest road: from 5')}<br>⚔ ${g.army.holder ? `${esc(nameOf(S, g.army.holder))} (${g.army.n})` : tx('größte Rittermacht: ab 3', 'largest army: from 3')}</p>`;
     return `<aside class="st-side"><section><h3>${tx('Spieler', 'Players')}</h3><ul class="st-players">${rows}</ul>${mine}${awards}</section>${buildList(S)}
       <section><h3>${tx('Bank', 'Bank')}</h3><ul class="st-bank" aria-label="${tx('Vorrat der Bank', 'Bank stock')}">${bank}</ul><small>${tx('Entwicklungskarten im Stapel', 'Development cards left')}: ${g.deckLeft}</small></section>
-      <section><h3>${tx('Baukosten', 'Costs')}</h3><ul class="st-costs">${costs}</ul></section></aside>`;
+      <section><h3>${tx('Baukosten', 'Costs')}</h3><ul class="st-costs">${costs}</ul><small><a href="/games/staedtehandel/credits.html" target="_blank" rel="noopener">${tx('Grafiknachweise', 'Artwork credits')}</a></small></section></aside>`;
   }
 
   function statusStrip(S) {
@@ -206,6 +228,14 @@
       pan = el && panKey === key ? [el.scrollLeft, el.scrollTop] : null; panKey = key; return false;
     },
     afterRender() {
+      loadBuildingArt();
+      // A later SVG-specific failure must also reveal the original marker.
+      for (const image of document.querySelectorAll('.st-building-art')) {
+        const src = image.getAttribute('href');
+        image.addEventListener('error', () => {
+          if (loadedArt.delete(src) && document.querySelector('.st-svg')) kit.render();
+        }, { once: true });
+      }
       const el = document.querySelector('.st-viewport'); if (!el) return;
       if (pan) el.scrollTo(...pan); else { el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2; el.scrollTop = (el.scrollHeight - el.clientHeight) / 2; }
     },

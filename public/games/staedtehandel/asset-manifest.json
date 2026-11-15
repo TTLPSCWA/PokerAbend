@@ -1,0 +1,69 @@
+{
+  "game": "staedtehandel",
+  "package": "Kenney Isometric Buildings 1.0 / KG3",
+  "source": "https://kenney.nl/assets/isometric-tiles-buildings",
+  "mirror": "https://github.com/GeorgeQLe/assets-2d-isometric",
+  "licenseEvidence": {
+    "sourceFile": "License.txt",
+    "originalSha256": "17b7e0683015024b5ec06cd97773dd795ca8b9371f6ec1fabd74d7b3eb6f6397",
+    "path": "public/games/staedtehandel/kenney-LICENSE.txt",
+    "canonicalSha256": "37c745bc7b0f6314729c2abeceabe55168bb2246f14addce121e0b085f13a4c3",
+    "changes": "LF line endings; trailing whitespace removed; wording unchanged."
+  },
+  "assets": [
+    {
+      "file": "buildingTiles_000.webp",
+      "path": "public/games/staedtehandel/art/buildingTiles_000.webp",
+      "use": "settlement",
+      "sourceFile": "PNG/buildingTiles_000.png",
+      "sourceUrl": "https://kenney.nl/assets/isometric-tiles-buildings",
+      "author": "Kenney Vleugels",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "987fffd6a479b052da5fcd8ae43050a30936a29892653810007bfe9548230a38",
+      "bytes": 2422,
+      "width": 99,
+      "height": 85,
+      "originalSha256": "d6f183657fb305a7bdce8d7741299b9711492c8c7441ecc806e32b3cd31a3c63",
+      "originalWidth": 99,
+      "originalHeight": 85,
+      "changes": "Resized without upscaling; WebP encoding. Prepared WebP copied byte-for-byte; SVG placement and owner badge only."
+    },
+    {
+      "file": "buildingTiles_003.webp",
+      "path": "public/games/staedtehandel/art/buildingTiles_003.webp",
+      "use": "city",
+      "sourceFile": "PNG/buildingTiles_003.png",
+      "sourceUrl": "https://kenney.nl/assets/isometric-tiles-buildings",
+      "author": "Kenney Vleugels",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "ad2a2ced1841e1cbe5a76a80d1e43a25fbb398ed2c47135db7b8bbe0e4f70dc8",
+      "bytes": 3828,
+      "width": 128,
+      "height": 123,
+      "originalSha256": "dd590479b46c8eb793bfc170b9e26d778b81135695e01e8e182b6e55281f63ad",
+      "originalWidth": 132,
+      "originalHeight": 127,
+      "changes": "Resized without upscaling; WebP encoding. Prepared WebP copied byte-for-byte; SVG placement and owner badge only."
+    }
+  ],
+  "reviewedButNotUsed": [
+    {
+      "file": "buildingTiles_010.webp",
+      "reason": "Red trim introduces a competing owner color; same shape as 003."
+    },
+    {
+      "file": "buildingTiles_032.webp",
+      "reason": "Different window style; 000/003 provide a consistent one-/two-storey family."
+    },
+    {
+      "file": "buildingTiles_066.webp",
+      "reason": "Roof module alone, not a complete building."
+    },
+    {
+      "file": "buildingTiles_114.webp",
+      "reason": "Modular tower and red trim; less clear settlement/city pair."
+    }
+  ]
+}

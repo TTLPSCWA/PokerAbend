@@ -1,0 +1,797 @@
+{
+  "game": "staedtehandel",
+  "date": "2026-11-15",
+  "before_commit": "798469be062d278a09e37b15069e57f0496ddb5e",
+  "after_commit": null,
+  "source_hash_format": "UTF-8, LF for source files; exact binary bytes for PNG/WebP",
+  "source_before": [
+    {
+      "path": "public/games/staedtehandel/staedtehandel.js",
+      "sha256": "cf7a2b23c59c972d783a928cc928134842957ec782e907430643a5f8d8934239"
+    },
+    {
+      "path": "public/games/staedtehandel/staedtehandel.css",
+      "sha256": "664cec24be7bda4f97e0cf8963bb4f918b4fee243e191a67c20b8f2bea79e820"
+    }
+  ],
+  "source_after": [
+    {
+      "path": "public/games/staedtehandel/staedtehandel.js",
+      "sha256": "07914d4fefaaca1afff16f001e520ac5a86e3ffe8f32e63606f9b4603547102a"
+    },
+    {
+      "path": "public/games/staedtehandel/staedtehandel.css",
+      "sha256": "306b5a671076104c4067f08ae07b48c2a32326a272b975280c9254d82233fc78"
+    }
+  ],
+  "unchanged_authoritative_sources": [
+    {
+      "path": "games/staedtehandel/map.js",
+      "sha256": "1f7f9f263691cc0b069e59bcfb0bc66b86d0fcc474af13f2765bc25337acab90"
+    },
+    {
+      "path": "games/staedtehandel/room.js",
+      "sha256": "793fbfef945e1c4c1a2c1cebd823fb3afa34924ee4d3799d04b30c0ba6bcd454"
+    },
+    {
+      "path": "games/staedtehandel/rules.js",
+      "sha256": "bfdb4d6f30e2777cea0c50c62c8f1ef45800204cd2aba9567409634964aca2f3"
+    },
+    {
+      "path": "games/staedtehandel/index.js",
+      "sha256": "61fff2d143c67f7ea222a08ad8c07342012fdcc61b87afe007ba67f59d32b037"
+    }
+  ],
+  "method": "Actual running local loopback app; native saved-game fixtures built via original setup/build/city-upgrade actions. Bank-conserving starting test resources. No client-side lastState replacement. Each size is a fresh browser context; Chromium/WebKit 390/360 use mobile/touch, Firefox uses responsive viewport (no native mobile emulation support). Anonymous test names only; no production data, tokens or saved snapshots copied here.",
+  "captures": [
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/before/3p-1920x1080.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "bytes": 120216,
+      "sha256": "97e85110e15fbc8ce331a9d7698159bbf0c0f7819dd647738b6a2c9cfb7cdb47",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "before/3p-1920x1080.png",
+        "bytes": 493461,
+        "sha256": "74c54e366328d1310c298242abb2763398d9b81fca8160335bf40bd66f6bc8c3"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/before/3p-1440x900.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 99096,
+      "sha256": "84f205ead248436539013c06ec82479e012d933df9d78dee6a9116199de2a983",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "before/3p-1440x900.png",
+        "bytes": 303276,
+        "sha256": "bfb58d33f71fdfe3314e2d6711805633b10d08ae171aafe5081693e90dd5d5ad"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/before/3p-768x1024.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        768,
+        1024
+      ],
+      "bytes": 82068,
+      "sha256": "e0f62b3797cba239ed739022ad39724adae9b7c9ef855d93bf1b3402d1c3b9cb",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "before/3p-768x1024.png",
+        "bytes": 175255,
+        "sha256": "5e6acbd62343000647dce5cecc073780285ff8c9d9feeae2802c43fdd6626297"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/before/3p-390x844.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        390,
+        844
+      ],
+      "bytes": 43766,
+      "sha256": "0683c91fff9fc376ae1c7626a8203e55773cb1fab68811eabbb8f31f5ab98b35",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "before/3p-390x844.png",
+        "bytes": 110947,
+        "sha256": "271b2b9feee9039c4ef62dbbbc10b5f3ade4899d7912fcfe5e4f59aed52661e3"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/before/3p-360x800.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        360,
+        800
+      ],
+      "bytes": 42290,
+      "sha256": "a03826eae2b1ee89f420de948383621df3b8820172c83809efa877dfd763dc4a",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "before/3p-360x800.png",
+        "bytes": 101682,
+        "sha256": "cfa354d5f5c5e5053f71e21de7b4a11895c8c1b7db0d8246366c894c1fc593bf"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/before/6p-1920x1080.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "bytes": 132616,
+      "sha256": "4380febfbf9a8af7858485450a7345c1db049a8bd7d2326ab7e111a98a12b80d",
+      "fixture": "6 players, XL 30 hexes",
+      "originalPng": {
+        "file": "before/6p-1920x1080.png",
+        "bytes": 515990,
+        "sha256": "17c47a0fe0b30feb4ce4af5117001d2aca88bfaa4ad81b99f1609b726cfe8b95"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/before/6p-1440x900.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 100690,
+      "sha256": "c27a2ce593a499a449541e93fc7bdd058a28e86c452b6535a7b8bc4cded6a4f5",
+      "fixture": "6 players, XL 30 hexes",
+      "originalPng": {
+        "file": "before/6p-1440x900.png",
+        "bytes": 321064,
+        "sha256": "59d008b5479ec21bc15abeccd6973199858ba2f1f2f7d6ab00126511095f00d3"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/before/6p-768x1024.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        768,
+        1024
+      ],
+      "bytes": 84728,
+      "sha256": "76cc3c56a8cabd513d9c4dfea108a7ffc1f99421284444d62afed61f797f5e0b",
+      "fixture": "6 players, XL 30 hexes",
+      "originalPng": {
+        "file": "before/6p-768x1024.png",
+        "bytes": 184618,
+        "sha256": "dc72b4972e4618bbf12cbbfe689f9eae03a879a27488f3e5c57fd6c9d1e96204"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/before/6p-390x844.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        390,
+        844
+      ],
+      "bytes": 45042,
+      "sha256": "bbe24260ccb1c86928f88e5da7feb1b88e3566a6efd07982627694a884958b62",
+      "fixture": "6 players, XL 30 hexes",
+      "originalPng": {
+        "file": "before/6p-390x844.png",
+        "bytes": 113648,
+        "sha256": "e22fefff7efb4034f5dcb5ea260ff91ded2072c2b22a6006d101fab2c955a7d3"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/before/6p-360x800.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        360,
+        800
+      ],
+      "bytes": 41504,
+      "sha256": "8e3c33fe945aa63c888bd00f8cff7e47aadbe574f8ccaf16da69dfaf5e5ca496",
+      "fixture": "6 players, XL 30 hexes",
+      "originalPng": {
+        "file": "before/6p-360x800.png",
+        "bytes": 103278,
+        "sha256": "cea8125a12cdcf445c0134dd47728e4b8245747c3febe684715b7e8b3345eb44"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/before/3p-build-spots.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 98896,
+      "sha256": "073d6ce410f320e8e29d8e7680211f082aad44be973b6bbba57672757656e0b7",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "before/3p-build-spots.png",
+        "bytes": 300501,
+        "sha256": "6f34449becc8e2f6362d930c8ccfbacaf61fb7ca841ee8c8782f2631a506dbd6"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/before/6p-build-spots.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 101540,
+      "sha256": "b2941ca0cf0c24ec95a2e7732fbab25f363dc6c6287d6e63bd9ee1c4b5360406",
+      "fixture": "6 players, XL 30 hexes",
+      "originalPng": {
+        "file": "before/6p-build-spots.png",
+        "bytes": 323462,
+        "sha256": "ffb6a4f21167b6deed8c9e865e0149b719f2d1b31958d9c737baf309a0cb5c25"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/before/3p-upgrade-reconnect-en.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 96384,
+      "sha256": "666a831a6867ea1e83c9a1b681907e5f43b4cdd183ba075f9e0d148b7c71b81e",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "before/3p-upgrade-reconnect-en.png",
+        "bytes": 301280,
+        "sha256": "3361e49e559762a5c4b4b832adccf2b928de005492305a9eb8e43407e28d2b6e"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/before/6p-upgrade-reconnect-en.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 104602,
+      "sha256": "7dc035cc6b1b6ee90d0fdacc386c4fadd589b3bcb115e2e2e0ab5df13c33aabe",
+      "fixture": "6 players, XL 30 hexes",
+      "originalPng": {
+        "file": "before/6p-upgrade-reconnect-en.png",
+        "bytes": 321200,
+        "sha256": "65548ac1836e69ece21ac40f48d8a5812bf165bf1e00d7744c84f9a66f3402e1"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/before/6p-spectator.webp",
+      "engine": "chromium",
+      "phase": "before",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 92674,
+      "sha256": "716749c9e944c7b975255728b00f803d5e4ebd6b26e63efc80f31a25be392560",
+      "fixture": "6 players, XL 30 hexes",
+      "originalPng": {
+        "file": "before/6p-spectator.png",
+        "bytes": 341931,
+        "sha256": "c928c2797560f472082e7e92d2ed8b29a30fe905c99c3bbd057bd2c45b095957"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after/3p-1920x1080.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "bytes": 122396,
+      "sha256": "b9a4c8ffe1fa62df91773ac5d239e61aebbacfa41d21ba9543b62c9abf5c2144",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "after/3p-1920x1080.png",
+        "bytes": 536482,
+        "sha256": "812c194485a18a9654d0c2bbad8c3cc44b9b31be62527bb8c41aa9eea96d7460"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after/3p-1440x900.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 100050,
+      "sha256": "b4c0a6125d3eb0d4f0f0c02be8c0410ae6765a15d3ddb2af18e3df3b212f253c",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "after/3p-1440x900.png",
+        "bytes": 336420,
+        "sha256": "155c1ebff9d458c6404b5f7cddfd0bb10545e0313fa02d7f3b8d8207deec48bb"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after/3p-768x1024.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        768,
+        1024
+      ],
+      "bytes": 83318,
+      "sha256": "fb8c18a8d845dc4ecf7766b94f878d30acb799a65f1857d854b433954a7d1c50",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "after/3p-768x1024.png",
+        "bytes": 208178,
+        "sha256": "a6ddcb3f546160f87a54758992c12dd6e065fdd0fa2824dfb691e1f55a2a0bbc"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after/3p-390x844.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        390,
+        844
+      ],
+      "bytes": 44312,
+      "sha256": "0d6e861ab94418d4f8bd39f24f3f07ddf066cb0856e84900b5245970042ae5b6",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "after/3p-390x844.png",
+        "bytes": 121087,
+        "sha256": "abdaf3f13fce163aed589095815b87862e378c26a7485fa53ba09b90985ec674"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after/3p-360x800.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        360,
+        800
+      ],
+      "bytes": 42862,
+      "sha256": "704703d5b5dabee71f706eda3ceaff129ba392ebfde0afa95f098bd528b8bf3d",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "after/3p-360x800.png",
+        "bytes": 108995,
+        "sha256": "5771a688a38a72dec93a23c4eceecdc058331b6729c1380330211359a17fd327"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after/6p-1920x1080.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "bytes": 134680,
+      "sha256": "d719917cc3569a894004dd6412e3bd5dc3a6ec1cf5224f2334640686f4973be5",
+      "fixture": "6 players, XL 30 hexes",
+      "originalPng": {
+        "file": "after/6p-1920x1080.png",
+        "bytes": 568047,
+        "sha256": "1276a0ba1721d0d514fe86354fe45a307c91c633e7e962a2590e529ba543ffbd"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after/6p-1440x900.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 102630,
+      "sha256": "0d2b527e0b4e44f78ba91a93ef42c5f48cffae7011a0691f3a173fc15572a945",
+      "fixture": "6 players, XL 30 hexes",
+      "originalPng": {
+        "file": "after/6p-1440x900.png",
+        "bytes": 356638,
+        "sha256": "492970f212db6b05744dbc6090661c1764af95a327b30066228ec60527b752e1"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after/6p-768x1024.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        768,
+        1024
+      ],
+      "bytes": 86196,
+      "sha256": "b7955e7551fba148f01388ad56f5e1fb2f556233661ce92d76e72024968ffe9d",
+      "fixture": "6 players, XL 30 hexes",
+      "originalPng": {
+        "file": "after/6p-768x1024.png",
+        "bytes": 223039,
+        "sha256": "c8c53e19691879536edda324134d1db11551d7a2240b2fd558a7acb5d878ca0e"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after/6p-390x844.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        390,
+        844
+      ],
+      "bytes": 45670,
+      "sha256": "da120606c0b5af852361ce4cd383af010f36f69bc30154d4bb15423e0de75d2e",
+      "fixture": "6 players, XL 30 hexes",
+      "originalPng": {
+        "file": "after/6p-390x844.png",
+        "bytes": 124355,
+        "sha256": "eee9bf3fbb0fc3ddf4dd01a81b39c78f03296c35b641611ab0b257fe1a124464"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after/6p-360x800.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        360,
+        800
+      ],
+      "bytes": 42130,
+      "sha256": "f57b8dbbfe058aca8ba38769c2e732cb52dbf4376138f75c5cb7c2d775645e9e",
+      "fixture": "6 players, XL 30 hexes",
+      "originalPng": {
+        "file": "after/6p-360x800.png",
+        "bytes": 109398,
+        "sha256": "26777d05133ff56b1a7b2fc74993a479234d876192bd95a7060c76b093cbb92d"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after/3p-build-spots.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 99698,
+      "sha256": "0248a2817b2ca59d537f3e79c13aaef8ee33305b9dc9288873b278981f2603eb",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "after/3p-build-spots.png",
+        "bytes": 333168,
+        "sha256": "0b6c7fc0f9bf899df71415c291d6cab9726ad1e7ebd2202ea46a29118d1e8a00"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after/6p-build-spots.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 103434,
+      "sha256": "801e3ba3f35986f6ad62fe03daaf19e07520597fdc8662f970a23fbecddb7ea8",
+      "fixture": "6 players, XL 30 hexes",
+      "originalPng": {
+        "file": "after/6p-build-spots.png",
+        "bytes": 358785,
+        "sha256": "fb5debffbdd76e074b3c7c9c237e989591077aff8ba0c46cda388138688e015e"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after/3p-upgrade-reconnect-en.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 97548,
+      "sha256": "b96fd1d82df1794ca3b387c4c39efbe27621848d4e12e521cc87525fa9f024ac",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "after/3p-upgrade-reconnect-en.png",
+        "bytes": 333750,
+        "sha256": "f61695fa70b532fa657c488f10be8270b79e5946339f9c0d9acdbc52cd668c7f"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after/6p-upgrade-reconnect-en.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 106838,
+      "sha256": "22f319e845452b6178c90eb324e3144ac74a6911de1da774798c1c43aade9bdb",
+      "fixture": "6 players, XL 30 hexes",
+      "originalPng": {
+        "file": "after/6p-upgrade-reconnect-en.png",
+        "bytes": 356047,
+        "sha256": "7785eeaa1de886633c805973bdfa2a71a0ba51e19c681c6fa370ddae7fc89067"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after/6p-spectator.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 94516,
+      "sha256": "d728d93252d433a37fd4067a8637fbc73752bc884af2d08ae5b2b976f3f22227",
+      "fixture": "6 players, XL 30 hexes",
+      "originalPng": {
+        "file": "after/6p-spectator.png",
+        "bytes": 377057,
+        "sha256": "096820bc9d9dc35a78c933962acb310b86db4582ac8ffe220de2d74a5bcb1572"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after/4p-1440x900.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 104692,
+      "sha256": "08fa64513ab87f6ba0e6111c567b841009253a11488a73f1e5204be351d3cebe",
+      "fixture": "4 players, standard 19 hexes",
+      "originalPng": {
+        "file": "after/4p-1440x900.png",
+        "bytes": 346001,
+        "sha256": "6e61ebd94967a04bb303e867c44b65892bbec36ae5058fad352ec58d0fd0fb18"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after/5p-1440x900.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 106288,
+      "sha256": "9b9ae5e992dbc95608ad41152108108a3313e1408ec8ac4565b64affe6a31722",
+      "fixture": "5 players, XL 30 hexes",
+      "originalPng": {
+        "file": "after/5p-1440x900.png",
+        "bytes": 349608,
+        "sha256": "3c454da50fd6acc34e2e6b31146fe6d36fd33eeccec3fb26ba9d764298f50e49"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after-firefox/3p-1440x900.webp",
+      "engine": "firefox",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 92386,
+      "sha256": "4a3a41b9fef97d9d66998dcf8874f953c680a42a77c73546ddabef2c640f4f5f",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "after-firefox/3p-1440x900.png",
+        "bytes": 255780,
+        "sha256": "2db9db95830cffd1e578075c0d65730f3bc8f290ae924326fb6db5057b304162"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after-firefox/6p-1440x900.webp",
+      "engine": "firefox",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 98074,
+      "sha256": "8ff4806ae0887a4662bf60dbc861840df60b6790415d32078e65f9d86181a19a",
+      "fixture": "6 players, XL 30 hexes",
+      "originalPng": {
+        "file": "after-firefox/6p-1440x900.png",
+        "bytes": 270939,
+        "sha256": "1d734d02e69d866e73716b351176587f5f934abe098de4e281d4a541779870ab"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after-firefox/6p-390x844.webp",
+      "engine": "firefox",
+      "phase": "after",
+      "viewport": [
+        390,
+        844
+      ],
+      "bytes": 41732,
+      "sha256": "615866dcc27e66dce37fbae17c52f100a136c12f2cde260095a513af9eb4c111",
+      "fixture": "6 players, XL 30 hexes",
+      "originalPng": {
+        "file": "after-firefox/6p-390x844.png",
+        "bytes": 110049,
+        "sha256": "6d49421dd85a8d44f1c413ccb6b58bf6e0382fa06f5af6391904e67c8132c481"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after-webkit/3p-1440x900.webp",
+      "engine": "webkit",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 95176,
+      "sha256": "a850059480e8f15c9c2e01c54c155dac5f3056754caf30857f33812d8e5fc7aa",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "after-webkit/3p-1440x900.png",
+        "bytes": 227231,
+        "sha256": "6c5a6e2af5a92d5b737fe004a0a595ebbe0bb9564fd1510dd14ab0795e5cece5"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after-webkit/6p-1440x900.webp",
+      "engine": "webkit",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 103296,
+      "sha256": "f23a1a1cea99539e27e4ddd9f824f5a5764d1b372cb2cdd0349a1c14e3ad9ace",
+      "fixture": "6 players, XL 30 hexes",
+      "originalPng": {
+        "file": "after-webkit/6p-1440x900.png",
+        "bytes": 247980,
+        "sha256": "ab053e8dc50f46d265ad008a37e7e05aeb37e7ea6f88b541487acc72b2691185"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after-webkit/6p-390x844.webp",
+      "engine": "webkit",
+      "phase": "after",
+      "viewport": [
+        390,
+        844
+      ],
+      "bytes": 42446,
+      "sha256": "e64ecc0a1eff9239f59503b33eb369ab54b057f0c15a495b70e085e20a205677",
+      "fixture": "6 players, XL 30 hexes",
+      "originalPng": {
+        "file": "after-webkit/6p-390x844.png",
+        "bytes": 97135,
+        "sha256": "51e3345a2fd1dc435a3e3835907ffa83e1338561570eab36d87b547f2459762d"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after/fallback-missing.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 92626,
+      "sha256": "c5e5769563959aea519fd46c4fc0ff85670e6ecb82017f8bd523a552b0f54a43",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "after/fallback-missing.png",
+        "bytes": 356514,
+        "sha256": "b704c6e94926055040b5686355750356e53696ec0912d1cf4caaea3636caffee"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after/fallback-corrupt.webp",
+      "engine": "chromium",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 92626,
+      "sha256": "c5e5769563959aea519fd46c4fc0ff85670e6ecb82017f8bd523a552b0f54a43",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "after/fallback-corrupt.png",
+        "bytes": 356514,
+        "sha256": "b704c6e94926055040b5686355750356e53696ec0912d1cf4caaea3636caffee"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after-firefox/fallback-missing.webp",
+      "engine": "firefox",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 87206,
+      "sha256": "9609eeba0b02d5330bb37e914fe205d37e049b61a331d0d34edbd8cf8d6674d8",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "after-firefox/fallback-missing.png",
+        "bytes": 252099,
+        "sha256": "e1033c1992933749149181c52e3ff257928e402f1fafb4fe6acbd01b9458ffb1"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after-firefox/fallback-corrupt.webp",
+      "engine": "firefox",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 87206,
+      "sha256": "9609eeba0b02d5330bb37e914fe205d37e049b61a331d0d34edbd8cf8d6674d8",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "after-firefox/fallback-corrupt.png",
+        "bytes": 252099,
+        "sha256": "e1033c1992933749149181c52e3ff257928e402f1fafb4fe6acbd01b9458ffb1"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after-webkit/fallback-missing.webp",
+      "engine": "webkit",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 87830,
+      "sha256": "d7e03a8db5c2e7dd4a0675e5c7c0b7279869d2d100321f8020f65c6caa74b525",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "after-webkit/fallback-missing.png",
+        "bytes": 220078,
+        "sha256": "d72334c1dd9bbc532dc3cc93b3968773ae5de04aecfc1361dce694c77f3e846a"
+      }
+    },
+    {
+      "path": "docs/design/screenshots/staedtehandel/kenney-2026-11/after-webkit/fallback-corrupt.webp",
+      "engine": "webkit",
+      "phase": "after",
+      "viewport": [
+        1440,
+        900
+      ],
+      "bytes": 87830,
+      "sha256": "d7e03a8db5c2e7dd4a0675e5c7c0b7279869d2d100321f8020f65c6caa74b525",
+      "fixture": "3 players, standard 19 hexes",
+      "originalPng": {
+        "file": "after-webkit/fallback-corrupt.png",
+        "bytes": 220078,
+        "sha256": "d72334c1dd9bbc532dc3cc93b3968773ae5de04aecfc1361dce694c77f3e846a"
+      }
+    }
+  ],
+  "export": "Exact original PNG captures retained privately; committed images are dimension-preserving WebP exports, canvas quality 0.90, no crop, montage, retouching or generated content."
+}

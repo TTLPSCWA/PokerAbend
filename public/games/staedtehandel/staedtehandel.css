@@ -83,3 +83,8 @@
 /* VIS-089: Eigener Rohstoff- und Städtebauplan – Bauziele zusätzlich als zugängliche Liste (nur tatsächlich legale Plätze, gleiche Aktion wie auf der Karte) */
 .st-buildlist ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; max-height: 260px; overflow: auto; }
 .st-buildlist .btn { width: 100%; min-height: 44px; text-align: left; white-space: normal; }
+/* Decorative Kenney buildings: preserve owner color/glyph and original SVG fallback. */
+.st-bld,.st-bld *{pointer-events:none}
+.st-building-illustration{opacity:0}
+.st-bld.art-ready .st-building-illustration{opacity:1}
+.st-bld.art-ready .st-building-fallback{visibility:hidden}

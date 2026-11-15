@@ -15118,15 +15118,15 @@
       ],
       "source_audit": [
         {
-          "path": "public/games/staedtehandel/staedtehandel.css",
-          "sha256": "94b0ab64492d7217705985e9cd3605320f82263aa6b16fa8755eb8c126a64e28"
+          "path": "public/games/staedtehandel/staedtehandel.js",
+          "sha256": "07914d4fefaaca1afff16f001e520ac5a86e3ffe8f32e63606f9b4603547102a"
         },
         {
-          "path": "public/games/staedtehandel/staedtehandel.js",
-          "sha256": "4f9e0961579642b9835206f80ae1cb54ec6718eeef5ac8ff7702dfd5f9309487"
+          "path": "public/games/staedtehandel/staedtehandel.css",
+          "sha256": "306b5a671076104c4067f08ae07b48c2a32326a272b975280c9254d82233fc78"
         }
       ],
-      "current_design": "Eigener Rohstoff- und Städtebauplan (Hex-, Kanten- und Kreuzungsgeometrie unverändert); Bauziele zusätzlich als zugängliche Liste, die nur tatsächlich legale Plätze enthält und dieselbe Aktion auslöst wie die Karte.",
+      "current_design": "Bestehende SVG-Insel Aurelia mit Zahlen, Rohstoffsymbolen, Häfen und Straßen; Kenney-Ein-/Zweigeschosser ergänzen Siedlung/Stadt, Eigentümerfarben und Symbole bleiben auf einem Sockel. Originale SVG-Marker als Ladefehler-Fallback.",
       "known_visual_weaknesses": [
         "Weitere Feinpolitur und optionale Varianten sind nicht Teil dieser Umsetzung."
       ],
@@ -15214,18 +15214,102 @@
         "docs/design/screenshots/vis-staedtehandel/mobil-trade-bank.jpg",
         "docs/design/screenshots/vis-staedtehandel/mobil-trade-offer.jpg",
         "docs/design/screenshots/vis-staedtehandel/mobil-trade-waiting.jpg",
-        "docs/design/screenshots/vis-staedtehandel/mobil-zoomed.jpg"
+        "docs/design/screenshots/vis-staedtehandel/mobil-zoomed.jpg",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/before/3p-1920x1080.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/before/3p-1440x900.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/before/3p-768x1024.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/before/3p-390x844.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/before/3p-360x800.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/before/6p-1920x1080.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/before/6p-1440x900.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/before/6p-768x1024.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/before/6p-390x844.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/before/6p-360x800.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/before/3p-build-spots.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/before/6p-build-spots.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/before/3p-upgrade-reconnect-en.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/before/6p-upgrade-reconnect-en.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/before/6p-spectator.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after/3p-1920x1080.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after/3p-1440x900.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after/3p-768x1024.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after/3p-390x844.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after/3p-360x800.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after/6p-1920x1080.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after/6p-1440x900.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after/6p-768x1024.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after/6p-390x844.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after/6p-360x800.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after/3p-build-spots.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after/6p-build-spots.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after/3p-upgrade-reconnect-en.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after/6p-upgrade-reconnect-en.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after/6p-spectator.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after/4p-1440x900.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after/5p-1440x900.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after-firefox/3p-1440x900.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after-firefox/6p-1440x900.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after-firefox/6p-390x844.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after-webkit/3p-1440x900.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after-webkit/6p-1440x900.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after-webkit/6p-390x844.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after/fallback-missing.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after/fallback-corrupt.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after-firefox/fallback-missing.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after-firefox/fallback-corrupt.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after-webkit/fallback-missing.webp",
+        "docs/design/screenshots/staedtehandel/kenney-2026-11/after-webkit/fallback-corrupt.webp"
       ],
       "test_results": [
         "npx playwright test test/ui/visual-p1.spec.js (desktop + mobil, sauberer Checkout): bestanden, sechs Viewports ohne seitliches Überlaufen, Lobby/eigene Aktion/Zuschauer/Wartend/Pause/Wiederverbindung/Englisch (+ Ergebnis, wo schnell erreichbar).",
         "Bestehende Specs der betroffenen Spiele (sauberer Checkout, 2026-11-07): siehe Abschlussbericht.",
-        "node --test \"test/*.test.js\": bestanden (sauberer Checkout)."
+        "node --test \"test/*.test.js\": bestanden (sauberer Checkout).",
+        "Kenney building follow-up 3.10.0: 32 existing game/server + 4 new art/privacy Node tests; 14 UI cases; Chromium/Firefox/WebKit; test:fast 2066 passed, 3 skipped. See docs/design/STAEDTEHANDEL_KENNEY.md."
       ],
       "commits": [
         "c76f68e79a2a106d59cd10f7a161778b55084b6e"
       ],
       "implementation_commit": "c76f68e79a2a106d59cd10f7a161778b55084b6e",
-      "completed_at": "2026-11-07"
+      "completed_at": "2026-11-07",
+      "asset_followup": {
+        "date": "2026-11-15",
+        "version": "3.10.0",
+        "report": "docs/design/STAEDTEHANDEL_KENNEY.md",
+        "manifest": "public/games/staedtehandel/asset-manifest.json",
+        "screenshot_manifest": "docs/design/screenshots/staedtehandel/kenney-2026-11/screenshots.json",
+        "scope": "Prepared Kenney building markers only; unchanged authoritative engine/map/rules, other games and shared frontend. Necessary numeric version-order test fix for 3.10.0.",
+        "tests": [
+          {
+            "command": "node --test test/staedtehandel.test.js test/staedtehandel-server.test.js",
+            "passed": 32,
+            "failed": 0
+          },
+          {
+            "command": "node --test test/staedtehandel-art.test.js",
+            "passed": 4,
+            "failed": 0
+          },
+          {
+            "command": "playwright test test/ui/staedtehandel-art.spec.js test/ui/staedtehandel.spec.js",
+            "passed": 14,
+            "failed": 0,
+            "note": "Final production code; Chromium desktop/native touch. Subsequent fault-injection harness explicitly blocks the service worker: two targeted cases passed."
+          },
+          {
+            "command": "Local loopback visual/gameplay audits: Chromium, Firefox, WebKit",
+            "passed": true,
+            "note": "3–6 owners, 19/30 hexes, five viewport sizes on standard/XL, city build, zoom, reload, English, spectator, missing/corrupt art; Safari itself unavailable."
+          },
+          {
+            "command": "npm run test:fast",
+            "passed": 2066,
+            "failed": 0,
+            "skipped": 3,
+            "duration_seconds": 87.803
+          }
+        ],
+        "implementation_commit": null
+      }
     },
     {
       "id": "VIS-090",

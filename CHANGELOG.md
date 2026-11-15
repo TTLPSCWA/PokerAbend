@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.10.0 – 15. November 2026
+
+* **Städtehandel:** Kenney-Gebäude für Siedlungen und Städte mit eindeutigen Eigentümerfarben und Symbolen. Aurelia-Karte, Spielregeln, Zoom und Bauplätze bleiben erhalten; bei fehlenden Bildern erscheinen die bisherigen SVG-Marker. Grafiknachweise direkt im Spiel.
+
 ## 3.9.0 – 15. November 2026
 
 * **Schatzinsel:** Zusammenhängende Sandinsel mit Kenney-Küste und Wasser, klaren Grabungs-/Fundmarkierungen, weiterhin allen 64 Koordinaten und gut bedienbaren Feldern. Verstecke und Regeln bleiben unverändert; Karte mit Tastatur und Touch verschiebbar, Grafiknachweise direkt erreichbar.
