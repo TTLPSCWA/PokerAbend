@@ -1,0 +1,11 @@
+/* ART-W2 · TW-13 Neon-Arcade: dunkles Raster, leuchtende Augen auf dunklen Würfeln, Neon-Becher. Schrift Righteous (bereits im Repository, OFL). Kein Blinken, keine Animation. */
+body[data-theme-world="TW-13"] {
+  --twd-table: #120a26 url('/games/theme-worlds/dice/table-tw-13.svg') 0 0 / 240px 240px repeat;
+  --twd-face: linear-gradient(145deg, #1e1640, #120c2a); --twd-pip: #ff6fe0; --twd-pip-glow: 0 0 6px #ff4fd8b0; --twd-die-edge: 2px solid #22e3ff;
+  --twd-die-shadow: 0 0 10px #22e3ff55, 0 3px 6px #000c; --twd-kept: #ffe14d; --twd-hidden: #2a1f4a;
+  --twd-cup: url('/games/theme-worlds/dice/cup-tw-13.svg'); --twd-tray: linear-gradient(180deg, #1a1036, #0d0820);
+  --twd-flap: linear-gradient(180deg, #1e1640, #120c2a); --twd-flap-ink: #8ff5ff; --twd-flap-shut: linear-gradient(180deg, #3a2a6a, #24184a); --twd-flap-shut-ink: #ff9fe8;
+  --twd-stage: linear-gradient(165deg, #22164a, #0d0820); --twd-stage-edge: #22e3ff77;
+  --twd-accent: #22e3ff; --twd-font: 'Righteous', 'Trebuchet MS', sans-serif; --twd-title-spacing: .03em; --twd-ink: #f2ecff; --twd-muted: #cfc6ee;
+  --twd-sheet-head: #2a1f4a; --twd-sheet-head-ink: #8ff5ff;
+}

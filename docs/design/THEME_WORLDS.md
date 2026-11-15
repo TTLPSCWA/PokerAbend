@@ -11,9 +11,10 @@ Stand: 15. November 2026. Fachliche Grundlage ist das ursprüngliche Konzept „
 | Welt | Stand | Nachweis |
 |---|---|---|
 | TW-01 Schatten über Neuengland | **Monopoly umgesetzt** (Standard und Tempowürfel, 3.13.0); Monopoly Deal offen | Commit `154a30e`, `test/art-w1-tw01.test.js`, `test/ui/art-w1-tw01.spec.js`, [art/ART-W1/](art/ART-W1/) |
-| TW-02 bis TW-16 | nur Konzept, keine Implementierungsfreigabe, keine Assets | – |
+| TW-14 Saloon, TW-11 Piratenbucht, TW-09 Runen & Nordlicht, TW-13 Neon-Arcade | **Würfelwelten umgesetzt** für alle 13 Würfelspiele (ART-W2, 3.14.0); andere Spielgruppen dieser Welten (z. B. Kartenspiele, Bretter) nicht | Abschnitt 5a, `test/art-w2-dice-worlds.test.js`, `test/ui/art-w2-dice-worlds.spec.js`, [art/ART-W2/](art/ART-W2/) |
+| übrige Welten (TW-02 bis TW-08, TW-10, TW-12, TW-15, TW-16) | nur Konzept, keine Implementierungsfreigabe, keine Assets | – |
 
-Die zentrale Registry (`public/games/theme-worlds/registry.js`, ART-W0) enthält heute die 40 Kartenwelten und TW-01. Weitere Welten kommen erst nach Freigabe hinzu.
+Die zentrale Registry (`public/games/theme-worlds/registry.js`, ART-W0) enthält heute die 40 Kartenwelten, TW-01 und die vier Würfelwelten TW-14, TW-11, TW-09, TW-13. Weitere Welten kommen erst nach Freigabe hinzu.
 
 ---
 
@@ -41,12 +42,12 @@ Spalte „Quelle“ zeigt, woher Namen und Motive kommen dürfen. Schriften: „
 | TW-06 | **Wunderland** | Carroll / Baum, gemeinfrei | Spielkarten-Soldaten, Teeparty, Smaragdstadt, gelber Ziegelweg | Pastell, Smaragd, Gold | Fredoka, Righteous (im Repo) | Konzept |
 | TW-07 | **Märchenwald** | Grimm, Andersen, gemeinfrei | Hexenhaus, Wolf, Schloss, Spiegel, Bohnenranke | Waldgrün, Rotkäppchen-Rot, Honig | Lilita One (im Repo) | Konzept |
 | TW-08 | **Götterberg** | griechische Sagen | Tempel, Olymp, Minotaurus-Labyrinth, Odyssee-Schiff | Marmorweiß, Ägäisblau, Gold | Cinzel (im Repo) | Konzept |
-| TW-09 | **Runen & Nordlicht** | nordische Sagen | Langhäuser, Drachenboote, Runensteine, Polarlicht | Eisblau, Holz, Polarlicht-Grün | Cinzel, Black Ops One (Titel) (im Repo) | Konzept |
+| TW-09 | **Runen & Nordlicht** | nordische Sagen | Langhäuser, Drachenboote, Runensteine, Polarlicht | Eisblau, Holz, Polarlicht-Grün | Cinzel, Black Ops One (Titel) (im Repo) | Würfelspiele umgesetzt (ART-W2) |
 | TW-10 | **Tafelrunde** | Artus-Sagen, gemeinfrei | Burgen, Ritter, Gral, Schwert im Stein, Banner | Wappenrot, Königsblau, Gold | Cinzel (im Repo) | Konzept |
-| TW-11 | **Piratenbucht** | Stevenson „Die Schatzinsel“, gemeinfrei | Galeonen, Karten mit X, Rum-Fässer, Papagei, Kanonen | Teak, Segeltuch, Karibikblau | Pirata One, Rye (OFL geprüft) | Konzept |
+| TW-11 | **Piratenbucht** | Stevenson „Die Schatzinsel“, gemeinfrei | Galeonen, Karten mit X, Rum-Fässer, Papagei, Kanonen | Teak, Segeltuch, Karibikblau | Pirata One, Rye (OFL geprüft) | Würfelspiele umgesetzt (ART-W2) |
 | TW-12 | **Raumhafen** | nur Stimmung (Space Opera), eigene Namen | Raumschiffe, Planeten, Sternenkarten, Andockbuchten | Nachtblau, Neon-Cyan, Warnorange | Orbitron (im Repo) | Konzept |
-| TW-13 | **Neon-Arcade** | nur Stimmung (Synthwave, 80er) | Raster-Horizont, Palmen, Kassetten, Spielautomaten | Magenta, Cyan, Violett | Press Start 2P, Righteous (im Repo) | Konzept |
-| TW-14 | **Saloon** | nur Stimmung (Wilder Westen) | Holzdielen, Pokertisch, Steckbriefe, Postkutsche | Whiskybraun, Wüstenocker | Rye (OFL geprüft) | Konzept |
+| TW-13 | **Neon-Arcade** | nur Stimmung (Synthwave, 80er) | Raster-Horizont, Palmen, Kassetten, Spielautomaten | Magenta, Cyan, Violett | Press Start 2P, Righteous (im Repo) | Würfelspiele umgesetzt (ART-W2) |
+| TW-14 | **Saloon** | nur Stimmung (Wilder Westen) | Holzdielen, Pokertisch, Steckbriefe, Postkutsche | Whiskybraun, Wüstenocker | Rye (OFL geprüft) | Würfelspiele umgesetzt (ART-W2) |
 | TW-15 | **Kunterbunt** | Glitch, CC0 | Verspielte Figuren, Pflanzen, Tiere, schräge Gegenstände | Bonbonfarben | Fredoka (im Repo) | Konzept |
 | TW-16 | **Tiefsee** | Verne + nur Stimmung | Korallen, Quallen, Tauchglocke, versunkene Stadt | Tiefblau, Biolumineszenz-Türkis | Righteous (im Repo) | Konzept |
 
@@ -192,6 +193,21 @@ Die Umsetzung bleibt unverändert; die Tabelle dient der späteren Entscheidung,
 | Änderungen am Spiel | Feldnamen, Figuren, Anbau/Hotel als Modelle, Kartenstapel, Brettgrund | Feldnamen, Figuren (2D-SVG), Häuser/Hotel als SVG-Marker, Kartenrücken, Brettgrund, zusätzlich Karten- und Figurennamen | weitgehend; „Modelle“ als flache SVG statt vorgerenderter 3D-Bilder |
 | Ablauf (Abschnitt 7) | Konzept und SVG-Entwurf in `drafts/`, Bewertung durch Tobi, dann Freigabe | Freigabe direkt im Auftrag; Entwurf ohne gesonderte Bewertungsrunde umgesetzt | Prozessabweichung, Ergebnis per Screenshots nachvollziehbar |
 
+## 5a. Würfelwelten (ART-W2, Version 3.14.0)
+
+TW-14 Saloon, TW-11 Piratenbucht, TW-09 Runen & Nordlicht und TW-13 Neon-Arcade gelten für alle 13 Würfelspiele (`kniffel`, `maexchen`, `schocken`, `zehntausend`, `wuerfelpoker`, `luegenwuerfel`, `chicago`, `wuerfelduell`, `risiko-wuerfeln`, `wuerfeljagd`, `monsterwuerfel`, `wuerfel-auktion`, `shutthebox`; alle Varianten, auch Kniffel Dreifach). Registry: `public/games/theme-worlds/dice-worlds.js`, Art `dice`.
+
+**Gemeinsamer Baustein:** `public/games/theme-worlds/dice/dice-worlds.css` gestaltet ausschließlich über Variablen den gemeinsamen Würfel (`dieHTML`/`.die` aus `kit.js`: Fläche, Augen, Rand, „bleibt“, verdeckt), die Becher (Mäxchen-Becher als Bild, Lügenwürfel-Schale), die Klappen von Shut the Box, die Tischfläche (`.kg-main`), die Bühne (`.wk-stage`: Fläche, Rand, Akzent, Titelschrift) und die Kopfzeile des Kniffel-Blocks. Jede Welt setzt nur Variablen, Texturen und Schrift (`dice/tw-xx.css`). Kein Spiel bekam eigenen Code; Regeln, Würfe, Zustände und Ereignisse sind unverändert.
+
+| Welt | Würfel | Becher, Tisch | Schrift |
+|---|---|---|---|
+| TW-14 Saloon | Knochen, dunkle Augen, Messing-Markierung | Lederbecher mit Nieten, Holzdielen | Rye (OFL, neu im Repo) |
+| TW-11 Piratenbucht | Walbein, marineblaue Augen | Holzbecher mit Eisenringen, Kneipentisch mit Seekarte | Pirata One (OFL, neu im Repo) |
+| TW-09 Runen & Nordlicht | Runenstein, dunkle Augen, Polarlicht-Markierung | Hornbecher mit Runen, Langhausdielen | Cinzel (im Repo) |
+| TW-13 Neon-Arcade | dunkel mit leuchtenden Augen und Neonrand | Neonbecher, Raster | Righteous (im Repo); Press Start 2P aus dem Konzept bewusst nicht für Überschriften (zu breit) |
+
+**Grenzen:** kein Wurfgeräusch je Welt (das Konzept nennt es; die vorhandenen Spielklänge bleiben unverändert, eine eigene Tonquelle wäre gesondert zu prüfen); keine Welt-Animation (nichts blinkt, reduzierte Bewegung braucht keine Sonderregel); Symbole und Bedeutungsfarben einzelner Spiele (z. B. Monsterwürfel, Würfelduell, Risiko-Würfeln) bleiben. Nachweise: [art/ART-W2/](art/ART-W2/).
+
 ## 6. Grafik- und Soundquellen (aus dem Konzept, mit Prüfstand)
 
 „Bestätigt“ nur, wenn die Lizenz am 14./15.11.2026 an der Quelle bzw. in einem bereits im Repository dokumentierten Paket geprüft wurde; alles andere ist **ungeprüft** und vor Verwendung je Datei zu belegen.
@@ -222,7 +238,7 @@ Die fachliche Zuordnung folgt dem Konzept. Abgeschlossene Pakete behalten ID und
 |---|---|---|
 | ART-W0 | Fundament: zentrale Registry, Host-Auswahl für Brett-, Karten- und Würfelspiele, Lebenszyklus, Server-Prüfung, Tests | **umgesetzt** (3.12.0, `a997131`) |
 | ART-W1 | Monopoly + Monopoly Deal: TW-01 Schatten über Neuengland | **teilweise:** Monopoly umgesetzt (3.13.0, `154a30e`); Monopoly Deal offen |
-| ART-W2 | Würfelbecher-Welten: TW-14, TW-11, TW-09, TW-13 für alle Würfelspiele | geplant |
+| ART-W2 | Würfelbecher-Welten: TW-14, TW-11, TW-09, TW-13 für alle Würfelspiele | **umgesetzt** (3.14.0) |
 | ART-W3 | Klassische Bretter: Schach, Mühle, Dame, Reversi, Hex, Vier gewinnt, Backgammon mit TW-08, TW-09, TW-10 | geplant |
 | ART-W4 | Kartenrücken-Welten für die Kartenspiele außerhalb von ART-T | geplant |
 | ART-W5 … | weitere Monopoly-Editionen und Einzelwelten nach Bedarf | Idee |

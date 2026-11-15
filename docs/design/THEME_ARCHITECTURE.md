@@ -140,7 +140,7 @@ Die fachliche Zuordnung folgt dem ursprünglichen Konzept (`THEME_WORLDS.md`, Ab
 |---|---|---|---|
 | **ART-W0** | Fundament: Registry, Host-Auswahl, Lebenszyklus, Server-Prüfung | umgesetzt (3.12.0) | – |
 | **ART-W1** | Monopoly + Monopoly Deal mit TW-01 | teilweise: Monopoly umgesetzt (3.13.0), Monopoly Deal offen | Deal: Kartenfronten-Renderer mit Anzeige-Attributen; Darstellungstexte für Deal-Karten |
-| **ART-W2** | Würfelbecher-Welten TW-14, TW-11, TW-09, TW-13 für alle 13 Würfelspiele | geplant | gemeinsamer Würfel-/Becher-Baustein statt Einzelanpassungen; Wurfgeräusch nur als Effekt mit Schalter (Standard aus), Lebenszyklus-Tests wie Wintermusik |
+| **ART-W2** | Würfelbecher-Welten TW-14, TW-11, TW-09, TW-13 für alle 13 Würfelspiele | umgesetzt (3.14.0): gemeinsamer Baustein `dice/dice-worlds.css`, Welt-Dateien nur mit Variablen | gemeinsamer Würfel-/Becher-Baustein statt Einzelanpassungen; Wurfgeräusch nur als Effekt mit Schalter (Standard aus), Lebenszyklus-Tests wie Wintermusik |
 | **ART-W3** | Klassische Bretter (Schach, Mühle, Dame, Reversi, Hex, Vier gewinnt, Backgammon) mit TW-08, TW-09, TW-10 | geplant | je Spiel Anzeige-Attribute im Renderer; Figurensätze für Schach als eigene oder geprüfte CC0-Grafiken; Lesbarkeit der Steine (Farbe nie allein) |
 | **ART-W4** | Kartenrücken-Welten für Kartenspiele außerhalb von ART-T | geplant | gemeinsamer Kartenrücken-Baustein; Einzelspieler (`solitaire`, `mahjong-solitaire`) brauchen eine persönliche Auswahl ohne Raum (Registry-Erweiterung) |
 | **ART-W5 …** | weitere Monopoly-Editionen und Einzelwelten nach Bedarf | Idee | – |

@@ -1,0 +1,12 @@
+/* ART-W2 · TW-14 Saloon: Holzdielen, Leder, Messing, Knochenwürfel. Schrift Rye (SIL OFL 1.1, public/fonts/worlds/rye-OFL.txt). */
+@font-face { font-family: 'TW Rye'; src: url('/fonts/worlds/rye.woff2') format('woff2'); font-display: swap; }
+body[data-theme-world="TW-14"] {
+  --twd-table: #3b2414 url('/games/theme-worlds/dice/table-tw-14.svg') 0 0 / 240px 240px repeat;
+  --twd-face: linear-gradient(145deg, #f6ecd4, #e2d0a6); --twd-pip: #2a1a10; --twd-die-edge: 1px solid #8a6a3a;
+  --twd-die-shadow: inset 0 -3px 0 #0000002e, 0 3px 6px #000a; --twd-kept: #e0b04a; --twd-hidden: #5a3320;
+  --twd-cup: url('/games/theme-worlds/dice/cup-tw-14.svg'); --twd-tray: linear-gradient(180deg, #5a3320, #3e2214);
+  --twd-flap: linear-gradient(180deg, #e9d3a6, #c9a66b); --twd-flap-ink: #2a1a10; --twd-flap-shut: linear-gradient(180deg, #4a2c18, #2f1b0e); --twd-flap-shut-ink: #e9d3a6;
+  --twd-stage: linear-gradient(165deg, #5a3320, #2f1b0e); --twd-stage-edge: #c89a5266;
+  --twd-accent: #e0b04a; --twd-font: 'TW Rye', Georgia, serif; --twd-title-spacing: .02em; --twd-ink: #f6ead2; --twd-muted: #dccbaa;
+  --twd-sheet-head: #e6cf9c; --twd-sheet-head-ink: #2a1a10;
+}

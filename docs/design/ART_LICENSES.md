@@ -52,6 +52,7 @@ Einordnung der Lizenzarten (geprüft am 15.11.2026 an den offiziellen Texten):
 | ART-013 | `public/games/schiffe/art/preview-naval.webp` | Bildschirmfoto des laufenden Spiels (Designauswahl), erzeugt mit `node scripts/capture-schiffe-skins.mjs` |
 | ART-046 (Paket F) | `test/fixtures/monopoly-theme/dist/assets/*.webp` (nur Testdaten, nie ausgeliefert) | eigene abstrakte Testgrafik (Farbverläufe, Polygone, Kreise), prozedural erzeugt mit `node scripts/monopoly-test-art.mjs`, optimiert mit `node scripts/build-monopoly-theme.mjs`; keine Vorlage, keine Figur, keine Marke |
 | ART-W1 · TW-01 „Schatten über Neuengland“ | `public/games/theme-worlds/tw-01/preview.svg`, `table.svg`, `center.svg`, `card-back.svg`, `house.svg`, `lighthouse.svg`, `token-hat.svg`, `token-car.svg`, `token-dog.svg`, `token-ship.svg`, `token-thimble.svg`, `token-barrow.svg`, `token-shoe.svg`, `token-cat.svg`, dazu `tw-01.css` | eigene Zeichnungen (Leuchtturm-Hafenszene, Hafenplanken, Kartenrücken mit Kompassrose, Fischerhütte, Leuchtturm, acht Messingfiguren), erzeugt mit `node scripts/build-tw01-art.mjs`; keine Vorlage, keine fremde Schrift (Georgia/serif aus dem System), keine Namen, Figuren oder Zeichen aus fremden Werken; Feld-, Karten- und Figurennamen eigene Texte in `public/games/theme-worlds/tw-01.js` |
+| ART-W2 · Würfelwelten TW-14, TW-11, TW-09, TW-13 | `public/games/theme-worlds/dice/table-tw-14.svg`, `table-tw-11.svg`, `table-tw-09.svg`, `table-tw-13.svg`, `cup-tw-14.svg`, `cup-tw-11.svg`, `cup-tw-09.svg`, `cup-tw-13.svg`, `preview-tw-14.svg`, `preview-tw-11.svg`, `preview-tw-09.svg`, `preview-tw-13.svg`, dazu `dice-worlds.css` und `tw-14.css`, `tw-11.css`, `tw-09.css`, `tw-13.css` | eigene Zeichnungen (Tischkacheln: Holzdielen, Kneipentisch mit Seekarte, Langhausdielen mit Runenritzungen, Neonraster; Becher aus Leder, Holz mit Eisenringen, Horn, Neon; Vorschauen), erzeugt mit `node scripts/build-dice-worlds-art.mjs`; keine Vorlage, keine Marken oder Figuren |
 
 ## Fremde Grafiken
 
@@ -118,7 +119,7 @@ Fremde Musik, nur in den Winterwelten und nur auf Wunsch des Spielers (Musik-Sch
 
 ## Schriften (SIL Open Font License 1.1)
 
-Unverändert aus den Fontsource-Paketen (npm `@fontsource/<name>`, Ausschnitt „latin“), je mit Lizenztext daneben. Nur für die Kartenwelten (ART-T1), geladen nur von der gewählten Welt.
+Unverändert aus den Fontsource-Paketen (npm `@fontsource/<name>`, Ausschnitt „latin“), je mit Lizenztext daneben. Für die Kartenwelten (ART-T1) und die Würfelwelten (ART-W2), geladen nur von der gewählten Welt.
 
 | Schrift | Datei | Lizenztext | Urheber |
 |---|---|---|---|
@@ -130,6 +131,8 @@ Unverändert aus den Fontsource-Paketen (npm `@fontsource/<name>`, Ausschnitt �
 | Black Ops One | `public/fonts/worlds/black-ops-one.woff2` | `public/fonts/worlds/black-ops-one-OFL.txt` | The Black Ops One Project Authors (Sorkin Type) |
 | Righteous | `public/fonts/worlds/righteous.woff2` | `public/fonts/worlds/righteous-OFL.txt` | Astigmatic (AOETI) |
 | Fredoka 700 | `public/fonts/worlds/fredoka.woff2` | `public/fonts/worlds/fredoka-OFL.txt` | The Fredoka Project Authors |
+| Rye 400 (ART-W2, TW-14 Saloon) | `public/fonts/worlds/rye.woff2` | `public/fonts/worlds/rye-OFL.txt` | Sorkin Type Co, Reserved Font Name „Rye“; Datei aus `@fontsource/rye` 5.2.5 (latin), Lizenztext aus `google/fonts` `ofl/rye/OFL.txt`; OFL in den Google-Fonts-Metadaten am 15.11.2026 geprüft |
+| Pirata One 400 (ART-W2, TW-11 Piratenbucht) | `public/fonts/worlds/pirata-one.woff2` | `public/fonts/worlds/pirata-one-OFL.txt` | Rodrigo Fuenzalida, Nicolas Massi, Reserved Font Name „Pirata“; Datei aus `@fontsource/pirata-one` 5.2.5 (latin), Lizenztext aus `google/fonts` `ofl/pirataone/OFL.txt`; OFL am 15.11.2026 geprüft |
 
 ## Namensnennung (für CC BY)
 

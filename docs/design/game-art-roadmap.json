@@ -384,7 +384,7 @@
         "wuerfel-auktion",
         "shutthebox"
       ],
-      "status": "planned",
+      "status": "in_progress",
       "implementation_commit": null,
       "goal": "TW-14 Saloon, TW-11 Piratenbucht, TW-09 Runen & Nordlicht und TW-13 Neon-Arcade für alle Würfelspiele: Würfelbecher, Würfelmaterial, Tischfläche, Wurfgeräusch (abschaltbar). Nur Aussehen.",
       "material": "eigene Grafiken; freie Quellen laut `THEME_WORLDS.md` Abschnitt 6 erst nach Prüfung je Datei."

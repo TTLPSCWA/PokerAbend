@@ -1,0 +1,29 @@
+/* ART-W2 · gemeinsamer Baustein der Würfelwelten (TW-14, TW-11, TW-09, TW-13) für alle Würfelspiele.
+   Wird nur geladen, solange eine Würfelwelt gilt (ThemeWorlds entfernt den <link> beim Abschalten). Alle Regeln hängen an
+   body[data-theme-kind="dice"] #kg; die Welt-Dateien setzen nur Variablen, Texturen und Schrift. Keine Spiellogik, keine Positionen:
+   Würfel, Becher, Klappen und Tisch bekommen nur Material und Farbe; Zustände (gehalten, verdeckt, alt, ausgewählt) bleiben sichtbar. */
+
+/* Tischfläche und Bühne */
+body[data-theme-kind="dice"] #kg .kg-main { background: var(--twd-table); }
+body[data-theme-kind="dice"] #kg .wk-stage { --wk-bg: var(--twd-stage); --wk-edge: var(--twd-stage-edge); --wk-accent: var(--twd-accent); --wk-font: var(--twd-font); --wk-ink: var(--twd-ink); --wk-muted: var(--twd-muted); }
+body[data-theme-kind="dice"] #kg :is(.wk-title, .bg-heading h2) { font-family: var(--twd-font); letter-spacing: var(--twd-title-spacing, normal); }
+
+/* Würfel (gemeinsamer Baustein dieHTML/.die aus kit.js und style.css) */
+body[data-theme-kind="dice"] #kg .die { background: var(--twd-face); box-shadow: var(--twd-die-shadow); outline: var(--twd-die-edge); outline-offset: -2px; }
+body[data-theme-kind="dice"] #kg .die i.on { background: var(--twd-pip); box-shadow: var(--twd-pip-glow, none); }
+body[data-theme-kind="dice"] #kg .die.kept { box-shadow: 0 0 0 4px var(--twd-kept), var(--twd-die-shadow); }
+body[data-theme-kind="dice"] #kg .die.hidden { background: var(--twd-hidden); box-shadow: inset 0 0 0 2px #ffffff26, var(--twd-die-shadow); }
+body[data-theme-kind="dice"] #kg .pk-q .die { color: var(--twd-pip); }
+
+/* Becher: Mäxchen (Grafik ersetzt), Lügenwürfel (Würfelgruppe im Becher) */
+body[data-theme-kind="dice"] #kg .mx-cup { background: var(--twd-cup) center bottom / contain no-repeat; }
+body[data-theme-kind="dice"] #kg .mx-cup-svg { visibility: hidden; }
+body[data-theme-kind="dice"] #kg .lw-cup { background: var(--twd-tray); border-radius: 14px; padding: 6px 8px; box-shadow: inset 0 2px 6px #0007; }
+
+/* Shut the Box: Klappen in Weltmaterial, Zahlen bleiben dunkel auf hell bzw. hell auf dunkel mit hohem Kontrast */
+body[data-theme-kind="dice"] #kg .sb-flap:not(.sel):not(.shut) { background: var(--twd-flap); color: var(--twd-flap-ink); }
+body[data-theme-kind="dice"] #kg .sb-flap.shut { background: var(--twd-flap-shut); color: var(--twd-flap-shut-ink); }
+
+/* Kniffel: Spaltenköpfe des Blocks in Weltfarbe (Tabelle bleibt hell und gut lesbar) */
+body[data-theme-kind="dice"] #kg .kn-sheet thead th { background: var(--twd-sheet-head); color: var(--twd-sheet-head-ink); }
+body[data-theme-kind="dice"] #kg .kn-tray { background: var(--twd-tray); }

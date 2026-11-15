@@ -1,0 +1,12 @@
+/* ART-W2 · TW-11 Piratenbucht: dunkler Kneipentisch mit Seekarte, Walbein-Würfel, Holzbecher mit Eisenringen. Schrift Pirata One (SIL OFL 1.1, public/fonts/worlds/pirata-one-OFL.txt). */
+@font-face { font-family: 'TW Pirata One'; src: url('/fonts/worlds/pirata-one.woff2') format('woff2'); font-display: swap; }
+body[data-theme-world="TW-11"] {
+  --twd-table: #2a1e14 url('/games/theme-worlds/dice/table-tw-11.svg') 0 0 / 240px 240px repeat;
+  --twd-face: linear-gradient(145deg, #f1e3bf, #d8c294); --twd-pip: #1f2a33; --twd-die-edge: 1px solid #7a5a34;
+  --twd-die-shadow: inset 0 -3px 0 #00000030, 0 3px 6px #000b; --twd-kept: #f2c14e; --twd-hidden: #4a321c;
+  --twd-cup: url('/games/theme-worlds/dice/cup-tw-11.svg'); --twd-tray: linear-gradient(180deg, #6b4a2a, #3e2a16);
+  --twd-flap: linear-gradient(180deg, #eadcb6, #cbb37e); --twd-flap-ink: #1f2a33; --twd-flap-shut: linear-gradient(180deg, #3e2a16, #241709); --twd-flap-shut-ink: #eadcb6;
+  --twd-stage: linear-gradient(165deg, #2b3a40, #141d21); --twd-stage-edge: #c8b07a66;
+  --twd-accent: #f2c14e; --twd-font: 'TW Pirata One', Georgia, serif; --twd-title-spacing: .03em; --twd-ink: #f3e7c9; --twd-muted: #d9c9a3;
+  --twd-sheet-head: #d9c9a3; --twd-sheet-head-ink: #1f2a33;
+}

@@ -21,8 +21,8 @@ test('Registry: die 40 Kartenwelten sind unverändert eingebunden und gelten gen
   const cards = reg.list().filter((w) => w.kind === 'card');
   assert.equal(cards.length, 40); assert.deepEqual(cards.map((w) => w.id), WORLDS.map((w) => w.id));
   assert.ok(cards.every((w) => w.released && w.fallback === 'standard'));
-  // ART-W1: einzige weitere Welt ist TW-01 (Monopoly)
-  assert.deepEqual(reg.list().filter((w) => w.kind !== 'card').map((w) => [w.id, w.kind, w.games.join()]), [['TW-01', 'board', 'monopoly']]);
+  // ART-W1: TW-01 (Monopoly); ART-W2: vier Würfelwelten für die 13 Würfelspiele
+  assert.deepEqual(reg.list().filter((w) => w.kind !== 'card').map((w) => [w.id, w.kind, w.games.length]), [['TW-01', 'board', 1], ['TW-14', 'dice', 13], ['TW-11', 'dice', 13], ['TW-09', 'dice', 13], ['TW-13', 'dice', 13]]);
   // Für jedes Spiel und jede ID dieselbe Entscheidung wie die bisherige Server-Prüfung worldOf()
   for (const game of gameIds) for (const id of [...WORLDS.map((w) => w.id), 'gibts-nicht', '', null, 42]) assert.equal(reg.worldFor(game, id)?.id ?? null, worldOf(game, id)?.id ?? null, `${game}/${id}`);
   for (const game of CARD_WORLD_GAMES) assert.deepEqual(reg.worldsFor(game).map((w) => w.id).sort(), worldsFor(game).map((w) => w.id).sort());
@@ -161,7 +161,9 @@ test('Roadmap: ART-W0 steht als Themenwelt-Paket in der Grafik-Roadmap, die Kart
   assert.deepEqual(roadmap.world_packages.map((p) => p.id), ['ART-T1', 'ART-T2a', 'ART-T2b', 'ART-T2c', 'ART-T3', 'ART-T4', 'ART-T5', 'ART-T6']);
   assert.ok(roadmap.world_packages.every((p) => p.status === 'done'));
   // Paketstruktur nach dem Konzept (THEME_WORLDS.md): W0 umgesetzt, W1 teilweise (Monopoly ja, Monopoly Deal offen), W2–W4 geplant; alle Spiel-IDs existieren
-  assert.deepEqual(roadmap.theme_packages.map((p) => [p.id, p.status]), [['ART-W0', 'done'], ['ART-W1', 'partial'], ['ART-W2', 'planned'], ['ART-W3', 'planned'], ['ART-W4', 'planned']]);
+  const st = Object.fromEntries(roadmap.theme_packages.map((p) => [p.id, p.status]));
+  assert.deepEqual(Object.keys(st), ['ART-W0', 'ART-W1', 'ART-W2', 'ART-W3', 'ART-W4']);
+  assert.equal(st['ART-W0'], 'done'); assert.equal(st['ART-W1'], 'partial'); assert.ok(['in_progress', 'done'].includes(st['ART-W2'])); assert.equal(st['ART-W3'], 'planned'); assert.equal(st['ART-W4'], 'planned');
   for (const p of roadmap.theme_packages) for (const g of p.games) assert.ok(gameIds.includes(g), p.id + ': ' + g);
   assert.ok(roadmap.theme_packages.find((p) => p.id === 'ART-W1').implementation_commit);
 });

@@ -185,7 +185,7 @@ Themenwelten für Brett-, Karten-, Würfel- und weitere Spiele nach dem Konzept 
 - **Spiele:** `kniffel`, `maexchen`, `schocken`, `zehntausend`, `wuerfelpoker`, `luegenwuerfel`, `chicago`, `wuerfelduell`, `risiko-wuerfeln`, `wuerfeljagd`, `monsterwuerfel`, `wuerfel-auktion`, `shutthebox`
 - **Ziel:** TW-14 Saloon, TW-11 Piratenbucht, TW-09 Runen & Nordlicht und TW-13 Neon-Arcade für alle Würfelspiele: Würfelbecher, Würfelmaterial, Tischfläche, Wurfgeräusch (abschaltbar). Nur Aussehen.
 - **Material:** eigene Grafiken; freie Quellen laut `THEME_WORLDS.md` Abschnitt 6 erst nach Prüfung je Datei.
-- **Status:** planned
+- **Status:** in Arbeit
 
 #### ART-W3 · Klassische Bretter · P2
 - **Spiele:** `schach`, `muehle`, `dame`, `reversi`, `hex`, `viergewinnt`, `backgammon`

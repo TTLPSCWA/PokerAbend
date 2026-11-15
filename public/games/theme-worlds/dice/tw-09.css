@@ -1,0 +1,11 @@
+/* ART-W2 · TW-09 Runen & Nordlicht: Langhausdielen, Runensteine als Würfel, Hornbecher, Polarlicht-Akzent. Schrift Cinzel (bereits im Repository, OFL). */
+body[data-theme-world="TW-09"] {
+  --twd-table: #24201c url('/games/theme-worlds/dice/table-tw-09.svg') 0 0 / 240px 240px repeat;
+  --twd-face: linear-gradient(145deg, #d3d7d3, #a9afad); --twd-pip: #16232b; --twd-die-edge: 1px solid #59646a;
+  --twd-die-shadow: inset 0 -3px 0 #00000033, 0 3px 6px #000b; --twd-kept: #6fe0b0; --twd-hidden: #3a3530;
+  --twd-cup: url('/games/theme-worlds/dice/cup-tw-09.svg'); --twd-tray: linear-gradient(180deg, #4a4038, #2a241f);
+  --twd-flap: linear-gradient(180deg, #d3d7d3, #a9afad); --twd-flap-ink: #16232b; --twd-flap-shut: linear-gradient(180deg, #3a3530, #24201c); --twd-flap-shut-ink: #cfe9df;
+  --twd-stage: linear-gradient(165deg, #2f3a3a, #161c1d); --twd-stage-edge: #8fd3c466;
+  --twd-accent: #6fe0b0; --twd-font: 'Cinzel', Georgia, serif; --twd-title-spacing: .04em; --twd-ink: #eef2ee; --twd-muted: #c8d3cf;
+  --twd-sheet-head: #cfe9df; --twd-sheet-head-ink: #16232b;
+}

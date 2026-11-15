@@ -5,6 +5,7 @@
 // Neue Welten (Brett, Würfel, Party …) kommen als weitere Einträge dazu und erscheinen erst mit `released: true`.
 import { WORLDS as CARD_WORLDS, FONTS, CARD_WORLD_GAMES } from '../card-worlds/worlds.js';
 import { TW01 } from './tw-01.js';
+import { DICE_WORLDS } from './dice-worlds.js';
 
 export const KINDS = ['card', 'board', 'dice', 'party', 'generic'];
 export const EFFECTS = ['snow', 'music']; // bekannte Effekttypen; der Browser registriert ihre Umsetzung (ThemeWorlds.effect)
@@ -90,7 +91,8 @@ export const cardWorldDefinition = (w) => ({
   fallback: 'standard', released: true, source: w.game === 'all' ? 'ART-T5' : 'ART-T1', card: { frame: w.frame },
 });
 // ART-W1: TW-01 „Schatten über Neuengland“ für Monopoly (eigener Entwurf, siehe docs/design/THEME_WORLDS.md)
-export const BUILTIN = [...CARD_WORLDS.map(cardWorldDefinition), TW01];
+// ART-W2: Würfelwelten TW-14, TW-11, TW-09, TW-13 für alle Würfelspiele
+export const BUILTIN = [...CARD_WORLDS.map(cardWorldDefinition), TW01, ...DICE_WORLDS];
 
 let active = createRegistry(BUILTIN);
 export const themeRegistry = () => active;
