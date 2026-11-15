@@ -287,7 +287,7 @@ Die fachliche Zuordnung folgt dem Konzept. Abgeschlossene Pakete behalten ID und
 | ART-W1 | Monopoly + Monopoly Deal: TW-01 Schatten über Neuengland | **teilweise:** Monopoly umgesetzt (3.13.0, `154a30e`); Monopoly Deal offen |
 | ART-W2 | Würfelbecher-Welten: TW-14, TW-11, TW-09, TW-13 für alle Würfelspiele | **umgesetzt** (3.14.0, `badf3e9`) |
 | ART-W3 | Klassische Bretter: Schach, Mühle, Dame, Reversi, Hex, Vier gewinnt, Backgammon mit TW-08, TW-09, TW-10 | **umgesetzt** (3.16.0, `1ae5d0b`) |
-| ART-W4 | Kartenrücken-Welten für die 16 Kartenspiele außerhalb von ART-T | **umgesetzt** (3.17.0) |
+| ART-W4 | Kartenrücken-Welten für die 16 Kartenspiele außerhalb von ART-T | **umgesetzt** (3.17.0, `7aac77e`) |
 | ART-W5 … | weitere Monopoly-Editionen und Einzelwelten nach Bedarf | Idee |
 
 ART-013 (Schiffe versenken) und ART-044 (6 nimmt!) bleiben eigene Pakete; sie können die Welten später nutzen.

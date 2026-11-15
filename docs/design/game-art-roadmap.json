@@ -455,11 +455,27 @@
         "praesident",
         "mogeln"
       ],
-      "status": "in_progress",
-      "implementation_commit": null,
+      "status": "done",
+      "implementation_commit": "7aac77e52bbe8e3cc53c5c5509e06f09ce656ed9",
       "goal": "Kartenrücken, Bildkarten-Stil und Tisch in passenden Welten (u. a. TW-02, TW-03, TW-09, TW-10, TW-13, TW-14) für Kartenspiele außerhalb von ART-T. Einzelspieler-Kartenspiele brauchen eine eigene Erweiterung. Nur Aussehen.",
       "material": "eigene Grafiken; Kartensets laut Konzept erst nach Prüfung.",
-      "implementation_note": "Registry `public/games/theme-worlds/deck-worlds.js` (Art deck; TW-02, TW-03 neu; Karten-Facetten für TW-01, TW-09, TW-10, TW-13, TW-14), Art `deck` und Facetten-Zusammenbau in `registry.js`, gemeinsamer Baustein `public/games/theme-worlds/deck/deck-worlds.css` (Spiel-Kit- und Poker-Adapter), Welt-Dateien `deck/tw-xx.css`, eigene SVG (`scripts/build-deck-worlds-art.mjs`), `data-face` auf offenen Bildkarten (`kit.js`, `poker.js`), Themenwelt-Auswahl im Poker-Host-Menü; Version 3.17.0."
+      "implementation_note": "Registry `public/games/theme-worlds/deck-worlds.js` (Art deck; TW-02, TW-03 neu; Karten-Facetten für TW-01, TW-09, TW-10, TW-13, TW-14), Art `deck` und Facetten-Zusammenbau in `registry.js`, gemeinsamer Baustein `public/games/theme-worlds/deck/deck-worlds.css` (Spiel-Kit- und Poker-Adapter), Welt-Dateien `deck/tw-xx.css`, eigene SVG (`scripts/build-deck-worlds-art.mjs`), `data-face` auf offenen Bildkarten (`kit.js`, `poker.js`), Themenwelt-Auswahl im Poker-Host-Menü; Version 3.17.0.",
+      "evidence": [
+        "test/art-w4-deck-worlds.test.js",
+        "test/ui/art-w4-deck-worlds.spec.js",
+        "docs/design/THEME_WORLDS.md",
+        "docs/design/art/ART-W4/README.md",
+        "docs/design/art/ART-W4/poker-standard-desktop.jpg",
+        "docs/design/art/ART-W4/poker-tw-14-desktop.jpg",
+        "docs/design/art/ART-W4/poker-tw-03-desktop.jpg",
+        "docs/design/art/ART-W4/poker-tw-13-desktop.jpg",
+        "docs/design/art/ART-W4/poker-tw-01-desktop.jpg",
+        "docs/design/art/ART-W4/skat-standard-desktop.jpg",
+        "docs/design/art/ART-W4/skat-tw-02-desktop.jpg",
+        "docs/design/art/ART-W4/skat-tw-09-desktop.jpg",
+        "docs/design/art/ART-W4/skat-tw-10-desktop.jpg",
+        "docs/design/art/ART-W4/skat-tw-14-desktop.jpg"
+      ]
     }
   ]
 }
