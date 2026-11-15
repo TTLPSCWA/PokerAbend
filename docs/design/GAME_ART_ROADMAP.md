@@ -185,7 +185,10 @@ Themenwelten für Brett-, Karten-, Würfel- und weitere Spiele nach dem Konzept 
 - **Spiele:** `kniffel`, `maexchen`, `schocken`, `zehntausend`, `wuerfelpoker`, `luegenwuerfel`, `chicago`, `wuerfelduell`, `risiko-wuerfeln`, `wuerfeljagd`, `monsterwuerfel`, `wuerfel-auktion`, `shutthebox`
 - **Ziel:** TW-14 Saloon, TW-11 Piratenbucht, TW-09 Runen & Nordlicht und TW-13 Neon-Arcade für alle Würfelspiele: Würfelbecher, Würfelmaterial, Tischfläche, Wurfgeräusch (abschaltbar). Nur Aussehen.
 - **Material:** eigene Grafiken; freie Quellen laut `THEME_WORLDS.md` Abschnitt 6 erst nach Prüfung je Datei.
-- **Status:** in Arbeit
+- **Status:** done
+- **Implementierungscommit:** `badf3e9093622092bf081f9e4698b2ea7632a0c2`
+- **Umsetzung:** Registry `public/games/theme-worlds/dice-worlds.js` (vier Welten, Art dice, 13 Spiele), gemeinsamer Baustein `public/games/theme-worlds/dice/dice-worlds.css` (Würfel, Becher, Klappen, Tisch, Bühne, Kniffel-Block über Variablen), Welt-Dateien `dice/tw-14.css`, `tw-11.css`, `tw-09.css`, `tw-13.css`, eigene SVG-Grafiken, Schriften Rye und Pirata One (OFL); kein Spielcode geändert; Version 3.14.0.
+- **Nachweise:** `test/art-w2-dice-worlds.test.js`, `test/ui/art-w2-dice-worlds.spec.js`, `docs/design/THEME_WORLDS.md`, `docs/design/art/ART-W2/README.md`, `docs/design/art/ART-W2/kniffel-standard-desktop.jpg`, `docs/design/art/ART-W2/kniffel-tw-14-desktop.jpg`, `docs/design/art/ART-W2/kniffel-tw-11-desktop.jpg`, `docs/design/art/ART-W2/kniffel-tw-09-desktop.jpg`, `docs/design/art/ART-W2/kniffel-tw-13-desktop.jpg`
 
 #### ART-W3 · Klassische Bretter · P2
 - **Spiele:** `schach`, `muehle`, `dame`, `reversi`, `hex`, `viergewinnt`, `backgammon`
