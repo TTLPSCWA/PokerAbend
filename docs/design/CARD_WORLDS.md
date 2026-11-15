@@ -24,6 +24,8 @@ Regeln:
 
 ## Welten und Vorbilder (nur intern)
 
+Die Spalte „Vorbild“ beschreibt nur die Stimmung. Es werden keine Namen, Logos, Figuren oder Gestaltungen dieser Titel verwendet. Rechtliche Einordnung und offene Prüfpunkte: [ART_LICENSES.md](ART_LICENSES.md) (Prüfstand 15.11.2026) und [THEME_ARCHITECTURE.md](THEME_ARCHITECTURE.md), Abschnitt 6. Neue Themenwelten folgen [THEME_QUALITY_CHECKLIST.md](THEME_QUALITY_CHECKLIST.md).
+
 | ID | Name | Vorbild (nur Stimmung) | Im Spiel |
 |---|---|---|---|
 | U-01 | Zaubersaal | Harry Potter · Hogwarts Legacy | Farbwahl = Hauswahl, +2 ist ein Zauberspruch, Aussetzen ein Lähmzauber. |

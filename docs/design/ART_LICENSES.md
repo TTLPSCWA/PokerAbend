@@ -2,6 +2,40 @@
 
 Jede Grafik in `public/games/<spiel>/art/` steht hier mit Herkunft und Lizenz. Fremde Dateien nur unter CC0 oder klar freien Lizenzen (MIT, ISC, SIL OFL; CC BY mit Namensnennung unten). Nur tatsächlich benutzte Dateien liegen im Repo.
 
+## Nachweisregeln (verbindlich für jedes neue Asset, auch Themenwelten)
+
+Jede ausgelieferte Datei muss sich aus dieser Liste eindeutig auf Quelle und Lizenz zurückführen lassen. Pflichtangaben je Datei:
+
+| Angabe | Inhalt |
+|---|---|
+| Pfad | genauer Dateipfad im Repository (keine Sammelangaben wie „*.webp“ für Fremdgrafik) |
+| Titel und Urheber | wie in der Quelle angegeben; Pseudonym genügt |
+| Quelle | URL der Originalseite, bei Repositories mit Commit/Version gepinnt; Originaldateiname im Paket |
+| Lizenz | Kurzname **mit Link zum offiziellen Lizenztext** |
+| Prüfung | Datum und Stelle der Prüfung (Lizenzdatei im Paket oder Seite des Urhebers); nicht prüfbar → **ungeprüft** |
+| Bearbeitung | was geändert wurde (Format, Größe, Farbe, Schnitt); bei CC BY Pflicht |
+| Prüfsumme | SHA-256 der ausgelieferten Datei (bei Pipeline-Assets steht sie im Manifest) |
+
+Einordnung der Lizenzarten (geprüft am 15.11.2026 an den offiziellen Texten):
+
+- **CC0 1.0 / gemeinfrei:** keine Pflichten, Namensnennung freiwillig. CC0 verzichtet nur auf Urheber- und verwandte Rechte; **Marken- und Patentrechte bleiben unberührt** (Abschnitt 4a) und Rechte Dritter (z. B. Persönlichkeitsrechte) werden nicht geklärt (4c). Kenney: „all game assets … are public domain licensed (CC0)“, „Attribution is not required“ (kenney.nl/support); das Kenney-Logo nicht separat verwenden.
+- **CC BY 3.0/4.0:** Lizenz-URI mit jeder Kopie (3.0: Abschnitt 4a), Urheber, Titel und vom Lizenzgeber angegebene URI nennen (4b), Bearbeitungen als solche kennzeichnen (3b). In der App erreichbare Credits-Seite (Muster: `/games/labyrinth-brett/credits.html`).
+- **SIL OFL 1.1 (Schriften):** nicht einzeln verkaufen; Weitergabe mit Software nur mit Copyright-Hinweis und Lizenztext; geänderte Fassungen ohne „Reserved Font Name“; nur unter OFL weitergeben. Umsetzung: Lizenztext liegt neben jeder Schrift in `public/fonts/worlds/` (geprüft).
+- **MIT/ISC:** Lizenztext mit Copyright beilegen.
+- **Pixabay-Inhaltslizenz:** kostenlos, ohne Namensnennung, Bearbeitung erlaubt; **verboten** ist Verkauf oder Weitergabe „on a Standalone basis“, d. h. ohne kreative Bearbeitung und „in substantially the same form“ (Nutzungsbedingungen Abschnitt 5, Stand 20.10.2026), außerdem systematisches Kopieren (Abschnitt 8). Nur als dokumentierte Ausnahme des Projektinhabers.
+- **Urheberrecht/Marken:** Stil und Stimmung sind frei; Namen, Logos, Figuren, typische Gestaltung, Kartentexte und wörtliche Übersetzungen geschützter Titel nicht verwenden. Auch KI-generierte Darstellungen geschützter Figuren oder Orte bleiben geschützt. Bezeichnungen wie „Fanprojekt“ oder „nicht kommerziell“ ersetzen keine Erlaubnis.
+- **Eigene Arbeit:** Das Projekt ist `UNLICENSED` (`package.json`, keine `LICENSE`-Datei): eigene Grafiken sind nicht an Dritte lizenziert („gleiche Lizenz wie das Projekt“ = alle Rechte vorbehalten).
+
+## Prüfstand 15.11.2026: offene oder ungeprüfte Punkte
+
+| Punkt | Stand |
+|---|---|
+| Pixabay-Musik (fünf Stücke unten) | **Risiko, ungeprüft:** Dateien liegen nach Neukodierung, Lautheitsangleich und Blenden einzeln abrufbar im öffentlichen Repository. Ob das eine Weitergabe „on a Standalone basis“ ist, ist nicht geklärt. Entscheidung des Projektinhabers nötig (behalten, durch CC0 ersetzen oder nicht öffentlich führen). |
+| OpenGameArt-Musik (fünf Stücke unten) | **ungeprüft:** Die Quellseiten waren bei der Prüfung nicht abrufbar (HTTP 403); die CC0-Angaben stammen aus der ursprünglichen Erfassung. |
+| `winter-wind.mp3` | **unvollständig:** Urheber fehlt. |
+| Vorbild-Tabelle der Kartenwelten (`CARD_WORLDS.md`) | Namen geschützter Titel als Vorbild im öffentlichen Repository; einzelne Weltnamen nah an Marken (z. B. „Taschenmonster“). Gesonderte Prüfung empfohlen, siehe `THEME_ARCHITECTURE.md`, Abschnitt 6. |
+| Themenwelten TW-01 bis TW-16 | Konzept `THEME_WORLDS.md` lag nicht vor; vorgeschlagene Quellen **ungeprüft**. |
+
 ## Eigene Grafiken (Spieleabend, gleiche Lizenz wie das Projekt)
 
 | Paket | Dateien | Herkunft |
