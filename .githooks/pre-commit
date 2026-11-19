@@ -1,0 +1,2 @@
+#!/bin/sh
+exec node scripts/agent-koordination.mjs hook pre-commit

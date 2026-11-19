@@ -18,6 +18,14 @@ Dokumentation und Planungsdateien sind keine automatische Implementierungsfreiga
 
 Diese Regel ersetzt frühere Feature-Branch-Anweisungen. Wenn direkte Änderungen an `main` technisch blockiert sind, Grund melden und auf die Entscheidung des Nutzers warten; keinen Ersatzbranch erstellen und keine Schutzprüfung umgehen. Vor Commit/Push Remote erneut abrufen, Divergenz sicher integrieren und vorhandene Nutzeränderungen erhalten.
 
+## Verbindliche Koordination für Claude Code und Codex
+
+- Beim Sitzungsstart im Repository `node scripts/agent-koordination.mjs status` ausführen. Einmalig bei fehlendem Zustand `node scripts/agent-koordination.mjs init` ausführen. Beide Agenten gleichen den dabei ausgegebenen absoluten Arbeitskopiepfad ab.
+- Vor jeder Dateiänderung den Pfad für die eigene Auftrags-ID mit `claim <agent> <auftrag> <pfade...>` reservieren und unmittelbar vor dem Schreibschritt mit `check` prüfen. Vor weiteren Pfaden erneut `status` lesen. Das gilt auch für durch Werkzeuge generierte Dateien.
+- `note` für Beginn, wichtige Ergebnisse, Fragen, Entscheidungen, Blockaden und Übergaben verwenden. Bei Konflikten nur den betroffenen Bereich pausieren. Fremde Reservierungen, Arbeitskopieänderungen und den Index erhalten.
+- Vor Änderungen an gemeinsamen Versions- oder Roadmap-Dateien sowie vor schreibenden Git-Operationen `@git` reservieren. Andere Sitzungen beenden ihre Schreibschritte und geben ihre Reservierungen frei, bevor `@git` erteilt wird. Vor Commit und Push `status` lesen, Scope und Index prüfen und Git über den Koordinationsbefehl ausführen. Nur geprüfte einzelne Dateien stagen.
+- Nach Abschluss Ergebnisse, Tests, Commits und offene Übergaben protokollieren, eigene Reservierungen freigeben und den abgeschlossenen Auftrag archivieren. Befehle und Wiederherstellung bei Abbruch stehen in [Koordination](docs/agents/KOORDINATION.md).
+
 ## Planung, Umfang und Sicherheit
 
 - Einstieg: `docs/roadmap/README.md`; zentrale maschinenlesbare Planung: `docs/roadmap/plan.json`.

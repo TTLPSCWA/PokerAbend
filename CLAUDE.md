@@ -18,6 +18,14 @@ Dokumentation und Planungsdateien sind keine automatische Implementierungsfreiga
 
 Diese Regel ersetzt frühere Feature-Branch-Anweisungen. Wenn direkte Änderungen an `main` technisch blockiert sind, Grund melden und auf die Entscheidung des Nutzers warten; keinen Ersatzbranch erstellen und keine Schutzprüfung umgehen.
 
+## Verbindliche Koordination für Claude Code und Codex
+
+- Beim Sitzungsstart im Repository `node scripts/agent-koordination.mjs status` ausführen. Einmalig bei fehlendem Zustand `node scripts/agent-koordination.mjs init` ausführen. Beide Agenten gleichen den dabei ausgegebenen absoluten Arbeitskopiepfad ab.
+- Vor jeder Dateiänderung den Pfad für die eigene Auftrags-ID mit `claim <agent> <auftrag> <pfade...>` reservieren und unmittelbar vor dem Schreibschritt mit `check` prüfen. Vor weiteren Pfaden erneut `status` lesen. Das gilt auch für durch Werkzeuge generierte Dateien.
+- `note` für Beginn, wichtige Ergebnisse, Fragen, Entscheidungen, Blockaden und Übergaben verwenden. Bei Konflikten nur den betroffenen Bereich pausieren. Fremde Reservierungen, Arbeitskopieänderungen und den Index erhalten.
+- Vor Änderungen an gemeinsamen Versions- oder Roadmap-Dateien sowie vor schreibenden Git-Operationen `@git` reservieren. Andere Sitzungen beenden ihre Schreibschritte und geben ihre Reservierungen frei, bevor `@git` erteilt wird. Vor Commit und Push `status` lesen, Scope und Index prüfen und Git über den Koordinationsbefehl ausführen. Nur geprüfte einzelne Dateien stagen.
+- Nach Abschluss Ergebnisse, Tests, Commits und offene Übergaben protokollieren, eigene Reservierungen freigeben und den abgeschlossenen Auftrag archivieren. Befehle und Wiederherstellung bei Abbruch stehen in [Koordination](docs/agents/KOORDINATION.md).
+
 ## Versionsnummer bei jeder Änderung
 
 Jeder Commit, der etwas an der Seite ändert (Fehlerbehebung, Paket, Feinschliff), zählt die Version in `package.json` und `package-lock.json` (nur die beiden Einträge des Projekts) hoch: Fehlerbehebung → letzte Stelle (3.1.0 → 3.1.1), neue Funktion oder Paket → mittlere Stelle (3.1.x → 3.2.0). Dazu ein kurzer Eintrag in `CHANGELOG.md` und die Versionszeile in `README.md` („jetzt **x.y.z**“) und oben in `docs/betrieb.md` („Version **x.y.z**“) anpassen; `test/planning-consistency.test.js` prüft das. Vor dem Push `npm run test:fast` laufen lassen (wie der GitHub-Build). Reine Doku- oder Planungs-Commits ändern die Version nicht. In der Abschlussmeldung an den Nutzer immer die neue Version nennen, damit er sie nach dem Deploy unter dem Schriftzug „Spieleabend“ prüfen kann.
