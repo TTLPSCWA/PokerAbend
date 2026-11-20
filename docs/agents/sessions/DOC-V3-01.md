@@ -1,0 +1,82 @@
+# Auftrag DOC-V3-01
+
+- Beginn (UTC): 2026-11-20T19:31:17.934Z
+- Ende (UTC): 2026-11-20T20:05:31.776Z
+- Beteiligte: claude
+
+## Vollständiger Verlauf
+
+- 2026-11-20T19:31:17.934Z · claude · DOC-V3-01 · INFO · NACHRICHT · START · Bezug: Pruefung/Vorbereitung 13 unversionierte Markdown-Dateien (docs/agents/sessions QA-CI-01*, docs/v3-entwurf). Nur lesend bis Freigabe; keine Commits.
+- 2026-11-20T19:55:31.155Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: @git
+- 2026-11-20T19:55:31.251Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/v3-entwurf/readme.md
+- 2026-11-20T19:55:31.251Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/v3-entwurf/qa-ci-01.md
+- 2026-11-20T19:55:31.251Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/v3-entwurf/nav-01.md
+- 2026-11-20T19:55:31.251Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/v3-entwurf/testmatrix.md
+- 2026-11-20T19:55:31.251Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/v3-entwurf/roadmap-01.md
+- 2026-11-20T19:55:31.251Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/v3-entwurf/roadmap-02.md
+- 2026-11-20T19:55:31.251Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/v3-entwurf/auth-01.md
+- 2026-11-20T19:55:31.251Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/qa-ci-01.md
+- 2026-11-20T19:57:22.710Z · claude · DOC-V3-01 · INFO · NACHRICHT · ERGEBNIS · Bezug: Pruefung der 13 Dateien abgeschlossen (nur lesend plus Nachtraege). Links/Anker ok, keine Secrets, Hashes und CI-Run-Nummern verifiziert (#220-#223,#225,#228,#229,#230). Statusnachtraege 20.11.2026 an 7 v3-entwurf-Dateien und QA-CI-01-Sitzungsarchiv angehaengt, Ursprungstext unveraendert. NAV-01 Volllauf #230 gruen. test:fast 2122/0/3. Kein Commit; Freigabe Nutzer ausstehend. Plan: Commit A 6 Sitzungsarchive, Commit B 7 V3-Dateien (ggf. mit Nachtrag), keine Versionsaenderung.
+- 2026-11-20T19:57:22.901Z · claude · DOC-V3-01 · RELEASE · NACHRICHT · Freigegeben · Bezug: @git, docs/v3-entwurf/readme.md, docs/v3-entwurf/qa-ci-01.md, docs/v3-entwurf/nav-01.md, docs/v3-entwurf/testmatrix.md, docs/v3-entwurf/roadmap-01.md, docs/v3-entwurf/roadmap-02.md, docs/v3-entwurf/auth-01.md, docs/agents/sessions/qa-ci-01.md
+- 2026-11-20T20:00:09.244Z · claude · DOC-V3-01 · INFO · NACHRICHT · START · Bezug: Freigabe Nutzer: Commit A (6 Sitzungsarchive) und B (7 V3-Dateien), danach gemeinsamer Push.
+- 2026-11-20T20:00:09.334Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: @git
+- 2026-11-20T20:00:09.426Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/qa-ci-01.md
+- 2026-11-20T20:00:09.426Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/qa-ci-01-review.md
+- 2026-11-20T20:00:09.426Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/qa-ci-01-nachbesserung.md
+- 2026-11-20T20:00:09.426Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/qa-ci-01-nachbesserung-2.md
+- 2026-11-20T20:00:09.426Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/qa-ci-01-finalreview.md
+- 2026-11-20T20:00:09.426Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/qa-ci-01-b-auflagen.md
+- 2026-11-20T20:00:09.426Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/v3-entwurf/readme.md
+- 2026-11-20T20:00:09.426Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/v3-entwurf/auth-01.md
+- 2026-11-20T20:00:09.426Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/v3-entwurf/nav-01.md
+- 2026-11-20T20:00:09.426Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/v3-entwurf/qa-ci-01.md
+- 2026-11-20T20:00:09.426Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/v3-entwurf/roadmap-01.md
+- 2026-11-20T20:00:09.426Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/v3-entwurf/roadmap-02.md
+- 2026-11-20T20:00:09.426Z · claude · DOC-V3-01 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/v3-entwurf/testmatrix.md
+- 2026-11-20T20:00:09.584Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion begonnen: fetch
+- 2026-11-20T20:00:10.129Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion beendet: fetch (0)
+- 2026-11-20T20:00:16.224Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-20T20:00:16.285Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-20T20:00:16.433Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-20T20:00:16.495Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-20T20:00:16.644Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-20T20:00:16.707Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-20T20:00:16.858Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-20T20:00:16.918Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-20T20:00:17.070Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-20T20:00:17.131Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-20T20:00:17.283Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-20T20:00:17.344Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-20T20:00:17.695Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion begonnen: commit
+- 2026-11-20T20:00:17.948Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion beendet: commit (0)
+- 2026-11-20T20:00:17.989Z · claude · DOC-V3-01 · INFO · COMMIT · Git hat Commits erzeugt (commit). · Bezug: bbb5b964ee23d5bb980a129b6da610fce57665af
+- 2026-11-20T20:00:23.510Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-20T20:00:23.572Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-20T20:00:23.722Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-20T20:00:23.782Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-20T20:00:23.943Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-20T20:00:24.006Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-20T20:00:24.161Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-20T20:00:24.225Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-20T20:00:24.376Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-20T20:00:24.436Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-20T20:00:24.589Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-20T20:00:24.649Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-20T20:00:24.802Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-20T20:00:24.871Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-20T20:00:25.205Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion begonnen: commit
+- 2026-11-20T20:00:25.437Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion beendet: commit (0)
+- 2026-11-20T20:00:25.476Z · claude · DOC-V3-01 · INFO · COMMIT · Git hat Commits erzeugt (commit). · Bezug: b1f5c29a95afceee5bd4b2130e8702fc73077731
+- 2026-11-20T20:00:31.502Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion begonnen: fetch
+- 2026-11-20T20:00:32.060Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion beendet: fetch (0)
+- 2026-11-20T20:00:32.929Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion begonnen: push
+- 2026-11-20T20:00:37.609Z · claude · DOC-V3-01 · INFO · NACHRICHT · Git-Aktion beendet: push (0)
+- 2026-11-20T20:05:31.476Z · claude · DOC-V3-01 · INFO · NACHRICHT · COMMIT · Bezug: Commits A bbb5b964ee23d5bb980a129b6da610fce57665af (6 Sitzungsarchive) und B b1f5c29a95afceee5bd4b2130e8702fc73077731 (7 V3-Dateien) gepusht. Push-Workflow #231 (44807413164) gruen. Diff gegenueber 0f14e19 nur docs/. NAV-01-Nachweis (#229, #230 auf 0f14e19) unveraendert gueltig., b1f5c29a95afceee5bd4b2130e8702fc73077731
+- 2026-11-20T20:05:31.581Z · claude · DOC-V3-01 · DONE · NACHRICHT · NACHRICHT · Bezug: DOC-V3-01 abgeschlossen.
+- 2026-11-20T20:05:31.776Z · claude · DOC-V3-01 · RELEASE · NACHRICHT · Freigegeben · Bezug: @git, docs/agents/sessions/qa-ci-01.md, docs/agents/sessions/qa-ci-01-review.md, docs/agents/sessions/qa-ci-01-nachbesserung.md, docs/agents/sessions/qa-ci-01-nachbesserung-2.md, docs/agents/sessions/qa-ci-01-finalreview.md, docs/agents/sessions/qa-ci-01-b-auflagen.md, docs/v3-entwurf/readme.md, docs/v3-entwurf/auth-01.md, docs/v3-entwurf/nav-01.md, docs/v3-entwurf/qa-ci-01.md, docs/v3-entwurf/roadmap-01.md, docs/v3-entwurf/roadmap-02.md, docs/v3-entwurf/testmatrix.md
+
+## Entscheidungen, Tests, Commits und offene Punkte
+
+- 2026-11-20T20:00:17.989Z · claude · DOC-V3-01 · INFO · COMMIT · Git hat Commits erzeugt (commit). · Bezug: bbb5b964ee23d5bb980a129b6da610fce57665af
+- 2026-11-20T20:00:25.476Z · claude · DOC-V3-01 · INFO · COMMIT · Git hat Commits erzeugt (commit). · Bezug: b1f5c29a95afceee5bd4b2130e8702fc73077731
+- 2026-11-20T20:05:31.581Z · claude · DOC-V3-01 · DONE · NACHRICHT · NACHRICHT · Bezug: DOC-V3-01 abgeschlossen.
