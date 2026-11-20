@@ -248,8 +248,24 @@ for (const id of only) {
     await page.reload(); await expect(page.locator(cfg.scene)).toBeVisible(); await shot(page, 'reconnect');
     if (info.project.name === 'desktop') for (const [width, height] of VIEWPORTS) {
       await page.setViewportSize({ width, height });
-      if (!cfg.relaxed) { expect(await overflow(page), `${width}x${height}`).toBe(true);
-        const box = await page.locator(cfg.scene).first().boundingBox(); expect(box.x).toBeGreaterThanOrEqual(-1); expect(box.x + box.width).toBeLessThanOrEqual(width + 1); }
+      if (!cfg.relaxed) {
+        // Solo scenes can replace their DOM between handle resolution and boundingBox().
+        let bounds;
+        const label = `${id} ${width}x${height} nach Reconnect`;
+        await expect.poll(async () => {
+          bounds = await page.evaluate(selector => {
+            const scene = document.querySelector(selector);
+            if (!scene) return null;
+            const { left, right, width, height } = scene.getBoundingClientRect();
+            if (width <= 0 || height <= 0 || getComputedStyle(scene).visibility !== 'visible') return null;
+            return { left, right, fitsViewport: document.documentElement.scrollWidth <= innerWidth + 1 };
+          }, cfg.scene);
+          return !!bounds;
+        }, { message: label + ': sichtbares Spielfeld' }).toBe(true);
+        expect(bounds.fitsViewport, label).toBe(true);
+        expect(bounds.left, label).toBeGreaterThanOrEqual(-1);
+        expect(bounds.right, label).toBeLessThanOrEqual(width + 1);
+      }
       await shot(page, `table-${width}x${height}`);
     } else if (!cfg.relaxed) expect(await overflow(page)).toBe(true);
     // Englisch: Kurzregeln im Hilfedialog (vor dem Ergebnis, solange der Tisch läuft)

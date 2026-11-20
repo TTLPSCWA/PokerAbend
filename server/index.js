@@ -346,6 +346,8 @@ const io = new Server(http, {
 
 /** @type {Map<string, import('./base-room.js').BaseRoom>} */
 const rooms = new Map();
+// Enabled by the isolated browser-test bootstrap only.
+let roomViewAudit;
 const presence = createPresence({
   emit: (list) => io.to('lobby').emit('presence', list),
   visibleFor: (key) => !key.startsWith('#') || !!accounts.byGameId(key) && accounts.privacyOf(accounts.byGameId(key).id).showOnline,
@@ -462,8 +464,16 @@ function removeOrphanHistory() {
 // Meldungen eines Raums: mit data.to nur an diesen Spieler (z. B. Anstupsen), sonst alle neu zeichnen
 function onRoomChange(room, kind, data) {
   if (kind === 'frame') { broadcastFrame(room); return; }
-  if (kind === 'roundStart') { ranked.freeze(room, data?.ids); return; }
-  if (kind === 'roundAbort') { ranked.abort(room); return; }
+  if (kind === 'roundStart') {
+    roomViewAudit?.rounds.set(room, ++roomViewAudit.nextIdentity);
+    ranked.freeze(room, data?.ids);
+    return;
+  }
+  if (kind === 'roundAbort') {
+    roomViewAudit?.rounds.delete(room);
+    ranked.abort(room);
+    return;
+  }
   // Ergebnis einer Partie: in die Bestenliste (gespeichert wird mit dem nächsten Speichern)
   if (kind === 'result') {
     // Long games can resume a live snapshot without a new ranked round. The
@@ -598,12 +608,49 @@ function startProgramStep(room, id, program) {
 // ---------- Hilfen ----------
 // Geplante Spiele und Funktionen (games/planned.js) lassen sich nicht hosten oder auswählen
 const notPlayable = (id) => (PLANNED.some((e) => e.id === String(id)) ? 'Das gibt es noch nicht – es steht auf der Liste der geplanten Spiele' : 'Dieses Spiel gibt es nicht');
+// The isolated Playwright server opts in before accepting any client.
+export function enableRoomViewAuditForTests() {
+  roomViewAudit ??= { revision: 0, nextIdentity: 0, identities: new WeakMap(), rounds: new WeakMap() };
+}
+
+function auditIdentity(subject) {
+  if (!subject || typeof subject !== 'object') return null;
+  const ids = roomViewAudit.identities;
+  if (!ids.has(subject)) ids.set(subject, ++roomViewAudit.nextIdentity);
+  return ids.get(subject);
+}
+
+function auditRound(room) {
+  if (room.phase === 'lobby' || (!room.phase && !room.table?.hand)) return null;
+  const rounds = roomViewAudit.rounds;
+  if (!rounds.has(room)) rounds.set(room, ++roomViewAudit.nextIdentity);
+  return rounds.get(room);
+}
+
 function broadcast(room) {
   presence.changed();
   bots.sync(room);
-  const botPlayers = [...room.players.values()].filter((p) => p.bot && !p.kicked).map((p) => botMetadata(room,p));
+  const audit = roomViewAudit && {
+    revision: ++roomViewAudit.revision,
+    room: auditIdentity(room),
+    hand: auditIdentity(room.table?.hand ?? room.drawTable?.hand),
+    round: auditRound(room),
+  };
+  const botPlayers = [...room.players.values()].filter((p) => p.bot && !p.kicked).map((p) => botMetadata(room, p));
   for (const p of room.players.values()) {
-    if (p.socketId) io.to(p.socketId).emit('state', { ...room.view(p.id), game: room.game, bots: botPlayers, ranked: ranked.state(room), unlisted: !!room.unlisted, cardWorld: room.cardWorld || null, ...(room.partyProgram ? { partyProgram: publicProgram(room) } : {}) });
+    if (!p.socketId) continue;
+    const view = room.view(p.id);
+    io.to(p.socketId).emit('state', {
+      ...view,
+      ...(audit && { __roomViewAudit: {
+        ...audit, connection: p.socketId, viewer: p.id,
+        role: (view.you?.playing ?? (Number.isInteger(view.you?.seat) ||
+          view.players?.some(player => player.id === p.id && player.seated))) ? 'player' : 'spectator',
+      } }),
+      game: room.game, bots: botPlayers, ranked: ranked.state(room),
+      unlisted: !!room.unlisted, cardWorld: room.cardWorld || null,
+      ...(room.partyProgram ? { partyProgram: publicProgram(room) } : {}),
+    });
   }
   scheduleLobby();
 }

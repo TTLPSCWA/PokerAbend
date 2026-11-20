@@ -1,5 +1,5 @@
 // EXP-007 Mensch ärgere Dich nicht: Würfel, hüpfende Figuren, Rauswurf im Bogen, drei Sechsen als Highlight.
-import { test, expect, expectSound, expectNoLeak } from './helpers.js';
+import { test, expect, expectSound, expectNoLeak, waitForServerView } from './helpers.js';
 import { openTable, watch, ok, send, soundLog, sounds, evidence, recordAnimations, animations, expectOnlyTransformOpacity, smoothReplay, fpsEvidence } from './exp-helpers.js';
 
 const turnPage = async (pages) => { for (const p of pages) if (await p.evaluate(() => lastState.turnId === lastState.you.id)) return p; return null; };
@@ -97,5 +97,72 @@ test('EXP-007: „Animationen reduzieren“, Neuladen und Zuschauen ohne Rückst
     expect(await sounds(page)).toEqual([]); expect(await animations(page)).toEqual([]);
     const { watcher, close: leave } = await watch(page, app, browser);
     try { await expect(watcher.locator('.hb-board')).toBeVisible(); await expect(watcher.locator('.xp-plaque')).toHaveCount(0); } finally { await leave(); }
+  } finally { await close(); }
+});
+
+test('EXP-007: reconnect on the active turn stays silent while experience loads', async ({ page, app, browser }) => {
+  const { close } = await start(page, app, browser);
+  const experience = Promise.withResolvers();
+  try {
+    const before = await waitForServerView(page, view => view.phase === 'playing' && view.turnId === view.you?.id);
+    await page.route('**/games/experience-kit.js', async route => {
+      await experience.promise;
+      await route.continue();
+    });
+    // Count calls to the actual fallback independently of AudioContext and asset load times.
+    await page.route('**/core.js', async route => {
+      const response = await route.fetch();
+      const source = await response.text();
+      await route.fulfill({ response, body: source + '\n' + [
+        'window.testFallbackBeeps = 0;',
+        'const realBeep = beep;',
+        'beep = (...args) => { window.testFallbackBeeps++; return realBeep(...args); };',
+      ].join('\n') });
+    });
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await waitForServerView(page, view => view.code === before.code && view.roundNo === before.roundNo && view.turnId === before.turnId);
+    await expect(page.locator('.hb-board')).toBeVisible();
+    expect(await page.evaluate(() => window.testFallbackBeeps)).toBe(0);
+  } finally {
+    experience.resolve();
+    await close();
+  }
+});
+
+test('EXP-007: a live turn change plays the palette cue while same-page reconnect stays silent', async ({ page, app, browser }) => {
+  const { others: [guest], close } = await start(page, app, browser, {
+    settings: { threeTries: false, sixAgain: false, turnTime: 0 },
+  });
+
+  async function finishTurn(actor, before) {
+    await ok(actor, 'roll');
+    const after = await waitForServerView(actor, view => view.__roomViewAudit.revision > before.__roomViewAudit.revision &&
+      (view.turnId !== before.turnId || view.g.rolled !== null));
+    if (after.turnId === before.turnId) await ok(actor, 'move', { piece: after.g.options[0] });
+  }
+
+  try {
+    const hostFirst = await waitForServerView(page, view => view.phase === 'playing' && view.turnId === view.you.id);
+    const guestWaiting = await waitForServerView(guest, view => view.turnId === hostFirst.you.id);
+    await expect(guest.locator('#kg')).toHaveAttribute('data-xp-kit', 'huetchen');
+    await soundLog(guest);
+    await finishTurn(page, hostFirst);
+
+    const guestLive = await waitForServerView(guest, view => view.turnId === view.you.id);
+    expect(guestLive.__roomViewAudit.connection).toBe(guestWaiting.__roomViewAudit.connection);
+    await expectSound(guest, { event: 'turn', palette: 'huetchen' });
+
+    await finishTurn(guest, guestLive);
+    const hostAgain = await waitForServerView(page, view => view.turnId === view.you.id);
+    const guestAgain = await waitForServerView(guest, view => view.turnId === hostAgain.you.id);
+    await guest.evaluate(() => { socket.disconnect(); });
+    await finishTurn(page, hostAgain);
+    await soundLog(guest);
+    await guest.evaluate(() => { socket.connect(); });
+
+    const restored = await waitForServerView(guest, view => view.you.id === guestLive.you.id && view.turnId === view.you.id);
+    expect(restored.roundNo).toBe(guestAgain.roundNo);
+    expect(restored.__roomViewAudit.connection).not.toBe(guestAgain.__roomViewAudit.connection);
+    expect(await sounds(guest)).not.toContain('turn');
   } finally { await close(); }
 });

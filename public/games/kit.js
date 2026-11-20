@@ -721,13 +721,21 @@ function kitGame(def) {
       const prev = S;
       // Der Server schickt das Rundenende mehrfach (Ergebnis, Rundenabschluss). Nur ein anderes Ergebnis beendet die laufende Feier.
       if (!prev || resultKey(prev) !== resultKey(st)) window.finishWinnerStages();
-      resultFresh = prev?.phase === 'playing' && st.phase === 'over' && socket.connected && !winnerStageReconnecting;
+      const restoring = winnerStageReconnecting;
+      resultFresh = prev?.phase === 'playing' && st.phase === 'over' && socket.connected && !restoring;
       winnerStageReconnecting = false;
       S = st;
       // Bin ich gerade drangekommen? Ton und Hinweis im Tab
       const now = st.turnId && st.turnId === st.you?.id;
       const before = prev && prev.turnId === prev.you?.id && prev.roundNo === st.roundNo;
-      if (now && !before) { if (!xp?.turn(st, prev)) { beep(740, 140, 0.06); setTimeout(() => beep(988, 160, 0.05), 140); } if (document.hidden) document.title = I18n.t('● Du bist dran – Spieleabend'); }
+      if (now && !before) {
+        // A snapshot on entry or reconnect restores the current turn without replaying its sound.
+        if (prev?.code === st.code && !restoring && !xp?.turn(st, prev)) {
+          beep(740, 140, 0.06);
+          setTimeout(() => beep(988, 160, 0.05), 140);
+        }
+        if (document.hidden) document.title = I18n.t('● Du bist dran – Spieleabend');
+      }
       if (!now) document.title = 'Spieleabend';
       if (!now || !before) peekKey = null;
       // Spiel-Töne: neue Runde = mischen, Rundenende = Sieg oder Schluss, sonst passend zur letzten Aktion

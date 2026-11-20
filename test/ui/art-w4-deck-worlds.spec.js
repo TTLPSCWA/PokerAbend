@@ -2,7 +2,7 @@
 // Referenzen: Poker (eigener Tisch) und Skat (Spiel-Kit) mit Host/Gast, später Zuschauerin, Neuladen, mehrfachem Wechsel, Standard,
 // zwei Räumen, fehlender Datei, Geheimhaltung verdeckter Karten und TW-09 Würfel → Brett → Karten. Danach alle übrigen 14 Spiele.
 // ART_W4_CAPTURE=1 legt die Vergleichsbilder unter docs/design/art/ART-W4/ ab.
-import { test, expect, login, selectGame, expectNoLeak, observeServerView } from './helpers.js';
+import { test, expect, login, selectGame, expectNoLeak } from './helpers.js';
 import { mkdirSync } from 'node:fs';
 import { POKER_GAMES, CLASSIC_GAMES, DECK_WORLD_IDS } from '../../public/games/theme-worlds/deck-worlds.js';
 
@@ -71,7 +71,7 @@ async function pokerHost(page, app, game = 'poker', name = 'Anna') {
 }
 async function guest(browser, info, app, code, name, { mode = 'watch', sit = true } = {}) {
   const ctx = await browser.newContext({ ...info.project.use });
-  const p = await ctx.newPage(); observeServerView(p); await login(p, app, name); await p.evaluate(([c, m]) => joinAndEnter(c, m), [code, mode]);
+  const p = await ctx.newPage(); await login(p, app, name); await p.evaluate(([c, m]) => joinAndEnter(c, m), [code, mode]);
   await expect.poll(() => p.evaluate(() => lastState?.code)).toBe(code);
   if (sit) await p.locator('[data-sit]').first().click();
   return { ctx, p };

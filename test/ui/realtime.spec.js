@@ -9,8 +9,13 @@ async function create(page, app, game, settings = {}) {
   const reply = await page.evaluate((settings) => send('settings', { playSecs: 10, ...settings }), settings);
   expect(reply.ok).toBe(true);
   await page.evaluate(() => {
-    window.testFrame = null; window.testFrames = 0; window.testStates = 0;
-    socket.on('arena', (frame) => { window.testFrame = frame; window.testFrames++; });
+    window.testFrame = null; window.testFrames = 0; window.testStates = 0; window.testJumpFrame = null;
+    socket.on('arena', (frame) => {
+      window.testFrame = frame;
+      window.testFrames++;
+      const me = frame.bodies.find(player => player.id === lastState?.you?.id);
+      if (me?.jumpUntil > frame.elapsed) window.testJumpFrame = { until: me.jumpUntil, elapsed: frame.elapsed };
+    });
     socket.on('state', () => window.testStates++);
   });
 }
@@ -19,14 +24,22 @@ const own = (page) => page.evaluate(() => window.testFrame?.bodies.find((p) => p
 async function start(page) {
   await page.getByRole('button', { name: 'Runde starten', exact: true }).click();
   await expect(page.locator('#rt-canvas')).toBeVisible();
-  await expect.poll(() => elapsed(page), { timeout: 6000 }).toBeGreaterThanOrEqual(0);
+  // Arena-Frames werden alle zwei 50-ms-Server-Ticks ausgeliefert.
+  await expect.poll(() => elapsed(page), { timeout: 6000, intervals: [100] }).toBeGreaterThanOrEqual(0);
 }
 async function holdDirection(page, direction, touch) {
   if (!touch) { await page.keyboard.down(direction === 'left' ? 'ArrowLeft' : 'ArrowUp'); return () => page.keyboard.up(direction === 'left' ? 'ArrowLeft' : 'ArrowUp'); }
-  const button = page.locator(`[data-rt-dir="${direction}"]`); const box = await button.boundingBox();
+  const button = page.locator(`[data-rt-dir="${direction}"]`);
+  await button.scrollIntoViewIfNeeded();
+  await expect(button).toBeInViewport({ ratio: 0.5 });
+  const box = await button.boundingBox();
+  expect(box, 'Richtungstaste braucht eine berührbare Fläche').not.toBeNull();
   const cdp = await page.context().newCDPSession(page);
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: box.x + box.width / 2, y: box.y + box.height / 2 }] });
-  return async () => { await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }); await cdp.detach(); };
+  return async () => {
+    try { await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }); }
+    finally { await cdp.detach(); }
+  };
 }
 
 test('Kronenjagd: zwei Browser, Tastatur/Touch, kompakte Frames, Stoppen und Wiederverbinden', async ({ page, app, browser }, info) => {
@@ -86,11 +99,18 @@ test('Bröckelboden: Bots, Sprungknopf, stabile Touch-Steuerung und Rundenende',
   await create(page, app, 'broeckelboden', { jump: true });
   expect((await page.evaluate(() => send('addBot'))).ok).toBe(true);
   await start(page);
-  const release = await holdDirection(page, 'left', info.project.name === 'mobil');
-  await page.getByRole('button', { name: 'Springen', exact: true }).click();
-  await expect.poll(async () => { const p = await own(page); return p?.jumpUntil - await elapsed(page); }).toBeGreaterThan(0);
+  const mobile = info.project.name === 'mobil';
+  const initialX = (await own(page)).x;
+  const release = await holdDirection(page, 'left', mobile);
+  try {
+    await expect.poll(async () => (await own(page))?.x, { message: 'Die Server-Frames müssen Bewegung bestätigen' }).toBeLessThan(initialX - 10);
+  } finally { await release(); }
+  const jump = page.getByRole('button', { name: 'Springen', exact: true });
+  if (mobile) await jump.tap();
+  else await jump.click();
+  await expect.poll(() => page.evaluate(() => window.testJumpFrame?.until - window.testJumpFrame?.elapsed),
+    { message: 'Mindestens ein Server-Frame muss einen aktiven Sprung bestätigen' }).toBeGreaterThan(0);
   await page.screenshot({ path: info.outputPath('broeckelboden.png'), fullPage: true });
-  await release();
   await expect(page.locator('.kg-over')).toBeVisible({ timeout: 18000 });
   await expect(page.locator('.kg-over')).toContainText('Bot 1');
 });

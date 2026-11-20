@@ -4,6 +4,8 @@ import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { startDomPresentationCapture } from './dom-presentation-capture.js';
+import { bindPresentation, installRoomViewAudit, isLivePeer, ServerViewLedger } from './server-view-audit.js';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const password = 'BlockA-Testpasswort';
@@ -20,7 +22,8 @@ export const test = base.extend({
     const dataDir = mkdtempSync(join(tmpdir(), 'spieleabend-ui-'));
     for (const [name, content] of Object.entries(seedFiles)) writeFileSync(join(dataDir, name), JSON.stringify(content));
     const child = spawn(process.execPath, ['--input-type=module', '-e', `
-      const { http } = await import('./server/index.js');
+      const { http, enableRoomViewAuditForTests } = await import('./server/index.js');
+      enableRoomViewAuditForTests();
       const ready = () => console.log('TEST_READY:' + http.address().port);
       if (http.listening) ready(); else http.once('listening', ready);
     `], {
@@ -51,6 +54,7 @@ export const test = base.extend({
     }
   },
   page: async ({ page, app }, use) => {
+    await observeServerView(page, app.url);
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
     page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
@@ -71,6 +75,7 @@ export async function selectGame(page, id) {
 }
 
 export async function login(page, app, name = 'Anna') {
+  await observeServerView(page, app.url);
   await page.addInitScript((name) => {
     if (!localStorage.getItem('poker:name')) {
       localStorage.setItem('poker:name', JSON.stringify(name));
@@ -99,25 +104,77 @@ import { inspectPresentation } from '../helpers/presentation-audit.js';
 import { MUST_HAVE_SECRETS } from '../helpers/leak-audit.js';
 const viewRecords = new WeakMap(), liveViewRecords = new Set();
 
-// Call before navigation for additional players created outside the base page fixture.
-export function observeServerView(page) {
-  if(viewRecords.has(page))return;
-  const record={page,views:[]};viewRecords.set(page,record);liveViewRecords.add(record);
-  page.on('websocket',socket=>{
-    try{if(new URL(socket.url()).host!==new URL(page.url()).host)return;}catch{return;}
-    socket.on('framereceived',({payload})=>{
-      const raw=typeof payload==='string'?payload:payload.toString('utf8');
-      if(!raw.startsWith('42'))return;
-      try{
-        const packet=JSON.parse(raw.slice(raw.indexOf('[')));
-        if(packet[0]!=='state'||!packet[1]?.code||!packet[1]?.game)return;
-        record.views.push(packet[1]);if(record.views.length>32)record.views.shift();
-      }catch{/* non-state Socket.IO traffic is not an oracle */}
-    });
+// Capture only this fixture's inbound Socket.IO traffic, outside the browser's game state.
+function observeServerView(page, baseURL) {
+  if (viewRecords.has(page)) return viewRecords.get(page).ready;
+  const origin = new URL(baseURL);
+  const ledger = new ServerViewLedger();
+  const record = { page, ledger, ready: page.addInitScript(installRoomViewAudit) };
+  const pollingRequests = new WeakMap();
+  viewRecords.set(page, record);
+  liveViewRecords.add(record);
+
+  const isTransport = (url, transport, protocol) => {
+    const address = new URL(url);
+    return address.protocol === protocol && address.host === origin.host &&
+      address.pathname === '/socket.io/' && address.searchParams.get('transport') === transport;
+  };
+  page.on('request', request => {
+    let frame;
+    try { frame = request.frame(); } catch { return; }
+    if (frame !== page.mainFrame()) return;
+    if (request.isNavigationRequest()) ledger.navigate();
+    if (request.method() === 'GET' && isTransport(request.url(), 'polling', origin.protocol)) {
+      pollingRequests.set(request, ledger.generation);
+    }
   });
-  page.once('close',()=>liveViewRecords.delete(record));
+  page.on('websocket', socket => {
+    const protocol = origin.protocol === 'https:' ? 'wss:' : 'ws:';
+    if (!isTransport(socket.url(), 'websocket', protocol)) return;
+    const generation = ledger.generation;
+    socket.on('framereceived', ({ payload }) => {
+      if (typeof payload === 'string') ledger.capture(payload, generation, socket);
+    });
+    socket.on('close', () => ledger.close(socket));
+    socket.on('socketerror', () => ledger.close(socket));
+  });
+  page.on('response', response => {
+    const generation = pollingRequests.get(response.request());
+    if (generation !== ledger.generation || !response.ok() || response.fromServiceWorker()) return;
+    void response.text().then(payload => ledger.capture(payload, generation), () => {});
+  });
+  page.once('close', () => liveViewRecords.delete(record));
+  return record.ready;
 }
-test.beforeEach(async({page})=>{observeServerView(page);});
+
+export async function waitForServerView(page, accepts = () => true) {
+  const ledger = viewRecords.get(page)?.ledger;
+  let view;
+  await expect.poll(async () => {
+    const generation = ledger?.generation;
+    const stamp = await page.evaluate(() => globalThis.__pokerRoomViewAudit?.current() ?? null);
+    view = generation === ledger?.generation ? ledger?.find(stamp) : undefined;
+    return !!view && Boolean(accepts(view));
+  }, { message: 'No captured server view for the expected room state' }).toBe(true);
+  return view;
+}
+
+// Compare one immutable server broadcast even when this tab is already rendering a newer one.
+export async function waitForPeerServerView(page, reference) {
+  const ledger = viewRecords.get(page)?.ledger;
+  const generation = ledger?.generation;
+  let peer;
+  await expect.poll(async () => {
+    const current = await page.evaluate(() => globalThis.__pokerRoomViewAudit?.current() ?? null);
+    if (generation !== ledger?.generation || !ledger?.find(current) || current.room !== reference.__roomViewAudit.room) return false;
+    const views = ledger.peers(reference, (view, candidate) =>
+      isLivePeer(view, candidate) && candidate.__roomViewAudit.connection === current.connection &&
+      candidate.__roomViewAudit.viewer === current.viewer && candidate.__roomViewAudit.role === current.role);
+    peer = views.length === 1 ? views[0] : undefined;
+    return Boolean(peer);
+  }, { message: 'No captured peer view for the exact server revision' }).toBe(true);
+  return peer;
+}
 
 /** Measure the action and newly started finite WAAPI work under 4x CDP CPU throttling. */
 export async function expectSmoothMotion(page, action, { minFps, timeout=10000 } = {}) {
@@ -181,56 +238,49 @@ export async function expectSound(page,event,{timeout=2500,since=0}={}) {
   return found;
 }
 
-/** Compare DOM and animation targets with runner-captured server views, never browser-mutated lastState. */
-export async function expectNoLeak(page,{serverView,peers,scope='#game-root',action,requireSecrets}={}) {
-  const recorder=async()=>page.evaluate(scope=>{
-    if(window.__experienceLeakCapture)throw Error('A leak capture is already active');
-    const roots=[...document.querySelectorAll(scope)];if(!roots.length)throw Error('No presentation root for '+scope);
-    const state={samples:[],overflow:false,observer:null,original:Element.prototype.animate};
-    const sample=(node,kind='dom',frames=[])=>{
-      if(!(node instanceof Element)||['SCRIPT','STYLE','LINK','META'].includes(node.tagName))return;
-      if(!roots.some(root=>root===node||root.contains(node)))return;
-      if(state.samples.length>=12000){state.overflow=true;return;}
-      const attributes=Object.fromEntries([...node.attributes].filter(a=>a.name.startsWith('data-')||['src','href','style','aria-label','alt','title'].includes(a.name)).map(a=>[a.name,a.value]));
-      const path=node.dataset.viewPath;
-      const value=node.dataset.viewValue??attributes['data-card']??attributes['data-die-value'];
-      state.samples.push({kind,tag:node.tagName,path,value,text:node.children.length?'':node.textContent,attributes,frames,dice:node.matches('[data-die-value],[data-dice-value],[data-dice-values],.die,.dice')});
-    };
-    const scan=(root,kind='dom')=>{sample(root,kind);for(const node of root.querySelectorAll('*'))sample(node,kind);};
-    for(const root of roots)scan(root);
-    for(const animation of document.getAnimations()){
-      const target=animation.effect?.target;
-      if(target instanceof Element)sample(target,'animation',animation.effect.getKeyframes().flatMap(frame=>Object.values(frame).filter(v=>typeof v==='string')));
-    }
-    if(typeof state.original==='function')Element.prototype.animate=function(frames,options){
-      scan(this,'animation');sample(this,'animation',Array.isArray(frames)?frames.flatMap(frame=>Object.values(frame).filter(v=>typeof v==='string')):Object.values(frames||{}).flat().filter(v=>typeof v==='string'));
-      return state.original.call(this,frames,options);
-    };
-    state.observer=new MutationObserver(records=>{
-      for(const record of records){
-        const node=record.target.nodeType===1?record.target:record.target.parentElement;if(node)scan(node);
-        if(record.oldValue!==null&&state.samples.length<12000)state.samples.push({kind:'dom',tag:node?.tagName||'text',text:record.type==='characterData'?record.oldValue:'',attributes:record.type==='attributes'?{[record.attributeName]:record.oldValue}:{},frames:[],dice:!!node?.matches?.('[data-die-value],[data-dice-value],.die,.dice')});
-        for(const added of record.addedNodes||[])if(added.nodeType===1)scan(added);
-      }
-    });
-    for(const root of roots)state.observer.observe(root,{subtree:true,childList:true,characterData:true,attributes:true,attributeOldValue:true,characterDataOldValue:true});
-    state.finish=()=>{state.observer.disconnect();Element.prototype.animate=state.original;for(const root of roots)scan(root);return {samples:state.samples,overflow:state.overflow};};
-    window.__experienceLeakCapture=state;
-  },scope);
-  await recorder();
-  let capture;
-  try{if(action)await action();capture=await page.evaluate(()=>window.__experienceLeakCapture.finish());}
-  finally{await page.evaluate(()=>{const state=window.__experienceLeakCapture;if(state){state.observer.disconnect();Element.prototype.animate=state.original;delete window.__experienceLeakCapture;}}).catch(()=>{});}
-  expect(capture.overflow,'Presentation capture exceeded 12,000 samples; narrow the scope').toBe(false);
-  const view=serverView??viewRecords.get(page)?.views.at(-1);
-  expect(!!view,'No captured server view; observeServerView(page) before joining the room or supply a fixture serverView').toBe(true);
-  const others=peers??[...liveViewRecords].filter(record=>record.page!==page&&!record.page.isClosed()).map(record=>record.views.at(-1));
-  const result=inspectPresentation(view,others,capture.samples);
-  if(requireSecrets??MUST_HAVE_SECRETS.includes(view.game)){
-    expect(result.compared,'Private game needs another runner-captured player view; observeServerView(peer) before navigation').toBeGreaterThan(0);
-    expect(result.privateValues,'No differential private values were exercised; use a view before reveal').toBeGreaterThan(0);
+/** Bind DOM and animation observations to the exact server revision used by the renderer. */
+export async function expectNoLeak(page, { serverView, peers, scope = '#game-root', action, requireSecrets } = {}) {
+  if (!await page.locator(scope).count()) throw new Error('No presentation root for ' + scope);
+  const initial = serverView ?? await waitForServerView(page);
+  const ledger = viewRecords.get(page)?.ledger;
+  const generation = ledger?.generation;
+  await page.evaluate(startDomPresentationCapture, { scope, expected: initial.__roomViewAudit });
+
+  let batches;
+  try {
+    if (action) await action();
+    const capture = await page.evaluate(() => window.__experienceLeakCapture.finish());
+    expect(capture.overflow, 'Presentation capture exceeded 12,000 samples; narrow the scope').toBe(false);
+    expect(capture.invalidated || ledger?.generation !== generation, 'No captured server view after invalidation or navigation').toBe(false);
+    batches = serverView ? [{ view: serverView, samples: capture.samples }] :
+      bindPresentation(capture.samples, stamp => ledger?.find(stamp));
+  } finally {
+    await page.evaluate(() => window.__experienceLeakCapture?.cleanup()).catch(() => {});
   }
-  expect(result.samples,'No DOM/animation samples inspected').toBeGreaterThan(0);
-  expect(result.problems,`Presentation leaks for ${view.game}: ${JSON.stringify(result.problems)}`).toEqual([]);
+
+  const result = { compared: 0, privateValues: 0, samples: 0, problems: [] };
+  for (const { view, samples } of batches) {
+    const needsSecrets = requireSecrets ?? MUST_HAVE_SECRETS.includes(view.game);
+    const matchingPeers = () => [...liveViewRecords].filter(record => record.page !== page)
+      .flatMap(record => record.ledger.peers(view, isLivePeer));
+    if (!serverView && needsSecrets && peers === undefined) {
+      await expect.poll(() => matchingPeers().length, { message: 'Private game needs another runner-captured player view at this revision' }).toBeGreaterThan(0);
+    }
+    const others = serverView ? peers : peers ? peers.filter(peer => isLivePeer(view, peer)) : matchingPeers();
+    if (!serverView && peers !== undefined) {
+      expect(others.length, 'Explicit peer views must share the DOM revision').toBe(peers.length);
+    }
+    const report = inspectPresentation(view, others, samples);
+    if (needsSecrets) {
+      expect(report.compared, 'Private game needs another runner-captured player view').toBeGreaterThan(0);
+      expect(report.privateValues, 'No differential private values were exercised; use a view before reveal').toBeGreaterThan(0);
+    }
+    result.compared += report.compared;
+    result.privateValues += report.privateValues;
+    result.samples += report.samples;
+    result.problems.push(...report.problems);
+  }
+  expect(result.samples, 'No DOM/animation samples inspected').toBeGreaterThan(0);
+  expect(result.problems, 'Presentation leaks for ' + initial.game + ': ' + JSON.stringify(result.problems)).toEqual([]);
   return result;
 }

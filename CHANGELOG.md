@@ -2,6 +2,11 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.17.1 – 20. November 2026
+
+* **Zugton:** Wer einen laufenden Tisch betritt oder eine Verbindung wiederherstellt, hört für den bereits laufenden eigenen Zug keinen neuen Zugton. Wechselt der Zug am selben Tisch regulär zu dir, bleibt das Signal erhalten.
+* **Qualitätssicherung (QA-CI-01):** Die Browser-Tests prüfen sichtbare Spielinformationen gegen die passende Empfängeransicht und Serverrevision. Hold’em und Omaha vergleichen dieselbe Hand nach Wiederverbindung. Zusätzliche Regressionen prüfen Bot-Züge, private Tischinformationen und kurzzeitig sichtbare Inhalte.
+
 ## 3.17.0 – 15. November 2026
 
 * **Kartenspiele, Themenwelten:** In Poker, Omaha, Omaha Hi/Lo, Seven Card Stud, Short Deck, Five Card Draw und Blackjack wählt der Host unter „Themenwelt“ **Saloon**, **Dampf & Messing**, **Neon-Arcade** oder **Schatten über Neuengland**; in Skat, Doppelkopf, Schwimmen, Mau-Mau, Durak, Hearts, Stichmeister, Präsident und Mogeln **Baker Street**, **Runen & Nordlicht**, **Tafelrunde** oder **Saloon**. Jede Welt bringt eigenen Kartenrücken, Kartenrahmen, ein blasses Emblem auf Bube, Dame und König sowie Tisch und Filz. Werte, Farben, Auswahl, Ziehen und Ablegen bleiben unverändert, verdeckte Karten bleiben verdeckt. Bei Poker steht die Auswahl im Host-Menü unter „Spiel“. „Standard“ zeigt alles wie bisher.

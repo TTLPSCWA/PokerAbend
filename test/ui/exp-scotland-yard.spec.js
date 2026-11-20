@@ -7,7 +7,13 @@ const turnPage = async (pages) => { for (const p of pages) if (await p.evaluate(
 async function move(pages) {
   let p; await expect.poll(async () => !!(p = await turnPage(pages))).toBe(true);
   const { legal, isX } = await p.evaluate(() => ({ legal: lastState.g.legal, isX: lastState.g.isX }));
-  const choice = legal.find((m) => m.ticket !== 'black') || legal[0];
+  // These are ordinary rides. Keep the actual arrest out of the movement-budget setup.
+  const mrX = await pages[1].evaluate(() => ({ isX: lastState.g.isX, position: lastState.g.xPosition }));
+  expect(mrX.isX).toBe(true);
+  expect(mrX.position).not.toBeNull();
+  const rides = isX ? legal : legal.filter(m => m.to !== mrX.position);
+  const choice = rides.find(m => m.ticket !== 'black') || rides[0];
+  expect(choice, 'Mindestens eine reguläre Fahrt ohne Festnahme').toBeTruthy();
   await ok(p, 'syMove', { to: choice.to, ticket: choice.ticket, double: false });
   return { p, isX, ticket: choice.ticket };
 }
@@ -48,6 +54,7 @@ test('EXP-001: Ticketklang, Fahrt entlang der Linie nur mit transform, Tageszeit
     for (let i = 0; i < 4 && !mine; i++) { const m = await move(pages); if (m.p === page) mine = m; }
     expect(mine, 'Hauptseite war als Detektiv am Zug').toBeTruthy();
     await expectSound(page, mine.ticket);
+    await expect.poll(() => page.evaluate(() => lastState.phase)).toBe('playing');
     await expect.poll(async () => (await animations(page)).some((a) => /sy-piece/.test(a.target))).toBe(true);
     const seen = await animations(page);
     expectOnlyTransformOpacity(seen);
@@ -74,6 +81,8 @@ test('EXP-001: Auftauchen im Nebel und Festnahme mit Handschellen und Stempel', 
     await expect(page.locator('.sy-map')).toHaveAttribute('data-xp', 'festnahme');
     await expectSound(page, 'cuffs'); await expectSound(page, 'stamp'); await expectSound(page, 'highlight');
     await expect(page.locator('.xp-plaque.xp-sy-stamp')).toContainText('GEFASST');
+    const arrestAnimations = (await animations(page)).filter(animation => animation.target.includes('sy-piece'));
+    expect(arrestAnimations.some(animation => animation.duration === 2000)).toBe(true);
     expectOnlyTransformOpacity(await animations(page));
     await page.waitForTimeout(350); await evidence(page, info, 'EXP-001', 'festnahme');
     // Der nächste bestätigte Zustand räumt alles weg (kein Rückstau).

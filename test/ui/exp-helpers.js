@@ -1,5 +1,5 @@
 // Gemeinsame Bausteine für die EXP-Spielpaket-Specs (Klang, Bewegung, Highlight je Spiel).
-import { expect, login, selectGame, observeServerView } from './helpers.js';
+import { expect, login, selectGame } from './helpers.js';
 import { mkdirSync } from 'node:fs';
 
 export const send = (page, type, data) => page.evaluate(({ type, data }) => send(type, data), { type, data });
@@ -23,7 +23,7 @@ export async function openTable(page, app, browser, game, { guests = [], setting
   const code = await page.evaluate(() => lastState.code), contexts = [], others = [];
   for (const name of guests) {
     const context = await browser.newContext({ viewport: page.viewportSize() || undefined }); contexts.push(context);
-    const other = await context.newPage(); observeServerView(other);
+    const other = await context.newPage();
     await login(other, app, name);
     await other.evaluate((code) => joinAndEnter(code, 'sit'), code);
     others.push(other);

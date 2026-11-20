@@ -1,9 +1,12 @@
 // EXP-036 Werwolf: Nacht- und Morgenklang, Dämmerung, Holztafeln, umdrehende Tafel beim Ausscheiden, Vollmond oder Sonne am Ende.
 import { test, expect, expectSound, expectNoLeak } from './helpers.js';
-import { openTable, watch, ok, send, soundLog, sounds, evidence, recordAnimations, animations, expectOnlyTransformOpacity, smoothReplay, fpsEvidence } from './exp-helpers.js';
+import { openTable, watch, ok, soundLog, sounds, evidence, recordAnimations, animations, expectOnlyTransformOpacity, smoothReplay, fpsEvidence } from './exp-helpers.js';
 
 const start = async (page, app, browser, options = {}) => {
-  const table = await openTable(page, app, browser, 'werwolf', { settings: { turnTime: 0 }, ...options });
+  // The audio and presentation cases need a real first dawn. Optional roles can
+  // otherwise end the game during the first night or insert a hunter phase.
+  const settings = { hexe: false, amor: false, jaeger: false, daySecs: 120 };
+  const table = await openTable(page, app, browser, 'werwolf', { settings, ...options });
   for (let i = 0; i < 5; i++) await ok(page, 'addBot');
   await soundLog(page); await recordAnimations(page);
   await ok(page, 'start'); await expect(page.locator('.ww-village')).toBeVisible();
@@ -14,12 +17,10 @@ async function untilDay(page) {
   await expect.poll(async () => {
     const g = await page.evaluate(() => lastState.g), todo = g.todo;
     if (g.stage !== 'night') return g.stage;
-    if (todo?.type === 'amor') await send(page, 'amor', { a: todo.targets[0], b: todo.targets[1] });
-    else if (todo?.type === 'wolf' && !todo.voted) await send(page, 'wolfVote', { target: todo.targets[0] });
-    else if (todo?.type === 'seer') await send(page, 'seer', { target: todo.targets[0] });
-    else if (todo?.type === 'witch') await send(page, 'witch', { action: 'none' });
+    if (todo?.type === 'wolf' && !todo.voted) await ok(page, 'wolfVote', { target: todo.targets[0] });
+    else if (todo?.type === 'seer') await ok(page, 'seer', { target: todo.targets[0] });
     return g.stage;
-  }, { timeout: 30000, intervals: [300] }).not.toBe('night');
+  }, { timeout: 30000, intervals: [300], message: 'Der Tisch muss den ersten Tag erreichen' }).toBe('day');
 }
 // Darstellung auf dem bestätigten Tisch: zwei Spieler scheiden aus, einer davon durch Abstimmung.
 const deathScene = (page) => page.evaluate(() => {

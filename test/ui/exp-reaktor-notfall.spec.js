@@ -13,6 +13,8 @@ const propose = async (pages, code) => { for (const p of pages) { const g = awai
 const wrongCode = async (page) => page.evaluate(() => '0000000'.slice(0, lastState.g.len)); // Wird als falsch geprüft, sonst gibt der Test eine andere Ziffernfolge vor.
 const savedScene = (page, heatMs) => page.evaluate((heatMs) => {
   const prev = JSON.parse(JSON.stringify(lastState)), view = JSON.parse(JSON.stringify(lastState));
+  // Nur die synthetische Rettung animieren, auch wenn die echte Testpartie pausiert ist.
+  view.gamePaused = false;
   view.g.stage = 'reveal'; view.g.heatMs = heatMs; view.g.result = { solved: true, code: '1234'.slice(0, view.g.len), clues: [] };
   return __experiences['reaktor-notfall'].present(prev, view);
 }, heatMs);
@@ -36,6 +38,10 @@ test('EXP-094: Säule und Rohre, Zischen bei echten Codes, Strafe, Alarm mit der
     await expectSound(page, 'alarm1', { timeout: 6000 });
     await expect.poll(() => page.locator('.xp-rn-pipes > i').evaluate((el) => Number(getComputedStyle(el).opacity))).toBeGreaterThan(0.2);
     await evidence(page, info, 'EXP-094', 'kontrollraum');
+    // Die Live-Uhr und der Alarm sind nachgewiesen. Ihre fortlaufenden CSS-Übergänge
+    // gehören nicht zur Messung der endlichen Rettungsanimation.
+    await ok(page, 'gamePause', { paused: true });
+    await expect.poll(() => page.evaluate(() => lastState.gamePaused)).toBe(true);
     // Rettung in letzter Sekunde (Darstellung auf dem echten Tisch): Entwarnung, Dampf, Instrumente auf Grün, Seufzer.
     await soundLog(page); await recordAnimations(page);
     expect(await savedScene(page, 300)).toBe(true);

@@ -61,6 +61,7 @@ window.addEventListener('languagechange', () => {
 let session = null;                       // { code, token, game }
 let account = { mode: 'open', games: [] }; // aus /me: Passwort oder offen, und welche Spiele es gibt
 const socket = io({ transports: ['websocket', 'polling'] });
+const roomViewAudit = globalThis.__pokerRoomViewAudit; // present only in instrumented browser tests
 
 // Die Server-Spielzeit steht während einer gemeinsamen Pause; die Browseruhr läuft weiter.
 const receivedGameTimes = new WeakMap();
@@ -268,6 +269,12 @@ const gameLoads = {};
 let current = null;   // laufendes Spielmodul
 let mounted = null;   // dessen Oberfläche gerade in #game-root steckt
 let lastState = null; // letzter Stand vom Server – kommt oft, bevor das Modul geladen ist
+function applyRoomView(view) {
+  roomViewAudit?.beforeRender(view, socket);
+  let applied = false;
+  try { current.onState(view); applied = true; }
+  finally { roomViewAudit?.afterRender(applied); }
+}
 function registerGame(id, mod) { GAME_MODULES[id] = mod; }
 // Spielarten, die die Oberfläche eines anderen Spiels nutzen (Omaha ist Poker mit vier Karten)
 const GAME_FILES = { omaha: 'poker' };
@@ -329,7 +336,7 @@ async function enterGame(r) {
   $('#game-root').hidden = false;
   current.show();
   if (typeof CardWorlds !== 'undefined') CardWorlds.reapply(); // der Raumstand kam schon vor der Join-Bestätigung, also vor session
-  if (lastState && (!lastState.game || lastState.game === game)) current.onState(lastState); // nie den Stand eines anderen Spiels in dieses Modul geben
+  if (lastState && (!lastState.game || lastState.game === game)) applyRoomView(lastState); // nie den Stand eines anderen Spiels in dieses Modul geben
 }
 // Gemeinsamer Teil des Host-Menüs „Spiel beenden“: zwei Knöpfe mit eigenen Bestätigungsdialogen
 function endGameHTML(running, noun = I18n.t('Runde')) {
@@ -363,6 +370,7 @@ socket.on('closed', (c) => {
   toast(c?.text || I18n.t('Der Tisch wurde geschlossen'), true);
 });
 function leaveGame() {
+  roomViewAudit?.invalidate();
   session = null; lastState = null; parked = false;
   $('#game-root').hidden = true;
   if (typeof CardWorlds !== 'undefined') CardWorlds.clear();
@@ -444,7 +452,7 @@ function returnToRoom() {
     $('#hub').hidden = true;
     $('#game-root').hidden = false;
     if (typeof CardWorlds !== 'undefined') CardWorlds.reapply();
-    if (lastState && (!lastState.game || lastState.game === mounted)) current.onState(lastState);
+    if (lastState && (!lastState.game || lastState.game === mounted)) applyRoomView(lastState);
   });
 }
 window.addEventListener('popstate', () => {
@@ -490,7 +498,7 @@ socket.on('connect', () => {
   $('#offline').hidden = true;
   if (session && !parked) socket.emit('join', { code: session.code, token: session.token }, (r) => { if (!r?.ok) { toast(r?.error, true); leaveGame(); showLobby(); } });
 });
-socket.on('disconnect', () => { if (session) $('#offline').hidden = false; });
+socket.on('disconnect', () => { roomViewAudit?.invalidate(); if (session) $('#offline').hidden = false; });
 // Verbindung abgelehnt? Dann ist meist das Passwort-Cookie abgelaufen → zur Passwort-Seite
 socket.on('connect_error', async () => {
   try {
@@ -498,9 +506,10 @@ socket.on('connect_error', async () => {
     if (r.status === 401) location.href = '/login?next=' + encodeURIComponent(location.pathname + location.search);
   } catch { /* Server nicht erreichbar – Socket.IO versucht es weiter */ }
 });
-socket.on('replaced', () => { session = null; if (typeof CardWorlds !== 'undefined') CardWorlds.clear(); document.body.innerHTML = I18n.html('<main class="lobby"><div class="lobby-felt"><h1 class="wordmark">Spieleabend</h1><p class="lobby-sub">Du spielst gerade in einem anderen Tab weiter. Diesen Tab kannst du schließen.</p></div></main>'); });
+socket.on('replaced', () => { session = null; if (typeof CardWorlds !== 'undefined') CardWorlds.clear(); roomViewAudit?.invalidate(); document.body.innerHTML = I18n.html('<main class="lobby"><div class="lobby-felt"><h1 class="wordmark">Spieleabend</h1><p class="lobby-sub">Du spielst gerade in einem anderen Tab weiter. Diesen Tab kannst du schließen.</p></div></main>'); });
 socket.on('kicked', () => { if (session) store.set('poker:session:' + session.code, null); leaveGame(); toast(I18n.t('Der Host hat dich vom Tisch genommen'), true); showLobby(); });
 socket.on('state', (st) => {
+  roomViewAudit?.received(st, socket);
   receivedGameTimes.set(st, Date.now());
   lastState = st;
   // Der Host hat das Spiel gewechselt: neu laden, das neue Spiel kommt automatisch (gleicher Raum, gleiches Token)
@@ -508,7 +517,7 @@ socket.on('state', (st) => {
     session.game = st.game;
     if (mounted && !parked) { location.reload(); return; }
   }
-  if (session && current && !parked && (!st.game || !mounted || st.game === mounted)) current.onState(st);
+  if (session && current && !parked && (!st.game || !mounted || st.game === mounted)) applyRoomView(st);
 });
 
 // ---------- Bestenliste über alle Abende ----------
