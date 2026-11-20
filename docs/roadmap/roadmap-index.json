@@ -223,7 +223,7 @@
     },
     "package/v3": {
       "total": 5,
-      "in-progress": 1,
+      "done": 1,
       "planned": 2,
       "verified": 2
     },
@@ -250,9 +250,7 @@
     "unverified-active-label": 1
   },
   "views": {
-    "active": [
-      "package:ROADMAP-01"
-    ],
+    "active": [],
     "completed": [
       "package:ART-002",
       "package:ART-004",
@@ -312,6 +310,7 @@
       "package:NAV-01",
       "package:PARTY-EXTRAS-01",
       "package:QA-CI-01",
+      "package:ROADMAP-01",
       "package:V2-00",
       "package:V2-01",
       "package:V2-02",
@@ -703,6 +702,14 @@
       "event": "push",
       "kind": "push",
       "sha": "b1f5c29",
+      "conclusion": "success"
+    },
+    {
+      "number": 232,
+      "id": 44810916088,
+      "event": "push",
+      "kind": "push",
+      "sha": "0bae015",
       "conclusion": "success"
     }
   ],
@@ -5962,21 +5969,23 @@
         "file": "docs/roadmap/roadmap-index-input.json",
         "ptr": "v3_packages[3]"
       },
-      "source_status": "in-progress",
-      "status": "in-progress",
+      "source_status": "implemented",
+      "status": "done",
       "stages": {
         "planned": true,
-        "implemented": false,
+        "implemented": true,
         "ci_accepted": false,
         "deployed": false
       },
       "evidence": {
-        "commit": null,
+        "commit": "0bae0150e188eadd7a27350a8632a2b00df56eb6",
         "completed_at": null,
         "tests": 0,
-        "refs": 1,
-        "version": null,
-        "ci_runs": []
+        "refs": 2,
+        "version": "3.18.0",
+        "ci_runs": [
+          232
+        ]
       },
       "links": {
         "doc": "docs/v3-entwurf/ROADMAP-01.md"

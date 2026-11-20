@@ -25,7 +25,8 @@
     { "number": 228, "id": 44732061196, "event": "workflow_dispatch", "kind": "full", "sha": "b2f47be", "conclusion": "success" },
     { "number": 229, "id": 44800180226, "event": "push", "kind": "push", "sha": "0f14e19", "conclusion": "success" },
     { "number": 230, "id": 44801679082, "event": "workflow_dispatch", "kind": "full", "sha": "0f14e19", "conclusion": "success" },
-    { "number": 231, "id": 44807413164, "event": "push", "kind": "push", "sha": "b1f5c29", "conclusion": "success" }
+    { "number": 231, "id": 44807413164, "event": "push", "kind": "push", "sha": "b1f5c29", "conclusion": "success" },
+    { "number": 232, "id": 44810916088, "event": "push", "kind": "push", "sha": "0bae015", "conclusion": "success" }
   ],
   "v3_packages": [
     {
@@ -52,10 +53,9 @@
     {
       "id": "ROADMAP-01", "title": "Zentrale Entwicklungsplanung (Index)", "area": "B", "doc": "docs/v3-entwurf/ROADMAP-01.md",
       "aliases": [],
-      "lifecycle": { "planned": true, "implemented": false, "ci_accepted": false, "deployed": false },
-      "in_progress": true,
-      "version": null, "implementation_commit": null, "ci_runs": [],
-      "note": "Umsetzung freigegeben und in Bearbeitung; als erledigt erst nach Commit, CI-Nachweis und Eintrag hier."
+      "lifecycle": { "planned": true, "implemented": true, "ci_accepted": false, "deployed": false },
+      "version": "3.18.0", "implementation_commit": "0bae0150e188eadd7a27350a8632a2b00df56eb6", "ci_runs": [232],
+      "note": "Implementiert und gepusht (Push-Lauf #232 grün). Ein vollständiger CI-Volllauf auf diesem Commit wurde auf Entscheidung des Projektinhabers am 20.11.2026 ausdrücklich nicht durchgeführt; deshalb nicht ci_accepted und nicht verified. Produktiv nicht bereitgestellt."
     },
     {
       "id": "ROADMAP-02", "title": "Besucheransicht der Roadmap", "area": "B", "doc": "docs/v3-entwurf/ROADMAP-02.md",
