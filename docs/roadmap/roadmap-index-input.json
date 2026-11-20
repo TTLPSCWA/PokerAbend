@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "purpose": "Handgepflegte Eingaben für Bereiche ohne maschinenlesbare Quelle. Der Index (roadmap-index.json) leitet daraus V3-Pakete, CI-Nachweise, die Produktivbeobachtung und offene Folgeaufgaben ab. Alle anderen Bereiche stammen aus ihren eigenen Quelldateien. Keine Vault-Inhalte.",
+  "rules": [
+    "Nur belegte Angaben eintragen. Fehlt ein Nachweis, bleibt das Feld null; nichts erfinden.",
+    "lifecycle trennt: planned, implemented, ci_accepted (vollständiger Volllauf auf dem Implementierungscommit grün), deployed (Produktivstand belegt).",
+    "CI-Läufe sind per GitHub-Abfrage belegt (node scripts/build-roadmap-index.mjs --check-ci prüft sie erneut). Ein grüner Lauf oder ein GHCR-Image ist kein Produktivdeployment."
+  ],
+  "production_observation": {
+    "observed_on": "2026-11-20",
+    "source": "https://poker.scwagaming.com/health",
+    "version": "3.17.0",
+    "commit": "cb2c167",
+    "note": "Beobachteter Stand nach dem Push von 3.18.0. Die Pakete ab 3.17.1 sind damit nicht als produktiv belegt."
+  },
+  "ci_runs": [
+    { "number": 220, "id": 43841868332, "event": "schedule", "kind": "nightly", "sha": "cb2c167", "conclusion": "failure" },
+    { "number": 221, "id": 44067289170, "event": "schedule", "kind": "nightly", "sha": "cb2c167", "conclusion": "failure" },
+    { "number": 222, "id": 44282420577, "event": "schedule", "kind": "nightly", "sha": "cb2c167", "conclusion": "failure" },
+    { "number": 223, "id": 44504508988, "event": "schedule", "kind": "nightly", "sha": "cb2c167", "conclusion": "failure" },
+    { "number": 224, "id": 44570122351, "event": "push", "kind": "push", "sha": "f642a06", "conclusion": "success" },
+    { "number": 225, "id": 44570876126, "event": "push", "kind": "push", "sha": "c3d3cd6", "conclusion": "success" },
+    { "number": 226, "id": 44715421827, "event": "schedule", "kind": "nightly", "sha": "c3d3cd6", "conclusion": "failure" },
+    { "number": 227, "id": 44730076827, "event": "push", "kind": "push", "sha": "b2f47be", "conclusion": "success" },
+    { "number": 228, "id": 44732061196, "event": "workflow_dispatch", "kind": "full", "sha": "b2f47be", "conclusion": "success" },
+    { "number": 229, "id": 44800180226, "event": "push", "kind": "push", "sha": "0f14e19", "conclusion": "success" },
+    { "number": 230, "id": 44801679082, "event": "workflow_dispatch", "kind": "full", "sha": "0f14e19", "conclusion": "success" },
+    { "number": 231, "id": 44807413164, "event": "push", "kind": "push", "sha": "b1f5c29", "conclusion": "success" }
+  ],
+  "v3_packages": [
+    {
+      "id": "QA-CI-01", "title": "Nachtläufe und reproduzierbare Fehleranalyse", "area": "E", "doc": "docs/v3-entwurf/QA-CI-01.md",
+      "aliases": ["CI-STABIL-01"],
+      "lifecycle": { "planned": true, "implemented": true, "ci_accepted": true, "deployed": false },
+      "version": "3.17.1", "implementation_commit": "b2f47be99b3421b502d2cecc9469612150cd4e02", "ci_runs": [227, 228],
+      "note": "Restpunkte stehen als eigene offene Punkte (OPEN-QA-*)."
+    },
+    {
+      "id": "NAV-01", "title": "Persönliche Anzeige und Navigation", "area": "B", "doc": "docs/v3-entwurf/NAV-01.md",
+      "aliases": [],
+      "lifecycle": { "planned": true, "implemented": true, "ci_accepted": true, "deployed": false },
+      "version": "3.18.0", "implementation_commit": "0f14e1927e064216c916a7d4b1f77b69e768a152", "ci_runs": [229, 230],
+      "note": "N03 bleibt von AUTH-01 abhängig. Restpunkte stehen als eigene offene Punkte (OPEN-NAV-*)."
+    },
+    {
+      "id": "AUTH-01", "title": "Aktive Discord-Sitzung", "area": "B", "doc": "docs/v3-entwurf/AUTH-01.md",
+      "aliases": [],
+      "lifecycle": { "planned": true, "implemented": false, "ci_accepted": false, "deployed": false },
+      "version": null, "implementation_commit": null, "ci_runs": [],
+      "note": "Geplant, nicht freigegeben."
+    },
+    {
+      "id": "ROADMAP-01", "title": "Zentrale Entwicklungsplanung (Index)", "area": "B", "doc": "docs/v3-entwurf/ROADMAP-01.md",
+      "aliases": [],
+      "lifecycle": { "planned": true, "implemented": false, "ci_accepted": false, "deployed": false },
+      "in_progress": true,
+      "version": null, "implementation_commit": null, "ci_runs": [],
+      "note": "Umsetzung freigegeben und in Bearbeitung; als erledigt erst nach Commit, CI-Nachweis und Eintrag hier."
+    },
+    {
+      "id": "ROADMAP-02", "title": "Besucheransicht der Roadmap", "area": "B", "doc": "docs/v3-entwurf/ROADMAP-02.md",
+      "aliases": [],
+      "lifecycle": { "planned": true, "implemented": false, "ci_accepted": false, "deployed": false },
+      "version": null, "implementation_commit": null, "ci_runs": [],
+      "note": "Geplant, nicht freigegeben. Baut auf ROADMAP-01 auf."
+    }
+  ],
+  "open_items": [
+    { "id": "OPEN-NAV-N02", "title": "N02: Entfernen eines Favoriten per Stern, Reconnect und zweite Browserinstanz für Favoriten automatisiert prüfen", "area": "E", "source": "docs/v3-entwurf/NAV-01.md" },
+    { "id": "OPEN-NAV-N06", "title": "N06: Tab-Navigation im geöffneten Mobil-Menü und Überlaufen im Englischen mit allen Schaltern prüfen", "area": "E", "source": "docs/v3-entwurf/NAV-01.md" },
+    { "id": "OPEN-NAV-IDLE", "title": "Idle-Spiel unter den Mehrspieler-Spielen in den Sichtbarkeitstests abdecken", "area": "E", "source": "docs/v3-entwurf/NAV-01.md" },
+    { "id": "OPEN-NAV-N03", "title": "N03: Exklusivmodus, Gast, Direktlink mit Anmeldeoption (hängt von AUTH-01 ab)", "area": "B", "source": "docs/v3-entwurf/TESTMATRIX.md" },
+    { "id": "OPEN-QA-AUDIO", "title": "Zweiter Audio-Fallback aus QA-CI-01", "area": "E", "source": "docs/agents/sessions/QA-CI-01-NACHBESSERUNG.md" },
+    { "id": "OPEN-QA-TIMEOUT", "title": "Einzelner Bröckelboden-Timeout unter Last", "area": "E", "source": "docs/agents/sessions/QA-CI-01-NACHBESSERUNG-2.md" },
+    { "id": "OPEN-QA-PERF", "title": "Lokale Leistungsschwankungen und Countdown unter Last", "area": "E", "source": "docs/agents/sessions/QA-CI-01.md" },
+    { "id": "OPEN-FLAKE-WELLENWACHT", "title": "Lastabhängiger Testwettlauf in singleplayer.spec.js (Wellenwacht, Fortsetzen gegen Auslesen der Turmwerte)", "area": "E", "source": "CHANGELOG.md" },
+    { "id": "OPEN-FLAKE-IDENTITY", "title": "Lastabhängiger Fehler in settings.spec.js „Meine Daten“ auf Mobil (Identity.gameId noch leer)", "area": "E", "source": "CHANGELOG.md" },
+    { "id": "OPEN-CI-NIGHTLY", "title": "Nachtlauf auf einem Stand nach 3.17.1 steht aus; Nachtlauf #226 auf c3d3cd6 war rot", "area": "E", "source": "docs/v3-entwurf/QA-CI-01.md" },
+    { "id": "OPEN-DEPLOY", "title": "Produktivbereitstellung von 3.17.1 und 3.18.0 nicht belegt (Healthcheck: 3.17.0, cb2c167)", "area": "E", "source": "docs/v3-entwurf/README.md" },
+    { "id": "OPEN-DOC-RULES", "title": "Veraltete Zahlen und Regeltexte in AGENTS.md, CLAUDE.md, docs/roadmap/README.md und POKERABEND_V2_ROADMAP.md bereinigen (eigener Dokumentationsauftrag)", "area": "E", "source": "docs/v3-entwurf/ROADMAP-01.md",
+      "note": "Künftig nötiger Arbeitsschritt (ab ROADMAP-01): Wer eine indexierte Quelle ändert (Paketstatus in plan.json, backlog/plan.json oder den Design-Roadmaps, Spiele- oder Varianten-Registrierung, games/planned.js, die Hub-Roadmap games/roadmap.js oder roadmap-index-input.json), führt danach aus: 1. node scripts/build-roadmap-index.mjs (erzeugt und prüft, schreibt nichts), 2. node scripts/build-roadmap-index.mjs --write (schreibt nur docs/roadmap/roadmap-index.json neu, nur wenn keine Probleme vorliegen), 3. node scripts/build-roadmap-index.mjs --check (Prüfmodus: vergleicht mit der committeten Datei, Exit 1 bei Abweichung, schreibt nichts, kein Netzwerk), 4. node --test test/roadmap-index.test.js und die Planungstests, 5. roadmap-index.json im selben Commit mitführen. Der eingefrorene Ausgangsindex test/fixtures/roadmap-index-baseline.json wird nie automatisch überschrieben. node scripts/build-roadmap-index.mjs --check-ci ist eine manuelle, netzabhängige Prüfung der erfassten CI-Läufe gegen GitHub und gehört nicht zum Test. Die Aufnahme in AGENTS.md und CLAUDE.md bleibt ein eigener Dokumentationsauftrag." }
+  ]
+}

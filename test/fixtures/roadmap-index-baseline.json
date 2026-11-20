@@ -1,0 +1,1957 @@
+{
+ "purpose": "Eingefrorener Ausgangsindex (ROADMAP-01, 20.11.2026): Schlüssel und Status je Eintrag. Wird nie automatisch neu erzeugt. Der Test roadmap-index.test.js prüft, dass kein Eintrag verschwindet und kein Status zurückfällt. Neue Einträge dürfen hinzukommen; ein bewusster Rückschritt braucht eine ausdrückliche Entscheidung und eine Änderung dieser Datei.",
+ "entries": [
+  {
+   "key": "package:ART-002",
+   "status": "done"
+  },
+  {
+   "key": "package:ART-004",
+   "status": "done"
+  },
+  {
+   "key": "package:ART-008",
+   "status": "done"
+  },
+  {
+   "key": "package:ART-009",
+   "status": "done"
+  },
+  {
+   "key": "package:ART-013",
+   "status": "done"
+  },
+  {
+   "key": "package:ART-044",
+   "status": "planned"
+  },
+  {
+   "key": "package:ART-046",
+   "status": "planned"
+  },
+  {
+   "key": "package:ART-T1",
+   "status": "done"
+  },
+  {
+   "key": "package:ART-T2a",
+   "status": "done"
+  },
+  {
+   "key": "package:ART-T2b",
+   "status": "done"
+  },
+  {
+   "key": "package:ART-T2c",
+   "status": "done"
+  },
+  {
+   "key": "package:ART-T3",
+   "status": "done"
+  },
+  {
+   "key": "package:ART-T4",
+   "status": "done"
+  },
+  {
+   "key": "package:ART-T5",
+   "status": "done"
+  },
+  {
+   "key": "package:ART-T6",
+   "status": "done"
+  },
+  {
+   "key": "package:ART-W0",
+   "status": "done"
+  },
+  {
+   "key": "package:ART-W1",
+   "status": "partial"
+  },
+  {
+   "key": "package:ART-W2",
+   "status": "done"
+  },
+  {
+   "key": "package:ART-W3",
+   "status": "done"
+  },
+  {
+   "key": "package:ART-W4",
+   "status": "done"
+  },
+  {
+   "key": "package:AUTH-01",
+   "status": "planned"
+  },
+  {
+   "key": "package:BACKLOG-01",
+   "status": "done"
+  },
+  {
+   "key": "package:BACKLOG-02",
+   "status": "done"
+  },
+  {
+   "key": "package:BACKLOG-03",
+   "status": "done"
+  },
+  {
+   "key": "package:BACKLOG-04",
+   "status": "done"
+  },
+  {
+   "key": "package:BACKLOG-05",
+   "status": "done"
+  },
+  {
+   "key": "package:BACKLOG-06",
+   "status": "verified"
+  },
+  {
+   "key": "package:BACKLOG-07",
+   "status": "verified"
+  },
+  {
+   "key": "package:BACKLOG-08",
+   "status": "verified"
+  },
+  {
+   "key": "package:BACKLOG-09",
+   "status": "verified"
+  },
+  {
+   "key": "package:BACKLOG-10",
+   "status": "verified"
+  },
+  {
+   "key": "package:BACKLOG-11",
+   "status": "verified"
+  },
+  {
+   "key": "package:BACKLOG-12",
+   "status": "verified"
+  },
+  {
+   "key": "package:CUX-001",
+   "status": "done"
+  },
+  {
+   "key": "package:CUX-002",
+   "status": "done"
+  },
+  {
+   "key": "package:CUX-003",
+   "status": "done"
+  },
+  {
+   "key": "package:CUX-004",
+   "status": "planned"
+  },
+  {
+   "key": "package:CUX-005",
+   "status": "planned"
+  },
+  {
+   "key": "package:CUX-006",
+   "status": "planned"
+  },
+  {
+   "key": "package:CUX-007",
+   "status": "planned"
+  },
+  {
+   "key": "package:CUX-008",
+   "status": "planned"
+  },
+  {
+   "key": "package:CUX-009",
+   "status": "planned"
+  },
+  {
+   "key": "package:CUX-010",
+   "status": "planned"
+  },
+  {
+   "key": "package:CUX-011",
+   "status": "planned"
+  },
+  {
+   "key": "package:CUX-012",
+   "status": "planned"
+  },
+  {
+   "key": "package:CUX-013",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-001",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-002",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-003",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-004",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-005",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-006",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-007",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-008",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-009",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-010",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-011",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-012",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-013",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-014",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-015",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-016",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-017",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-018",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-019",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-020",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-021",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-022",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-023",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-024",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-025",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-026",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-027",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-028",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-029",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-030",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-031",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-032",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-033",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-034",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-035",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-036",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-037",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-038",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-039",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-040",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-041",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-042",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-043",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-044",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-045",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-046",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-047",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-048",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-049",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-050",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-051",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-052",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-053",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-054",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-055",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-056",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-057",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-058",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-059",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-060",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-061",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-062",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-063",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-064",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-065",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-066",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-067",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-068",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-069",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-070",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-071",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-072",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-073",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-074",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-075",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-076",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-077",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-078",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-079",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-080",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-081",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-082",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-083",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-084",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-085",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-086",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-087",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-088",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-089",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-090",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-091",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-092",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-093",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-094",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-095",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-096",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-097",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-098",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-099",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-100",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-101",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-102",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-103",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-104",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-105",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-106",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-107",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-108",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-109",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-110",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-111",
+   "status": "planned"
+  },
+  {
+   "key": "package:EXP-F1",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-F2",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-F3",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-F4",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-F5",
+   "status": "done"
+  },
+  {
+   "key": "package:EXP-F6",
+   "status": "done"
+  },
+  {
+   "key": "package:NAV-01",
+   "status": "verified"
+  },
+  {
+   "key": "package:PARTY-EXTRAS-01",
+   "status": "verified"
+  },
+  {
+   "key": "package:QA-CI-01",
+   "status": "verified"
+  },
+  {
+   "key": "package:ROADMAP-01",
+   "status": "in-progress"
+  },
+  {
+   "key": "package:ROADMAP-02",
+   "status": "planned"
+  },
+  {
+   "key": "package:V2-00",
+   "status": "done"
+  },
+  {
+   "key": "package:V2-01",
+   "status": "done"
+  },
+  {
+   "key": "package:V2-02",
+   "status": "done"
+  },
+  {
+   "key": "package:V2-03",
+   "status": "done"
+  },
+  {
+   "key": "package:V2-04",
+   "status": "done"
+  },
+  {
+   "key": "package:V2-05",
+   "status": "done"
+  },
+  {
+   "key": "package:V2-06",
+   "status": "done"
+  },
+  {
+   "key": "package:V2-07",
+   "status": "done"
+  },
+  {
+   "key": "package:V2-08",
+   "status": "planned"
+  },
+  {
+   "key": "package:V2-09",
+   "status": "done"
+  },
+  {
+   "key": "package:V2-10",
+   "status": "done"
+  },
+  {
+   "key": "package:V2-11",
+   "status": "done"
+  },
+  {
+   "key": "package:V2-12",
+   "status": "done"
+  },
+  {
+   "key": "package:V2-13",
+   "status": "done"
+  },
+  {
+   "key": "package:V2-14",
+   "status": "done"
+  },
+  {
+   "key": "package:V2-15",
+   "status": "done"
+  },
+  {
+   "key": "package:V2-16",
+   "status": "done"
+  },
+  {
+   "key": "package:V2-17",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-001",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-002",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-003",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-004",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-005",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-006",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-007",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-008",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-009",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-010",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-011",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-012",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-013",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-014",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-015",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-016",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-017",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-018",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-019",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-020",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-021",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-022",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-023",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-024",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-025",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-026",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-027",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-028",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-029",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-030",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-031",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-032",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-033",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-034",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-035",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-036",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-037",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-038",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-039",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-040",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-041",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-042",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-043",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-044",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-045",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-046",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-047",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-048",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-049",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-050",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-051",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-052",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-053",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-054",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-055",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-056",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-057",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-058",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-059",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-060",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-061",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-062",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-063",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-064",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-065",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-066",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-067",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-068",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-069",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-070",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-071",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-072",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-073",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-074",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-075",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-076",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-077",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-078",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-079",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-080",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-081",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-082",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-083",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-084",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-085",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-086",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-087",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-088",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-089",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-090",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-091",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-092",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-093",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-094",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-095",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-096",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-097",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-098",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-099",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-100",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-101",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-102",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-103",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-104",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-105",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-106",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-107",
+   "status": "done"
+  },
+  {
+   "key": "package:VIS-108",
+   "status": "done"
+  },
+  {
+   "key": "game:2048",
+   "status": "done"
+  },
+  {
+   "key": "game:backgammon",
+   "status": "done"
+  },
+  {
+   "key": "game:bildunterschrift",
+   "status": "done"
+  },
+  {
+   "key": "game:blackjack",
+   "status": "done"
+  },
+  {
+   "key": "game:block-puzzle",
+   "status": "done"
+  },
+  {
+   "key": "game:bomben-duell",
+   "status": "done"
+  },
+  {
+   "key": "game:broeckelboden",
+   "status": "done"
+  },
+  {
+   "key": "game:brueckenroulette",
+   "status": "done"
+  },
+  {
+   "key": "game:chicago",
+   "status": "done"
+  },
+  {
+   "key": "game:dame",
+   "status": "done"
+  },
+  {
+   "key": "game:domino",
+   "status": "done"
+  },
+  {
+   "key": "game:doppelagent",
+   "status": "done"
+  },
+  {
+   "key": "game:doppelkopf",
+   "status": "done"
+  },
+  {
+   "key": "game:durak",
+   "status": "done"
+  },
+  {
+   "key": "game:exploding-deck",
+   "status": "done"
+  },
+  {
+   "key": "game:fallenbauer",
+   "status": "done"
+  },
+  {
+   "key": "game:farbenchaos",
+   "status": "done"
+  },
+  {
+   "key": "game:five-card-draw",
+   "status": "done"
+  },
+  {
+   "key": "game:gebietskampf",
+   "status": "done"
+  },
+  {
+   "key": "game:gedaechtnis-kueche",
+   "status": "done"
+  },
+  {
+   "key": "game:geschenkdiebe",
+   "status": "done"
+  },
+  {
+   "key": "game:geschenkfaenger",
+   "status": "done"
+  },
+  {
+   "key": "game:gummiband-challenge",
+   "status": "done"
+  },
+  {
+   "key": "game:hearts",
+   "status": "done"
+  },
+  {
+   "key": "game:hex",
+   "status": "done"
+  },
+  {
+   "key": "game:huetchen",
+   "status": "done"
+  },
+  {
+   "key": "game:infektionsjagd",
+   "status": "done"
+  },
+  {
+   "key": "game:jaeger-schatten",
+   "status": "done"
+  },
+  {
+   "key": "game:kistenchaos",
+   "status": "done"
+  },
+  {
+   "key": "game:kniffel",
+   "status": "done"
+  },
+  {
+   "key": "game:kritzelpost",
+   "status": "done"
+  },
+  {
+   "key": "game:kronenjagd",
+   "status": "done"
+  },
+  {
+   "key": "game:labyrinth-brett",
+   "status": "done"
+  },
+  {
+   "key": "game:labyrinth-chaos",
+   "status": "done"
+  },
+  {
+   "key": "game:laser-huepfer",
+   "status": "done"
+  },
+  {
+   "key": "game:letzter-schutzplatz",
+   "status": "done"
+  },
+  {
+   "key": "game:luegenbaron",
+   "status": "done"
+  },
+  {
+   "key": "game:luegenwuerfel",
+   "status": "done"
+  },
+  {
+   "key": "game:maexchen",
+   "status": "done"
+  },
+  {
+   "key": "game:mahjong-solitaire",
+   "status": "done"
+  },
+  {
+   "key": "game:malen-raten",
+   "status": "done"
+  },
+  {
+   "key": "game:match-3",
+   "status": "done"
+  },
+  {
+   "key": "game:maumau",
+   "status": "done"
+  },
+  {
+   "key": "game:memory",
+   "status": "done"
+  },
+  {
+   "key": "game:minenlauf",
+   "status": "done"
+  },
+  {
+   "key": "game:minesweeper",
+   "status": "done"
+  },
+  {
+   "key": "game:mogeln",
+   "status": "done"
+  },
+  {
+   "key": "game:monopoly",
+   "status": "done"
+  },
+  {
+   "key": "game:monopoly-deal",
+   "status": "done"
+  },
+  {
+   "key": "game:monsterwuerfel",
+   "status": "done"
+  },
+  {
+   "key": "game:muehle",
+   "status": "done"
+  },
+  {
+   "key": "game:nonogramm",
+   "status": "done"
+  },
+  {
+   "key": "game:omaha",
+   "status": "done"
+  },
+  {
+   "key": "game:omaha-hi-lo",
+   "status": "done"
+  },
+  {
+   "key": "game:pfeilfieber",
+   "status": "done"
+  },
+  {
+   "key": "game:poker",
+   "status": "done"
+  },
+  {
+   "key": "game:praesident",
+   "status": "done"
+  },
+  {
+   "key": "game:puzzle-panik",
+   "status": "done"
+  },
+  {
+   "key": "game:reaktor-notfall",
+   "status": "done"
+  },
+  {
+   "key": "game:regelwahnsinn",
+   "status": "done"
+  },
+  {
+   "key": "game:reversi",
+   "status": "done"
+  },
+  {
+   "key": "game:rhythmus-rausch",
+   "status": "done"
+  },
+  {
+   "key": "game:risiko-wuerfeln",
+   "status": "done"
+  },
+  {
+   "key": "game:schach",
+   "status": "done"
+  },
+  {
+   "key": "game:schaetzmeister",
+   "status": "done"
+  },
+  {
+   "key": "game:schatzgraeber",
+   "status": "done"
+  },
+  {
+   "key": "game:schatzinsel",
+   "status": "done"
+  },
+  {
+   "key": "game:scheinwerfer-flucht",
+   "status": "done"
+  },
+  {
+   "key": "game:schiffe",
+   "status": "done"
+  },
+  {
+   "key": "game:schlagfertig",
+   "status": "done"
+  },
+  {
+   "key": "game:schocken",
+   "status": "done"
+  },
+  {
+   "key": "game:schubsarena",
+   "status": "done"
+  },
+  {
+   "key": "game:schwimmen",
+   "status": "done"
+  },
+  {
+   "key": "game:scotland-yard",
+   "status": "done"
+  },
+  {
+   "key": "game:scrabble",
+   "status": "done"
+  },
+  {
+   "key": "game:sechs-nimmt",
+   "status": "done"
+  },
+  {
+   "key": "game:seven-card-stud",
+   "status": "done"
+  },
+  {
+   "key": "game:short-deck",
+   "status": "done"
+  },
+  {
+   "key": "game:shutthebox",
+   "status": "done"
+  },
+  {
+   "key": "game:skat",
+   "status": "done"
+  },
+  {
+   "key": "game:snake",
+   "status": "done"
+  },
+  {
+   "key": "game:sokoban",
+   "status": "done"
+  },
+  {
+   "key": "game:solitaire",
+   "status": "done"
+  },
+  {
+   "key": "game:sortierstation",
+   "status": "done"
+  },
+  {
+   "key": "game:spiel-des-lebens",
+   "status": "done"
+  },
+  {
+   "key": "game:staedtehandel",
+   "status": "done"
+  },
+  {
+   "key": "game:stapelrennen",
+   "status": "done"
+  },
+  {
+   "key": "game:stichmeister",
+   "status": "done"
+  },
+  {
+   "key": "game:stillgestanden",
+   "status": "done"
+  },
+  {
+   "key": "game:story-chaos",
+   "status": "done"
+  },
+  {
+   "key": "game:sudoku",
+   "status": "done"
+  },
+  {
+   "key": "game:tickendes-paket",
+   "status": "done"
+  },
+  {
+   "key": "game:turmbauer",
+   "status": "done"
+  },
+  {
+   "key": "game:viergewinnt",
+   "status": "done"
+  },
+  {
+   "key": "game:wellenwacht",
+   "status": "done"
+  },
+  {
+   "key": "game:wer-bin-ich",
+   "status": "done"
+  },
+  {
+   "key": "game:werhatdasgesagt",
+   "status": "done"
+  },
+  {
+   "key": "game:werwolf",
+   "status": "done"
+  },
+  {
+   "key": "game:wortjagd",
+   "status": "done"
+  },
+  {
+   "key": "game:wuerfel-auktion",
+   "status": "done"
+  },
+  {
+   "key": "game:wuerfelduell",
+   "status": "done"
+  },
+  {
+   "key": "game:wuerfeljagd",
+   "status": "done"
+  },
+  {
+   "key": "game:wuerfelpoker",
+   "status": "done"
+  },
+  {
+   "key": "game:zahlenreihe",
+   "status": "done"
+  },
+  {
+   "key": "game:zahlenzoo",
+   "status": "done"
+  },
+  {
+   "key": "game:zehnetappen",
+   "status": "done"
+  },
+  {
+   "key": "game:zehntausend",
+   "status": "done"
+  },
+  {
+   "key": "variant:farbenchaos/all-wild",
+   "status": "done"
+  },
+  {
+   "key": "variant:farbenchaos/classic",
+   "status": "done"
+  },
+  {
+   "key": "variant:farbenchaos/flip",
+   "status": "done"
+  },
+  {
+   "key": "variant:farbenchaos/halloween-ghosthunt",
+   "status": "done"
+  },
+  {
+   "key": "variant:farbenchaos/no-mercy",
+   "status": "done"
+  },
+  {
+   "key": "variant:huetchen/classic",
+   "status": "done"
+  },
+  {
+   "key": "variant:huetchen/six",
+   "status": "done"
+  },
+  {
+   "key": "variant:huetchen/team",
+   "status": "done"
+  },
+  {
+   "key": "variant:kniffel/classic",
+   "status": "done"
+  },
+  {
+   "key": "variant:kniffel/triple",
+   "status": "done"
+  },
+  {
+   "key": "variant:monopoly-deal/classic",
+   "status": "done"
+  },
+  {
+   "key": "variant:monopoly-deal/quick",
+   "status": "done"
+  },
+  {
+   "key": "variant:monopoly/classic",
+   "status": "done"
+  },
+  {
+   "key": "variant:monopoly/junior",
+   "status": "done"
+  },
+  {
+   "key": "variant:monopoly/speed",
+   "status": "done"
+  },
+  {
+   "key": "variant:schach/chess960",
+   "status": "done"
+  },
+  {
+   "key": "variant:schach/classic",
+   "status": "done"
+  },
+  {
+   "key": "variant:schiffe/classic",
+   "status": "done"
+  },
+  {
+   "key": "variant:schiffe/salvo",
+   "status": "done"
+  },
+  {
+   "key": "variant:spiel-des-lebens/classic",
+   "status": "done"
+  },
+  {
+   "key": "variant:spiel-des-lebens/short",
+   "status": "done"
+  },
+  {
+   "key": "variant:stapelrennen/classic",
+   "status": "done"
+  },
+  {
+   "key": "variant:stapelrennen/short",
+   "status": "done"
+  },
+  {
+   "key": "variant:stapelrennen/team",
+   "status": "done"
+  },
+  {
+   "key": "variant:viergewinnt/classic",
+   "status": "done"
+  },
+  {
+   "key": "variant:viergewinnt/five",
+   "status": "done"
+  },
+  {
+   "key": "variant:viergewinnt/pop-out",
+   "status": "done"
+  },
+  {
+   "key": "variant:zehnetappen/classic",
+   "status": "done"
+  },
+  {
+   "key": "variant:zehnetappen/short",
+   "status": "done"
+  },
+  {
+   "key": "variant:zehnetappen/team",
+   "status": "done"
+  },
+  {
+   "key": "stage:ausblick",
+   "status": "planned"
+  },
+  {
+   "key": "stage:benachrichtigungen",
+   "status": "planned"
+  },
+  {
+   "key": "stage:betrieb",
+   "status": "planned"
+  },
+  {
+   "key": "stage:bots-fertig",
+   "status": "done"
+  },
+  {
+   "key": "stage:design-toene",
+   "status": "done"
+  },
+  {
+   "key": "stage:discord-login",
+   "status": "done"
+  },
+  {
+   "key": "stage:echtzeit",
+   "status": "done"
+  },
+  {
+   "key": "stage:einzelspieler-start",
+   "status": "done"
+  },
+  {
+   "key": "stage:einzelspieler-zukunft",
+   "status": "done"
+  },
+  {
+   "key": "stage:englisch",
+   "status": "planned"
+  },
+  {
+   "key": "stage:erfolge-sammeln",
+   "status": "done"
+  },
+  {
+   "key": "stage:fahndung-und-kleine-spiele",
+   "status": "done"
+  },
+  {
+   "key": "stage:gebietskampf-staedtehandel",
+   "status": "done"
+  },
+  {
+   "key": "stage:grosse-projekte",
+   "status": "planned"
+  },
+  {
+   "key": "stage:hub-fertig",
+   "status": "done"
+  },
+  {
+   "key": "stage:hub-paket",
+   "status": "done"
+  },
+  {
+   "key": "stage:klassiker-varianten",
+   "status": "done"
+  },
+  {
+   "key": "stage:monopoly-co",
+   "status": "done"
+  },
+  {
+   "key": "stage:neue-spielwelten",
+   "status": "done"
+  },
+  {
+   "key": "stage:paket2b-fertig",
+   "status": "done"
+  },
+  {
+   "key": "stage:paket4-fertig",
+   "status": "done"
+  },
+  {
+   "key": "stage:paket5-fertig",
+   "status": "done"
+  },
+  {
+   "key": "stage:paket6-fertig",
+   "status": "done"
+  },
+  {
+   "key": "stage:party-extras",
+   "status": "done"
+  },
+  {
+   "key": "stage:party-modi",
+   "status": "done"
+  },
+  {
+   "key": "stage:phase10-fertig",
+   "status": "done"
+  },
+  {
+   "key": "stage:poker-extras",
+   "status": "planned"
+  },
+  {
+   "key": "stage:ranked-bestenlisten",
+   "status": "done"
+  },
+  {
+   "key": "stage:schutz-fertig",
+   "status": "done"
+  },
+  {
+   "key": "stage:sicherheit-datenschutz",
+   "status": "done"
+  },
+  {
+   "key": "stage:skat-doppelkopf-fertig",
+   "status": "done"
+  },
+  {
+   "key": "stage:spaetere-spiele",
+   "status": "done"
+  },
+  {
+   "key": "stage:spieleabend",
+   "status": "done"
+  },
+  {
+   "key": "stage:technik",
+   "status": "planned"
+  },
+  {
+   "key": "stage:ticket-board",
+   "status": "done"
+  },
+  {
+   "key": "stage:tisch-komfort-fertig",
+   "status": "done"
+  },
+  {
+   "key": "stage:v1-fertig",
+   "status": "done"
+  },
+  {
+   "key": "stage:v2-admin-verwaltung",
+   "status": "done"
+  },
+  {
+   "key": "stage:v2-grundlagen",
+   "status": "done"
+  },
+  {
+   "key": "stage:v2-profile",
+   "status": "done"
+  },
+  {
+   "key": "stage:v2-spielerkomfort",
+   "status": "done"
+  },
+  {
+   "key": "stage:version-3",
+   "status": "done"
+  },
+  {
+   "key": "stage:wer-bin-ich-fertig",
+   "status": "done"
+  },
+  {
+   "key": "stage:zeichnen",
+   "status": "done"
+  },
+  {
+   "key": "stage:zurueck-fertig",
+   "status": "done"
+  },
+  {
+   "key": "open-item:OPEN-CI-NIGHTLY",
+   "status": "planned"
+  },
+  {
+   "key": "open-item:OPEN-DEPLOY",
+   "status": "planned"
+  },
+  {
+   "key": "open-item:OPEN-DOC-RULES",
+   "status": "planned"
+  },
+  {
+   "key": "open-item:OPEN-FLAKE-IDENTITY",
+   "status": "planned"
+  },
+  {
+   "key": "open-item:OPEN-FLAKE-WELLENWACHT",
+   "status": "planned"
+  },
+  {
+   "key": "open-item:OPEN-NAV-IDLE",
+   "status": "planned"
+  },
+  {
+   "key": "open-item:OPEN-NAV-N02",
+   "status": "planned"
+  },
+  {
+   "key": "open-item:OPEN-NAV-N03",
+   "status": "planned"
+  },
+  {
+   "key": "open-item:OPEN-NAV-N06",
+   "status": "planned"
+  },
+  {
+   "key": "open-item:OPEN-QA-AUDIO",
+   "status": "planned"
+  },
+  {
+   "key": "open-item:OPEN-QA-PERF",
+   "status": "planned"
+  },
+  {
+   "key": "open-item:OPEN-QA-TIMEOUT",
+   "status": "planned"
+  }
+ ]
+}
