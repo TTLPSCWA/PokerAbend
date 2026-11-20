@@ -1,6 +1,6 @@
 # Betrieb: Spieleabend aufsetzen, aktualisieren, sichern, reparieren
 
-Stand: Version **3.17.1** (20. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
+Stand: Version **3.18.0** (20. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
 
 **Inhalt**
 
@@ -247,6 +247,7 @@ Zusätzlich: Das Passwort-Cookie `pa_auth` bleibt gültig, solange `SITE_PASSWOR
 
 * **Schnell, ohne Datenverlust:** `IMAGE` in der `.env` auf den gemerkten alten Tag setzen, `up -d`. Die alte Version liest das neue Datenformat weiter (unbekannte Felder werden ignoriert; `accounts.json` bleibt ungenutzt liegen). Kontoabhängige Dinge (Game-IDs, Ranked) sind dann nicht sichtbar, kommen aber zurück, sobald wieder 3.0.0 läuft.
 * **Sicher, auf den Stand vor dem Update:** Container stoppen, Sicherung aus Schritt 1 zurückspielen ([Abschnitt 7](#7-sichern-und-wiederherstellen)), altes Image starten. Zwischenzeitlich gespielte Runden sind dann weg.
+* **Seit 3.18.0 (Anzeigeeinstellungen):** Ein Zurückrollen auf eine ältere Version als 3.18.0 verwirft in den Konten gespeicherte Anzeigelisten, die `tables` oder `idle` enthalten, aus der Ansicht (keine Spiel- oder Kontodaten). Die Werte bleiben gespeichert, solange dort an dieser Liste nichts geändert wird, und gelten nach dem erneuten Aktualisieren wieder.
 * **Nur eine Datei zurück:** Aus `backups/pre-v2-01/` (Stand vor den Konten) oder `leaderboard.json.pre-v2-03` (Stand der Bestenliste vor Ranked) die Datei in den Datenordner kopieren, bei gestopptem Container.
 
 ## 6. Jedes weitere Update
@@ -259,6 +260,8 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 scripts/release-check.sh nachher
 ```
+
+**Hinweis ab Version 3.18.0 (Zurückrollen):** Die Anzeigeeinstellungen kennen jetzt die Kennungen `tables` (Offene Tische) und `idle` (Kategorie Idle). Ein älterer Server weist ein Speichern mit diesen Kennungen mit Fehler 400 ab und verwirft gespeicherte Listen, die sie enthalten (z. B. alle ausgeblendeten Bereiche eines Kontos). Das betrifft nur die Anzeige, keine Spiel- oder Kontodaten; mit Version 3.18.0 oder neuer sind die Werte wieder da. Server und Seite laufen im selben Image und werden gemeinsam aus- und zurückgerollt. Nach einem Zurückrollen können offene Browser-Tabs mit der neuen Seite ihre Einstellungen vorübergehend nicht speichern, bis sie neu geladen werden.
 
 Tische bleiben erhalten: Gespeichert wird beim Beenden, der Host startet nach dem Neustart die nächste Runde. Mitten in einer Runde wird nie abgebrochen, wenn die Frist reicht (`UPDATE_DRAIN_MAX_MIN`).
 

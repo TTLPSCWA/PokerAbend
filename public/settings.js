@@ -6,8 +6,8 @@ const Settings = (() => {
   const tx = (de, en) => (I18n.language === 'en' ? en : de);
   const KEY = 'poker:settings';
   const DEFAULTS = { display: { theme: 'classic', cardSize: 'normal', calm: false, reduceGlass: false, language: 'de' }, controls: { doubleTap: true, confirmations: true }, hub: { hiddenCategories: [], defaultFilter: 'all', hiddenBlocks: [] }, sound: { enabled: true, master: 1, effects: 1, atmosphere: 0, speech: 1, mutedGames: [] } };
-  const CATEGORIES = [['karten', 'Kartenspiele', 'Card games'], ['wuerfel', 'Würfelspiele', 'Dice games'], ['brett', 'Brettspiele', 'Board games'], ['party', 'Party', 'Party'], ['einzelspieler', 'Einzelspieler', 'Single player']];
-  const BLOCKS = [['presence', 'Gerade online', 'Who is online'], ['recent', 'Zuletzt gespielt', 'Recently played'], ['favorites', 'Favoriten auf der Startseite', 'Favourites on the start page'], ['achievements', 'Erfolge', 'Achievements'], ['leaderboard', 'Bestenliste', 'Leaderboard'], ['reviews', 'Abend-Rückblicke', 'Evening reviews'], ['planning', 'Abend planen', 'Plan an evening'], ['roadmap', 'Roadmap', 'Roadmap'], ['tickets', 'Tickets', 'Tickets']];
+  const CATEGORIES = [['karten', 'Kartenspiele', 'Card games'], ['wuerfel', 'Würfelspiele', 'Dice games'], ['brett', 'Brettspiele', 'Board games'], ['party', 'Party', 'Party'], ['einzelspieler', 'Einzelspieler', 'Single player'], ['idle', 'Idle', 'Idle']];
+  const BLOCKS = [['presence', 'Gerade online', 'Who is online'], ['recent', 'Zuletzt gespielt', 'Recently played'], ['favorites', 'Favoriten (Reiter und Startseite)', 'Favourites (tab and start page)'], ['achievements', 'Erfolge', 'Achievements'], ['leaderboard', 'Bestenliste', 'Leaderboard'], ['reviews', 'Abend-Rückblicke', 'Evening reviews'], ['planning', 'Abend planen', 'Plan an evening'], ['roadmap', 'Roadmap', 'Roadmap'], ['tickets', 'Tickets', 'Tickets'], ['tables', 'Offene Tische', 'Open tables']];
   const FILTERS = [['all', 'Alle Spiele', 'All games'], ['fav', 'Nur Favoriten', 'Favourites only'], ['p2', '2 Spieler', '2 players'], ['p34', '3–4 Spieler', '3–4 players'], ['p56', '5–6 Spieler', '5–6 players'], ['p7', '7 und mehr', '7 or more']];
   const SECTIONS = ['anzeige', 'bedienung', 'hub', 'ton', 'datenschutz', 'daten'];
   const PRIVACY = [
@@ -120,7 +120,8 @@ const Settings = (() => {
   const row = (path, label, hint, control) => `<div class="set-row"><div><b>${esc(label)}</b>${hint ? `<small>${esc(hint)}</small>` : ''}</div>${control}</div>`;
   const toggle = (path, label, hint) => { const [s, k] = path.split('.'); return `<label class="toggle set-toggle"><span>${esc(label)}${hint ? `<small>${esc(hint)}</small>` : ''}</span><input type="checkbox" role="switch" data-set="${path}" ${state[s][k] ? 'checked' : ''}></label>`; };
   const select = (path, label, options) => { const [s, k] = path.split('.'); return `<label class="field set-field"><span>${esc(label)}</span><select class="input" data-set="${path}">${options.map(([v, text]) => `<option value="${v}" ${state[s][k] === v ? 'selected' : ''}>${esc(text)}</option>`).join('')}</select></label>`; };
-  const listToggle = (path, items) => items.map(([id, de, en]) => { const [s, k] = path.split('.'); return `<label class="toggle set-toggle"><span>${esc(tx(de, en))}</span><input type="checkbox" role="switch" data-set-list="${path}" data-value="${id}" ${state[s][k].includes(id) ? '' : 'checked'}></label>`; }).join('');
+  let categoryAvailable = () => true; // Idle erscheint erst, wenn ein Idle-Spiel registriert ist (vom Hub gesetzt)
+  const listToggle = (path, items) => items.filter(([id]) => path !== 'hub.hiddenCategories' || categoryAvailable(id)).map(([id, de, en]) => { const [s, k] = path.split('.'); return `<label class="toggle set-toggle"><span>${esc(tx(de, en))}</span><input type="checkbox" role="switch" data-set-list="${path}" data-value="${id}" ${state[s][k].includes(id) ? '' : 'checked'}></label>`; }).join('');
   const head = (id, de, en, section) => `<div class="set-head"><h2>${esc(tx(de, en))}</h2>${section ? `<button type="button" class="btn btn-ghost" data-set-reset="${section}">${esc(tx('Zurücksetzen', 'Reset'))}</button>` : ''}</div>`;
   const soundSlider = (key, label, hint = '') => `<label class="field set-field"><span>${esc(label)} <output data-sound-value="${key}">${Math.round(state.sound[key] * 100)} %</output></span>${hint ? `<small>${esc(hint)}</small>` : ''}<input type="range" min="0" max="100" step="1" value="${Math.round(state.sound[key] * 100)}" data-sound-level="${key}" aria-label="${esc(label)}"></label>`;
   function syncSoundMute() {
@@ -250,6 +251,7 @@ const Settings = (() => {
   apply();
   return {
     get: () => state, page: pageHTML, fromPrefs, sync, reset, SECTIONS,
+    setCategoryAvailable: (fn) => { categoryAvailable = typeof fn === 'function' ? fn : () => true; },
     categoryHidden: (id) => state.hub.hiddenCategories.includes(id), blockHidden: (id) => state.hub.hiddenBlocks.includes(id),
   };
 })();

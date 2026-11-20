@@ -1,8 +1,10 @@
 // Einstellungen (V2-05/V2-15): ein validiertes Schema für alles, was an der Spieler-ID hängt und auf allen verbundenen Geräten gilt.
 // Rein lokale Anzeigen (Theme, Filter, Blöcke) stehen hier; öffentliche Privatsphäre steht getrennt in account.privacy (V2-04).
 // UI-Ausblenden ändert nie Rechte oder Spielregeln – der Server prüft Berechtigungen unabhängig von diesen Werten.
-export const CATEGORIES = ['karten', 'wuerfel', 'brett', 'party', 'einzelspieler'];
-export const BLOCKS = ['presence', 'recent', 'favorites', 'achievements', 'leaderboard', 'reviews', 'planning', 'roadmap', 'tickets'];
+// NAV-01 Ausrollen/Zurückrollen: Listen strikt validiert. Ein älterer Server weist die neuen IDs (idle, tables) mit 400 ab und verwirft gespeicherte Listen, die sie enthalten.
+// Server und Client daher immer gemeinsam ausrollen bzw. zurückrollen; betroffen sind nur Anzeigeeinstellungen.
+export const CATEGORIES = ['karten', 'wuerfel', 'brett', 'party', 'einzelspieler', 'idle'];
+export const BLOCKS = ['presence', 'recent', 'favorites', 'achievements', 'leaderboard', 'reviews', 'planning', 'roadmap', 'tickets', 'tables'];
 export const FILTERS = ['all', 'fav', 'p2', 'p34', 'p56', 'p7'];
 
 export const SETTINGS_DEFAULTS = Object.freeze({

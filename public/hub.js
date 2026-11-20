@@ -96,9 +96,14 @@ async function joinAndEnter(code, mode = '') {
 }
 
 // ---------- Seiten und Navigation ----------
-const GAME_CATEGORIES = [['karten', 'Kartenspiele'], ['wuerfel', 'Würfelspiele'], ['brett', 'Brettspiele'], ['party', 'Party'], ['einzelspieler', 'Einzelspieler']]; // wie games/index.js
+const GAME_CATEGORIES = [['karten', 'Kartenspiele'], ['wuerfel', 'Würfelspiele'], ['brett', 'Brettspiele'], ['party', 'Party'], ['einzelspieler', 'Einzelspieler'], ['idle', 'Idle']]; // wie games/index.js und server/settings.js
 // Ausgeblendete Kategorien fehlen in Bibliothek und Listen, bleiben aber über Adresse (#spiele/brett) und Einladungslinks erreichbar
 const libraryGames = () => [...(account.games || []), ...(account.singleplayerGames || [])].filter((g) => !Settings.categoryHidden(g.category || 'karten') || route.sub === (g.category || 'karten'));
+// NAV-01: eine gemeinsame Sichtbarkeitsregel für Seitenleiste, Mobil-Tabs, Kategorie-Chips und Startseite.
+// Idle gibt es erst mit einem registrierten Idle-Spiel; ausgeblendet ist nur die Anzeige, nie der Zugriff.
+const catOffered = (id) => id !== 'idle' || [...(account.games || []), ...(account.singleplayerGames || [])].some((g) => g.category === 'idle');
+const catShown = (id) => catOffered(id) && !Settings.categoryHidden(id);
+Settings.setCategoryAvailable(catOffered);
 const hubVisible = () => !$('#hub').hidden;
 const ico = (d) => `<svg class="hub-ico" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
 const ICONS = {
@@ -113,6 +118,7 @@ const ICONS = {
   wuerfel: '<rect x="4" y="4" width="16" height="16" rx="3.5"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/><circle cx="9" cy="15" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/>',
   brett: '<rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M3.5 9.2h17M3.5 14.8h17M9.2 3.5v17M14.8 3.5v17"/>',
   party: '<path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="m19 16 .8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/>',
+  idle: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/>',
   roadmap: '<path d="M6 4v16M6 5h12l-3 4 3 4H6"/><circle cx="6" cy="20" r="1"/>',
   rueckblick: '<path d="M4 5h16v15H4zM8 3v4M16 3v4M4 10h16M8 14h3M8 17h7"/>',
   planung: '<path d="M4 5h16v15H4zM8 3v4M16 3v4M4 10h16m-9 4h6m-3-3v6"/>',
@@ -127,7 +133,7 @@ let route = { page: 'start', sub: '' };
 function parseRoute() {
   const [p = 'start', s = ''] = location.hash.replace(/^#/, '').split('/');
   const page = PAGES.includes(p) ? p : 'start';
-  return { page, sub: page === 'spiele' && GAME_CATEGORIES.some(([id]) => id === s) || page === 'solo' && Singleplayer.ids.includes(s) || page === 'einstellungen' && Settings.SECTIONS.includes(s) || page === 'tickets' && /^[1-9]\d{0,8}$/.test(s) || page === 'rueckblick' && EveningReviews.validId(s) || page === 'planung' && EveningPlans.validId(s) ? s : '' };
+  return { page, sub: page === 'spiele' && GAME_CATEGORIES.some(([id]) => id === s && catOffered(id)) || page === 'solo' && Singleplayer.ids.includes(s) || page === 'einstellungen' && Settings.SECTIONS.includes(s) || page === 'tickets' && /^[1-9]\d{0,8}$/.test(s) || page === 'rueckblick' && EveningReviews.validId(s) || page === 'planung' && EveningPlans.validId(s) ? s : '' };
 }
 const hashOf = (page, sub = '') => `#${page}${sub ? '/' + sub : ''}`;
 let hubTables = [];                      // offene Tische (vom Server, siehe Teil H3)
@@ -139,16 +145,16 @@ function navHTML() {
   const n = openTableCount();
   const badge = n ? I18n.html`<span class="badge" aria-label="${n} offene${n === 1 ? 'r' : ''} Tisch${n === 1 ? '' : 'e'}">${n}</span>` : '';
   const games = libraryGames();
-  return I18n.html`${item('#start', 'start', I18n.t('Start'))}${item('#spiele', 'spiele', I18n.t('Spielebibliothek'))}${item('#tische', 'tische', I18n.t('Offene Tische'), badge)}${item('#favoriten', 'favoriten', I18n.t('Favoriten'))}${show('planning', item('#planung', 'planung', I18n.t('Abend planen')))}${show('leaderboard', item('#bestenliste', 'bestenliste', I18n.t('Bestenliste')))}${show('achievements', item('#erfolge', 'erfolge', I18n.t('Erfolge & Abzeichen')))}${show('reviews', item('#rueckblick', 'rueckblick', I18n.t('Rückblick')))}${show('roadmap', item('#roadmap', 'roadmap', 'Roadmap'))}${show('tickets', item('#tickets', 'tickets', 'Tickets'))}${item('#einstellungen', 'einstellungen', I18n.t('Einstellungen'))}
-    <details class="side-categories" ${route.sub && route.page === 'spiele' ? 'open' : ''}><summary class="nav-item">${ico(ICONS.karten)}<span class="side-label">Spielarten</span></summary>
-    ${GAME_CATEGORIES.filter(([id]) => !Settings.categoryHidden(id)).map(([id, title]) => item(I18n.html`#spiele/${id}`, id, title, I18n.html`<span class="count side-label" aria-label="${games.filter((g) => (g.category || 'karten') === id).length} Spiele">${games.filter((g) => (g.category || 'karten') === id).length}</span>`)).join('')}</details>`;
+  return I18n.html`${item('#start', 'start', I18n.t('Start'))}${item('#spiele', 'spiele', I18n.t('Spielebibliothek'))}${show('tables', item('#tische', 'tische', I18n.t('Offene Tische'), badge))}${show('favorites', item('#favoriten', 'favoriten', I18n.t('Favoriten')))}${show('planning', item('#planung', 'planung', I18n.t('Abend planen')))}${show('leaderboard', item('#bestenliste', 'bestenliste', I18n.t('Bestenliste')))}${show('achievements', item('#erfolge', 'erfolge', I18n.t('Erfolge & Abzeichen')))}${show('reviews', item('#rueckblick', 'rueckblick', I18n.t('Rückblick')))}${show('roadmap', item('#roadmap', 'roadmap', 'Roadmap'))}${show('tickets', item('#tickets', 'tickets', 'Tickets'))}${item('#einstellungen', 'einstellungen', I18n.t('Einstellungen'))}
+    ${GAME_CATEGORIES.some(([id]) => catShown(id)) ? `<details class="side-categories" ${route.sub && route.page === 'spiele' ? 'open' : ''}><summary class="nav-item">${ico(ICONS.karten)}<span class="side-label">Spielarten</span></summary>
+    ${GAME_CATEGORIES.filter(([id]) => catShown(id)).map(([id, title]) => item(I18n.html`#spiele/${id}`, id, title, I18n.html`<span class="count side-label" aria-label="${games.filter((g) => (g.category || 'karten') === id).length} Spiele">${games.filter((g) => (g.category || 'karten') === id).length}</span>`)).join('')}</details>` : ''}`;
 }
 function tabbarHTML() {
   const cur = route.page;
   const tab = (href, key, label, on, extra = '') => `<a class="tab-item" href="${href}" ${on ? 'aria-current="page"' : ''}>${ico(ICONS[key])}<span>${I18n.t(label)}</span>${extra}</a>`;
   const n = openTableCount();
   return tab('#start', 'start', I18n.t('Start'), cur === 'start' || cur === 'planung') + tab('#spiele', 'spiele', I18n.t('Spiele'), cur === 'spiele' || cur === 'favoriten')
-    + tab('#tische', 'tische', I18n.t('Tische'), cur === 'tische', n ? I18n.html`<span class="badge" aria-label="${n} offen">${n}</span>` : '') + (blockHidden('leaderboard') ? '' : tab('#bestenliste', 'bestenliste', I18n.t('Bestenliste'), ['bestenliste', 'rueckblick', 'erfolge'].includes(cur))) + (blockHidden('roadmap') ? '' : tab('#roadmap', 'roadmap', 'Roadmap', cur === 'roadmap')) + (blockHidden('tickets') ? '' : tab('#tickets', 'tickets', 'Tickets', cur === 'tickets')) + tab('#einstellungen', 'einstellungen', I18n.t('Einstellungen'), cur === 'einstellungen');
+    + (blockHidden('tables') ? '' : tab('#tische', 'tische', I18n.t('Tische'), cur === 'tische', n ? I18n.html`<span class="badge" aria-label="${n} offen">${n}</span>` : '')) + (blockHidden('leaderboard') ? '' : tab('#bestenliste', 'bestenliste', I18n.t('Bestenliste'), ['bestenliste', 'rueckblick', 'erfolge'].includes(cur))) + (blockHidden('roadmap') ? '' : tab('#roadmap', 'roadmap', 'Roadmap', cur === 'roadmap')) + (blockHidden('tickets') ? '' : tab('#tickets', 'tickets', 'Tickets', cur === 'tickets')) + tab('#einstellungen', 'einstellungen', I18n.t('Einstellungen'), cur === 'einstellungen');
 }
 
 const TITLES = { start: 'Start', spiele: 'Spiele', favoriten: 'Favoriten', tische: 'Offene Tische', bestenliste: 'Bestenliste', roadmap: 'Roadmap', tickets: 'Tickets', einstellungen: 'Einstellungen', rueckblick: 'Abend-Rückblick', planung: 'Abend planen', erfolge: 'Erfolge & Abzeichen' };
@@ -264,6 +270,13 @@ function openGamePicker() {
   if (!d.open) d.showModal();
   $('#picker-search').focus();
 }
+// NAV-01: der Block „Eure Spieleabende“ folgt den Schaltern für Abend planen und Rückblicke; sind beide aus, entfällt er ganz
+function eveningLinksHTML() {
+  const plan = !blockHidden('planning'), review = !blockHidden('reviews');
+  if (!plan && !review) return '';
+  const text = plan && review ? I18n.html`Plant euren nächsten Abend oder schaut auf die letzten Runden zurück.` : plan ? I18n.html`Plant euren nächsten Abend.` : I18n.html`Schaut auf die letzten Runden zurück.`;
+  return I18n.html`<section class="hub-block home-panel evening-links"><div><span class="eyebrow">Eure Spieleabende</span><h2>Vorfreude & Erinnerungen</h2><p>${text}</p></div><div class="plan-actions">${plan ? I18n.html`<a class="btn" href="#planung">Nächsten Abend planen</a>` : ''}${review ? I18n.html`<a class="btn btn-ghost" href="#rueckblick">Abend-Rückblicke öffnen</a>` : ''}</div></section>`;
+}
 function pageStart() {
   loadResume();
   return I18n.html`<section class="hub-head welcome"><div><h1>Spielebibliothek</h1><p>Willkommen, ${esc(profile.name)}. Entdecke euer nächstes Spiel.<br>Gemeinsam mehr Spieleabende erleben.</p></div><button type="button" class="btn btn-brass" data-create-table><span aria-hidden="true">⊕</span> Tisch erstellen</button></section>
@@ -271,8 +284,8 @@ function pageStart() {
     <div class="home-layout"><div class="home-primary">
       ${gamesPreviewHTML()}
       ${show('recent', localGamesHTML('recent'))}
-      <section class="hub-block home-panel live-tables"><div class="hub-block-head"><h2>Am Tisch zusammenkommen</h2><a href="#tische">Alle Tische →</a></div><div data-tables="2">${tablesBlockHTML(2)}</div></section>
-      <section class="hub-block home-panel evening-links"><div><span class="eyebrow">Eure Spieleabende</span><h2>Vorfreude & Erinnerungen</h2><p>Plant euren nächsten Abend oder schaut auf die letzten Runden zurück.</p></div><div class="plan-actions"><a class="btn" href="#planung">Nächsten Abend planen</a><a class="btn btn-ghost" href="#rueckblick">Abend-Rückblicke öffnen</a></div></section>
+      ${show('tables', `<section class="hub-block home-panel live-tables"><div class="hub-block-head"><h2>Am Tisch zusammenkommen</h2><a href="#tische">Alle Tische →</a></div><div data-tables="2">${tablesBlockHTML(2)}</div></section>`)}
+      ${eveningLinksHTML()}
     </div><aside class="home-secondary" aria-label="Deine Runde">
       ${show('favorites', localGamesHTML('favorites'))}
       ${show('presence', `<section class="hub-block home-panel" id="presence-slot">${presenceHTML()}</section>`)}
@@ -335,6 +348,7 @@ function gamesToolbarHTML() {
 }
 function gamesBodyHTML() {
   const list = visibleGames();
+  if (!list.length && !libraryGames().length && !GAME_CATEGORIES.some(([id]) => catShown(id))) return I18n.html`<p class="hint" data-all-hidden>Alle Spielkategorien sind in deinen Einstellungen ausgeblendet. <a href="#einstellungen/hub">Kategorien einblenden</a></p>`;
   if (!list.length) return `<p class="hint">${route.page === 'favoriten' ? I18n.t('Noch keine Favoriten – tipp bei einem Spiel auf den Stern.') : I18n.t('Dazu gibt es kein Spiel. Probier einen anderen Filter.')}</p>`;
   return `<ul class="games ${gamesView === 'tiles' ? 'tiles' : 'rows'}">${list.map((g) => gameHTML(g, gamesView === 'tiles')).join('')}</ul>`;
 }
@@ -345,7 +359,8 @@ function pageGames() {
     ${categoryTabsHTML(true)}<div class="home-layout library-layout"><div class="home-primary"><section class="home-panel library-panel"><div class="hub-block-head"><h2>${solo ? I18n.content('Deine Solo-Spiele','Your solo games') : route.page === 'favoriten' ? I18n.t('Deine Auswahl') : I18n.t('Alle Spiele')}</h2><span class="library-count">${solo ? (account.singleplayerGames || []).length : libraryGames().length} spielbar</span></div><div class="games-tools"><div id="games-toolbar" class="toolbar">${gamesToolbarHTML()}</div></div><div id="games-body">${gamesBodyHTML()}</div></section></div><aside class="home-secondary" aria-label="${solo ? I18n.t('Einzelspieler') : I18n.t('Deine Runde')}">${localGamesHTML('favorites')}${solo ? '<section class="hub-block home-panel"><h2>' + I18n.content('Dein Spielstand wartet','Your saved game is waiting') + '</h2><p>' + I18n.content('Dein Fortschritt bleibt in diesem Browser. Beim Verlassen pausieren wir für dich.','Your progress stays in this browser. We pause for you when you leave.') + '</p><p>' + I18n.content('Regeln und Einstellungen findest du direkt im Spiel.','Rules and settings are available inside each game.') + '</p></section>' : '<section class="hub-block home-panel" id="presence-slot">' + presenceHTML() + '</section>' + codeBoxHTML()}</aside></div>`;
 }
 function categoryTabsHTML(all) {
-  return I18n.html`<nav class="category-tabs ${all ? '' : 'home-categories'}" aria-label="Spielkategorien">${all ? I18n.html`<a class="category-all" href="#spiele" ${!route.sub && route.page === 'spiele' ? 'aria-current="page"' : ''}>${ico(ICONS.spiele)}Alle Spiele<span>${libraryGames().length}</span></a>` : ''}${GAME_CATEGORIES.map(([id, label]) => `<a href="#spiele/${id}" ${route.sub === id ? 'aria-current="page"' : ''}>${ico(ICONS[id])}${I18n.t(label)}</a>`).join('')}</nav>`;
+  if (!all && !GAME_CATEGORIES.some(([id]) => catShown(id))) return ''; // kein leerer Navigationscontainer
+  return I18n.html`<nav class="category-tabs ${all ? '' : 'home-categories'}" aria-label="Spielkategorien">${all ? I18n.html`<a class="category-all" href="#spiele" ${!route.sub && route.page === 'spiele' ? 'aria-current="page"' : ''}>${ico(ICONS.spiele)}Alle Spiele<span>${libraryGames().length}</span></a>` : ''}${GAME_CATEGORIES.filter(([id]) => catShown(id) || route.sub === id).map(([id, label]) => `<a href="#spiele/${id}" ${route.sub === id ? 'aria-current="page"' : ''}>${ico(ICONS[id])}${I18n.t(label)}</a>`).join('')}</nav>`;
 }
 function refreshGames() {
   $('#games-toolbar').innerHTML = gamesToolbarHTML(); $('#games-body').innerHTML = gamesBodyHTML();
@@ -374,6 +389,7 @@ function openPlan(id) {
 }
 // Start: die ersten Spiele (Favoriten, zuletzt gespielt) als Kacheln
 function gamesPreviewHTML() {
+  if (!libraryGames().length) return ''; // alle Kategorien ausgeblendet: kein leerer Block
   const ranked = sortGames(libraryGames());
   const list = favs().size || Object.keys(recent()).length ? ranked.slice(0, 4) : ['poker', 'kniffel', 'reversi', 'werwolf'].map((id) => ranked.find((g) => g.id === id)).filter(Boolean);
   return I18n.html`<section class="hub-block home-panel featured-games"><div class="hub-block-head"><h2>Spiele entdecken</h2><a href="#spiele">Alle ansehen →</a></div><ul class="games tiles home-games">${list.map((g) => gameHTML(g, true)).join('')}</ul></section>`;

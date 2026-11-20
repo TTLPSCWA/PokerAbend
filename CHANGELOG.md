@@ -2,6 +2,15 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.18.0 – 20. November 2026
+
+* **Navigation und Anzeige (NAV-01):** Seitenleiste, Mobil-Tabs, Mobil-Menü, Kategorie-Chips, Spielzähler und Startseite folgen jetzt denselben Einstellungen unter „Einstellungen → Startseite und Filter“. Neu sind Schalter für **Offene Tische** (Reiter, Tab und Startseitenblock) und **Favoriten** (Reiter und Startseite). Der Startseitenblock „Eure Spieleabende“ folgt den Schaltern „Abend planen“ und „Abend-Rückblicke“; sind beide aus, entfällt er ganz.
+* **Kategorien:** Sind alle Spielkategorien ausgeblendet, erscheinen keine leeren Blöcke mehr. Die Bibliothek zeigt stattdessen einen Hinweis mit Link zu den Einstellungen. Die neue Kategorie **Idle** taucht erst auf, wenn ein Idle-Spiel registriert ist.
+* **Nur Anzeige:** Ausgeblendetes bleibt über Direktlinks, Einladungslinks und „Tisch erstellen“ erreichbar. Favoriten, Verlauf und bestehende Einstellungen bleiben erhalten.
+* **Englisch:** Der Text im Block „Eure Spieleabende“ ist wieder vollständig übersetzt.
+* **Betrieb, Zurückrollen:** Ein älterer Server kennt die neuen Einstellungs-Kennungen `tables` und `idle` nicht. Server und Seite immer gemeinsam aus- und zurückrollen, Hinweise in [docs/betrieb.md](docs/betrieb.md#6-jedes-weitere-update). Betroffen sind nur Anzeigeeinstellungen, keine Spiel- oder Kontodaten.
+* **Bekannte Punkte (Folgeaufgaben):** Zwei Browser-Tests schlagen unter hoher Last gelegentlich fehl, unabhängig von NAV-01: „Wellenwacht“ (Wettlauf zwischen Fortsetzen und Auslesen der Turmwerte, auch auf Version 3.17.1 nachgewiesen) und „Meine Daten: Export“ auf Mobil (`Identity.gameId` noch nicht geladen). Nicht automatisiert geprüft sind das Entfernen eines Favoriten per Stern, Reconnect und zweite Browserinstanz für Favoriten, ein Idle-Spiel unter den Mehrspieler-Spielen sowie der Discord-Sichtbarkeitsfall (N03, gehört zu AUTH-01).
+
 ## 3.17.1 – 20. November 2026
 
 * **Zugton:** Wer einen laufenden Tisch betritt oder eine Verbindung wiederherstellt, hört für den bereits laufenden eigenen Zug keinen neuen Zugton. Wechselt der Zug am selben Tisch regulär zu dir, bleibt das Signal erhalten.

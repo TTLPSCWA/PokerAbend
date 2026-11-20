@@ -209,3 +209,36 @@ test('Server: Löschen braucht die Game-ID, räumt auf, anonymisiert Runden und 
   const files = ['accounts.json', 'leaderboard.json'].map((f) => { try { return readFileSync(join(dataDir, f), 'utf8'); } catch { return ''; } }).join('');
   for (const gone of ['AnnaDiscord', '#AAAA', 'AltAnna']) assert.ok(!files.includes(gone), `${gone} steht noch in den Daten`);
 });
+
+// ---------- NAV-01: Sichtbarkeitslisten, Kompatibilität und Übereinstimmung von Server und Browser ----------
+const readSrc = (f) => readFileSync(join(import.meta.dirname, '..', f), 'utf8');
+const ids = (src, name) => { const from = src.indexOf('const ' + name + ' = ['), to = src.indexOf('];', from); return [...src.slice(from, to).matchAll(/\['([a-z]+)'/g)].map((m) => m[1]); };
+
+test('NAV-01: Server- und Browserlisten für Kategorien und Bereiche stimmen überein', async () => {
+  const client = readSrc('public/settings.js'), hub = readSrc('public/hub.js');
+  assert.deepEqual(ids(client, 'CATEGORIES'), CATEGORIES, 'public/settings.js ↔ server/settings.js (Kategorien)');
+  assert.deepEqual(ids(client, 'BLOCKS'), BLOCKS, 'public/settings.js ↔ server/settings.js (Bereiche)');
+  assert.deepEqual(ids(hub, 'GAME_CATEGORIES'), CATEGORIES, 'public/hub.js ↔ server/settings.js');
+  // games/index.js (durch Beweisprüfungen fest verankert) kennt nur die fünf Spielkategorien; Idle wird erst mit einer Registrierung ergänzt
+  const { CATEGORIES: gameCategories } = await import('../games/index.js');
+  assert.deepEqual(gameCategories.map((c) => c[0]), CATEGORIES.filter((c) => c !== 'idle'), 'games/index.js ↔ server/settings.js (ohne idle)');
+});
+
+test('NAV-01: alte Einstellungen bleiben gültig, neue Schalter werden gespeichert', () => {
+  // Bestand aus Version 3.17.1: nur die früheren Kennungen
+  const old = { hub: { hiddenCategories: ['brett', 'party'], hiddenBlocks: ['presence', 'tickets'], defaultFilter: 'all' } };
+  assert.equal(patchProblem(old), '');
+  assert.deepEqual(sanitizeSettings(old).hub.hiddenCategories, ['brett', 'party']);
+  assert.deepEqual(sanitizeSettings(old).hub.hiddenBlocks, ['presence', 'tickets']);
+  // neue Kennungen: Idle, Offene Tische; Favoriten gab es schon als Bereich
+  for (const patch of [{ hiddenCategories: ['idle'] }, { hiddenBlocks: ['tables'] }, { hiddenBlocks: ['favorites', 'tables'] }]) assert.equal(patchProblem({ hub: patch }), '', JSON.stringify(patch));
+  assert.deepEqual(sanitizeSettings({ hub: { hiddenBlocks: ['tables', 'favorites'] } }).hub.hiddenBlocks, ['tables', 'favorites']);
+  // unbekannte Kennungen werden weiterhin abgelehnt
+  assert.notEqual(patchProblem({ hub: { hiddenCategories: ['gibtesnicht'] } }), '');
+  assert.notEqual(patchProblem({ hub: { hiddenBlocks: ['tables', 'x'] } }), '');
+  // Zusammenführen ändert nur den gesendeten Zweig und lässt andere Listen unangetastet
+  const merged = mergeSettings(sanitizeSettings(old), { hub: { hiddenBlocks: ['tables'] } });
+  assert.deepEqual(merged.hub.hiddenCategories, ['brett', 'party']);
+  assert.deepEqual(merged.hub.hiddenBlocks, ['tables']);
+  assert.equal(isDefault(sanitizeSettings({ hub: { hiddenBlocks: ['tables'] } })), false);
+});

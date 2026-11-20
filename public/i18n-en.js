@@ -155,6 +155,8 @@ Object.assign(window.EN, {
   'Eure Spieleabende': 'Your game nights', 'Vorfreude & Erinnerungen': 'Plans & memories',
   'Plant euren nächsten Abend oder schaut auf die letzten Runden zurück.': 'Plan your next evening or look back on recent rounds.',
   'Nächsten Abend planen': 'Plan the next evening', 'Abend-Rückblicke öffnen': 'Open evening recaps',
+  'Plant euren nächsten Abend.': 'Plan your next evening.', 'Schaut auf die letzten Runden zurück.': 'Look back on recent rounds.',
+  'Alle Spielkategorien sind in deinen Einstellungen ausgeblendet.': 'All game categories are hidden in your settings.', 'Kategorien einblenden': 'Show categories',
   'Ohne Benutzerkonto. Nur Spielgeld, kein Echtgeld.': 'No account needed. Play money only, no real money.',
   '★ Favoriten': '★ Favourites', '2 Spieler': '2 players', '3–4 Spieler': '3–4 players',
   '5–6 Spieler': '5–6 players', '7+ Spieler': '7+ players', 'Kurz (< 15 Min.)': 'Short (< 15 min)',

@@ -68,7 +68,7 @@
     },
     {
       "path": "public/i18n-en.js",
-      "sha256": "a94ce744aafb7acd4a160c7ef8dcb2fc0a66dd06fd8b585679f637b27cf72fcf"
+      "sha256": "ffbdfdd8e74557fe0fe5d89337a55e82af36dabceff946f91375c55131cd1523"
     },
     {
       "path": "public/index.html",
@@ -137,6 +137,10 @@
     {
       "path": "test/v2-13-14-proof.test.js",
       "sha256": "00a9a00d16c00cc26bcf2980b93acffbf77ea589526c7086c76be7058eedcd49"
+    },
+    {
+      "path": "public/hub.js",
+      "sha256": "efc1b89e3168dc3da3f2a04bdb6943c87f3564419e9f3ca2b01e927b2c6820d0"
     }
   ],
   "previous_shared_sources": [
@@ -164,6 +168,11 @@
       "path": "public/i18n-en.js",
       "archive": "test/fixtures/party-features/baseline/public/i18n-en.js",
       "sha256": "d3cdbd36f1b04dfffff14425ad50a9fa4291f6c9ef618b537fb79fbf8b69aab8"
+    },
+    {
+      "path": "public/hub.js",
+      "archive": "test/fixtures/party-features/v2-13/public/hub.js",
+      "sha256": "846d2fbf270a339ac0898bfc6de141a0b8632aeac6f18b41e372222a5149587c"
     }
   ]
 }
