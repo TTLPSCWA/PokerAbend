@@ -1,0 +1,307 @@
+{
+  "schema_version": 1,
+  "purpose": "Kuratierte Besucherquelle der öffentlichen Roadmap (ROADMAP-02). Von Menschen geprüfte Texte, kein Auszug interner Planung. Der ROADMAP-01-Index dient nur der Validierung und Zuordnung. Der Block internal wird nie ausgeliefert.",
+  "approved": false,
+  "approval_note": "Redaktionelle Abschlussfreigabe des Projektinhabers fehlt. Solange approved false ist, liefert /api/roadmap keine Einträge und der Hub zeigt weiter die bisherige Roadmap.",
+  "updated": "2026-11-21",
+  "production_basis": {
+    "version": "3.17.0",
+    "commit": "cb2c167",
+    "observed_on": "2026-11-20",
+    "source": "https://poker.scwagaming.com/health",
+    "note": "Beobachteter Produktivstand bei der Kuratierung. Zur Laufzeit zählt der Build des Servers; siehe games/public-roadmap.js."
+  },
+  "sections": [
+    "neu",
+    "entwicklung",
+    "naechstes",
+    "geplant",
+    "ideen",
+    "pausiert"
+  ],
+  "review_points": [
+    "Abschlussfreigabe: approved auf true setzen erst nach Prüfung aller Texte (DE und EN) durch den Projektinhaber.",
+    "Neu veröffentlicht: nur zwei Einträge (3.16.0 und 3.17.0), weil nur sie mit dem beobachteten Produktivbuild belegt sind. Weitere brauchen Version, Implementierungscommit und Ahnenprüfung gegen den Produktivbuild.",
+    "Als Nächstes: Discord-Anmeldung und geschützte Bereiche, vom Projektinhaber am 2026-11-21 als nächste Phase bestätigt. Nicht implementiert; ohne Termin; ohne Pflicht-Server-Mitgliedschaft formuliert.",
+    "In Entwicklung und Pausiert sind leer (kein nachgewiesener aktiver Auftrag, nichts ausdrücklich pausiert) und zeigen einen Leerzustand.",
+    "Benachrichtigungen bleiben unter Geplant.",
+    "3D-Experiment und Discord Activity stehen als ausdrücklich unverbindliche Ideen.",
+    "Idle-Spiele sind nicht aufgenommen (keine Freigabe zur Veröffentlichung).",
+    "Englische Fassungen sind redaktionell formuliert (zum Beispiel Götterberg als Mount Olympus) und brauchen die Freigabe."
+  ],
+  "entries": [
+    {
+      "id": "karten-themenwelten",
+      "area": "aussehen",
+      "status": "neu",
+      "version": "3.17.0",
+      "title": {
+        "de": "Themenwelten für Kartenspiele",
+        "en": "Theme worlds for card games"
+      },
+      "text": {
+        "de": "Bei vielen Kartenspielen wählt der Host eine Themenwelt, zum Beispiel Saloon, Baker Street oder Tafelrunde: mit eigenem Kartenrücken, Rahmen, Tisch und Filz. Regeln und Spielablauf bleiben gleich.",
+        "en": "In many card games the host picks a theme world, for example Saloon, Baker Street or Round Table: with its own card back, frame, table and felt. Rules and game flow stay the same."
+      },
+      "internal": {
+        "sources": [
+          "package:ART-W4"
+        ],
+        "deployment": {
+          "implementation_commit": "7aac77e52bbe8e3cc53c5c5509e06f09ce656ed9",
+          "production_version": "3.17.0",
+          "production_commit": "cb2c167",
+          "method": "git merge-base --is-ancestor <implementation_commit> cb2c167",
+          "verified_on": "2026-11-20"
+        }
+      }
+    },
+    {
+      "id": "brett-themenwelten",
+      "area": "aussehen",
+      "status": "neu",
+      "version": "3.16.0",
+      "title": {
+        "de": "Themenwelten für klassische Brettspiele",
+        "en": "Theme worlds for classic board games"
+      },
+      "text": {
+        "de": "Schach, Mühle, Dame, Reversi, Hex, Vier gewinnt und Backgammon bekommen drei Welten zur Auswahl: Götterberg, Runen & Nordlicht und Tafelrunde. Züge und Regeln bleiben unverändert.",
+        "en": "Chess, Nine Men's Morris, Checkers, Reversi, Hex, Connect Four and Backgammon get three worlds to choose from: Mount Olympus, Runes & Northern Lights and Round Table. Moves and rules stay unchanged."
+      },
+      "internal": {
+        "sources": [
+          "package:ART-W3"
+        ],
+        "deployment": {
+          "implementation_commit": "1ae5d0bfe16ee1e68fb22eeb9f5675e62703e41b",
+          "production_version": "3.17.0",
+          "production_commit": "cb2c167",
+          "method": "git merge-base --is-ancestor <implementation_commit> cb2c167",
+          "verified_on": "2026-11-20"
+        }
+      }
+    },
+    {
+      "id": "discord-anmeldung",
+      "area": "funktionen",
+      "status": "naechstes",
+      "title": {
+        "de": "Discord-Anmeldung und geschützte Bereiche",
+        "en": "Discord sign-in and protected areas"
+      },
+      "text": {
+        "de": "Als Nächstes verbessern wir die Anmeldung mit Discord. Tickets, Abendplanung und Ranglisten sollen damit genutzt werden können; eine Mitgliedschaft auf einem bestimmten Discord-Server ist dafür keine Pflicht. Spielen bleibt weiter ohne Discord möglich. Einen Termin gibt es nicht.",
+        "en": "Next we are improving sign-in with Discord. Tickets, evening planning and leaderboards are meant to work with it; membership of a particular Discord server is not required. Playing stays possible without Discord. No date is promised."
+      },
+      "internal": {
+        "sources": [
+          "package:AUTH-01"
+        ],
+        "confirmed_by": {
+          "who": "Projektinhaber",
+          "on": "2026-11-21",
+          "ref": "Auftrag ROADMAP-02-RELEASE: als nächste Entwicklungsphase bestätigt, nicht implementiert"
+        }
+      }
+    },
+    {
+      "id": "tischkamera",
+      "area": "funktionen",
+      "status": "geplant",
+      "title": {
+        "de": "Tischkamera",
+        "en": "Table camera"
+      },
+      "text": {
+        "de": "Auf Wunsch dein Kamerabild am Tisch zeigen – nur über den Browser und nie automatisch.",
+        "en": "Show your camera image at the table if you want – browser only, never automatic."
+      },
+      "internal": {
+        "sources": [
+          "package:V2-08"
+        ]
+      }
+    },
+    {
+      "id": "klang-bewegung-figuren",
+      "area": "aussehen",
+      "status": "geplant",
+      "title": {
+        "de": "Klang, Bewegung & Figuren für weitere Spiele",
+        "en": "Sound, motion & pieces for more games"
+      },
+      "text": {
+        "de": "Immer mehr Spiele bekommen eigene Töne, Animationen und Spielfiguren – Spiel für Spiel.",
+        "en": "More and more games get their own sounds, animations and pieces – game by game."
+      },
+      "internal": {
+        "sources": [
+          "package:EXP-005"
+        ]
+      }
+    },
+    {
+      "id": "push-mitteilungen",
+      "area": "funktionen",
+      "status": "geplant",
+      "title": {
+        "de": "Benachrichtigungen",
+        "en": "Notifications"
+      },
+      "text": {
+        "de": "Eine Nachricht, wenn du dran bist oder der Tisch auf dich wartet – auch außerhalb des Tabs und bei allen Spielen.",
+        "en": "A message when it is your turn or the table is waiting for you – also outside the tab and in all games."
+      },
+      "internal": {
+        "sources": [
+          "stage:benachrichtigungen"
+        ]
+      }
+    },
+    {
+      "id": "handy-app",
+      "area": "funktionen",
+      "status": "ideen",
+      "title": {
+        "de": "App fürs Handy",
+        "en": "Phone app"
+      },
+      "text": {
+        "de": "Der Spieleabend als App zum Installieren, mit Mitteilung, wenn du dran bist.",
+        "en": "The game night as an installable app, with a notification when it is your turn."
+      },
+      "internal": {
+        "sources": [
+          "stage:ausblick"
+        ]
+      }
+    },
+    {
+      "id": "discord-bot",
+      "area": "funktionen",
+      "status": "ideen",
+      "title": {
+        "de": "Discord-Bot",
+        "en": "Discord bot"
+      },
+      "text": {
+        "de": "Ein Bot, der im Discord Bescheid gibt, wenn jemand einen Tisch aufmacht.",
+        "en": "A bot that tells Discord when someone opens a table."
+      },
+      "internal": {
+        "sources": [
+          "stage:ausblick"
+        ]
+      }
+    },
+    {
+      "id": "saisons-turniere",
+      "area": "funktionen",
+      "status": "ideen",
+      "title": {
+        "de": "Saisons & Turniere",
+        "en": "Seasons and tournaments"
+      },
+      "text": {
+        "de": "Bestenlisten, die in Saisons neu starten, und echte Turniere mit Auslosung.",
+        "en": "Leaderboards that restart each season, and real tournaments with a draw."
+      },
+      "internal": {
+        "sources": [
+          "stage:ausblick"
+        ]
+      }
+    },
+    {
+      "id": "zuschauen-wiederholungen",
+      "area": "funktionen",
+      "status": "ideen",
+      "title": {
+        "de": "Zuschauen & Wiederholungen",
+        "en": "Spectating and replays"
+      },
+      "text": {
+        "de": "Fertige Partien Zug für Zug noch einmal ansehen – bei allen Spielen.",
+        "en": "Watch finished games again move by move – in every game."
+      },
+      "internal": {
+        "sources": [
+          "stage:ausblick"
+        ]
+      }
+    },
+    {
+      "id": "tutorials",
+      "area": "funktionen",
+      "status": "ideen",
+      "title": {
+        "de": "Tutorials",
+        "en": "Tutorials"
+      },
+      "text": {
+        "de": "Kurze Erklärungen zum Ausprobieren, damit auch Neue sofort mitspielen können.",
+        "en": "Short hands-on explanations so newcomers can join right away."
+      },
+      "internal": {
+        "sources": [
+          "stage:ausblick"
+        ]
+      }
+    },
+    {
+      "id": "hausregeln",
+      "area": "spiele",
+      "status": "ideen",
+      "title": {
+        "de": "Hausregeln",
+        "en": "House rules"
+      },
+      "text": {
+        "de": "Eigene Regeln für euren Tisch festlegen und speichern.",
+        "en": "Set and save your own rules for your table."
+      },
+      "internal": {
+        "sources": [
+          "stage:ausblick"
+        ]
+      }
+    },
+    {
+      "id": "drei-d-experiment",
+      "area": "aussehen",
+      "status": "ideen",
+      "title": {
+        "de": "3D-Experiment",
+        "en": "3D experiment"
+      },
+      "text": {
+        "de": "Unverbindliche Idee: 3D-Würfel als begrenzter Test für eine räumliche Darstellung.",
+        "en": "Non-binding idea: 3D dice as a limited test for a spatial look."
+      },
+      "internal": {
+        "sources": [
+          "stage:grosse-projekte"
+        ]
+      }
+    },
+    {
+      "id": "discord-activity",
+      "area": "funktionen",
+      "status": "ideen",
+      "title": {
+        "de": "Discord Activity",
+        "en": "Discord Activity"
+      },
+      "text": {
+        "de": "Unverbindliche Idee: Direkt gemeinsam im Discord-Sprachkanal spielen.",
+        "en": "Non-binding idea: play together directly in the Discord voice channel."
+      },
+      "internal": {
+        "sources": [
+          "stage:grosse-projekte"
+        ]
+      }
+    }
+  ]
+}

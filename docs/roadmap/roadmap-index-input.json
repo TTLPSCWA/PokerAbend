@@ -61,8 +61,9 @@
       "id": "ROADMAP-02", "title": "Besucheransicht der Roadmap", "area": "B", "doc": "docs/v3-entwurf/ROADMAP-02.md",
       "aliases": [],
       "lifecycle": { "planned": true, "implemented": false, "ci_accepted": false, "deployed": false },
+      "in_progress": true,
       "version": null, "implementation_commit": null, "ci_runs": [],
-      "note": "Geplant, nicht freigegeben. Baut auf ROADMAP-01 auf."
+      "note": "Umsetzung freigegeben und in Bearbeitung (nicht committet). Die Besucherdatei ist ohne Abschlussfreigabe des Projektinhabers nicht veröffentlicht (approved false)."
     }
   ],
   "open_items": [

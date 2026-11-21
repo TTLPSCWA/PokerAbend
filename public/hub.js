@@ -133,7 +133,7 @@ let route = { page: 'start', sub: '' };
 function parseRoute() {
   const [p = 'start', s = ''] = location.hash.replace(/^#/, '').split('/');
   const page = PAGES.includes(p) ? p : 'start';
-  return { page, sub: page === 'spiele' && GAME_CATEGORIES.some(([id]) => id === s && catOffered(id)) || page === 'solo' && Singleplayer.ids.includes(s) || page === 'einstellungen' && Settings.SECTIONS.includes(s) || page === 'tickets' && /^[1-9]\d{0,8}$/.test(s) || page === 'rueckblick' && EveningReviews.validId(s) || page === 'planung' && EveningPlans.validId(s) ? s : '' };
+  return { page, sub: page === 'spiele' && GAME_CATEGORIES.some(([id]) => id === s && catOffered(id)) || page === 'solo' && Singleplayer.ids.includes(s) || page === 'einstellungen' && Settings.SECTIONS.includes(s) || page === 'tickets' && /^[1-9]\d{0,8}$/.test(s) || page === 'roadmap' && s === 'verlauf' || page === 'rueckblick' && EveningReviews.validId(s) || page === 'planung' && EveningPlans.validId(s) ? s : '' };
 }
 const hashOf = (page, sub = '') => `#${page}${sub ? '/' + sub : ''}`;
 let hubTables = [];                      // offene Tische (vom Server, siehe Teil H3)
@@ -581,9 +581,46 @@ async function loadRoadmap() {
     finally { roadmapRequest = null; if (hubVisible() && route.page === 'roadmap') renderHub(); }
   })();
 }
+// ---------- Öffentliche Roadmap (ROADMAP-02) ----------
+// Sechs Abschnitte aus /api/roadmap. Ohne redaktionelle Freigabe liefert der Server approved=false; dann bleibt die bisherige Roadmap die Ansicht.
+// #roadmap/verlauf zeigt weiterhin die frühere, ausführliche Etappenliste (Historie).
+let publicRoadmap, publicRoadmapRequest = null, publicRoadmapFilter = 'alle';
+const PUBROAD_AREAS = [['alle', 'Alle'], ['spiele', 'Spiele'], ['funktionen', 'Funktionen'], ['aussehen', 'Aussehen'], ['betrieb', 'Betrieb']];
+const pubPick = (o) => (o ? (I18n.language === 'en' ? o.en : o.de) : '');
+async function loadPublicRoadmap() {
+  if (publicRoadmapRequest) return;
+  publicRoadmapRequest = (async () => {
+    try { const r = await fetch('/api/roadmap', { credentials: 'same-origin' }); const d = r.ok ? await r.json() : null; publicRoadmap = d && d.approved === true && Array.isArray(d.sections) ? d : null; } catch { publicRoadmap = null; }
+    finally { publicRoadmapRequest = null; if (hubVisible() && route.page === 'roadmap') renderHub(); }
+  })();
+}
+function pubRoadmapBodyHTML() {
+  const areaLabel = Object.fromEntries(PUBROAD_AREAS);
+  return publicRoadmap.sections.map((s) => {
+    const list = s.entries.filter((e) => publicRoadmapFilter === 'alle' || e.area === publicRoadmapFilter);
+    const empty = !s.entries.length ? (s.empty ? pubPick(s.empty) : I18n.t('Hier ist gerade nichts eingetragen.')) : I18n.t('Für diesen Filter gibt es hier keine Einträge.');
+    return I18n.html`<section class="hub-block home-panel pubroad-section pubroad-${esc(s.id)}" aria-labelledby="pubroad-${esc(s.id)}"><div class="hub-block-head"><h2 id="pubroad-${esc(s.id)}">${esc(pubPick(s.title))}</h2><span class="pubroad-count" aria-label="${list.length} ${I18n.t('Einträge')}">${list.length}</span></div><p class="local-note">${esc(pubPick(s.hint))}</p>
+      ${list.length ? `<ul class="pubroad-list">${list.map((e) => `<li class="pubroad-card"><h3>${esc(pubPick(e.title))}</h3><p>${esc(pubPick(e.text))}</p><p class="pubroad-meta"><span>${esc(I18n.t(areaLabel[e.area] || e.area))}</span>${e.version ? `<span>${I18n.t('Version')} ${esc(e.version)}</span>` : ''}${e.period ? `<span>${esc(e.period)}</span>` : ''}</p>${e.reason ? `<p class="pubroad-reason"><b>${I18n.t('Grund')}:</b> ${esc(pubPick(e.reason))}</p>` : ''}</li>`).join('')}</ul>` : `<p class="pubroad-empty hint">${esc(empty)}</p>`}</section>`;
+  }).join('');
+}
 function pageRoadmap() {
+  if (publicRoadmap === undefined) { loadPublicRoadmap(); return I18n.html`<section class="hub-head"><h1>Roadmap</h1><p role="status">Roadmap wird geladen …</p></section>`; }
+  if (!publicRoadmap || route.sub === 'verlauf') return pageRoadmapLegacy();
+  return I18n.html`<section class="hub-head"><h1>Roadmap</h1><p>Was schon da ist, woran wir arbeiten und was wir vorhaben. Ideen und Pläne sind keine Zusagen.</p></section>
+    <div class="chips pubroad-filters" role="group" aria-label="Roadmap nach Bereich filtern">${PUBROAD_AREAS.map(([id, title]) => `<button type="button" class="chip" data-pubroad-filter="${id}" aria-pressed="${publicRoadmapFilter === id}">${I18n.t(title)}</button>`).join('')}</div>
+    <div id="pubroad-body" class="pubroad-grid">${pubRoadmapBodyHTML()}</div>
+    <p class="pubroad-history"><a href="#roadmap/verlauf">Änderungshistorie und frühere Roadmap</a></p>`;
+}
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-pubroad-filter]');
+  if (!b || !publicRoadmap) return;
+  publicRoadmapFilter = b.dataset.pubroadFilter;
+  $$('.pubroad-filters button').forEach((chip) => chip.setAttribute('aria-pressed', String(chip === b)));
+  $('#pubroad-body').innerHTML = pubRoadmapBodyHTML();
+});
+function pageRoadmapLegacy() {
   if (!roadmapData && !roadmapRequest && !roadmapError) loadRoadmap();
-  return I18n.html`<section class="hub-head"><h1>Roadmap</h1><p>Was wir gerade bauen, was als Nächstes kommt und was schon fertig ist.</p></section>
+  return I18n.html`<section class="hub-head"><h1>Roadmap</h1><p>Was wir gerade bauen, was als Nächstes kommt und was schon fertig ist.</p>${publicRoadmap ? I18n.html`<p><a href="#roadmap">Zurück zur Roadmap-Übersicht</a></p>` : ''}</section>
     <div class="chips roadmap-filters" role="group" aria-label="Roadmap filtern">${ROADMAP_FILTERS.map(([id, title]) => `<button type="button" class="chip" data-roadmap-filter="${id}" aria-pressed="${roadmapFilter === id}">${I18n.t(title)}</button>`).join('')}</div>
     <div id="roadmap-body">${roadmapBodyHTML()}</div>`;
 }

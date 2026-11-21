@@ -9,6 +9,8 @@ RUN npm ci --omit=dev && npm cache clean --force
 COPY games ./games
 COPY server ./server
 COPY public ./public
+# Kuratierte Besucher-Roadmap (ROADMAP-02): wird zur Laufzeit von games/public-roadmap.js gelesen
+COPY docs/roadmap/public-roadmap.json ./docs/roadmap/public-roadmap.json
 
 # Commit-Hash des Builds, sichtbar unter „Ich“ und auf /health (docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) .).
 # Bewusst erst nach den Installations-Schichten, damit ein neuer Commit den Abhängigkeits-Cache nicht ungültig macht.

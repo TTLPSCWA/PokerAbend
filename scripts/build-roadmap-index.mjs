@@ -201,6 +201,7 @@ export function sourceList() {
     s('games/index.js', 'authoritative', 'Spielbarkeit: Mehrspieler-Registrierung und Varianten'),
     s('games/singleplayer/index.js', 'authoritative', 'Spielbarkeit: Einzelspieler-Registrierung'),
     s('games/planned.js', 'authoritative', 'kuratierte künftige Spiele (derzeit leer)'),
+    s('docs/roadmap/public-roadmap.json', 'authoritative', 'kuratierte Besucher-Roadmap (ROADMAP-02); der Index validiert und ordnet sie zu, ersetzt sie nicht'),
     s('games/roadmap.js', 'display', 'öffentliche Hub-Roadmap (handgepflegt, kuratiert; nicht Arbeitsnachweis)'),
     s(INPUT_FILE, 'authoritative', 'V3-Pakete, CI-Nachweise, Produktivbeobachtung, offene Punkte (kein maschinenlesbarer Ursprung vorhanden)'),
     s('docs/roadmap/consolidation.json', 'historical', 'Konsolidierung 30.10.2026'),

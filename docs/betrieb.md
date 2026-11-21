@@ -1,6 +1,6 @@
 # Betrieb: Spieleabend aufsetzen, aktualisieren, sichern, reparieren
 
-Stand: Version **3.18.0** (20. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
+Stand: Version **3.19.0** (21. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
 
 **Inhalt**
 
@@ -264,6 +264,17 @@ scripts/release-check.sh nachher
 **Hinweis ab Version 3.18.0 (Zurückrollen):** Die Anzeigeeinstellungen kennen jetzt die Kennungen `tables` (Offene Tische) und `idle` (Kategorie Idle). Ein älterer Server weist ein Speichern mit diesen Kennungen mit Fehler 400 ab und verwirft gespeicherte Listen, die sie enthalten (z. B. alle ausgeblendeten Bereiche eines Kontos). Das betrifft nur die Anzeige, keine Spiel- oder Kontodaten; mit Version 3.18.0 oder neuer sind die Werte wieder da. Server und Seite laufen im selben Image und werden gemeinsam aus- und zurückgerollt. Nach einem Zurückrollen können offene Browser-Tabs mit der neuen Seite ihre Einstellungen vorübergehend nicht speichern, bis sie neu geladen werden.
 
 Tische bleiben erhalten: Gespeichert wird beim Beenden, der Host startet nach dem Neustart die nächste Runde. Mitten in einer Runde wird nie abgebrochen, wenn die Frist reicht (`UPDATE_DRAIN_MAX_MIN`).
+
+### Öffentliche Roadmap und Freigabeschalter (seit 3.19.0)
+
+Die Besucher-Roadmap kommt aus der kuratierten Datei `docs/roadmap/public-roadmap.json` (sechs Abschnitte: Neu veröffentlicht, In Entwicklung, Als Nächstes, Geplant, Ideen, Pausiert; Texte auf Deutsch und Englisch). Der Server liefert sie über `/api/roadmap` als Whitelist-Projektion aus; interne Zuordnungen und Belege verlassen den Server nie.
+
+* **Freigabeschalter `approved`:** Steht er in der Datei auf `false`, liefert `/api/roadmap` keine Einträge und der Hub zeigt weiter die bisherige Roadmap. Erst nach der redaktionellen Freigabe wird er auf `true` gesetzt; das ist eine Änderung der Datei (Commit, Version, Image-Build, Aufspielen), keine Einstellung im Betrieb.
+* **Neu veröffentlicht nur mit Beleg:** Ein Eintrag erscheint dort nur, wenn der **laufende Build** ihn belegt: Version und Build müssen zum festgehaltenen Produktivbeleg passen. Ein Rollback auf einen älteren Stand, dieselbe Version mit anderem Build oder ein unbekannter Build halten den Eintrag zurück. Ein grüner CI-Lauf, ein Push oder ein veröffentlichtes Image sind **kein** Produktivdeployment: Umgesetzt (committet), CI-abgenommen (Volllauf grün) und produktiv bereitgestellt (Healthcheck mit passendem Build) sind drei getrennte Stufen.
+* **Image:** Das Image enthält die Datei über eine eigene `COPY`-Zeile in der `Dockerfile`. Fehlt sie im Container, liefert `/api/roadmap` nur `approved: false`; die Seite bleibt benutzbar.
+* **Bisherige Roadmap erhalten:** `/roadmap` und `/api/whats-new` sind unverändert. Die ausführliche frühere Roadmap bleibt unter `#roadmap/verlauf` erreichbar; die Änderungshistorie („Was ist neu“) bleibt getrennt von der Veröffentlichungsübersicht.
+* **Zurückrollen:** Ein älterer Server kennt `/api/roadmap` nicht; die neue Seite fällt dann auf die bisherige Roadmap zurück. Ein älterer Browser-Tab mit neuem Server nutzt weiter `/roadmap`. Es gehen keine Daten verloren. Server und Seite werden wie sonst gemeinsam aus- und zurückgerollt.
+* **Index:** Änderungen an der Besucherdatei oder anderen Planungsquellen verlangen `node scripts/build-roadmap-index.mjs --write` (siehe `docs/roadmap/INDEX.md`).
 
 ## 7. Sichern und Wiederherstellen
 

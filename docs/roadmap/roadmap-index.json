@@ -126,6 +126,11 @@
       "covers": "kuratierte künftige Spiele (derzeit leer)"
     },
     {
+      "file": "docs/roadmap/public-roadmap.json",
+      "role": "authoritative",
+      "covers": "kuratierte Besucher-Roadmap (ROADMAP-02); der Index validiert und ordnet sie zu, ersetzt sie nicht"
+    },
+    {
       "file": "games/roadmap.js",
       "role": "display",
       "covers": "öffentliche Hub-Roadmap (handgepflegt, kuratiert; nicht Arbeitsnachweis)"
@@ -224,7 +229,8 @@
     "package/v3": {
       "total": 5,
       "done": 1,
-      "planned": 2,
+      "in-progress": 1,
+      "planned": 1,
       "verified": 2
     },
     "package/vis": {
@@ -250,7 +256,9 @@
     "unverified-active-label": 1
   },
   "views": {
-    "active": [],
+    "active": [
+      "package:ROADMAP-02"
+    ],
     "completed": [
       "package:ART-002",
       "package:ART-004",
@@ -6004,8 +6012,8 @@
         "file": "docs/roadmap/roadmap-index-input.json",
         "ptr": "v3_packages[4]"
       },
-      "source_status": "planned",
-      "status": "planned",
+      "source_status": "in-progress",
+      "status": "in-progress",
       "stages": {
         "planned": true,
         "implemented": false,

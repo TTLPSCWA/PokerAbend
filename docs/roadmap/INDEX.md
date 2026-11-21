@@ -27,6 +27,7 @@ Die normale Prüfung und `--check` brauchen keinen Netzwerkzugriff. Der Test `te
 | maßgeblich | `docs/design/card-interaction-roadmap.json` | CUX |
 | maßgeblich | `games/index.js`, `games/singleplayer/index.js` | Spielbarkeit und Varianten (Registrierung) |
 | maßgeblich | `games/planned.js` | kuratierte künftige Spiele (derzeit leer) |
+| maßgeblich | `docs/roadmap/public-roadmap.json` | kuratierte Besucher-Roadmap (ROADMAP-02); der Index validiert und ordnet sie zu, ersetzt sie nicht |
 | Anzeige | `games/roadmap.js` | öffentliche Hub-Roadmap, handgepflegt, kein Arbeitsnachweis |
 | maßgeblich | [roadmap-index-input.json](roadmap-index-input.json) | V3-Pakete, CI-Nachweise, Produktivbeobachtung, offene Punkte. Für diese Bereiche gibt es keinen anderen maschinenlesbaren Ursprung. |
 | historisch | `consolidation.json`, `CONSOLIDATION_2026-10-30.md`, `MASTERPROMPT_V2_SOURCE.md`, `PROMPT.md` | keine Aufträge |

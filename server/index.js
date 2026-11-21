@@ -16,6 +16,7 @@ import { versionInfo, createAdminLog, createClientErrors, createSystemSampler, c
 import { createAdmin } from './admin.js';
 import { createAdminTools } from './admin-tools.js';
 import { resolvedRoadmap, whatsNew } from '../games/roadmap.js';
+import { loadPublicRoadmap, publicRoadmap } from '../games/public-roadmap.js';
 import { createPresence } from './presence.js';
 import { createTicketAPI } from './ticket-api.js';
 import { configureProgram, beginProgram, nextProgramStep, recordProgramResult, publicProgram, restoreProgram, programActive, programGames, programDefaults, programOptions, programSeats, validateProgramPlayers } from './party-program.js';
@@ -246,6 +247,11 @@ if (ADMIN_PASSWORD) {
     undoClaim: (key) => { const info = leaderboard.unclaim(key); if (!info) return null; save(); return { name: info.name, gameId: accounts.get(info.claimedBy)?.gameId || '' }; },
   }).router);
 } else console.log('Admin-Seite aus (kein ADMIN_PASSWORD gesetzt)');
+// ROADMAP-02: kuratierte Besucher-Roadmap (Whitelist-Projektion). Ohne redaktionelle Freigabe (approved) keine Einträge; /roadmap bleibt unverändert die bisherige Historie.
+app.get('/api/roadmap', (_req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.json(publicRoadmap(loadPublicRoadmap(), { version: VERSION.version, commit: VERSION.short }));
+});
 app.get('/roadmap', (_req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.json(resolvedRoadmap());

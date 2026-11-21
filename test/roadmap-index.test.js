@@ -73,7 +73,8 @@ test('ROAD-T03: kein done oder verified ohne Commit und Nachweis; fehlende Nachw
   }
   assert.equal(entry(committed, 'package:QA-CI-01').status, 'verified');
   assert.equal(entry(committed, 'package:NAV-01').status, 'verified');
-  for (const id of ['AUTH-01', 'ROADMAP-02']) assert.equal(entry(committed, `package:${id}`).status, 'planned');
+  assert.equal(entry(committed, 'package:AUTH-01').status, 'planned');
+  assert.equal(entry(committed, 'package:ROADMAP-02').status, 'in-progress'); // ROADMAP-02 freigegeben und in Bearbeitung, nicht committet
   // ROADMAP-01: implementiert (Commit 0bae015, Push #232), Volllauf auf Entscheidung des Projektinhabers nicht durchgeführt: done, nicht verified
   assert.equal(entry(committed, 'package:ROADMAP-01').status, 'done');
   assert.equal(entry(committed, 'package:ROADMAP-01').stages.ci_accepted, false);

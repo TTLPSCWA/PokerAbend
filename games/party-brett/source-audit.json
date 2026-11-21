@@ -68,7 +68,7 @@
     },
     {
       "path": "public/i18n-en.js",
-      "sha256": "ffbdfdd8e74557fe0fe5d89337a55e82af36dabceff946f91375c55131cd1523"
+      "sha256": "978770fdf9b57e636263967126a77dc813a65d0ac81e82fca2dd6f6e84eb33d9"
     },
     {
       "path": "public/index.html",
@@ -80,7 +80,7 @@
     },
     {
       "path": "server/index.js",
-      "sha256": "fe524f8e630d7ef5cebc4d439f76d5e343169b11075e6afc0bc709332596076d"
+      "sha256": "afedecdf4877cf0ca23d7b324f1c4caaa106a44ae45a67a28f0ded144f8cf632"
     },
     {
       "path": "server/party-program.js",
@@ -140,7 +140,7 @@
     },
     {
       "path": "public/hub.js",
-      "sha256": "efc1b89e3168dc3da3f2a04bdb6943c87f3564419e9f3ca2b01e927b2c6820d0"
+      "sha256": "f97420236c558f75f8c20311db1772f3ef609ed45b1bcc6fe825794d79757647"
     }
   ],
   "previous_shared_sources": [

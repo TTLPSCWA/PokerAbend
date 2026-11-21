@@ -154,6 +154,7 @@ Object.assign(window.EN, {
   'Am Tisch zusammenkommen': 'Get together at a table', 'Alle Tische →': 'All tables →',
   'Eure Spieleabende': 'Your game nights', 'Vorfreude & Erinnerungen': 'Plans & memories',
   'Plant euren nächsten Abend oder schaut auf die letzten Runden zurück.': 'Plan your next evening or look back on recent rounds.',
+  "Hier ist gerade nichts eingetragen.": "Nothing is listed here right now.", "Für diesen Filter gibt es hier keine Einträge.": "There are no entries here for this filter.", "Einträge": "entries", "Version": "Version", "Grund": "Reason", "Aussehen": "Look", "Betrieb": "Operations", "Funktionen": "Features", "Was schon da ist, woran wir arbeiten und was wir vorhaben. Ideen und Pläne sind keine Zusagen.": "What is already here, what we are working on and what we have in mind. Ideas and plans are not promises.", "Roadmap nach Bereich filtern": "Filter roadmap by area", "Änderungshistorie und frühere Roadmap": "Change history and earlier roadmap", "Zurück zur Roadmap-Übersicht": "Back to the roadmap overview",
   'Nächsten Abend planen': 'Plan the next evening', 'Abend-Rückblicke öffnen': 'Open evening recaps',
   'Plant euren nächsten Abend.': 'Plan your next evening.', 'Schaut auf die letzten Runden zurück.': 'Look back on recent rounds.',
   'Alle Spielkategorien sind in deinen Einstellungen ausgeblendet.': 'All game categories are hidden in your settings.', 'Kategorien einblenden': 'Show categories',

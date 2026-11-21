@@ -2,6 +2,15 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.19.0 – 21. November 2026
+
+* **Neue Roadmap (ROADMAP-02):** Die öffentliche Roadmap zeigt sechs verständliche Bereiche mit Karten statt einer langen Liste: **Neu veröffentlicht**, **In Entwicklung**, **Als Nächstes**, **Geplant**, **Ideen** und **Pausiert**, mit Filter nach Spiele, Funktionen, Aussehen und Betrieb, auf Deutsch und Englisch, am Handy und per Tastatur bedienbar. Leere Bereiche zeigen einen Hinweis. Interne Paketnummern, Pfade und Entwicklungsnotizen werden nicht angezeigt.
+* **Nur Belegtes ist „neu“:** Ein Eintrag steht nur unter „Neu veröffentlicht“, wenn der laufende Server ihn belegt. Ein erfolgreicher Build oder ein veröffentlichtes Image reicht nicht.
+* **Noch nicht freigeschaltet:** Die neue Ansicht ist mit einem Freigabeschalter (`approved` in `docs/roadmap/public-roadmap.json`) ausgeliefert, der aus ist. Bis zur redaktionellen Freigabe zeigt der Hub die bisherige Roadmap.
+* **Erhalten:** Die bisherige Roadmap bleibt unter `#roadmap/verlauf` erreichbar; `/roadmap` und „Was ist neu“ sind unverändert. Neu ist `/api/roadmap`.
+* **Betrieb:** Das Image übernimmt die Besucherdatei über eine eigene `COPY`-Zeile; Zurückrollen und Freigabe stehen in [docs/betrieb.md](docs/betrieb.md#öffentliche-roadmap-und-freigabeschalter-seit-3190).
+* **Technik:** Der Entwicklungsindex führt die Besucherdatei als Quelle; ROADMAP-02 steht dort als in Bearbeitung, solange sie nicht committet und CI-abgenommen ist.
+
 ## 3.18.0 – 20. November 2026
 
 * **Navigation und Anzeige (NAV-01):** Seitenleiste, Mobil-Tabs, Mobil-Menü, Kategorie-Chips, Spielzähler und Startseite folgen jetzt denselben Einstellungen unter „Einstellungen → Startseite und Filter“. Neu sind Schalter für **Offene Tische** (Reiter, Tab und Startseitenblock) und **Favoriten** (Reiter und Startseite). Der Startseitenblock „Eure Spieleabende“ folgt den Schaltern „Abend planen“ und „Abend-Rückblicke“; sind beide aus, entfällt er ganz.
