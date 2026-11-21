@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 export const PUBLIC_ROADMAP_FILE = 'docs/roadmap/public-roadmap.json';
+export const ROADMAP_BUILD_PROOF_FILE = 'server/roadmap-build-proof.json';
 export const SECTIONS = ['neu', 'entwicklung', 'naechstes', 'geplant', 'ideen', 'pausiert'];
 export const AREAS = ['spiele', 'funktionen', 'aussehen', 'betrieb'];
 const COPY = {
@@ -22,6 +23,9 @@ export const TIME_WORDS = [/\bbald\b/i, /nächste Woche/i, /next week/i, /\bsoon
 export const loadPublicRoadmap = (file = fileURLToPath(new URL('../' + PUBLIC_ROADMAP_FILE, import.meta.url))) => {
   try { return JSON.parse(readFileSync(file, 'utf8')); } catch { return null; }
 };
+export const loadRoadmapBuildProof = (file = fileURLToPath(new URL('../' + ROADMAP_BUILD_PROOF_FILE, import.meta.url))) => {
+  try { return JSON.parse(readFileSync(file, 'utf8')); } catch { return null; }
+};
 
 // ---------- Versionen und Produktivbeleg (P1) ----------
 const parseVersion = (v) => (/^\d+\.\d+\.\d+$/.test(String(v || '')) ? String(v).split('.').map(Number) : null);
@@ -31,16 +35,21 @@ export function compareVersions(a, b) {
   for (let i = 0; i < 3; i++) if (x[i] !== y[i]) return x[i] < y[i] ? -1 : 1;
   return 0;
 }
-// running: Version und Build-Kürzel des laufenden Servers. Unbekannt oder widersprüchlich gilt als nicht belegt.
-// Annahme: main ist linear; ein späterer Build enthält jeden früheren. Gleiche Version verlangt denselben Build wie beim Beleg (Rollback, Neubau).
-export function isPublished(entry, running) {
+// Das beim Image-Build erzeugte Manifest bindet belegte Commit-Paare an genau dieses Image.
+export function isPublished(entry, running, build) {
   const d = entry?.internal?.deployment;
-  if (!d || !d.implementation_commit || !d.production_commit || !d.production_version || !parseVersion(entry.version)) return false;
-  if (!running || !parseVersion(running.version) || !running.commit || /^(dev|unknown|)$/i.test(String(running.commit))) return false;
-  const own = compareVersions(running.version, entry.version), proof = compareVersions(running.version, d.production_version);
-  if (own === null || own < 0 || proof === null || proof < 0) return false;     // Rollback auf einen älteren Stand als Eintrag oder Beleg
-  if (proof === 0) return String(running.commit).startsWith(d.production_commit.slice(0, 7)); // gleiche Version wie beim Beleg nur mit demselben Build
-  return true;                                                                  // neuerer Build als der Beleg
+  if (!d?.verified_on || !/^[0-9a-f]{40}$/.test(d.implementation_commit) || !/^[0-9a-f]{7,40}$/.test(d.production_commit)) return false;
+  if (build?.schemaVersion !== 1 || !/^[0-9a-f]{40}$/.test(running?.commit) ||
+      build.commit !== running.commit || build.version !== running.version || !Array.isArray(build.deployments)) return false;
+  const own = compareVersions(d.production_version, entry.version);
+  const proof = compareVersions(running.version, d.production_version);
+  if (own === null || own < 0 || proof === null || proof < 0) return false;
+
+  return build.deployments.some((check) => check?.implementationCommit === d.implementation_commit &&
+    check.productionRef === d.production_commit && check.productionVersion === d.production_version &&
+    typeof check.productionCommit === 'string' && /^[0-9a-f]{40}$/.test(check.productionCommit) &&
+    check.productionCommit.startsWith(check.productionRef) &&
+    (proof > 0 || check.productionCommit === running.commit));
 }
 
 // ---------- Validierung gegen den ROADMAP-01-Index ----------
@@ -102,9 +111,9 @@ export function validatePublicRoadmap(data, { index, readFile = () => '' } = {})
 
 // ---------- Projektion für Besucher ----------
 // approved=false: keine Einträge. Unbelegte „Neu veröffentlicht“-Einträge werden zurückgehalten.
-export function publicRoadmap(data, running) {
+export function publicRoadmap(data, running, build) {
   if (!data || data.approved !== true) return { approved: false };
-  const shown = data.entries.filter((e) => e.status !== 'neu' || isPublished(e, running));
+  const shown = data.entries.filter((e) => e.status !== 'neu' || isPublished(e, running, build));
   const entry = (e) => ({
     id: e.id, area: e.area, status: e.status, title: { de: e.title.de, en: e.title.en }, text: { de: e.text.de, en: e.text.en },
     ...(e.status === 'neu' ? { version: e.version } : {}), ...(e.period ? { period: e.period } : {}), ...(e.status === 'pausiert' ? { reason: { de: e.reason.de, en: e.reason.en } } : {}),

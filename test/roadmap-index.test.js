@@ -74,7 +74,12 @@ test('ROAD-T03: kein done oder verified ohne Commit und Nachweis; fehlende Nachw
   assert.equal(entry(committed, 'package:QA-CI-01').status, 'verified');
   assert.equal(entry(committed, 'package:NAV-01').status, 'verified');
   assert.equal(entry(committed, 'package:AUTH-01').status, 'planned');
-  assert.equal(entry(committed, 'package:ROADMAP-02').status, 'in-progress'); // ROADMAP-02 freigegeben und in Bearbeitung, nicht committet
+  const roadmap2 = entry(committed, 'package:ROADMAP-02');
+  assert.equal(roadmap2.status, 'done');
+  assert.deepEqual(roadmap2.stages, { planned: true, implemented: true, ci_accepted: false, deployed: false });
+  assert.equal(roadmap2.evidence.commit, 'c992ba953782b94e4302ce770d7b83b3c58b9056');
+  assert.deepEqual(roadmap2.evidence.ci_runs, [235, 236]);
+  assert.deepEqual(roadmap2.evidence.ci_runs.map((number) => committed.ci_runs.find((run) => run.number === number).conclusion), ['success', 'failure']);
   // ROADMAP-01: implementiert (Commit 0bae015, Push #232), Volllauf auf Entscheidung des Projektinhabers nicht durchgeführt: done, nicht verified
   assert.equal(entry(committed, 'package:ROADMAP-01').status, 'done');
   assert.equal(entry(committed, 'package:ROADMAP-01').stages.ci_accepted, false);

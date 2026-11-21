@@ -2,6 +2,11 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.19.1 – 21. November 2026
+
+* Die Besucher-Roadmap verlangt für „Neu veröffentlicht“ einen Buildnachweis, der zum laufenden Image passt. Die redaktionelle Freigabe bleibt aus.
+* Der Backgammon-Browsertest wartet nach jedem Zug auf die bestätigte Serverrevision. Spielregeln und das Testbudget bleiben erhalten.
+
 ## 3.19.0 – 21. November 2026
 
 * **Neue Roadmap (ROADMAP-02):** Die öffentliche Roadmap zeigt sechs verständliche Bereiche mit Karten statt einer langen Liste: **Neu veröffentlicht**, **In Entwicklung**, **Als Nächstes**, **Geplant**, **Ideen** und **Pausiert**, mit Filter nach Spiele, Funktionen, Aussehen und Betrieb, auf Deutsch und Englisch, am Handy und per Tastatur bedienbar. Leere Bereiche zeigen einen Hinweis. Interne Paketnummern, Pfade und Entwicklungsnotizen werden nicht angezeigt.

@@ -9,6 +9,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { AREAS, FORBIDDEN, SECTIONS, compareVersions, isPublished, loadPublicRoadmap, publicRoadmap, validatePublicRoadmap } from '../games/public-roadmap.js';
 import { ROADMAP, resolvedRoadmap, whatsNew } from '../games/roadmap.js';
+import { buildProofFor, production as PROD, productionProof } from './fixtures/roadmap-build-proof.js';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const read = (f) => readFileSync(join(root, f), 'utf8');
@@ -17,12 +18,11 @@ const index = JSON.parse(read('docs/roadmap/roadmap-index.json'));
 const clone = (o) => structuredClone(o);
 const has = (problems, fragment) => problems.some((p) => p.includes(fragment));
 const approved = (d = data) => ({ ...clone(d), approved: true });
-const PROD = { version: '3.17.0', commit: 'cb2c167' };
 
 test('PUB-T01: genau sechs Abschnitte, jeder Eintrag in einem Abschnitt, Leerzustände sind möglich', () => {
   assert.deepEqual(SECTIONS, ['neu', 'entwicklung', 'naechstes', 'geplant', 'ideen', 'pausiert']);
   assert.deepEqual(data.sections, SECTIONS);
-  const out = publicRoadmap(approved(), PROD);
+  const out = publicRoadmap(approved(), PROD, productionProof);
   assert.equal(out.approved, true);
   assert.deepEqual(out.sections.map((s) => s.id), SECTIONS);
   const listed = out.sections.flatMap((s) => s.entries.map((e) => e.id));
@@ -55,7 +55,7 @@ test('PUB-T02: jeder Eintrag hat eine gültige interne Zuordnung mit passendem S
 });
 
 test('PUB-T03: die Besucherantwort enthält nur Whitelist-Felder und nichts Internes', () => {
-  const out = publicRoadmap(approved(), PROD);
+  const out = publicRoadmap(approved(), PROD, productionProof);
   const text = JSON.stringify(out);
   for (const re of FORBIDDEN) assert.doesNotMatch(text, re, `verbotenes Muster ${re}`);
   assert.doesNotMatch(text, /internal|sources|deployment|implementation_commit|confirmed_by|review|production_basis|approval_note|review_points/);
@@ -71,19 +71,30 @@ test('PUB-T03: die Besucherantwort enthält nur Whitelist-Felder und nichts Inte
     }
   }
   // ohne Freigabe: keine Einträge, auch keine Struktur
-  assert.deepEqual(publicRoadmap(data, PROD), { approved: false });
+  assert.deepEqual(publicRoadmap(data, PROD, productionProof), { approved: false });
   assert.deepEqual(publicRoadmap(null, PROD), { approved: false });
   assert.equal(data.approved, false, 'ohne ausdrückliche Abschlussfreigabe nicht veröffentlichen');
 });
 
 test('PUB-T04: „Neu veröffentlicht“ nur mit Produktivbeleg des laufenden Builds (P1)', () => {
-  const neu = (running) => publicRoadmap(approved(), running).sections.find((s) => s.id === 'neu').entries.map((e) => e.version);
-  assert.deepEqual(neu(PROD).sort(), ['3.16.0', '3.17.0'], 'belegter Produktivbuild');
-  assert.deepEqual(neu({ version: '3.18.0', commit: 'abcdef0' }).sort(), ['3.16.0', '3.17.0'], 'späterer Build enthält frühere Funktionen');
-  assert.deepEqual(neu({ version: '3.17.0', commit: 'ffff000' }), [], 'gleiche Version, anderer Build: nicht belegt');
-  assert.deepEqual(neu({ version: '3.16.0', commit: 'cb2c167' }), [], 'Rollback auf älteren Stand');
-  assert.deepEqual(neu({ version: '3.16.9', commit: 'cb2c167' }).sort(), [], 'Rollback unter den Beleg (3.17.0)');
-  for (const running of [null, undefined, {}, { version: 'dev', commit: 'cb2c167' }, { version: '3.17.0', commit: '' }, { version: '3.17.0', commit: 'unknown' }, { version: 'x.y', commit: 'cb2c167' }]) assert.deepEqual(neu(running), [], `unbekannt: ${JSON.stringify(running)}`);
+  const neu = (running, proof) => publicRoadmap(approved(), running, proof).sections
+    .find((s) => s.id === 'neu').entries.map((e) => e.version).sort();
+  const release = { version: '3.19.0', commit: 'c992ba953782b94e4302ce770d7b83b3c58b9056' };
+  const releaseProof = buildProofFor(release);
+  assert.deepEqual(neu(PROD, productionProof), ['3.16.0', '3.17.0'], 'genau der bestätigte Produktivbuild');
+  assert.deepEqual(neu(release, releaseProof), ['3.16.0', '3.17.0'], 'späterer Build mit geprüfter Abstammung');
+  assert.deepEqual(neu(release), [], 'ohne Manifest');
+  const foreign = { version: '88.0.0', commit: 'f'.repeat(40) };
+  assert.deepEqual(neu(foreign, releaseProof), [], 'höhere Version ohne passendes Manifest');
+  assert.deepEqual(neu(foreign, { ...buildProofFor(foreign), deployments: [] }), [], 'höhere Version ohne belegte Abstammung');
+  const sameVersion = { ...PROD, commit: PROD.commit.slice(0, 7) + 'f'.repeat(33) };
+  assert.deepEqual(neu(sameVersion, buildProofFor(sameVersion)), [], 'gleiche Version mit gleichem Präfix, aber anderem Commit');
+  const rollback = { version: '3.16.0', commit: 'a'.repeat(40) };
+  assert.deepEqual(neu(rollback, buildProofFor(rollback)), [], 'Rollback unter den Produktivbeleg');
+  assert.deepEqual(neu({ ...release, version: '3.19.1' }, releaseProof), [], 'Manifest einer anderen Version');
+  for (const running of [null, undefined, {}, { ...PROD, commit: 'cb2c167' }, { ...PROD, commit: 'unknown' }, { ...PROD, version: 'dev' }]) {
+    assert.deepEqual(neu(running, productionProof), [], `unbekannt: ${JSON.stringify(running)}`);
+  }
   // Datenebene: kein Veröffentlichungseintrag ohne vollständigen Beleg
   const noProof = clone(data); delete noProof.entries.find((e) => e.status === 'neu').internal.deployment;
   assert.ok(has(validatePublicRoadmap(noProof, { index }), 'Produktivnachweis unvollständig'));
@@ -98,14 +109,34 @@ test('PUB-T04: „Neu veröffentlicht“ nur mit Produktivbeleg des laufenden Bu
   assert.equal(compareVersions('3.17.0', '3.17.0'), 0);
   assert.equal(compareVersions('3.9.0', '3.10.0'), -1, 'numerischer Vergleich');
   assert.equal(compareVersions('x', '3.1.0'), null);
-  assert.equal(isPublished(data.entries.find((x) => x.status === 'neu'), PROD), true);
+  assert.equal(isPublished(data.entries.find((x) => x.status === 'neu'), PROD, productionProof), true);
   // unvollständiger Beleg gilt nie als Veröffentlichung, auch bei passendem Build
-  for (const field of ['implementation_commit', 'production_commit', 'production_version']) {
+  for (const field of ['implementation_commit', 'production_commit', 'production_version', 'verified_on']) {
     const partial = clone(data.entries.find((x) => x.status === 'neu')); delete partial.internal.deployment[field];
-    assert.equal(isPublished(partial, PROD), false, `ohne ${field}`);
+    assert.equal(isPublished(partial, PROD, productionProof), false, `ohne ${field}`);
   }
   const noVersion = clone(data.entries.find((x) => x.status === 'neu')); delete noVersion.version;
-  assert.equal(isPublished(noVersion, PROD), false, 'ohne Version');
+  assert.equal(isPublished(noVersion, PROD, productionProof), false, 'ohne Version');
+});
+
+test('P1-Mutationen: beschädigte Manifeste und falsche Commit-Paare werden verworfen', () => {
+  const entry = data.entries.find((e) => e.id === 'karten-themenwelten');
+  const mutations = [
+    ['fremder Build', (build) => { build.commit = 'f'.repeat(40); }],
+    ['unbekanntes Schema', (build) => { build.schemaVersion = 2; }],
+    ['ungültige Belegliste', (build) => { build.deployments = {}; }],
+    ['fremder Implementierungscommit', (build) => { build.deployments[0].implementationCommit = 'f'.repeat(40); }],
+    ['fremder Produktivcommit', (build) => { build.deployments[0].productionCommit = 'f'.repeat(40); }],
+    ['unpassender Produktivbeleg', (build) => { build.deployments[0].productionRef = 'deadbee'; }],
+    ['unpassende Produktivversion', (build) => { build.deployments[0].productionVersion = '3.16.0'; }],
+    ['ungültiger Produktivcommit-Typ', (build) => { build.deployments[0].productionCommit = [PROD.commit]; }],
+  ];
+  for (const [name, mutate] of mutations) {
+    const build = clone(productionProof);
+    mutate(build);
+    assert.equal(isPublished(entry, PROD, build), false, name);
+  }
+  assert.equal(isPublished(entry, PROD, productionProof), true);
 });
 
 test('PUB-T05: bisherige Roadmap-Daten und „Was ist neu“ bleiben unverändert erhalten', () => {
@@ -125,7 +156,7 @@ test('PUB-T06: Deutsch und Englisch sind vollständig, Bereiche gültig', () => 
     for (const f of ['title', 'text']) for (const lang of ['de', 'en']) assert.ok(String(e[f]?.[lang] || '').trim().length > 3, `${e.id}.${f}.${lang}`);
     assert.ok(AREAS.includes(e.area));
   }
-  const out = publicRoadmap(approved(), PROD);
+  const out = publicRoadmap(approved(), PROD, productionProof);
   for (const s of out.sections) { assert.ok(s.title.de && s.title.en && s.hint.de && s.hint.en); }
   // Zeitversprechen und interne Begriffe werden von der Validierung gefunden
   const timey = clone(data); timey.entries[2].text.de = 'Kommt bald.';
@@ -212,7 +243,13 @@ test('PUB-T07: /api/roadmap liefert ohne Freigabe nichts, /roadmap und /api/what
 });
 
 test('PUB-T08: der Container enthält die kuratierte Datei; der Index führt sie als Quelle', () => {
-  assert.match(read('Dockerfile'), /COPY docs\/roadmap\/public-roadmap\.json \.\/docs\/roadmap\/public-roadmap\.json/);
+  const docker = read('Dockerfile');
+  const workflow = read('.github/workflows/docker.yml').split('  build:')[1].split('  nightly-node:')[0];
+  assert.match(docker, /COPY docs\/roadmap\/public-roadmap\.json \.\/docs\/roadmap\/public-roadmap\.json/);
+  assert.match(docker, /COPY server \.\/server/);
+  assert.match(read('.dockerignore'), /^\.git\r?$/m);
+  assert.match(workflow, /fetch-depth: 0[\s\S]+node scripts\/build-roadmap-proof\.mjs "\$GITHUB_SHA"[\s\S]+docker\/build-push-action@/);
+  assert.ok(workflow.includes('GIT_COMMIT=\${{ github.sha }}'));
   assert.ok(index.sources.some((s) => s.file === 'docs/roadmap/public-roadmap.json'), 'Index kennt die öffentliche Quelle');
   assert.equal(index.production_observation.version, data.production_basis.version);
   assert.equal(index.production_observation.commit, data.production_basis.commit);

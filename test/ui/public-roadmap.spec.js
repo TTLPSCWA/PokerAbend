@@ -2,10 +2,11 @@
 // der kuratierten Datei per Route-Abfang aus, als wäre sie freigegeben. Ohne Freigabe bleibt die bisherige Roadmap die Ansicht.
 import { test, expect, login } from './helpers.js';
 import { loadPublicRoadmap, publicRoadmap } from '../../games/public-roadmap.js';
+import { buildProofFor, production, productionProof } from '../fixtures/roadmap-build-proof.js';
 
 test.use({ createLimit: '100' });
 const data = loadPublicRoadmap();
-const payload = publicRoadmap({ ...data, approved: true }, { version: '3.17.0', commit: 'cb2c167' });
+const payload = publicRoadmap({ ...data, approved: true }, production, productionProof);
 const go = (page, h) => page.evaluate((x) => { location.hash = x; }, h);
 const withApproval = (page, body = payload) => page.route('**/api/roadmap', (route) => route.fulfill({ json: body }));
 const SECTION_DE = ['Neu veröffentlicht', 'In Entwicklung', 'Als Nächstes', 'Geplant', 'Ideen', 'Pausiert'];
@@ -155,7 +156,8 @@ test('Ausfall der Besucher-API: bisherige Roadmap bleibt nutzbar', async ({ page
 });
 
 test('unbelegte Veröffentlichung wird nicht angezeigt (Rollback- und Build-Fall)', async ({ page, app }) => {
-  const rolledBack = publicRoadmap({ ...data, approved: true }, { version: '3.16.0', commit: 'cb2c167' });
+  const running = { version: '3.16.0', commit: 'a'.repeat(40) };
+  const rolledBack = publicRoadmap({ ...data, approved: true }, running, buildProofFor(running));
   await withApproval(page, rolledBack);
   await login(page, app);
   await go(page, '#roadmap');

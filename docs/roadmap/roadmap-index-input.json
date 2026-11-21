@@ -26,7 +26,9 @@
     { "number": 229, "id": 44800180226, "event": "push", "kind": "push", "sha": "0f14e19", "conclusion": "success" },
     { "number": 230, "id": 44801679082, "event": "workflow_dispatch", "kind": "full", "sha": "0f14e19", "conclusion": "success" },
     { "number": 231, "id": 44807413164, "event": "push", "kind": "push", "sha": "b1f5c29", "conclusion": "success" },
-    { "number": 232, "id": 44810916088, "event": "push", "kind": "push", "sha": "0bae015", "conclusion": "success" }
+    { "number": 232, "id": 44810916088, "event": "push", "kind": "push", "sha": "0bae015", "conclusion": "success" },
+    { "number": 235, "id": 44888464577, "event": "push", "kind": "push", "sha": "c992ba9", "conclusion": "success" },
+    { "number": 236, "id": 44891231093, "event": "schedule", "kind": "nightly", "sha": "c992ba9", "conclusion": "failure" }
   ],
   "v3_packages": [
     {
@@ -60,10 +62,9 @@
     {
       "id": "ROADMAP-02", "title": "Besucheransicht der Roadmap", "area": "B", "doc": "docs/v3-entwurf/ROADMAP-02.md",
       "aliases": [],
-      "lifecycle": { "planned": true, "implemented": false, "ci_accepted": false, "deployed": false },
-      "in_progress": true,
-      "version": null, "implementation_commit": null, "ci_runs": [],
-      "note": "Umsetzung freigegeben und in Bearbeitung (nicht committet). Die Besucherdatei ist ohne Abschlussfreigabe des Projektinhabers nicht veröffentlicht (approved false)."
+      "lifecycle": { "planned": true, "implemented": true, "ci_accepted": false, "deployed": false },
+      "version": "3.19.0", "implementation_commit": "c992ba953782b94e4302ce770d7b83b3c58b9056", "ci_runs": [235, 236],
+      "note": "Implementiert und gepusht. Push-Lauf #235 grün, Nachtlauf #236 wegen Backgammon-Mobiltest rot. Die Besucheransicht wartet mit approved false auf die gesonderte Freigabe."
     }
   ],
   "open_items": [

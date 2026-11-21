@@ -7,6 +7,7 @@ COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
 COPY games ./games
+# Enthält beim CI-Build auch den erzeugten Roadmap-Buildnachweis. Git-Historie bleibt im Checkout.
 COPY server ./server
 COPY public ./public
 # Kuratierte Besucher-Roadmap (ROADMAP-02): wird zur Laufzeit von games/public-roadmap.js gelesen

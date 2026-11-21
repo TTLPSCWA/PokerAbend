@@ -1,6 +1,6 @@
 # Betrieb: Spieleabend aufsetzen, aktualisieren, sichern, reparieren
 
-Stand: Version **3.19.0** (21. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
+Stand: Version **3.19.1** (21. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
 
 **Inhalt**
 
@@ -271,7 +271,8 @@ Die Besucher-Roadmap kommt aus der kuratierten Datei `docs/roadmap/public-roadma
 
 * **Freigabeschalter `approved`:** Steht er in der Datei auf `false`, liefert `/api/roadmap` keine Einträge und der Hub zeigt weiter die bisherige Roadmap. Erst nach der redaktionellen Freigabe wird er auf `true` gesetzt; das ist eine Änderung der Datei (Commit, Version, Image-Build, Aufspielen), keine Einstellung im Betrieb.
 * **Neu veröffentlicht nur mit Beleg:** Ein Eintrag erscheint dort nur, wenn der **laufende Build** ihn belegt: Version und Build müssen zum festgehaltenen Produktivbeleg passen. Ein Rollback auf einen älteren Stand, dieselbe Version mit anderem Build oder ein unbekannter Build halten den Eintrag zurück. Ein grüner CI-Lauf, ein Push oder ein veröffentlichtes Image sind **kein** Produktivdeployment: Umgesetzt (committet), CI-abgenommen (Volllauf grün) und produktiv bereitgestellt (Healthcheck mit passendem Build) sind drei getrennte Stufen.
-* **Image:** Das Image enthält die Datei über eine eigene `COPY`-Zeile in der `Dockerfile`. Fehlt sie im Container, liefert `/api/roadmap` nur `approved: false`; die Seite bleibt benutzbar.
+* **Image:** Vor dem Docker-Build prüft Git im vollständigen Checkout, ob der beobachtete Produktivcommit die Umsetzung enthält und zum neuen Image-Commit gehört. Der Workflow legt den entsprechenden Nachweis in `server/roadmap-build-proof.json` ab. Die Dockerfile übernimmt den Nachweis mit `server/`. Git und seine Historie bleiben außerhalb des Images. Der Server verlangt die exakte Übereinstimmung von voller Commit-ID und Version mit dem Manifest. Bei gleicher Version wie im Produktivbeleg muss es derselbe Produktivcommit sein.
+* **Lokaler Build:** Für ein Image mit Belegen zuerst `node scripts/build-roadmap-proof.mjs "$(git rev-parse HEAD)"` aus einem vollständigen Checkout mit unveränderten versionierten Dateien ausführen und denselben SHA als `GIT_COMMIT` übergeben. Fehlt der Buildnachweis oder passt er nicht, bleiben veröffentlichte Einträge verborgen. Fehlt die kuratierte Besucherdatei, liefert `/api/roadmap` nur `approved: false`.
 * **Bisherige Roadmap erhalten:** `/roadmap` und `/api/whats-new` sind unverändert. Die ausführliche frühere Roadmap bleibt unter `#roadmap/verlauf` erreichbar; die Änderungshistorie („Was ist neu“) bleibt getrennt von der Veröffentlichungsübersicht.
 * **Zurückrollen:** Ein älterer Server kennt `/api/roadmap` nicht; die neue Seite fällt dann auf die bisherige Roadmap zurück. Ein älterer Browser-Tab mit neuem Server nutzt weiter `/roadmap`. Es gehen keine Daten verloren. Server und Seite werden wie sonst gemeinsam aus- und zurückgerollt.
 * **Index:** Änderungen an der Besucherdatei oder anderen Planungsquellen verlangen `node scripts/build-roadmap-index.mjs --write` (siehe `docs/roadmap/INDEX.md`).

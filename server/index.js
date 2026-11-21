@@ -16,7 +16,7 @@ import { versionInfo, createAdminLog, createClientErrors, createSystemSampler, c
 import { createAdmin } from './admin.js';
 import { createAdminTools } from './admin-tools.js';
 import { resolvedRoadmap, whatsNew } from '../games/roadmap.js';
-import { loadPublicRoadmap, publicRoadmap } from '../games/public-roadmap.js';
+import { loadPublicRoadmap, loadRoadmapBuildProof, publicRoadmap } from '../games/public-roadmap.js';
 import { createPresence } from './presence.js';
 import { createTicketAPI } from './ticket-api.js';
 import { configureProgram, beginProgram, nextProgramStep, recordProgramResult, publicProgram, restoreProgram, programActive, programGames, programDefaults, programOptions, programSeats, validateProgramPlayers } from './party-program.js';
@@ -82,6 +82,7 @@ const PUBLIC_DIR = join(__dirname, '..', 'public');
 const SITE_PASSWORD = process.env.SITE_PASSWORD || '';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || ''; // eigener Zugang für /admin; leer = Admin-Seite aus
 const VERSION = versionInfo();
+const ROADMAP_BUILD_PROOF = loadRoadmapBuildProof();
 const UPDATE_DEFAULT_MIN = Number(process.env.UPDATE_ANNOUNCE_MIN || 5); // Vorlauf bei Ankündigung per Signal (SIGUSR2)
 const UPDATE_DRAIN_MAX_MIN = Number(process.env.UPDATE_DRAIN_MAX_MIN || 15); // so lange darf eine laufende Runde nach Fristende noch fertig werden
 const TRUST_PROXY = ['1', 'true', 'yes'].includes(String(process.env.TRUST_PROXY || '').toLowerCase());
@@ -250,7 +251,7 @@ if (ADMIN_PASSWORD) {
 // ROADMAP-02: kuratierte Besucher-Roadmap (Whitelist-Projektion). Ohne redaktionelle Freigabe (approved) keine Einträge; /roadmap bleibt unverändert die bisherige Historie.
 app.get('/api/roadmap', (_req, res) => {
   res.setHeader('Cache-Control', 'no-store');
-  res.json(publicRoadmap(loadPublicRoadmap(), { version: VERSION.version, commit: VERSION.short }));
+  res.json(publicRoadmap(loadPublicRoadmap(), VERSION, ROADMAP_BUILD_PROOF));
 });
 app.get('/roadmap', (_req, res) => {
   res.setHeader('Cache-Control', 'no-store');

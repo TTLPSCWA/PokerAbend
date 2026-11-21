@@ -6,3 +6,4 @@ playwright-report/
 artifacts/
 reports/
 /.agent-coordination/
+/server/roadmap-build-proof.json
