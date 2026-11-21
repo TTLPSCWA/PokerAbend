@@ -68,6 +68,8 @@ Je Eintrag trennt `stages` konsequent: `planned`, `implemented`, `ci_accepted`, 
 
 `roadmap-index-input.json` enthält nur belegte Angaben. Beim Abschluss eines V3-Pakets dort Version, Commit, CI-Läufe und Lebenszyklus eintragen; `--check-ci` prüft die Läufe gegen GitHub. Ein Paket wird nur `ci_accepted`, wenn ein `kind: full`-Lauf mit `conclusion: success` auf dem Implementierungscommit eingetragen ist.
 
+Erledigt ein abgenommenes V3-Paket einen Folgepunkt, verweist dessen `resolved_by` auf die Paket-ID. Der Folgepunkt behält seine ID und den ursprünglichen Quellverweis. Der Index führt ihn als `done` und übernimmt den belegten Commit des Pakets.
+
 ## Grenzen und Folgeaufgaben
 
 - Der Index ändert keine Quelle, keine Hub-Roadmap und keinen Status. Veraltete Zahlen in `AGENTS.md`, `CLAUDE.md`, `docs/roadmap/README.md` und `POKERABEND_V2_ROADMAP.md` sind als `OPEN-DOC-RULES` erfasst und bleiben einem eigenen Dokumentationsauftrag vorbehalten.

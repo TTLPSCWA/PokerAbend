@@ -119,7 +119,13 @@ export function buildIndex(src) {
       links: { doc: v.doc }, aliases: [...(v.aliases || [])] });
   }
   for (const [i, o] of src.manual.open_items.entries()) {
-    add({ namespace: 'open-item', id: o.id, title: o.title, area: o.area, group: 'open-item', source: { file: INPUT_FILE, ptr: `open_items[${i}]`, reference: o.source }, source_status: 'open', status: 'planned', stages: stagesOf('planned', { implemented: false }), evidence: { commit: null, completed_at: null, tests: 0, refs: 0 }, links: {}, ...(o.note ? { note: o.note } : {}) });
+    const resolution = src.manual.v3_packages.find((v) => v.id === o.resolved_by && v.lifecycle.ci_accepted);
+    const status = resolution ? 'done' : 'planned';
+    add({ namespace: 'open-item', id: o.id, title: o.title, area: o.area, group: 'open-item',
+      source: { file: INPUT_FILE, ptr: `open_items[${i}]`, reference: o.source }, source_status: resolution ? 'resolved' : 'open', status,
+      stages: stagesOf(status, resolution ? { ci_accepted: true, deployed: resolution.lifecycle.deployed } : {}),
+      evidence: { commit: resolution?.implementation_commit ?? null, completed_at: null, tests: 0, refs: resolution?.ci_runs.length ?? 0 },
+      links: resolution ? { package: resolution.id } : {}, ...(o.note ? { note: o.note } : {}) });
   }
 
   // Spiele und Varianten (Registrierung ist maßgeblich für „spielbar“)
@@ -295,6 +301,11 @@ export function validateIndex(index, src, { root = ROOT, files = true } = {}) {
     }
     for (const n of v.ci_runs) if (!runs.has(n)) problems.push(`${v.id}: unbekannter CI-Lauf #${n}`);
     if (lc.deployed) problems.push(`${v.id}: deployed ist ohne Produktivbeleg nicht zulässig`);
+  }
+  for (const item of src.manual.open_items) {
+    if (item.resolved_by && !src.manual.v3_packages.some((v) => v.id === item.resolved_by && v.lifecycle.ci_accepted)) {
+      problems.push(`${item.id}: Abschluss verweist auf kein CI-abgenommenes V3-Paket`);
+    }
   }
   // Verweise (Aliasse, Querverweise) müssen existieren
   for (const a of index.aliases || []) if (!seen.has(a.target)) problems.push(`Alias ${a.alias} zeigt ins Leere: ${a.target}`);

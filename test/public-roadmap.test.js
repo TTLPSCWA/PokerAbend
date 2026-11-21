@@ -30,10 +30,9 @@ test('PUB-T01: genau sechs Abschnitte, jeder Eintrag in einem Abschnitt, Leerzus
   for (const s of out.sections) for (const e of s.entries) assert.equal(e.status, s.id);
   // ohne belegte, bestätigte oder pausierte Vorhaben bleiben diese Abschnitte leer
   for (const id of ['entwicklung', 'pausiert']) assert.equal(out.sections.find((s) => s.id === id).entries.length, 0, id);
-  // Als Nächstes: genau die bestätigte Discord-Phase, ohne Dopplung in Geplant
-  const next = out.sections.find((s) => s.id === 'naechstes').entries;
-  assert.deepEqual(next.map((e) => e.id), ['discord-anmeldung']);
-  assert.ok(!out.sections.find((s) => s.id === 'geplant').entries.some((e) => /discord/i.test(e.id + e.title.de)), 'Discord nicht doppelt unter Geplant');
+  assert.deepEqual(out.sections.find((s) => s.id === 'naechstes').entries, []);
+  const planned = out.sections.find((s) => s.id === 'geplant').entries;
+  assert.deepEqual(planned.filter((e) => /discord/i.test(e.id + e.title.de)).map((e) => e.id), ['discord-anmeldung']);
   assert.equal(out.sections.find((s) => s.id === 'pausiert').empty.de, 'Derzeit ist nichts pausiert.');
   assert.ok(out.sections.find((s) => s.id === 'ideen').entries.length > 0);
   assert.deepEqual(validatePublicRoadmap(data, { index }), []);
@@ -103,7 +102,7 @@ test('PUB-T04: „Neu veröffentlicht“ nur mit Produktivbeleg des laufenden Bu
   const future = clone(data); future.entries.find((e) => e.status === 'neu').version = '3.99.0';
   assert.ok(has(validatePublicRoadmap(future, { index }), 'Version nach dem Produktivbuild'));
   // Ein grüner Push oder ein Image-Build ist kein Beleg: nicht erledigte interne Einträge dürfen nicht „neu“ sein
-  const planned = clone(data); const e = planned.entries.find((x) => x.status === 'neu'); e.internal.sources = ['package:AUTH-01'];
+  const planned = clone(data); const e = planned.entries.find((x) => x.status === 'neu'); e.internal.sources = ['open-item:OPEN-AUTH-BETRIEB'];
   assert.ok(has(validatePublicRoadmap(planned, { index }), 'Neu veröffentlicht, aber intern planned'));
   assert.equal(compareVersions('3.18.0', '3.17.0'), 1);
   assert.equal(compareVersions('3.17.0', '3.17.0'), 0);
@@ -165,19 +164,19 @@ test('PUB-T06: Deutsch und Englisch sind vollständig, Bereiche gültig', () => 
   assert.ok(has(validatePublicRoadmap(leaky, { index }), 'interner Begriff'));
 });
 
-test('Discord-Eintrag: bestätigt, ohne Termin, ohne Pflicht-Server und ohne Dopplung', () => {
+test('Discord-Eintrag: Einführung geplant, ohne Termin, ohne Pflicht-Server und ohne Dopplung', () => {
   const e = data.entries.find((x) => x.id === 'discord-anmeldung');
-  assert.equal(e.status, 'naechstes');
-  assert.equal(e.internal.confirmed_by.who, 'Projektinhaber');
+  assert.equal(e.status, 'geplant');
+  assert.deepEqual(e.internal.sources, ['open-item:OPEN-AUTH-BETRIEB']);
   assert.match(e.text.de, /keine Pflicht/); assert.match(e.text.en, /not required/);
   assert.match(e.text.de, /ohne Discord möglich/); assert.match(e.text.de, /Einen Termin gibt es nicht/);
   assert.doesNotMatch(JSON.stringify([e.title, e.text]), /Guild|verpflichtend|Pflicht-?Mitglied/i);
-  assert.equal(data.entries.filter((x) => x.internal.sources.includes('package:AUTH-01')).length, 1, 'AUTH-01 nur einmal');
+  assert.equal(data.entries.filter((x) => x.internal.sources.includes(e.internal.sources[0])).length, 1, 'Discord-Einführung nur einmal');
   // dieselbe interne Quelle in zwei Abschnitten wird gemeldet
-  const dup = clone(data); const g = clone(dup.entries.find((x) => x.id === 'tischkamera')); g.id = 'discord-geplant'; g.internal.sources = ['package:AUTH-01']; dup.entries.push(g);
-  assert.ok(has(validatePublicRoadmap(dup, { index }), 'dieselbe interne Quelle in mehreren Abschnitten: package:AUTH-01'));
+  const dup = clone(data); const g = clone(e); g.id = 'discord-als-idee'; g.status = 'ideen'; dup.entries.push(g);
+  assert.ok(has(validatePublicRoadmap(dup, { index }), 'dieselbe interne Quelle in mehreren Abschnitten: open-item:OPEN-AUTH-BETRIEB'));
   // ohne bestätigte Reihenfolge kein „Als Nächstes“
-  const unconfirmed = clone(data); delete unconfirmed.entries.find((x) => x.id === 'discord-anmeldung').internal.confirmed_by;
+  const unconfirmed = clone(data); unconfirmed.entries.find((x) => x.id === 'discord-anmeldung').status = 'naechstes';
   assert.ok(has(validatePublicRoadmap(unconfirmed, { index }), 'Als Nächstes braucht eine bestätigte Reihenfolge'));
   // unverbindliche Ideen sind ausdrücklich so gekennzeichnet
   for (const id of ['drei-d-experiment', 'discord-activity']) { const i = data.entries.find((x) => x.id === id); assert.equal(i.status, 'ideen'); assert.match(i.text.de, /^Unverbindliche Idee/); assert.match(i.text.en, /^Non-binding idea/); }

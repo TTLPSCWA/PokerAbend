@@ -47,3 +47,5 @@ Der obige Text ist der Planungsstand bei `c3d3cd6`. „Umsetzung separat freigeb
 ## N03 in Version 3.20.0
 
 Die Sichtbarkeit folgt dem AUTH-01-Status zusätzlich zu den persönlichen Ausblendungen. Mit aktiver Modulsperre erhalten Gäste bei direkten Hash-Links eine Anmeldung mit der ursprünglichen Zieladresse. Bei Konfigurationsfehlern erscheint die Meldung ohne Anmeldelink. Nach Berechtigungsverlust verschwinden die geschützten Inhalte. Desktop und Mobil sind mit simulierten Statuswechseln geprüft. Die Zugriffskontrolle selbst wird am echten Testserver geprüft. [Browserfälle](../../test/ui/auth-01.spec.js) · [HTTP-Fälle](../../test/discord.test.js)
+
+N03 wurde mit AUTH-01 in 3.20.2 abgenommen. Der Volllauf prüfte Desktop und Mobil auf dem Commit `28a9e3f` einschließlich des Erhalts der Game-ID während eines Discord-Statuswechsels und des Verwerfens verspäteter geschützter Antworten. [GitHub Actions #241](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305) · [AUTH-Abnahme](AUTH-01.md#abnahme-21112026)

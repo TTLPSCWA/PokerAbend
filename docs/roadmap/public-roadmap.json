@@ -22,7 +22,7 @@
   "review_points": [
     "Abschlussfreigabe: approved auf true setzen erst nach Prüfung aller Texte (DE und EN) durch den Projektinhaber.",
     "Neu veröffentlicht: nur zwei Einträge (3.16.0 und 3.17.0), weil nur sie mit dem beobachteten Produktivbuild belegt sind. Weitere brauchen Version, Implementierungscommit und Ahnenprüfung gegen den Produktivbuild.",
-    "Als Nächstes: Discord-Anmeldung und geschützte Bereiche, vom Projektinhaber am 2026-11-21 als nächste Phase bestätigt. Nicht implementiert; ohne Termin; ohne Pflicht-Server-Mitgliedschaft formuliert.",
+    "Geplant: Prüfung und mögliche Einführung des Discord-Exklusivmodus. Die Implementierung ist geprüft. Die Einführung braucht eine eigene Freigabe und hat noch keinen Termin.",
     "In Entwicklung und Pausiert sind leer (kein nachgewiesener aktiver Auftrag, nichts ausdrücklich pausiert) und zeigen einen Leerzustand.",
     "Benachrichtigungen bleiben unter Geplant.",
     "3D-Experiment und Discord Activity stehen als ausdrücklich unverbindliche Ideen.",
@@ -85,24 +85,19 @@
     {
       "id": "discord-anmeldung",
       "area": "funktionen",
-      "status": "naechstes",
+      "status": "geplant",
       "title": {
         "de": "Discord-Anmeldung und geschützte Bereiche",
         "en": "Discord sign-in and protected areas"
       },
       "text": {
-        "de": "Als Nächstes verbessern wir die Anmeldung mit Discord. Tickets, Abendplanung und Ranglisten sollen damit genutzt werden können; eine Mitgliedschaft auf einem bestimmten Discord-Server ist dafür keine Pflicht. Spielen bleibt weiter ohne Discord möglich. Einen Termin gibt es nicht.",
-        "en": "Next we are improving sign-in with Discord. Tickets, evening planning and leaderboards are meant to work with it; membership of a particular Discord server is not required. Playing stays possible without Discord. No date is promised."
+        "de": "Vor der Einführung prüfen wir Discord als Zugang zu Tickets, Abendplanung und Ranglisten. Eine Mitgliedschaft auf einem bestimmten Discord-Server ist dafür keine Pflicht. Spielen bleibt ohne Discord möglich. Einen Termin gibt es nicht.",
+        "en": "Before rollout, we will check Discord sign-in for tickets, evening planning and leaderboards. Membership of a particular Discord server is not required. Playing remains possible without Discord. No date has been set."
       },
       "internal": {
         "sources": [
-          "package:AUTH-01"
-        ],
-        "confirmed_by": {
-          "who": "Projektinhaber",
-          "on": "2026-11-21",
-          "ref": "Auftrag ROADMAP-02-RELEASE: als nächste Entwicklungsphase bestätigt, nicht implementiert"
-        }
+          "open-item:OPEN-AUTH-BETRIEB"
+        ]
       }
     },
     {

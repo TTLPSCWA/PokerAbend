@@ -105,3 +105,7 @@ Schwierigkeit **3/5**. Schema, Kuratierung der ersten Fassung und Texte etwa 1�
 ROADMAP-02 ist mit 3.19.0 in `c992ba953782b94e4302ce770d7b83b3c58b9056` umgesetzt und gepusht. Push #235 war erfolgreich. Nachtlauf #236 scheiterte im Backgammon-Mobiltest. [Push #235](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44888464577) · [Nachtlauf #236](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44891231093)
 
 QA-REPAIR-01 hat in 3.19.1 (`31fa17d79e65dcbcc2fafbda8232184fad22360f`) den P1-Buildnachweis abgesichert und den Backgammon-Test auf bestätigte Serverrevisionen umgestellt. Push #237 einschließlich Image-Build war erfolgreich. Der Projektinhaber hat entschieden, den separaten Volllauf auf 3.19.1 zu überspringen. Die Umsetzung ist abgeschlossen und die vollständige CI-Abnahme steht aus. Der Besucherstatus bleibt bei `approved: false`. Ein Produktivdeployment fand im Rahmen dieser Arbeiten nicht statt. [Push #237](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44912001011)
+
+## Integrierter Regressionsnachweis
+
+Volllauf #241 enthält die ROADMAP-02-, P1- und Backgammon-Regressionen auf 3.20.2. Alle vier Node- und zwölf Browser-Shards waren erfolgreich. Der Nachweis gehört zum AUTH-Release `28a9e3f0015b78550109c84a2f1b6a36654f9c64`. Der eigenständige 3.19.1-Volllauf bleibt übersprungen. Die Besucherfreigabe steht bei `approved: false`. [GitHub Actions #241](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305)

@@ -62,3 +62,9 @@ Dieser Nachtrag ergänzt den Plan um den tatsächlichen Umsetzungsstand und änd
 ## Nachtrag 21.11.2026 (Version 3.19.1)
 
 ROADMAP-02 wurde mit 3.19.0 umgesetzt und durch QA-REPAIR-01 in 3.19.1 korrigiert. Die Umsetzung ist abgeschlossen. Der separate Volllauf auf 3.19.1 wurde vom Projektinhaber bewusst übersprungen. Besucherfreigabe und Produktivdeployment stehen aus. Der anschließende Auftrag gibt AUTH-01 und den abhängigen NAV-01-Restpunkt N03 zur Entwicklung frei. [Nachweise zu ROADMAP-02](ROADMAP-02.md#nachtrag-21112026)
+
+## Nachtrag 21.11.2026 (Version 3.20.2)
+
+AUTH-01 und NAV-N03 sind mit 3.20.2 auf `main` umgesetzt und im Volllauf #241 abgenommen. Der Release-SHA ist `28a9e3f0015b78550109c84a2f1b6a36654f9c64`. Der Discord-Exklusivmodus ist standardmäßig aus. Die Aktivierung mit produktivem Discord-Client erfordert eine eigene Betriebsfreigabe. [AUTH-Abnahme](AUTH-01.md#abnahme-21112026) · [GitHub Actions #241](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305)
+
+ROADMAP-01 behält seine Nachweishistorie. #241 ergänzt die ROADMAP-02-Regressionsprüfung auf 3.20.2. Der eigenständige Lauf auf 3.19.1 wurde bewusst übersprungen. Die Besucherfreigabe steht aus. [ROADMAP-02](ROADMAP-02.md#integrierter-regressionsnachweis)

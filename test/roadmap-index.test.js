@@ -73,7 +73,13 @@ test('ROAD-T03: kein done oder verified ohne Commit und Nachweis; fehlende Nachw
   }
   assert.equal(entry(committed, 'package:QA-CI-01').status, 'verified');
   assert.equal(entry(committed, 'package:NAV-01').status, 'verified');
-  assert.equal(entry(committed, 'package:AUTH-01').status, 'planned');
+  const auth = entry(committed, 'package:AUTH-01');
+  assert.equal(auth.status, 'verified');
+  assert.equal(auth.evidence.version, '3.20.2');
+  const n03 = entry(committed, 'open-item:OPEN-NAV-N03');
+  assert.equal(n03.status, 'done');
+  assert.equal(n03.links.package, 'AUTH-01');
+  assert.equal(n03.evidence.commit, auth.evidence.commit);
   const roadmap2 = entry(committed, 'package:ROADMAP-02');
   assert.equal(roadmap2.status, 'done');
   assert.deepEqual(roadmap2.stages, { planned: true, implemented: true, ci_accepted: false, deployed: false });
@@ -214,7 +220,7 @@ test('Mutation: geänderte Quellen werden erkannt (Index veraltet, Quellstatus u
 test('Mutation: V3-Lebenszyklus verlangt Belege (CI-Volllauf, Commit, kein erfundenes Deployment)', () => {
   const a = clone(src); a.manual.v3_packages.find((p) => p.id === 'NAV-01').ci_runs = [229];
   assert.ok(has(validateIndex(committed, a), 'NAV-01: ci_accepted ohne grünen Volllauf'));
-  const b = clone(src); b.manual.v3_packages.find((p) => p.id === 'AUTH-01').lifecycle.implemented = true;
+  const b = clone(src); b.manual.v3_packages.find((p) => p.id === 'AUTH-01').implementation_commit = null;
   assert.ok(has(validateIndex(committed, b), 'AUTH-01: implemented ohne Commit'));
   const c = clone(src); c.manual.v3_packages.find((p) => p.id === 'QA-CI-01').lifecycle.deployed = true;
   assert.ok(has(validateIndex(committed, c), 'QA-CI-01: deployed ist ohne Produktivbeleg nicht zulässig'));
@@ -222,6 +228,8 @@ test('Mutation: V3-Lebenszyklus verlangt Belege (CI-Volllauf, Commit, kein erfun
   assert.ok(has(validateIndex(committed, d), 'NAV-01: unbekannter CI-Lauf #999'));
   const e = clone(committed); e.aliases.push({ alias: 'X', target: 'package:GIBT-ES-NICHT', kind: 'renamed-package' });
   assert.ok(has(validateIndex(e, src), 'Alias X zeigt ins Leere'));
+  const f = clone(src); f.manual.open_items.find((p) => p.id === 'OPEN-NAV-N03').resolved_by = 'ROADMAP-02';
+  assert.ok(has(validateIndex(buildIndex(f), f), 'OPEN-NAV-N03: Abschluss verweist auf kein CI-abgenommenes V3-Paket'));
 });
 
 test('Mutation: Vault-Quellen und fehlende Quelldateien werden gemeldet', () => {

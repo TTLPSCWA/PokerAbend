@@ -7,11 +7,11 @@
     "CI-Läufe sind per GitHub-Abfrage belegt (node scripts/build-roadmap-index.mjs --check-ci prüft sie erneut). Ein grüner Lauf oder ein GHCR-Image ist kein Produktivdeployment."
   ],
   "production_observation": {
-    "observed_on": "2026-11-20",
+    "observed_on": "2026-11-21",
     "source": "https://poker.scwagaming.com/health",
     "version": "3.17.0",
     "commit": "cb2c167",
-    "note": "Beobachteter Stand nach dem Push von 3.18.0. Die Pakete ab 3.17.1 sind damit nicht als produktiv belegt."
+    "note": "Der öffentliche Healthcheck meldete nach dem Push von 3.20.1 weiterhin 3.17.0 mit Build cb2c167. Der AUTH-Release ist auf GitHub geprüft. Die Betriebsfreigabe steht aus."
   },
   "ci_runs": [
     { "number": 220, "id": 43841868332, "event": "schedule", "kind": "nightly", "sha": "cb2c167", "conclusion": "failure" },
@@ -29,7 +29,11 @@
     { "number": 232, "id": 44810916088, "event": "push", "kind": "push", "sha": "0bae015", "conclusion": "success" },
     { "number": 235, "id": 44888464577, "event": "push", "kind": "push", "sha": "c992ba9", "conclusion": "success" },
     { "number": 236, "id": 44891231093, "event": "schedule", "kind": "nightly", "sha": "c992ba9", "conclusion": "failure" },
-    { "number": 237, "id": 44912001011, "event": "push", "kind": "push", "sha": "31fa17d", "conclusion": "success" }
+    { "number": 237, "id": 44912001011, "event": "push", "kind": "push", "sha": "31fa17d", "conclusion": "success" },
+    { "number": 238, "id": 44914955060, "event": "push", "kind": "push", "sha": "c1e0191eea039892ac60e5cd9160a38a2c92efd4", "conclusion": "success" },
+    { "number": 239, "id": 44917450753, "event": "push", "kind": "full", "sha": "c56efff0b4c4349058014b886e02bd93f171bcea", "conclusion": "failure" },
+    { "number": 240, "id": 44930313619, "event": "push", "kind": "full", "sha": "f88e1d600871978819da4226c198fa472cd21a0c", "conclusion": "failure" },
+    { "number": 241, "id": 44932771305, "event": "push", "kind": "full", "sha": "28a9e3f0015b78550109c84a2f1b6a36654f9c64", "conclusion": "success" }
   ],
   "v3_packages": [
     {
@@ -44,14 +48,14 @@
       "aliases": [],
       "lifecycle": { "planned": true, "implemented": true, "ci_accepted": true, "deployed": false },
       "version": "3.18.0", "implementation_commit": "0f14e1927e064216c916a7d4b1f77b69e768a152", "ci_runs": [229, 230],
-      "note": "N03 bleibt von AUTH-01 abhängig. Restpunkte stehen als eigene offene Punkte (OPEN-NAV-*)."
+      "note": "N03 wurde mit AUTH-01 in 3.20.2 abgenommen. Die übrigen Restpunkte stehen als eigene offene Punkte (OPEN-NAV-*)."
     },
     {
       "id": "AUTH-01", "title": "Aktive Discord-Sitzung", "area": "B", "doc": "docs/v3-entwurf/AUTH-01.md",
       "aliases": [],
-      "lifecycle": { "planned": true, "implemented": false, "ci_accepted": false, "deployed": false },
-      "version": null, "implementation_commit": null, "ci_runs": [],
-      "note": "Geplant, nicht freigegeben."
+      "lifecycle": { "planned": true, "implemented": true, "ci_accepted": true, "deployed": false },
+      "version": "3.20.2", "implementation_commit": "28a9e3f0015b78550109c84a2f1b6a36654f9c64", "ci_runs": [239, 240, 241],
+      "note": "D1, D3, D5 und NAV-N03. Nachgebessert in 3.20.1 und 3.20.2. Volllauf #241 mit Schnelltests, Image-Build, 4 Node- und 12 Browser-Shards sowie Zusammenfassung grün. Exklusivmodus standardmäßig aus."
     },
     {
       "id": "ROADMAP-01", "title": "Zentrale Entwicklungsplanung (Index)", "area": "B", "doc": "docs/v3-entwurf/ROADMAP-01.md",
@@ -72,7 +76,8 @@
     { "id": "OPEN-NAV-N02", "title": "N02: Entfernen eines Favoriten per Stern, Reconnect und zweite Browserinstanz für Favoriten automatisiert prüfen", "area": "E", "source": "docs/v3-entwurf/NAV-01.md" },
     { "id": "OPEN-NAV-N06", "title": "N06: Tab-Navigation im geöffneten Mobil-Menü und Überlaufen im Englischen mit allen Schaltern prüfen", "area": "E", "source": "docs/v3-entwurf/NAV-01.md" },
     { "id": "OPEN-NAV-IDLE", "title": "Idle-Spiel unter den Mehrspieler-Spielen in den Sichtbarkeitstests abdecken", "area": "E", "source": "docs/v3-entwurf/NAV-01.md" },
-    { "id": "OPEN-NAV-N03", "title": "N03: Exklusivmodus, Gast, Direktlink mit Anmeldeoption (hängt von AUTH-01 ab)", "area": "B", "source": "docs/v3-entwurf/TESTMATRIX.md" },
+    { "id": "OPEN-NAV-N03", "title": "N03: Exklusivmodus, Gast, Direktlink mit Anmeldeoption", "area": "B", "source": "docs/v3-entwurf/TESTMATRIX.md", "resolved_by": "AUTH-01" },
+    { "id": "OPEN-AUTH-BETRIEB", "title": "Betriebsprüfung und separate Freigabe des Discord-Exklusivmodus", "area": "E", "source": "docs/v3-entwurf/AUTH-01.md" },
     { "id": "OPEN-QA-AUDIO", "title": "Zweiter Audio-Fallback aus QA-CI-01", "area": "E", "source": "docs/agents/sessions/QA-CI-01-NACHBESSERUNG.md" },
     { "id": "OPEN-QA-TIMEOUT", "title": "Einzelner Bröckelboden-Timeout unter Last", "area": "E", "source": "docs/agents/sessions/QA-CI-01-NACHBESSERUNG-2.md" },
     { "id": "OPEN-QA-PERF", "title": "Lokale Leistungsschwankungen und Countdown unter Last", "area": "E", "source": "docs/agents/sessions/QA-CI-01.md" },

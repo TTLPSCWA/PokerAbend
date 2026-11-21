@@ -40,10 +40,9 @@ test('freigegeben: sechs Abschnitte mit Karten, Leerzuständen und ohne interne 
   // leere Abschnitte haben einen Leerzustand
   await expect(page.locator('.pubroad-entwicklung .pubroad-empty')).toHaveText('Hier ist gerade nichts eingetragen.');
   await expect(page.locator('.pubroad-pausiert .pubroad-empty')).toHaveText('Derzeit ist nichts pausiert.');
-  await expect(page.locator('.pubroad-naechstes .pubroad-card')).toHaveCount(1);
-  await expect(page.locator('.pubroad-naechstes')).toContainText('Discord-Anmeldung und geschützte Bereiche');
-  await expect(page.locator('.pubroad-naechstes')).toContainText('keine Pflicht');
-  await expect(page.locator('.pubroad-geplant')).not.toContainText('Discord-Anmeldung');
+  await expect(page.locator('.pubroad-naechstes .pubroad-card')).toHaveCount(0);
+  await expect(page.locator('.pubroad-geplant')).toContainText('Discord-Anmeldung und geschützte Bereiche');
+  await expect(page.locator('.pubroad-geplant')).toContainText('keine Pflicht');
   await expect(page.locator('.pubroad-geplant .pubroad-card')).not.toHaveCount(0);
   await expect(page.locator('.pubroad-ideen .pubroad-card')).not.toHaveCount(0);
   // keine Paketnummern, Pfade, Hashes oder Agenten
@@ -95,7 +94,7 @@ test('Englisch und Sprachwechsel: Abschnitte, Texte und Bedienelemente', async (
   await expect(page.locator('.pubroad-neu')).toContainText('Version 3.17.0');
   await expect(page.locator('.pubroad-pausiert .pubroad-empty')).toHaveText('Nothing is paused at the moment.');
   await expect(page.locator('.pubroad-entwicklung .pubroad-empty')).toHaveText('Nothing is listed here right now.');
-  await expect(page.locator('.pubroad-naechstes')).toContainText('not required');
+  await expect(page.locator('.pubroad-geplant')).toContainText('not required');
   await expect(page.locator('[data-pubroad-filter="aussehen"]')).toHaveText('Look');
   await expect(page.locator('.pubroad-history a')).toHaveText('Change history and earlier roadmap');
   await expect(page.locator('.pubroad-filters')).toHaveAttribute('aria-label', 'Filter roadmap by area');

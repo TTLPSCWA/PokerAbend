@@ -62,11 +62,11 @@
     "deployed": "Produktivstand per Healthcheck mit passendem Build belegt; null = nicht belegt"
   },
   "production_observation": {
-    "observed_on": "2026-11-20",
+    "observed_on": "2026-11-21",
     "source": "https://poker.scwagaming.com/health",
     "version": "3.17.0",
     "commit": "cb2c167",
-    "note": "Beobachteter Stand nach dem Push von 3.18.0. Die Pakete ab 3.17.1 sind damit nicht als produktiv belegt."
+    "note": "Der öffentliche Healthcheck meldete nach dem Push von 3.20.1 weiterhin 3.17.0 mit Build cb2c167. Der AUTH-Release ist auf GitHub geprüft. Die Betriebsfreigabe steht aus."
   },
   "sources": [
     {
@@ -181,7 +181,8 @@
       "done": 12
     },
     "open-item/open-item": {
-      "total": 12,
+      "total": 13,
+      "done": 1,
       "planned": 12
     },
     "package/art": {
@@ -229,8 +230,7 @@
     "package/v3": {
       "total": 5,
       "done": 2,
-      "planned": 1,
-      "verified": 2
+      "verified": 3
     },
     "package/vis": {
       "total": 107,
@@ -274,6 +274,7 @@
       "package:ART-W2",
       "package:ART-W3",
       "package:ART-W4",
+      "package:AUTH-01",
       "package:BACKLOG-01",
       "package:BACKLOG-02",
       "package:BACKLOG-03",
@@ -740,6 +741,38 @@
       "event": "push",
       "kind": "push",
       "sha": "31fa17d",
+      "conclusion": "success"
+    },
+    {
+      "number": 238,
+      "id": 44914955060,
+      "event": "push",
+      "kind": "push",
+      "sha": "c1e0191eea039892ac60e5cd9160a38a2c92efd4",
+      "conclusion": "success"
+    },
+    {
+      "number": 239,
+      "id": 44917450753,
+      "event": "push",
+      "kind": "full",
+      "sha": "c56efff0b4c4349058014b886e02bd93f171bcea",
+      "conclusion": "failure"
+    },
+    {
+      "number": 240,
+      "id": 44930313619,
+      "event": "push",
+      "kind": "full",
+      "sha": "f88e1d600871978819da4226c198fa472cd21a0c",
+      "conclusion": "failure"
+    },
+    {
+      "number": 241,
+      "id": 44932771305,
+      "event": "push",
+      "kind": "full",
+      "sha": "28a9e3f0015b78550109c84a2f1b6a36654f9c64",
       "conclusion": "success"
     }
   ],
@@ -1431,21 +1464,25 @@
         "file": "docs/roadmap/roadmap-index-input.json",
         "ptr": "v3_packages[2]"
       },
-      "source_status": "planned",
-      "status": "planned",
+      "source_status": "ci_accepted",
+      "status": "verified",
       "stages": {
         "planned": true,
-        "implemented": false,
-        "ci_accepted": false,
+        "implemented": true,
+        "ci_accepted": true,
         "deployed": false
       },
       "evidence": {
-        "commit": null,
+        "commit": "28a9e3f0015b78550109c84a2f1b6a36654f9c64",
         "completed_at": null,
         "tests": 0,
-        "refs": 1,
-        "version": null,
-        "ci_runs": []
+        "refs": 4,
+        "version": "3.20.2",
+        "ci_runs": [
+          239,
+          240,
+          241
+        ]
       },
       "links": {
         "doc": "docs/v3-entwurf/AUTH-01.md"
@@ -16361,6 +16398,35 @@
       ]
     },
     {
+      "key": "open-item:OPEN-AUTH-BETRIEB",
+      "namespace": "open-item",
+      "id": "OPEN-AUTH-BETRIEB",
+      "title": "Betriebsprüfung und separate Freigabe des Discord-Exklusivmodus",
+      "area": "E",
+      "group": "open-item",
+      "source": {
+        "file": "docs/roadmap/roadmap-index-input.json",
+        "ptr": "open_items[4]",
+        "reference": "docs/v3-entwurf/AUTH-01.md"
+      },
+      "source_status": "open",
+      "status": "planned",
+      "stages": {
+        "planned": true,
+        "implemented": false,
+        "ci_accepted": null,
+        "deployed": null
+      },
+      "evidence": {
+        "commit": null,
+        "completed_at": null,
+        "tests": 0,
+        "refs": 0
+      },
+      "links": {},
+      "diagnostics": []
+    },
+    {
       "key": "open-item:OPEN-CI-NIGHTLY",
       "namespace": "open-item",
       "id": "OPEN-CI-NIGHTLY",
@@ -16369,7 +16435,7 @@
       "group": "open-item",
       "source": {
         "file": "docs/roadmap/roadmap-index-input.json",
-        "ptr": "open_items[9]",
+        "ptr": "open_items[10]",
         "reference": "docs/v3-entwurf/QA-CI-01.md"
       },
       "source_status": "open",
@@ -16398,7 +16464,7 @@
       "group": "open-item",
       "source": {
         "file": "docs/roadmap/roadmap-index-input.json",
-        "ptr": "open_items[10]",
+        "ptr": "open_items[11]",
         "reference": "docs/v3-entwurf/README.md"
       },
       "source_status": "open",
@@ -16427,7 +16493,7 @@
       "group": "open-item",
       "source": {
         "file": "docs/roadmap/roadmap-index-input.json",
-        "ptr": "open_items[11]",
+        "ptr": "open_items[12]",
         "reference": "docs/v3-entwurf/ROADMAP-01.md"
       },
       "source_status": "open",
@@ -16457,7 +16523,7 @@
       "group": "open-item",
       "source": {
         "file": "docs/roadmap/roadmap-index-input.json",
-        "ptr": "open_items[8]",
+        "ptr": "open_items[9]",
         "reference": "CHANGELOG.md"
       },
       "source_status": "open",
@@ -16486,7 +16552,7 @@
       "group": "open-item",
       "source": {
         "file": "docs/roadmap/roadmap-index-input.json",
-        "ptr": "open_items[7]",
+        "ptr": "open_items[8]",
         "reference": "CHANGELOG.md"
       },
       "source_status": "open",
@@ -16568,7 +16634,7 @@
       "key": "open-item:OPEN-NAV-N03",
       "namespace": "open-item",
       "id": "OPEN-NAV-N03",
-      "title": "N03: Exklusivmodus, Gast, Direktlink mit Anmeldeoption (hängt von AUTH-01 ab)",
+      "title": "N03: Exklusivmodus, Gast, Direktlink mit Anmeldeoption",
       "area": "B",
       "group": "open-item",
       "source": {
@@ -16576,21 +16642,23 @@
         "ptr": "open_items[3]",
         "reference": "docs/v3-entwurf/TESTMATRIX.md"
       },
-      "source_status": "open",
-      "status": "planned",
+      "source_status": "resolved",
+      "status": "done",
       "stages": {
         "planned": true,
-        "implemented": false,
-        "ci_accepted": null,
-        "deployed": null
+        "implemented": true,
+        "ci_accepted": true,
+        "deployed": false
       },
       "evidence": {
-        "commit": null,
+        "commit": "28a9e3f0015b78550109c84a2f1b6a36654f9c64",
         "completed_at": null,
         "tests": 0,
-        "refs": 0
+        "refs": 3
       },
-      "links": {},
+      "links": {
+        "package": "AUTH-01"
+      },
       "diagnostics": []
     },
     {
@@ -16631,7 +16699,7 @@
       "group": "open-item",
       "source": {
         "file": "docs/roadmap/roadmap-index-input.json",
-        "ptr": "open_items[4]",
+        "ptr": "open_items[5]",
         "reference": "docs/agents/sessions/QA-CI-01-NACHBESSERUNG.md"
       },
       "source_status": "open",
@@ -16660,7 +16728,7 @@
       "group": "open-item",
       "source": {
         "file": "docs/roadmap/roadmap-index-input.json",
-        "ptr": "open_items[6]",
+        "ptr": "open_items[7]",
         "reference": "docs/agents/sessions/QA-CI-01.md"
       },
       "source_status": "open",
@@ -16689,7 +16757,7 @@
       "group": "open-item",
       "source": {
         "file": "docs/roadmap/roadmap-index-input.json",
-        "ptr": "open_items[5]",
+        "ptr": "open_items[6]",
         "reference": "docs/agents/sessions/QA-CI-01-NACHBESSERUNG-2.md"
       },
       "source_status": "open",

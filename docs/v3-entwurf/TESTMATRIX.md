@@ -76,3 +76,24 @@ Die HTTP-Fälle verwenden temporäre Datenverzeichnisse, synthetische Konten und
 | N03 | [Browser](../../test/ui/auth-01.spec.js), [NAV-Nachbartests](../../test/ui/nav-visibility.spec.js) | Seitennavigation, Mobil-Tabs, Mehr-Menü, Startseite, Direktlink, Fokus, Sprache und Berechtigungsverlust geprüft. Ohne Berechtigung werden keine geschützten Ansichtsabfragen ausgelöst. |
 
 Die kombinierte Matrix nutzt getrennte Server- und Browsernachweise. Die Tests führen weder eine Anmeldung am späteren produktiven Discord-Client noch eine Betriebsaktivierung aus.
+
+## Vollständige CI-Abnahme für 3.20.2
+
+Der erste Workflowversuch #241 lief auf `28a9e3f0015b78550109c84a2f1b6a36654f9c64`. Vier Node-Shards meldeten 2.311 bestandene und drei ausgelassene Fälle. In den Browser-Shards bestanden 1.476 Fälle im ersten Versuch und drei nach Retry. 277 Fälle waren gemäß bestehenden Testbedingungen ausgelassen. Es gab keinen endgültigen Testfehler. [Workflow](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305) · [Node-Shard mit AUTH](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305/job/136932801542) · [Zusammenfassung](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305/job/136940326890)
+
+| Shard | Bestanden im ersten Versuch | Bestanden nach Retry | Ausgelassen |
+| --- | ---: | ---: | ---: |
+| [Browser 1](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305/job/136932801670) | 127 | 0 | 2 |
+| [Browser 2](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305/job/136932801452) | 127 | 0 | 3 |
+| [Browser 3](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305/job/136932801512) | 129 | 0 | 0 |
+| [Browser 4](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305/job/136932801550) | 131 | 0 | 0 |
+| [Browser 5](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305/job/136932801411) | 127 | 0 | 108 |
+| [Browser 6](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305/job/136932801684) | 128 | 0 | 0 |
+| [Browser 7](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305/job/136932801559) | 114 | 1 | 14 |
+| [Browser 8](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305/job/136932801628) | 113 | 2 | 11 |
+| [Browser 9](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305/job/136932801626) | 112 | 0 | 17 |
+| [Browser 10](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305/job/136932801545) | 125 | 0 | 6 |
+| [Browser 11](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305/job/136932801582) | 120 | 0 | 115 |
+| [Browser 12](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305/job/136932801554) | 123 | 0 | 1 |
+
+Der mobile Würfeljagd-Test in Shard 7, der mobile UNO-Flip-Kartenwelttest und der mobile Doppelkopf-Erlebnistest in Shard 8 bestanden jeweils beim einzigen Retry. Die AUTH- und N03-Browserfälle bestanden auf Desktop und Mobil im ersten Versuch. Der Ranked-Erfolgstest spielte in beiden Projekten mit zwei Sitzungen des synthetischen OAuth-Providers. [AUTH Desktop](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305/job/136932801670) · [AUTH Mobil](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305/job/136932801559) · [Ranked-Erfolg Desktop](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305/job/136932801684) · [Ranked-Erfolg Mobil](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44932771305/job/136932801554)
