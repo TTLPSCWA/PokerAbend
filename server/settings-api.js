@@ -7,7 +7,8 @@ import { patchProblem, SETTINGS_DEFAULTS } from './settings.js';
 
 export const EXPORT_SCHEMA = 1;
 
-export function createMeAPI({ accounts, leaderboard, achievements, games, erase, secure = () => false, trustProxy = false, onChange = () => {} }) {
+export function createMeAPI({ accounts, leaderboard, achievements, games, erase, exportIdle = () => [],
+  secure = () => false, trustProxy = false, onChange = () => {} }) {
   const router = express.Router(), reads = limiter({ windowMs: 60000, max: 120 }), writes = limiter({ windowMs: 60000, max: 40 }), exports_ = limiter({ windowMs: 10 * 60000, max: 10 }), deletes = limiter({ windowMs: 10 * 60000, max: 5 });
   const names = new Map(games.map((g) => [g.id, g.name]));
   router.use((req, res, next) => {
@@ -40,6 +41,7 @@ export function createMeAPI({ accounts, leaderboard, achievements, games, erase,
     if (!exports_.hit(req.accountId)) { res.setHeader('Retry-After', 600); return res.status(429).json({ error: 'Zu viele Exporte. Bitte warte ein paar Minuten' }); }
     const a = accounts.get(req.accountId), id = a.id, detail = achievements.detailFor(id, a.name), times = accounts.achievementTimes(id);
     const profile = leaderboard.profile({ accountId: id, name: a.name });
+    const idleSaves = exportIdle(id);
     const payload = {
       schemaVersion: EXPORT_SCHEMA, exportedAt: new Date().toISOString(),
       account: { gameId: a.gameId, name: a.name, avatar: a.avatar, createdAt: a.createdAt ? new Date(a.createdAt).toISOString() : null, discord: accounts.isRegistered(id) ? { linked: true, name: a.discord?.name || '' } : { linked: false } },
@@ -48,6 +50,7 @@ export function createMeAPI({ accounts, leaderboard, achievements, games, erase,
       achievements: detail.badges.filter((b) => b.unlocked).map((b) => ({ id: b.id, title: b.title, unlockedAt: times[b.id] ? new Date(times[b.id]).toISOString() : null })),
       rounds: leaderboard.accountRounds(id, 5000).map((r) => ({ game: r.game, at: new Date(r.at).toISOString(), ranked: r.ranked, won: r.win, place: r.place, points: r.points, players: r.players })),
       claimedLegacyNames: leaderboard.claims().filter((c) => c.claimedBy === id).map((c) => c.name),
+      ...(idleSaves.length ? { idleSaves } : {}),
     };
     res.setHeader('Content-Disposition', `attachment; filename="spieleabend-daten-${a.gameId.slice(1)}.json"`);
     res.type('application/json').send(JSON.stringify(payload, null, 2));
@@ -65,6 +68,9 @@ export function createMeAPI({ accounts, leaderboard, achievements, games, erase,
   });
 
   router.use((error, _req, res, _next) => {
+    if (error.code === 'idle-storage-unavailable' && error.status === 503) {
+      return res.status(error.status).json({ code: error.code, error: error.message });
+    }
     const status = error.status >= 400 && error.status < 500 ? error.status : 500;
     res.status(status).json({ error: error.type === 'entity.parse.failed' ? 'Ungültiges JSON' : status === 500 ? 'Das hat nicht geklappt' : error.message });
   });

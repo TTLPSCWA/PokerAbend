@@ -46,8 +46,10 @@ export function createIdleExportCodec({ keys, current }) {
   const signature = (key, id, payload) => digest(key, 'idle-save-v1', id + '.' + payload);
 
   return Object.freeze({
-    encode(accountId, record) {
-      const key = keyring.get(current);
+    activeKeyId: current,
+    encode(accountId, record, keyId = current) {
+      const key = keyring.get(keyId);
+      requireIdle(key, 'unknown-key');
       const body = {
         version: 1, gameId: record.snapshot.gameId, runId: record.runId, revision: record.revision,
         savedAt: record.snapshot.at, binding: binding(key, accountId), snapshot: record.snapshot,
@@ -56,7 +58,7 @@ export function createIdleExportCodec({ keys, current }) {
       const data = Buffer.from(canonical(body), 'utf8');
       requireIdle(data.length <= maxPayload, 'payload-too-large');
       const payload = data.toString('base64url');
-      return [current, payload, signature(key, current, payload).toString('base64url')].join('.');
+      return [keyId, payload, signature(key, keyId, payload).toString('base64url')].join('.');
     },
     decode(accountId, gameId, text) {
       requireIdle(typeof text === 'string' && text.length <= Math.ceil(maxPayload * 4 / 3) + 80, 'payload-too-large');

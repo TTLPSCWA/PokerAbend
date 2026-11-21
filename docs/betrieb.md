@@ -1,8 +1,8 @@
 # Betrieb: Spieleabend aufsetzen, aktualisieren, sichern, reparieren
 
-Stand: Version **3.21.0** (21. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
+Stand: Version **3.22.0** (21. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
 
-Das [Idle-Fundament](idle-engine.md) wird mitgeliefert. HTTP-Routen, eine produktive Idle-Datenablage und ein betrieblicher Schlüsselring folgen in gesonderten Paketen. Für Version 3.21.0 ist keine Idle-Konfiguration erforderlich.
+Die [Idle-Konto- und Speicheranbindung](idle-engine.md) wird mitgeliefert. Die Konfiguration des Schlüsselrings ist erst mit dem ersten separat freigegebenen und registrierten Idle-Spiel nötig.
 
 **Inhalt**
 
@@ -115,6 +115,7 @@ Alles oder nichts: `DISCORD_CLIENT_SECRET` und `PUBLIC_URL` müssen zusammen ges
 | `DISCORD_GUILD_ID` | `900000000000000001` | Optional. Mit Server-ID ermöglicht bestätigte Mitgliedschaft den Seitenzugang per Discord. Ohne Server-ID stehen OAuth und Verknüpfung nach regulärem Seitenzugang zur Verfügung. |
 | `DISCORD_ROLE_ID` | `900000000000000002` | Optional: nur Mitglieder mit dieser Rolle kommen per Discord hinein. |
 | `DISCORD_EXCLUSIVE_MODULES` | `off` | Standard aus. Mit `on` erfordern Tickets, Abendplanung, Ranglisten, Altnamen und Abend-Rückblicke einschließlich Modulexporten eine aktive, zum Konto passende Discord-Sitzung. |
+| `IDLE_SAVE_KEYRING` | leer | Serverseitiger JSON-Schlüsselring für die Signatur von Idle-Spielständen. Einrichtung und Rotation stehen in der [Idle-Betriebsdokumentation](idle-engine.md#schlüsselring-und-rotation). |
 
 Den Exklusivschalter erst nach einer gesonderten Betriebsfreigabe setzen. Eine gesetzte Rollen-ID setzt eine gültige Guild-ID voraus. Fehlende OAuth-Pflichtwerte, eine ungültige Mitgliedsrichtlinie oder deaktiviertes Discord führen bei aktiver Modulsperre zu HTTP 503 mit `discord-configuration`. Eine fehlende, widerrufene oder kontofremde Sitzung führt zu HTTP 403 mit `discord-required`. Das Gruppenpasswort gilt unverändert. Der unabhängige Adminzugang unter `/admin` enthält Ticket- und Statistikmoderation. Ticket-Markdown ist dort unter `/admin/api/tickets/export.md` und `/admin/api/tickets/:id/export.md` abrufbar.
 
@@ -289,6 +290,8 @@ Die Besucher-Roadmap kommt aus der kuratierten Datei `docs/roadmap/public-roadma
 ## 7. Sichern und Wiederherstellen
 
 **Was gesichert wird:** das ganze Volume (`/app/data`): Tische, Verläufe, Bestenliste, Konten, Tickets, Planungen, Admin-Protokoll, `secret.key`, `features.json`.
+
+Sobald Idle-Bestandsdaten unter `/app/data/idle` vorliegen, Server für eine konsistente Sicherung von Konten und Idle-Savepoints stoppen. Die Schlüsselkonfiguration getrennt sichern. Hinweise zu Writer-Sperre, defekten Daten und Wiederherstellung stehen in der [Idle-Betriebsdokumentation](idle-engine.md#datenablage-und-betrieb).
 
 **Einrichten** (einmal auf dem Server):
 

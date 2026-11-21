@@ -247,7 +247,14 @@ export function createDiscordAuth({ config, secret, dataDir, accounts, identity,
     merges.delete(current?.id);
     if (!offer || offer.expires <= now() || !accounts.has(offer.to)) return res.status(409).json({ error: 'Die Rückfrage ist abgelaufen. Bitte verknüpfe Discord noch einmal' });
     if (req.body?.confirm !== true) return res.json({ ok: true, merged: false });
-    merge(current.id, offer.to);
+    try {
+      if (merge(current.id, offer.to) === false) return res.status(409).json({ error: 'Diese Konten können nicht mehr verbunden werden.' });
+    } catch (error) {
+      if (error.code?.startsWith('idle-') && [409, 503].includes(error.status)) {
+        return res.status(error.status).json({ code: error.code, error: error.message });
+      }
+      throw error;
+    }
     setGuest(req, res, accounts.get(offer.to).id);
     res.json({ ok: true, merged: true });
   });

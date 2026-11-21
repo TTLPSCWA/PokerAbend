@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.22.0 – 21. November 2026
+
+* Die Idle-Plattform kann manuelle Spielstände sicher einem Spieleabend-Konto zuordnen. Dazu gehören Gerätewechsel, signierte Exporte, Importvorschau, Schlüsselwechsel und das Löschen der eigenen Daten. Die drei geplanten Idle-Spiele erscheinen nach ihrer jeweiligen Freigabe.
+
 ## 3.21.0 – 21. November 2026
 
 * Technisches Fundament für Die Spielhalle, Game Studio Tycoon und Factory Empire mit gemeinsamem Fortschritt, Offline-Berechnung und manuellen, signierten Spielständen. Die drei Spiele folgen in eigenen Paketen und erscheinen mit diesem Stand noch nicht im Spielekatalog.

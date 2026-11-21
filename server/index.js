@@ -44,6 +44,8 @@ import { createPlanAPI } from './plan-api.js';
 import { createAchievements } from './achievements.js';
 import { createProfiles, createProfileAPI } from './profile.js';
 import { createMeAPI } from './settings-api.js';
+import { createIdleRuntime, isIdleRequest } from './idle/runtime.js';
+import { idleEngines } from './idle/registry.js';
 import { variantOf, variantName, scoreKey } from '../games/variants.js';
 import { themeRegistry } from '../public/games/theme-worlds/registry.js';
 // ART-W0: zentrale Themenwelten-Registry (enthält die Kartenwelten ART-T); nennt eine Welt ein unbekanntes Spiel, startet der Server nicht
@@ -55,6 +57,10 @@ const PORT = Number(process.env.PORT || 3000);
 // Fail closed before opening/migrating any data when local preview was requested.
 const privateMonopoly = configurePrivateMonopoly();
 const DATA_DIR = process.env.DATA_DIR || join(__dirname, '..', 'data');
+const idle = createIdleRuntime({
+  dataDir: DATA_DIR, engines: idleEngines, keyring: process.env.IDLE_SAVE_KEYRING,
+  accountMembers: (id) => accounts.members(id), persistAccounts: () => accounts.save({ flush: true }),
+});
 // V2-01: vor der ersten Nutzung des neuen Formats die vorhandenen Dateien einmalig sichern (nur kopieren)
 try {
   const backup = backupBeforeIdentityMigration(DATA_DIR);
@@ -92,7 +98,10 @@ const MAX_CONN_PER_IP = Number(process.env.MAX_CONN_PER_IP || 30);
 const MODE = SITE_PASSWORD ? 'password' : 'open';
 const SECRET = loadSecret(DATA_DIR);
 const auth = createAuth({ password: SITE_PASSWORD, secret: SECRET });
-const accounts = createAccountStore(DATA_DIR, { onChange: () => save() });   // interne Konto-IDs und öffentliche Game-IDs
+const accounts = createAccountStore(DATA_DIR, {
+  onChange: () => save(), beforeMerge: idle.beforeMerge, beforeDelete: idle.beforeDelete,
+});
+idle.assertAccountHistory(accounts.loadedFromDisk);
 // Feature-Flags (V2-10): .env (FEATURE_*, DISABLED_GAMES) und /admin → Funktionen; Standard: nichts ändert sich, nur die Kamera ist aus
 const features = createFeatures({ dir: DATA_DIR, knownGames: [...Object.keys(GAMES), ...Object.keys(SINGLEPLAYER_GAMES)] });
 const discordOn = () => !!discord && features.enabled('discord');
@@ -134,7 +143,11 @@ const loggedIn = (req) => hasAccess(req.headers.cookie);
 const discord = createDiscordAuth({
   config: discordConfig(), secret: SECRET, dataDir: DATA_DIR, accounts, identity, accountOf: (cookieHeader) => accountOf(cookieHeader),
   siteAccess: (req) => MODE === 'open' || loggedIn(req), secure: (req) => isSecure(req), trustProxy: TRUST_PROXY, onChange: () => save(),
-  merge: (from, to) => { accounts.merge(from, to); leaderboard.merge(from, to, accounts.get(to)?.name || ''); mergeAccounts(from, to); save(); },
+  merge: (from, to) => {
+    if (!accounts.merge(from, to)) return false;
+    leaderboard.merge(from, to, accounts.get(to)?.name || ''); mergeAccounts(from, to); save();
+    return true;
+  },
 });
 if (discord) console.log(`Discord-Anmeldung: an${discord.config.guildId ? ' (Seitenzugang für berechtigte Mitglieder)' : ' (Identität nach Seitenzugang)'}`);
 const DISCORD_ERRORS = {
@@ -197,6 +210,9 @@ app.use((req, res, next) => {
     if (isPage(req) && passwordOk(req)) res.setHeader('Set-Cookie', cookieHeader(auth.issue(), { secure: isSecure(req) }));
     return next();
   }
+  if (idleEngines.length && isIdleRequest(req.path)) {
+    return res.set('Cache-Control', 'no-store').status(401).json({ code: 'site-access-required', error: 'Bitte melde dich bei Spieleabend an.' });
+  }
   if (req.method === 'GET' && !req.path.includes('.') && req.path !== '/me') {
     return res.redirect(`/login?next=${encodeURIComponent(req.originalUrl)}`);
   }
@@ -206,7 +222,10 @@ app.use((req, res, next) => {
 // die parallel kommen) und wird bei jedem Besuch erneuert. Ohne gültiges Cookie gibt es keine Konto-ID – der Client kann keine behaupten.
 const accountOf = (cookieHeader) => { const id = identity.verify(parseCookies(cookieHeader)[GUEST_COOKIE]); return id ? accounts.ensure(id) : null; };
 app.use((req, res, next) => {
-  let account = accountOf(req.headers.cookie);
+  // An Idle API request can use an existing account, never create one from an old cookie.
+  const existingOnly = idleEngines.length && isIdleRequest(req.path);
+  let account = existingOnly ? accounts.get(identity.verify(parseCookies(req.headers.cookie)[GUEST_COOKIE]))
+    : accountOf(req.headers.cookie);
   const issues = isPage(req) || req.path.startsWith('/api/identity');
   if (!account && issues) {
     // Wer ohne Cookie immer wieder die Seite lädt, würde sonst unbegrenzt Konten anlegen
@@ -227,6 +246,8 @@ app.use('/api', (req, res, next) => {
   res.setHeader('Retry-After', apiLimit.retryAfter(ip));
   res.status(429).json({ error: 'Zu viele Anfragen – bitte kurz warten' });
 });
+const idleRouter = idle.router(accounts, TRUST_PROXY);
+if (idleRouter) app.use('/api/idle', idleRouter);
 function discordAccess(req) {
   const configured = discordOn() && discord.config.policyValid;
   const active = !!(configured && discord.sessionReference(req.headers.cookie, req.accountId));
@@ -406,15 +427,16 @@ profileRouter = createProfileAPI({ profiles, accounts, competitionAllowed, trust
 const DELETED_ACCOUNT = '0'.repeat(32);
 function eraseAccount(accountId) {
   const gameId = accounts.get(accountId)?.gameId;
-  if (gameId) { ticketAPI.rebindGameId(gameId, null); planAPI.rebindGameId(gameId, null); reviews?.rebindGameId(gameId, null); }
   const removed = accounts.deleteAccount(accountId);
+  if (gameId) { ticketAPI.rebindGameId(gameId, null); planAPI.rebindGameId(gameId, null); reviews?.rebindGameId(gameId, null); }
   leaderboard.forgetAccounts(removed);
   for (const id of removed) { ticketAPI.rebind(id, DELETED_ACCOUNT); planAPI.rebind(id, DELETED_ACCOUNT); boardStore().rebind(id, DELETED_ACCOUNT); discord?.revokeAccount(id); }
   for (const room of rooms.values()) for (const p of room.players.values()) if (removed.includes(p.accountId)) p.accountId = null;
   for (const s of io.sockets.sockets.values()) if (removed.includes(s.data.accountId)) s.data.accountId = null;
   leaderboard.save(); presence.changed(); save();
 }
-meRouter = createMeAPI({ accounts, leaderboard, achievements, games: Object.values(GAMES), erase: eraseAccount, secure: isSecure, trustProxy: TRUST_PROXY, onChange: () => save() });
+meRouter = createMeAPI({ accounts, leaderboard, achievements, games: Object.values(GAMES), erase: eraseAccount,
+  exportIdle: idle.accountStates, secure: isSecure, trustProxy: TRUST_PROXY, onChange: () => save() });
 
 // ---------- Speichern ----------
 // Verlauf pro Tisch in eigener Datei – der Spielstand bleibt klein, der Verlauf wird nur bei Änderungen geschrieben

@@ -18,10 +18,15 @@ export const PRIVACY_DEFAULTS = Object.freeze({ hidden: false, showDiscord: fals
 export const PRIVACY_KEYS = Object.keys(PRIVACY_DEFAULTS);
 const emptyState = () => ({ schemaVersion: SCHEMA_VERSION, accounts: {}, externals: {}, audit: [] });
 
-export function createAccountStore(dir, { now = Date.now, onChange = () => {} } = {}) {
+export function createAccountStore(dir, { now = Date.now, onChange = () => {}, beforeMerge = () => false, beforeDelete = () => {} } = {}) {
   const file = join(dir, 'accounts.json');
-  let state = emptyState(), dirty = false, unreadable = null;
-  try { if (existsSync(file)) state = JSON.parse(readFileSync(file, 'utf8')); }
+  let state = emptyState(), dirty = false, unreadable = null, readFromDisk = false;
+  try {
+    if (existsSync(file)) {
+      state = JSON.parse(readFileSync(file, 'utf8'));
+      readFromDisk = true;
+    }
+  }
   catch (e) { unreadable = e.message; }
   if (!state || typeof state !== 'object' || Array.isArray(state) || !state.accounts || typeof state.accounts !== 'object' || Array.isArray(state.accounts)) { unreadable ||= 'unerwartete Struktur'; state = emptyState(); }
   if (state.schemaVersion > SCHEMA_VERSION) { unreadable ||= `schemaVersion ${state.schemaVersion} ist neuer als ${SCHEMA_VERSION}`; state = emptyState(); }
@@ -49,7 +54,9 @@ export function createAccountStore(dir, { now = Date.now, onChange = () => {} } 
   }
   // Ein Konto, das in ein anderes aufgegangen ist (zweites Gerät), zeigt auf das Ziel
   function resolve(id) {
-    for (let hops = 0; hops < 5 && typeof id === 'string'; hops++) {
+    const visited = new Set();
+    while (typeof id === 'string' && !visited.has(id)) {
+      visited.add(id);
       const a = state.accounts[id];
       if (!a?.mergedInto) return a ? id : null;
       id = a.mergedInto;
@@ -57,9 +64,22 @@ export function createAccountStore(dir, { now = Date.now, onChange = () => {} } 
     return null;
   }
 
+  function members(id) {
+    const target = resolve(id);
+    return target ? Object.keys(state.accounts).filter((key) => resolve(key) === target) : [];
+  }
+
+  function save({ flush = false } = {}) {
+    if (!dirty) return;
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(file + '.tmp', JSON.stringify(state), { mode: 0o600, flush });
+    renameSync(file + '.tmp', file);
+    dirty = false;
+  }
+
   return {
     newId: () => randomBytes(16).toString('hex'),
-    resolve,
+    resolve, members, loadedFromDisk: readFromDisk && !unreadable,
     has: (id) => typeof id === 'string' && !!state.accounts[id],
     // Legt das Konto beim ersten Gebrauch an. Nur gültige, vom Server gewürfelte IDs (nie „bot_…“)
     ensure(id) {
@@ -86,10 +106,26 @@ export function createAccountStore(dir, { now = Date.now, onChange = () => {} } 
     merge(from, to) {
       const f = resolve(from), t = resolve(to);
       if (!f || !t || f === t) return false;
+      const persist = beforeMerge(f, t);
+      // Idle records can stay at the original owner. Commit the account alias
+      // before acknowledging access to that record on a different account.
+      const previous = persist ? { target: structuredClone(state.accounts[t]), audit: state.audit.slice(), dirty } : null;
       { const src = state.accounts[f], dst = state.accounts[t]; if (src.achievements) { dst.achievements = dst.achievements || {}; for (const [k, v] of Object.entries(src.achievements)) if (!dst.achievements[k] || v < dst.achievements[k]) dst.achievements[k] = v; } }
       if (state.accounts[f].settings && !state.accounts[t].settings) state.accounts[t].settings = state.accounts[f].settings;
       state.accounts[f].mergedInto = t; byGameId.delete(state.accounts[f].gameId);
       audit('Geräte verbunden', `${state.accounts[f].gameId} → ${state.accounts[t].gameId}`);
+      if (previous) {
+        try { save({ flush: true }); }
+        catch {
+          state.accounts[f].mergedInto = null;
+          state.accounts[t] = previous.target;
+          state.audit = previous.audit;
+          dirty = previous.dirty;
+          byGameId.set(state.accounts[f].gameId, f);
+          throw Object.assign(new Error('Die Verbindung mit dem Idle-Spielstand konnte nicht gespeichert werden.'),
+            { status: 503, code: 'idle-storage-unavailable' });
+        }
+      }
       return true;
     },
     // Vorbereitung für V2-02: eine externe Identität (z. B. „discord“) hängt an genau einem Konto
@@ -138,12 +174,34 @@ export function createAccountStore(dir, { now = Date.now, onChange = () => {} } 
     // Gibt die entfernten Konto-IDs zurück, damit Ergebnisse anderer anonymisiert (nicht gelöscht) werden können.
     deleteAccount(id) {
       const target = resolve(id); if (!target) return [];
-      const removed = Object.keys(state.accounts).filter((key) => resolve(key) === target);
+      const removed = members(target);
+      const persist = beforeDelete(removed);
+      const previous = persist ? {
+        records: removed.map((key) => {
+          const account = state.accounts[key];
+          return { key, account, indexed: byGameId.has(account.gameId) };
+        }),
+        externals: Object.assign(Object.create(null), state.externals), audit: state.audit, dirty,
+      } : null;
       const ids = removed.map((key) => state.accounts[key].gameId);
       for (const key of removed) { byGameId.delete(state.accounts[key].gameId); delete state.accounts[key]; }
       state.audit = state.audit.filter((entry) => !ids.some((gid) => entry.detail.includes(gid))); // das Protokoll nennt die Game-ID nicht weiter
       for (const [key, owner] of Object.entries(state.externals)) if (removed.includes(owner)) delete state.externals[key];
       audit('Konto gelöscht', `${removed.length} Eintrag/Einträge`);
+      if (previous) {
+        try { save({ flush: true }); }
+        catch {
+          for (const { key, account, indexed } of previous.records) {
+            state.accounts[key] = account;
+            if (indexed) byGameId.set(account.gameId, key);
+          }
+          state.externals = previous.externals;
+          state.audit = previous.audit;
+          dirty = previous.dirty;
+          throw Object.assign(new Error('Die Kontolöschung konnte nicht gespeichert werden. Bitte erneut versuchen.'),
+            { status: 503, code: 'idle-storage-unavailable' });
+        }
+      }
       return removed;
     },
     // V2-17: Verwaltung findet Konten über Game-ID oder Anzeigename. Die interne Konto-ID bleibt beim Server.
@@ -156,12 +214,6 @@ export function createAccountStore(dir, { now = Date.now, onChange = () => {} } 
     audit,
     auditLog: (n = 50) => state.audit.slice(-n).reverse(),
     count: () => Object.values(state.accounts).filter((a) => !a.mergedInto).length,
-    save() {
-      if (!dirty) return;
-      mkdirSync(dir, { recursive: true });
-      writeFileSync(file + '.tmp', JSON.stringify(state), { mode: 0o600 });
-      renameSync(file + '.tmp', file);
-      dirty = false;
-    },
+    save,
   };
 }

@@ -73,6 +73,9 @@ export function createIdentityAPI({ identity, accounts, leaderboard, secure = ()
   }));
 
   router.use((error, _req, res, _next) => {
+    if (error.code?.startsWith('idle-') && [409, 503].includes(error.status)) {
+      return res.status(error.status).json({ code: error.code, error: error.message });
+    }
     const status = error.status >= 400 && error.status < 500 ? error.status : 500;
     res.status(status).json({ error: error.type === 'entity.parse.failed' ? 'Ungültiges JSON' : status === 500 ? 'Das hat nicht geklappt' : error.message });
   });

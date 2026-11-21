@@ -1,18 +1,18 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { mkdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { IdleError, plainData, requireIdle, timestamp } from '../../public/idle/engine.js';
 import { fingerprint, revisionOK } from './exports.js';
 
 const accountPattern = /^[a-f0-9]{32}$/;
-const gamePattern = /^[a-z][a-z0-9-]{0,63}$/;
+export const IDLE_GAME_ID = /^[a-z][a-z0-9-]{0,63}$/;
 const actionPattern = /^[a-zA-Z0-9_-]{1,80}$/;
 const uuidPattern = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/;
 const maxRecordBytes = 384 * 1024;
 
 function recordKey(accountId, gameId) {
   requireIdle(typeof accountId === 'string' && accountPattern.test(accountId), 'invalid-account');
-  requireIdle(typeof gameId === 'string' && gamePattern.test(gameId), 'wrong-game');
+  requireIdle(typeof gameId === 'string' && IDLE_GAME_ID.test(gameId), 'wrong-game');
   return createHash('sha256').update(accountId + ':' + gameId).digest('hex');
 }
 
@@ -22,7 +22,14 @@ function validateRecord(record) {
     typeof record.runId === 'string' && uuidPattern.test(record.runId) && record.snapshot && typeof record.snapshot === 'object' &&
     record.operation && typeof record.operation.id === 'string' && actionPattern.test(record.operation.id) &&
     typeof record.operation.digest === 'string' && /^[a-f0-9]{64}$/.test(record.operation.digest) &&
+    (!Object.hasOwn(record.operation, 'keyId') || (typeof record.operation.keyId === 'string' &&
+      /^[a-zA-Z0-9_-]{1,32}$/.test(record.operation.keyId))) &&
     record.format === 1, 'corrupt-save');
+  requireIdle(typeof record.snapshot.gameId === 'string' && IDLE_GAME_ID.test(record.snapshot.gameId) &&
+    revisionOK(record.snapshot.stateVersion) && record.snapshot.stateVersion > 0 &&
+    revisionOK(record.snapshot.rulesVersion) && record.snapshot.rulesVersion > 0 &&
+    Object.hasOwn(record.snapshot, 'data'), 'corrupt-save');
+  timestamp(record.snapshot.at);
   return record;
 }
 
@@ -46,6 +53,22 @@ export function createIdleFileStore(directory) {
   }
   return Object.freeze({
     read,
+    remove(accountId, gameId) {
+      const key = recordKey(accountId, gameId);
+      let files;
+      try { files = readdirSync(directory); }
+      catch (error) {
+        if (error.code === 'ENOENT') return;
+        throw new IdleError('storage-unavailable');
+      }
+      try {
+        for (const file of files) {
+          if (file === key + '.json' || (file.startsWith(key + '.json.') && file.endsWith('.tmp'))) {
+            rmSync(join(directory, file), { force: true });
+          }
+        }
+      } catch { throw new IdleError('storage-unavailable'); }
+    },
     compareAndSet(accountId, gameId, expected, record) {
       requireIdle((read(accountId, gameId)?.revision ?? 0) === expected, 'revision-conflict');
       requireIdle(validateRecord(record).revision === expected + 1, 'revision-conflict');
@@ -68,7 +91,7 @@ export function createIdleFileStore(directory) {
 // The caller supplies a canonical server account and allowed module registry.
 // No HTTP routes, browser storage, account merge, or production flags live here.
 export function createIdleSaveService({ engines, store, codec, migrations = {},
-  now = Date.now, leaseClock = () => performance.now(), leaseMs = 300_000, maxSessions = 1024 }) {
+  now = Date.now, leaseClock = () => performance.now(), beforeSave = () => {}, leaseMs = 300_000, maxSessions = 1024 }) {
   const registry = new Map(engines.map((engine) => [engine.gameId, engine]));
   requireIdle(registry.size === engines.length && Number.isSafeInteger(leaseMs) && leaseMs > 0 &&
     Number.isSafeInteger(maxSessions) && maxSessions > 0, 'invalid-service');
@@ -141,7 +164,7 @@ export function createIdleSaveService({ engines, store, codec, migrations = {},
     const active = {
       id: randomUUID(), token: randomUUID(), runId: record?.runId ?? randomUUID(), base: record?.revision ?? 0,
       savedAt: record?.snapshot.at ?? null, version: 0, snapshot: advanced, settlement,
-      dirty: (record?.snapshot.at ?? at) < advanced.at, commands: new Map(), preview: null,
+      dirty: (record?.snapshot.at ?? at) < advanced.at, unsavedActions: false, commands: new Map(), preview: null,
     };
     refreshLease(active);
     const result = snapshotView(ctx, active);
@@ -160,19 +183,22 @@ export function createIdleSaveService({ engines, store, codec, migrations = {},
     if (previous?.operation.id === id) {
       requireIdle(previous.operation.digest === digest, 'operation-conflict');
       load(ctx, previous.snapshot);
-      return { record: previous, file: withExport ? codec.encode(ctx.accountId, previous) : undefined };
+      return { record: previous, file: withExport ? codec.encode(ctx.accountId, previous, previous.operation.keyId) : undefined };
     }
     const active = writer(ctx, token);
     requireIdle(active.version === sessionVersion && active.base === revision &&
       revision === (previous?.revision ?? 0) && revisionOK(revision + 1), 'revision-conflict');
     const { snapshot } = ctx.engine.advance(active.snapshot, timestamp(now()));
-    const next = { format: 1, revision: revision + 1, runId: active.runId, snapshot, operation: { id, digest } };
+    const next = { format: 1, revision: revision + 1, runId: active.runId, snapshot,
+      operation: { id, digest, keyId: codec.activeKeyId } };
     const file = codec.encode(ctx.accountId, next);
+    beforeSave();
     store.compareAndSet(ctx.accountId, ctx.gameId, revision, next);
     active.base = next.revision;
     active.savedAt = snapshot.at;
     active.snapshot = snapshot;
     active.dirty = false;
+    active.unsavedActions = false;
     active.settlement = { from: snapshot.at, to: snapshot.at, segments: 0 };
     refreshLease(active);
     return { record: next, file: withExport ? file : undefined };
@@ -190,16 +216,38 @@ export function createIdleSaveService({ engines, store, codec, migrations = {},
   }
 
   return Object.freeze({
+    preview(accountId, gameId) {
+      const ctx = select(accountId, gameId);
+      const record = read(ctx);
+      const at = timestamp(now());
+      const { snapshot, ...settlement } = ctx.engine.advance(
+        record ? load(ctx, record.snapshot) : ctx.engine.create(at), at,
+      );
+      return {
+        revision: record?.revision ?? 0, savedAt: record?.snapshot.at ?? null, settlement,
+        view: ctx.engine.view(snapshot),
+      };
+    },
     open(accountId, gameId) {
       const ctx = select(accountId, gameId);
       const active = current(ctx);
       return active ? liveView(ctx, active, true) : begin(ctx);
     },
-    takeover(accountId, gameId, expectedSessionId) {
+    takeover(accountId, gameId, expectedSessionId, expected) {
       const ctx = select(accountId, gameId);
       const active = current(ctx);
       requireIdle(active && active.id === expectedSessionId, 'lease-conflict');
+      requireIdle(!expected || (expected.sessionVersion === active.version && expected.revision === active.base), 'session-conflict');
       return begin(ctx);
+    },
+    hasUnsavedActions(accountIds) {
+      return accountIds.some((accountId) => engines.some(({ gameId }) =>
+        current(select(accountId, gameId))?.unsavedActions));
+    },
+    invalidate(accountIds) {
+      for (const accountId of accountIds) {
+        for (const { gameId } of engines) sessions.delete(recordKey(accountId, gameId));
+      }
     },
     view(accountId, gameId, token) {
       const ctx = select(accountId, gameId);
@@ -223,6 +271,7 @@ export function createIdleSaveService({ engines, store, codec, migrations = {},
       const result = { sessionVersion: ++active.version, at: snapshot.at };
       active.snapshot = snapshot;
       active.dirty = true;
+      active.unsavedActions = true;
       active.commands.set(id, { digest, result });
       if (active.commands.size > 128) active.commands.delete(active.commands.keys().next().value);
       refreshLease(active);
@@ -267,6 +316,7 @@ export function createIdleSaveService({ engines, store, codec, migrations = {},
       active.snapshot = snapshot;
       active.settlement = settlement;
       active.dirty = settlement.to > settlement.from;
+      active.unsavedActions = false;
       active.commands.clear();
       active.version++;
       refreshLease(active);

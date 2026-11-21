@@ -1,6 +1,7 @@
 # Gemeinsame Idle-Engine
 
 IDLE-ENGINE-01 ist das technische Fundament in PokerAbend 3.21.0. Entwicklungsbasis war Version 3.20.2 auf Commit `9a796fcca08eec79f08da63857eca7ab06ade378`.
+Version 3.22.0 integriert Kontoauflösung, HTTP, Datenträger und Schlüsselrotation als IDLE-01A und IDLE-01B. Der Abgleich erfolgte gegen 3.21.0 auf Commit `6a2dda21d05fe2bb9f0d72ddc5f7aff72e59e7d3`.
 Die Phasenkonfiguration folgt den bestätigten Fachregeln von IDLE-D00. IDLE-D03 dient als Entwurf für die spätere Oberfläche. Die Zahlen aus IDLE-D04.1 sind Vergleichswerte für Balancing und Tests.
 
 ## Module und Schnittstellen
@@ -11,8 +12,10 @@ Die Phasenkonfiguration folgt den bestätigten Fachregeln von IDLE-D00. IDLE-D03
 | [public/idle/progression.js](../public/idle/progression.js) | Fünf Phasen pro Spiel mit messbaren Eintrittsbedingungen, Freischaltungen, Ressourcen, Engpässen, Automatisierung und Abschlusszielen. |
 | [server/idle/savepoints.js](../server/idle/savepoints.js) | Autoritative Sitzungen, Tab-Übernahme, Savepoints, revisionsgebundene Kommandos, Importvorschau und lokaler Dateiadapter. |
 | [server/idle/exports.js](../server/idle/exports.js) | Versionierte und auf Konto und Spiel gebundene HMAC-Exporte, kanonisches JSON und Prüfsummen. |
+| [server/idle/api.js](../server/idle/api.js) und [runtime.js](../server/idle/runtime.js) | API-Vertrag, Fehlercodes, konfigurierter Schlüsselring und Kontolebenszyklus. |
+| [server/idle/storage.js](../server/idle/storage.js) und [registry.js](../server/idle/registry.js) | Exklusiver Einprozessbetrieb mit Konto-Aliasen und ausdrückliche Spielregistrierung. |
 
-`createIdleEngine(module, phases)` stellt `create`, `validate`, `advance`, `view`, `command` und `migrate` bereit. Das Modul definiert Spiel-ID, Zustands- und Regelversion, Startzustand, Validierung, Fakten, Kommandos und Zeitsegmente. Die Fakten für Eintrittsbedingungen und Forschung stammen aus dem autoritativen Spielzustand. Die spätere HTTP-Schicht muss Konten über die vorhandene serverseitige Identität auflösen. Spiele und Module erhalten eine eigene Allowlist.
+`createIdleEngine(module, phases)` stellt `create`, `validate`, `advance`, `view`, `command` und `migrate` bereit. Das Modul definiert Spiel-ID, Zustands- und Regelversion, Startzustand, Validierung, Fakten, Kommandos und Zeitsegmente. Die Fakten für Eintrittsbedingungen und Forschung stammen aus dem autoritativen Spielzustand. HTTP verwendet die vorhandene serverseitige Identität. Die Spiel-Allowlist kommt aus der Idle-Registry.
 
 Für die Ansicht liefern `view` und optionale Modulmethoden Fortschritt je Ziel, kumulative Freischaltungen, verfügbare Automatisierung und Engpassgründe. Der Browser kann dieses Darstellungsmodell verwenden. Guthaben, Freischaltungen und Save-Rechte entscheidet der Server. Ein Spielmodul kann zusätzlich eigene Besitz-, Qualitäts- und Kapazitätsbedingungen erzwingen. Automatisierung prüft Freischaltung, ausdrückliche Aktivierung und Budget. Forschung schaltet die Studio-Testpipeline und die Release-Regeln individuell frei.
 
@@ -44,14 +47,56 @@ Die Engine wertet die Übergänge der Reihe nach aus und zeigt am Ende die jewei
 
 Vor der Umsetzung der Speicheroberfläche ist zu klären, wann sie für die bereits aktive Revision einen Hinweis zeigt und wann sie das erneute Laden zur Rücknahme ungespeicherter Aktionen anbietet. Der Service unterstützt das in der technischen Planung vorgesehene erneute Laden eines bekannten aktuellen Stands.
 
-Ältere manuelle Sicherungen können mit 3.21.0 bewusst nicht wiederhergestellt werden. Der Rollback-Ablauf aus dem frühen UX-Entwurf ist separat freizugeben. Dafür sind ein neuer Lauf mit aktuellem Zeitanker, eine fortgeführte Revision und der Schutz vor erneuten Gutschriften und Prestigeansprüchen zu spezifizieren. Der Verlust des bestätigten Serverdatensatzes erfordert einen gesonderten Betreiber-Wiederherstellungsweg.
+## HTTP und Konten
 
-Der Signierer wird ausschließlich serverseitig mit einem expliziten Schlüsselring initialisiert. Ein fehlender aktiver Schlüssel, ein ungültiger Schlüssel oder eine unbekannte Signaturkennung führt zur Ablehnung. Der Browsercode enthält keine Schlüssel. Die produktive Einbindung und Rotation des Schlüsselrings sind Teil späterer Arbeiten. Spielmodule müssen exportierbaren Zustand von Zugangsdaten und anderen Geheimnissen getrennt halten.
+Endpunkte unter `/api/idle` werden erst mit einem ausdrücklich im Servercode registrierten Modul bereitgestellt. Version 3.22.0 liefert eine leere Registry. Eine Konfiguration allein öffnet keine Spielroute. Die Tests registrieren ihr synthetisches Modul ausschließlich im Testprozess.
 
-## Grenzen und Nachweise
+Es gelten der vorhandene Seitenzugang und ein gültiges Gast-Cookie für ein bereits bestehendes Konto. Das gilt auch für ein mit Discord verknüpftes Konto. Die API ermittelt die kanonische ID aus dem Cookie und akzeptiert keine Konto-ID vom Client. Schreibanfragen benötigen JSON, den Header `X-Requested-With: spieleabend` und eine Prüfung des aufrufenden Ursprungs. API-Antworten setzen `Cache-Control: no-store`. Anfragegröße und -häufigkeit sind begrenzt.
 
-Der Dateiadapter unterstützt einen Node-Prozess und ein lokales Dateisystem. Er schreibt eine exklusive temporäre Datei, synchronisiert deren Inhalt und ersetzt den Zielpfad atomar. Garantien für einen Stromausfall oder mehrere Prozesse erfordern eine separate Prüfung und gegebenenfalls einen transaktionalen Adapter. Konto-Löschung, Kontozusammenführung, produktiver Schlüsselbetrieb, Autorisierung der Routen und API-Limits sind Integrationsaufgaben.
+| Methode und Pfad | Wirkung |
+| --- | --- |
+| `GET /` und `GET /:gameId` | Nutzbare Spiel-IDs und flüchtige Vorschau des bestätigten Savepoints. Optionaler Header `X-Idle-Token` liefert die eigene aktive Schreibansicht. |
+| `POST /:gameId/session`, `POST /:gameId/session/heartbeat` | Schreibsitzung öffnen oder bestehende Sitzung lesend anzeigen. Der Heartbeat verlängert die Lease des Schreibers im Speicher. |
+| `POST /:gameId/takeover` | Tab-Übernahme mit `confirm: true`, Session-ID, Sitzungs- und Datensatzrevision. Bei veränderter Sitzung ist eine neue Prüfung nötig. |
+| `POST /:gameId/actions`, `POST /:gameId/save` | Autoritative Aktion oder manueller Save mit Schreib-Token, Sitzungs- und Datensatzrevision und Anfragen-ID. |
+| `GET /:gameId/export`, `POST /:gameId/export` | Aktuellen bestätigten Stand herunterladen oder ausdrücklich speichern und genau diese Revision exportieren. |
+| `POST /:gameId/import/preview`, `POST /:gameId/import/confirm` | Datei serverseitig prüfen und nur nach `confirm: true` neu laden. Die Datei muss zum aktuellen bestätigten Datensatz passen. |
 
-Die Idle-Kategorie bleibt verborgen, bis ein Spiel registriert ist. Der Engine-Auftrag registriert kein Spiel und bindet keine HTTP-Routen ein. Echte Langzeitwerte, Bedienung, Mobil-Performance der drei Spiele und das offene Balancing benötigen eigene Abnahmen.
+Fehler enthalten `code` und eine verständliche Meldung. Wichtige Zustände sind `401 invalid-account`, `404 wrong-game`, `409 lease-conflict`, `409 session-conflict`, `409 revision-conflict`, `409 no-ledger`, `413 payload-too-large` und `503 idle-unavailable`. Eine ältere Datei liefert einen Revisionskonflikt mit dem Hinweis, dass nur der aktuell bestätigte Stand importiert werden kann.
 
-Die gezielte Prüfung läuft mit `node --test test/idle-engine.test.js test/idle-savepoints.test.js`. Beide Dateien sind Teil von `npm run test:fast`. Der vorhandene Playwright-Fall N05 prüft die Sichtbarkeit im Hub mit und ohne registriertes Idle-Spiel.
+Der gemeinsame Konto-Store prüft Gerätecode, Discord und Administration vor einer Zusammenführung. Falls beide Konten für dasselbe Spiel einen Stand besitzen, antwortet die Operation mit Konflikt und erhält beide Datensätze. Ungespeicherte Aktionen blockieren die Zusammenführung bis zur Speicherung, zum ausdrücklich bestätigten Verwerfen oder Lease-Ablauf. Gibt es pro Spiel nur einen Stand, bleibt er an seinem Speicherpfad. Die vor Bestätigung persistent geschriebene Konto-Aliasbeziehung macht ihn für das verbundene Konto zugänglich. Alte Schreibsitzungen verfallen. Ein neuer Export bindet sich an das kanonische Konto.
+
+Der personenbezogene Kontoexport enthält die bestätigten Idle-Spielstände des eigenen Kontos und seiner Aliase. Die bestätigte Kontolöschung entwertet aktive Sitzungen und entfernt diese Stände und zugehörige temporäre Dateien. Schlägt ein Löschschritt fehl, kann die Operation wiederholt werden. Bereits gelöschte Dateien werden bei Wiederholung übersprungen. Die Verantwortlichkeit für ältere Sicherungskopien liegt bei den Aufbewahrungs- und Löschfristen des Betreibers.
+
+## Schlüsselring und Rotation
+
+`IDLE_SAVE_KEYRING` wird serverseitig aus der Betriebsumgebung geladen. Es ist ein JSON-Objekt mit `active` und `keys`. `active` enthält eine Signaturkennung. `keys` ist eine Liste aus `{ "id": "kennung", "key": "<64 hex-Zeichen>" }` mit ein bis acht Einträgen. Jeder Schlüssel besteht aus 32 kryptografisch zufälligen Bytes. Kennungen und Schlüssel müssen eindeutig sein. Schlüssel gehören in die geschützte Betriebsumgebung und in eine getrennte, zugriffsbeschränkte Sicherung.
+
+1. Einen neuen zufälligen Schlüssel mit neuer Kennung hinzufügen und diese Kennung als `active` konfigurieren. Den Vorgänger für die dokumentierte Übergangszeit im Ring behalten.
+2. Den einzelnen Server kontrolliert neu starten. Neue Exporte verwenden die neue Kennung. Während der Übergangszeit bleiben Exporte mit zulässigem Vorgängerschlüssel verifizierbar. Die Wiederholung eines bereits bestätigten Save-and-Export liefert mit dem noch verfügbaren alten Schlüssel dieselbe Datei.
+3. Einen Vorgängerschlüssel erst nach der festgelegten Übergangsfrist entfernen. Danach sind seine Exporte ungültig. Besitzer können ihre aktuelle bestätigte Revision mit dem aktiven Schlüssel erneut exportieren. Bei kompromittiertem Schlüssel die Kennung unmittelbar aus dem Ring entfernen, Server neu starten und Betroffene informieren.
+
+Fehlt der aktive Schlüssel oder ist die Konfiguration ungültig, sperrt die Runtime die Spiel-API mit `503 idle-unavailable`. Der Signierer läuft nur auf dem Server. Der HMAC schützt gegen Veränderungen. Der Inhalt der Datei bleibt lesbar. Spielmodule müssen daher Zugangsdaten und sonstige Geheimnisse aus dem exportierbaren Zustand heraushalten.
+
+## Datenablage und Betrieb
+
+Das Compose-Betriebsmodell verwendet einen Node-Prozess im Service `poker` und das Volume `poker-data` unter `DATA_DIR`. Idle nutzt `DATA_DIR/idle/<spiel>` und opake Kontodateinamen. Der Dateiadapter synchronisiert die exklusive temporäre Datei und ersetzt die bisherige Datei atomar. Revision und Replay-Beleg stehen in derselben Datei. Für Fehler beim Schreiben, fehlende Daten oder defekte Dateien gibt es unterscheidbare Antworten. Ein normaler Serverneustart verwirft flüchtige Sitzungen und lädt ab dem bestätigten Zeitanker.
+
+Ein atomar angelegtes Verzeichnis `DATA_DIR/idle/.writer` verhindert eine zweite Instanz auf demselben Dateisystem. Auch beim späteren Entfernen eines Spielmoduls gelten die Sperre und die Konto-Lebenszyklusregeln für vorhandene Daten weiter. Bei sauberem Stopp gibt der Prozess die Sperre automatisch frei. Nach einem harten Abbruch muss der Betreiber alle potenziellen Writer auf demselben Volume stoppen und ihre Beendigung prüfen. Erst dann kann er das leere Sperrverzeichnis entfernen und den Server neu starten. Eine offene oder unklare Sperre bleibt bestehen. Das ist ein Schutz für ein gemeinsam sichtbares lokales Dateisystem. Mehrere gleichzeitige Writer und replizierte Volumes benötigen einen transaktionalen Adapter.
+
+Für konsistente Backups Konto- und Idle-Daten bei gestopptem Server gemeinsam sichern. Die Schlüsselkonfiguration separat geschützt sichern. Vorhandene Idle-Savepoints ohne lesbares Konto-Verzeichnis sperren den Start, weil sich die Besitzer und Geräte-Aliase sonst nicht sicher auflösen lassen. Das Wiederanlaufen nach normaler Prozessbeendigung und die Sperre nach erzwungenem Abbruch sind getestet. Vollständige Haltbarkeit nach Stromausfall einschließlich des Verzeichniseintrags bleibt eine Anforderung für den jeweiligen Datenträger.
+
+## Entscheidungsvorlage zur Wiederherstellung
+
+| Fall | Vorgeschlagenes Verfahren zur Freigabe |
+| --- | --- |
+| Ältere signierte Datei und vorhandener Datensatz | Separater Vorschau-/Bestätigungsvorgang. Dateisignatur, Besitzer, Spiel, Schema und aktuelle Ledgerrevision unter Schreibschutz erneut prüfen. Den wirtschaftlichen Inhalt in einen neuen Run mit **Serverzeit jetzt** übernehmen. Die globale Revision wird von der aktuellen Ledgerrevision aus um eins erhöht. Aus der früheren Dateizeit entsteht keine zusätzliche Offline-Gutschrift. |
+| Serverseitiger Datensatz verloren | Betreiber-Recovery aus einem verifizierten und konsistenten Konto-/Idle-Backup. Vor Freigabe der betroffenen Konten gültige Schlüssel, maximale bekannte Revision und Abrechnungshistorie nachweisen. Wenn die Historie fehlt, bleibt die Wiederherstellung bis zur ausdrücklichen Entscheidung gesperrt. Eine einzelne Exportdatei liefert diesen Nachweis nicht. |
+| Gutschriften und Prestige | Abrechnungsanker auf jetzt setzen und kontoweite, bereits verbuchte Prestigeansprüche erhalten. Run-ID, neuer Zeitanker, Revision, Anspruchsregister und Wiederholungsbeleg müssen gemeinsam transaktional geschrieben werden. Alte Leases und Vorschauen werden entwertet. |
+| Entscheidung vor dem Bau | Projektinhaber legt fest, ob Spieler einen ersetzenden Rollback auslösen dürfen oder nur der Betreiber. Aufbewahrung, maximal belegte Revision, Audit und Verhalten bei verlorenen Schlüsseln müssen vor Umsetzung feststehen. |
+
+## Abnahme vor dem ersten Idle-Spiel
+
+Die technische Prüfung läuft mit `node --test test/idle-engine.test.js test/idle-savepoints.test.js test/idle-integration.test.js`. Der Playwright-Fall N05 prüft die Sichtbarkeit im Hub mit und ohne registriertes Idle-Spiel.
+
+IDLE-04 kann die vorhandenen Verträge für Konto, Savepoint und synchronisierte Tab-Übernahme verwenden. Zu prüfen sind die Zustandsvalidierung der Spielhalle, Schutz der exportierbaren Daten, echte Offline-Aggregation mit Gäste- und Standby-Regeln, Bedienung der Speicher- und Konfliktdialoge sowie Smartphone-Leistung. Die Registrierung und die Benutzeroberfläche brauchen ihre eigene Freigabe.
