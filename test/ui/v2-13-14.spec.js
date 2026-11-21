@@ -1,26 +1,43 @@
 import {test,expect,login,selectGame} from './helpers.js';
 import {createIdentity} from '../../server/identity.js';
 import {mkdirSync} from 'node:fs';
+const memberA='100000000000000001',memberB='100000000000000002';
 const A='a'.repeat(32),B='b'.repeat(32),secret='test-v213-v214-only',now=Date.now();
 const person=(id,gameId,name)=>({id,gameId,name,avatar:'🦉',createdAt:now,lastSeen:now,mergedInto:null});
 const rounds=Object.fromEntries(Array.from({length:4},(_,i)=>{const id=(i+1).toString(16).padStart(16,'0');return [id,{id,game:'viergewinnt',variant:'classic',ranked:true,at:now-10000+i,players:[{a:A,n:'Anna',win:true,bot:false,pts:1,place:1},{a:B,n:'Ben',win:false,bot:false,pts:0,place:2}]}];}));
-test.use({seedFiles:{'accounts.json':{schemaVersion:1,accounts:{[A]:person(A,'#AAAA','Anna'),[B]:person(B,'#BBBB','Ben')},externals:{'discord:111':A,'discord:222':B},audit:[]},'leaderboard.json':{schemaVersion:3,players:{[A]:{name:'Anna',accountId:A,games:{viergewinnt:{played:4,wins:4,points:4,months:{}}}}},rounds}},createLimit:'100'});
+test.use({seedFiles:{'accounts.json':{schemaVersion:1,accounts:{[A]:person(A,'#AAAA','Anna'),[B]:person(B,'#BBBB','Ben')},externals:{['discord:'+memberA]:A,['discord:'+memberB]:B},audit:[]},'leaderboard.json':{schemaVersion:3,players:{[A]:{name:'Anna',accountId:A,games:{viergewinnt:{played:4,wins:4,points:4,months:{}}}}},rounds}},createLimit:'100'});
 let previous;
 test.beforeAll(()=>{previous=process.env.SESSION_SECRET;process.env.SESSION_SECRET=secret;});
 test.afterAll(()=>{if(previous===undefined)delete process.env.SESSION_SECRET;else process.env.SESSION_SECRET=previous;});
 async function enter(page,app,id,name){await page.context().addCookies([{name:'pa_guest',value:createIdentity({secret}).issue(id),url:app.url,httpOnly:true,sameSite:'Lax'}]);await login(page,app,name);}
+async function authorizeDiscord(page, app, user, name) {
+  app.provider.user(user, name);
+  const client = page.context().request;
+  const start = await client.get(app.url + '/auth/discord/login', {maxRedirects:0});
+  expect(start.status()).toBe(303);
+  const callback = app.provider.authorize(start.headers().location, {user});
+  const response = await client.get(callback.href, {maxRedirects:0});
+  expect(response.headers().location).toBe('/');
+  expect(await api(page, '/auth/discord/status')).toMatchObject({linked:true, active:true});
+  await page.reload(); // Socket.IO bindet den serverseitigen Nachweis beim n?chsten Handshake.
+  await expect(page.locator('#hub')).toBeVisible();
+}
 async function emit(page,event,data={}){const r=await page.evaluate(([e,d])=>send(e,d),[event,data]);expect(r.ok,r.error).toBe(true);return r;}
 const api=(page,path,body)=>page.evaluate(async([path,body])=>{const r=await fetch(path,{method:body?'POST':'GET',headers:{'Content-Type':'application/json','X-Requested-With':'spieleabend'},...(body?{body:JSON.stringify(body)}:{})});return r.json();},[path,body]);
 const list=page=>page.locator(page.viewportSize().width<641?'.presence-mobile > .presence-list':'.presence-desktop > .presence-list');
 async function showPresence(page){if(page.viewportSize().width<641&&!await page.locator('.presence-mobile').evaluate(el=>el.open))await page.locator('.presence-mobile > summary').click();}
 async function capture(page,info,name){let path=info.outputPath(name+'.png');if(process.env.V213_CAPTURE==='1'){const dir='docs/roadmap/screenshots/v2-13-14';mkdirSync(dir,{recursive:true});path=`${dir}/${info.project.name}-${name}.png`;}await page.screenshot({path,fullPage:true});}
 
-test('V2-13: real qualified win unlocks secret once, game/rare progress, reload/backfill and public privacy',async({page,app,browser},info)=>{
- test.setTimeout(90000);await enter(page,app,A,'Anna');await page.evaluate(()=>location.hash='#erfolge');await expect(page.locator('.achievement-summary')).toBeVisible();await page.getByLabel('Abzeichen-Bereich',{exact:true}).selectOption('meilensteine');const hidden=page.locator('[data-badge="verborgener-erfolg"]');await expect(hidden).toContainText('Verborgener Erfolg');await expect(hidden).not.toContainText('fünf');await expect(hidden.locator('progress')).toHaveCount(0);await capture(page,info,'secret-locked');
+test.describe('V2-13 mit aktiven Discord-Sitzungen', () => {
+ test.use({discordOAuth:true});
+ test('V2-13: real qualified win unlocks secret once, game/rare progress, reload/backfill and public privacy',async({page,app,browser},info)=>{
+ test.setTimeout(90000);await enter(page,app,A,'Anna');await authorizeDiscord(page,app,memberA,'Anna');await page.evaluate(()=>location.hash='#erfolge');await expect(page.locator('.achievement-summary')).toBeVisible();await page.getByLabel('Abzeichen-Bereich',{exact:true}).selectOption('meilensteine');const hidden=page.locator('[data-badge="verborgener-erfolg"]');await expect(hidden).toContainText('Verborgener Erfolg');await expect(hidden).not.toContainText('fünf');await expect(hidden.locator('progress')).toHaveCount(0);await capture(page,info,'secret-locked');
  await page.getByLabel('Abzeichen-Bereich',{exact:true}).selectOption('all');await page.getByLabel('Abzeichen-Spiel',{exact:true}).selectOption('viergewinnt');await expect(page.locator('.achievement-card')).toHaveCount(3);await expect(page.locator('[data-badge="spiel-viergewinnt-routine"] progress')).toHaveAttribute('value','4');await expect(page.locator('[data-badge="spiel-viergewinnt-meister"]')).toContainText('Selten');
- const context=await browser.newContext({viewport:page.viewportSize()});try{const other=await context.newPage();await enter(other,app,B,'Ben');await selectGame(page,'viergewinnt');await page.locator('#host-form button[type=submit]').click();await emit(page,'sit');const code=await page.evaluate(()=>lastState.code);await other.evaluate(code=>joinAndEnter(code,'sit'),code);await expect.poll(()=>page.evaluate(()=>lastState.players.filter(p=>p.seated).length)).toBe(2);await page.evaluate(()=>{window.badgeMessages=[];socket.on('achievements',e=>badgeMessages.push(e));});await emit(page,'start');for(let i=0;i<7;i++){await expect.poll(()=>page.evaluate(()=>lastState.turnId===lastState.you.id)).toBe(i%2===0);await emit(i%2===0?page:other,'drop',{col:i%2===0?0:1});}await expect.poll(()=>page.evaluate(()=>badgeMessages.length)).toBe(1);expect(await page.evaluate(()=>badgeMessages[0].names)).toEqual(['Perfekte Serie']);await expect(page.locator('#toast')).toContainText('Perfekte Serie');await page.evaluate(()=>parkRoom());await page.evaluate(()=>location.hash='#erfolge');await expect(page.locator('.achievement-summary')).toBeVisible();await page.getByLabel('Abzeichen-Bereich',{exact:true}).selectOption('meilensteine');await expect(hidden).toContainText('Perfekte Serie');await capture(page,info,'secret-unlocked');const before=await api(page,'/api/achievements?me=1');expect(before.stats.rankedPlayed).toBe(5);await page.reload();const after=await api(page,'/api/achievements?me=1');expect(after).toEqual(before);
+ const context=await browser.newContext({viewport:page.viewportSize()});try{const other=await context.newPage();await enter(other,app,B,'Ben');await authorizeDiscord(other,app,memberB,'Ben');await selectGame(page,'viergewinnt');await page.locator('#host-form button[type=submit]').click();await emit(page,'sit');const code=await page.evaluate(()=>lastState.code);await other.evaluate(code=>joinAndEnter(code,'sit'),code);await expect.poll(()=>page.evaluate(()=>lastState.players.filter(p=>p.seated).length)).toBe(2);await page.evaluate(()=>{window.badgeMessages=[];socket.on('achievements',e=>badgeMessages.push(e));});await emit(page,'start');for(let i=0;i<7;i++){await expect.poll(()=>page.evaluate(()=>lastState.turnId===lastState.you.id)).toBe(i%2===0);await emit(i%2===0?page:other,'drop',{col:i%2===0?0:1});}await expect.poll(()=>page.evaluate(()=>badgeMessages.length)).toBe(1);expect(await page.evaluate(()=>badgeMessages[0].names)).toEqual(['Perfekte Serie']);await expect(page.locator('#toast')).toContainText('Perfekte Serie');await page.evaluate(()=>parkRoom());await page.evaluate(()=>location.hash='#erfolge');await expect(page.locator('.achievement-summary')).toBeVisible();await page.getByLabel('Abzeichen-Bereich',{exact:true}).selectOption('meilensteine');await expect(hidden).toContainText('Perfekte Serie');await capture(page,info,'secret-unlocked');const before=await api(page,'/api/achievements?me=1');expect(before.stats.rankedPlayed).toBe(5);await page.reload();const after=await api(page,'/api/achievements?me=1');expect(after).toEqual(before);
  await api(page,'/api/profile/privacy',{showAchievements:false});const foreign=await api(other,'/api/profile/AAAA');expect(foreign.achievements).toBe(null);expect((await api(other,'/api/achievements?name=Anna')).stats.played).toBe(0);expect((await api(page,'/api/achievements?me=1')).stats.rankedPlayed).toBe(5);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
  }finally{await context.close();}
+});
+
 });
 
 test('V2-14: two contexts, lobby join, real game/watching, private room, server privacy and tab close',async({page,app,browser},info)=>{

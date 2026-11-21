@@ -615,7 +615,7 @@ Object.assign(window.EN, {
   'ohne gesicherte Wertung': 'without a secured result', 'nicht gewertet': 'not ranked',
   'Diese Woche': 'This week', 'Dieser Monat': 'This month', 'Alles': 'All time', 'Alle Spiele zusammen': 'All games combined',
   'Gewertet (Ranked)': 'Ranked', 'Statistik, unbestätigt (alle Partien)': 'Statistics, unconfirmed (all games)',
-  'Gewertet: nur vollständig beendete Partien zwischen mindestens zwei registrierten Menschen, ohne Gäste und Computer.': 'Ranked: only completed games between at least two registered people, without guests and computers.',
+  'Gewertet: beendete Partien mit mindestens zwei verschiedenen Konten und durchgehend aktiver Discord-Sitzung je Teilnehmer. Computer spielen ungewertet.': 'Ranked: completed games with at least two different accounts and a continuously active Discord session for every player. Computer players play unranked.',
   'Durchschnittliche Platzierung': 'Average placement', 'Gewertet': 'Ranked', 'Nicht gewertet': 'Not ranked',
   'Nicht gewertete Partien zählen weiter in der Statistik.': 'Games that are not ranked still count in the statistics.', 'Sortiert nach Siegen.': 'Sorted by wins.',
   'Unbestätigt: Statistik aller Partien, auch mit Computern, Gästen und nach altem Namen. Sie bestimmt keine gewertete Rangliste.': 'Unconfirmed: statistics of all games, including computers, guests and old names. They do not decide a ranked leaderboard.',

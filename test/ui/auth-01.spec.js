@@ -13,6 +13,21 @@ async function mockAccess(page, current) {
   });
 }
 
+test('AUTH-01: Seitenstart und Fokus erzeugen bei ausgeschaltetem Exklusivmodus keine Statusabfragen', async ({ page, app }) => {
+  const requests = [];
+  page.on('request', (request) => { requests.push(new URL(request.url()).pathname); });
+  const settings = page.waitForResponse((response) => new URL(response.url()).pathname === '/api/me/settings' && response.ok());
+  await Promise.all([settings, login(page, app)]);
+  await page.evaluate(async () => {
+    window.dispatchEvent(new Event('focus'));
+    document.dispatchEvent(new Event('visibilitychange'));
+    await fetch('/me');
+  });
+  await expect(page.locator('#side-nav').locator(moduleLinks).first()).toHaveCount(1);
+  expect(requests.filter((path) => path === '/api/discord-access')).toHaveLength(0);
+  expect(requests.filter((path) => path === '/api/me/settings')).toHaveLength(1);
+});
+
 test('N03/A10: Gastnavigation, direkter Planlink, Sprache, Fokus und Konfigurationsfehler', async ({ page, app }) => {
   let status = guest;
   let protectedRequests = 0;

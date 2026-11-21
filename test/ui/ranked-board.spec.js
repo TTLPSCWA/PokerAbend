@@ -34,7 +34,7 @@ const overflow = (page) => page.evaluate(() => document.documentElement.scrollWi
 test('Bestenliste: gewertete Ansicht mit Zeiträumen, Zusammenfassung der nicht gewerteten Partien', async ({ page, app }, info) => {
   await open(page, app);
   await expect(page.locator('#lbp-view')).toHaveValue('ranked');
-  await expect(page.locator('.lb-badge-ranked')).toContainText('mindestens zwei registrierten Menschen');
+  await expect(page.locator('.lb-badge-ranked')).toContainText('mindestens zwei verschiedenen Konten und durchgehend aktiver Discord-Sitzung je Teilnehmer');
   await page.locator('#lbp-game').selectOption('maumau');
   await expect(page.locator('.lb-table tbody tr')).toHaveCount(3);
   // Alles: Anna 2 Siege, Ben 1, Cara 0 – ohne die Computer- und Gast-Runden
@@ -45,7 +45,7 @@ test('Bestenliste: gewertete Ansicht mit Zeiträumen, Zusammenfassung der nicht 
   await expect(page.locator('.lb-table')).not.toContainText('Gast');
   await expect(page.locator('#board-body')).toContainText('Gewertet: 3 · nicht gewertet: 2');
   await expect(page.locator('#board-body')).toContainText('mit Computer-Mitspielern');
-  await expect(page.locator('#board-body')).toContainText('mit Gästen ohne Discord-Verknüpfung');
+  await expect(page.locator('#board-body')).toContainText('ohne durchgehend aktive Discord-Sitzung');
   // Diese Woche: die 20 Tage alte Runde fällt heraus
   await page.locator('#lbp-period').selectOption('week');
   await expect(page.locator('.lb-table tbody tr')).toHaveCount(3);

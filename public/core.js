@@ -523,7 +523,7 @@ socket.on('state', (st) => {
 // AUTH-01: Serverstatus für geschützte Ansichten. Eine Generation bindet ausstehende Antworten an den Kontokontext.
 const DiscordAccess = (() => {
   let current = { required: true, active: false, login: false, code: 'discord-checking', viewer: null };
-  let generation = 0, refreshId = 0;
+  let generation = 0, refreshId = 0, started = false, pending = null;
   const allowed = () => !current.required || current.active;
   function update(next) {
     if (!next || typeof next.required !== 'boolean' || typeof next.active !== 'boolean') return;
@@ -534,18 +534,24 @@ const DiscordAccess = (() => {
   }
   function invalidate() {
     refreshId++;
+    pending = null;
     if (current.required) update({ ...current, active: false, code: 'discord-checking' });
   }
-  async function refresh() {
+  function refresh(force = false) {
+    if (!started || (!force && !current.required)) return;
+    if (pending) return pending;
     const id = ++refreshId;
-    try {
-      const response = await fetch('/api/discord-access', { credentials: 'same-origin', cache: 'no-store' });
-      if (!response.ok) throw new Error('Zugangsstatus nicht erreichbar');
-      const status = await response.json();
-      if (id === refreshId) update(status);
-    } catch {
-      if (id === refreshId && current.required) update({ ...current, active: false, code: 'discord-unavailable' });
-    }
+    pending = fetch('/api/discord-access', { credentials: 'same-origin', cache: 'no-store' })
+      .then((response) => {
+        if (!response.ok) throw new Error('Zugangsstatus nicht erreichbar');
+        return response.json();
+      })
+      .then((status) => { if (id === refreshId) update(status); })
+      .catch(() => {
+        if (id === refreshId && current.required) update({ ...current, active: false, code: 'discord-unavailable' });
+      })
+      .finally(() => { if (id === refreshId) pending = null; });
+    return pending;
   }
   const messages = {
     'discord-required': 'Für diesen Bereich ist eine aktive Discord-Anmeldung erforderlich.',
@@ -569,16 +575,21 @@ const DiscordAccess = (() => {
     if (before !== generation) throw new Error(message());
     if (!response.ok && ['discord-required', 'discord-configuration'].includes(payload.code)) {
       refreshId++;
+      pending = null;
       update({ ...current, required: true, active: false, login: payload.code === 'discord-required', code: payload.code });
     }
     if (!response.ok) throw Object.assign(new Error(payload.error || 'Die Anfrage ist fehlgeschlagen'), { status: response.status });
     return payload;
   }
-  return { allowed, update, invalidate, refresh, notice, json, message };
+  return { allowed, update, invalidate, refresh, notice, json, message, start: () => { started = true; } };
 })();
-socket.on('connect', () => DiscordAccess.refresh());
+let sawSocketConnect = false;
+socket.on('connect', () => {
+  if (sawSocketConnect) DiscordAccess.refresh(true);
+  sawSocketConnect = true;
+});
 window.addEventListener('focus', () => DiscordAccess.refresh());
-window.addEventListener('pageshow', (event) => { if (event.persisted) { DiscordAccess.invalidate(); DiscordAccess.refresh(); } });
+window.addEventListener('pageshow', (event) => { if (event.persisted) { DiscordAccess.invalidate(); DiscordAccess.refresh(true); } });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) DiscordAccess.refresh(); });
 setInterval(() => { if (!document.hidden) DiscordAccess.refresh(); }, 15_000);
 
@@ -622,7 +633,7 @@ function leaderboardInner(r, pre = 'lb') {
     const s = r.summary || { ranked: 0, notRanked: 0, reasons: {} };
     const why = Object.entries(s.reasons).map(([k, n]) => `${n}× ${rankedReasonText(k)}`).join(', ');
     return I18n.html`${filters}
-      <p class="lb-badge lb-badge-ranked">${I18n.t('Gewertet: nur vollständig beendete Partien zwischen mindestens zwei registrierten Menschen, ohne Gäste und Computer.')}</p>
+      <p class="lb-badge lb-badge-ranked">${I18n.t('Gewertet: beendete Partien mit mindestens zwei verschiedenen Konten und durchgehend aktiver Discord-Sitzung je Teilnehmer. Computer spielen ungewertet.')}</p>
       ${rows ? I18n.html`<div class="lb-scroll"><table class="standings lb-table"><thead><tr><th></th><th>Name</th><th class="num">${isPoker ? I18n.t('Hände') : 'Partien'}</th><th class="num">Siege</th><th class="num" title="${I18n.t('Durchschnittliche Platzierung')}">Ø Platz</th>${r.game === 'all' ? '' : `<th class="num">${esc(info?.scoreLabel || I18n.t('Punkte'))}</th>`}</tr></thead><tbody>${rows}</tbody></table></div>`
         : I18n.html`<p class="hint lb-empty">${I18n.t('In diesem Zeitraum gibt es noch keine gewerteten Partien. Jede Person braucht eine aktive Discord-Sitzung und ein eigenes Konto.')}</p>`}
       <p class="hint" style="margin:0">${I18n.t('Gewertet')}: ${s.ranked} · ${I18n.t('nicht gewertet')}: ${s.notRanked}${why ? ` (${esc(why)})` : ''}. ${I18n.t('Nicht gewertete Partien zählen weiter in der Statistik.')} ${I18n.t('Sortiert nach Siegen.')}</p>`;
@@ -742,6 +753,7 @@ async function boot() {
       I18n.configureGames([...account.games, ...(account.singleplayerGames || []), ...(account.planned || [])]);
     }
   } catch { /* offline – Socket.IO versucht es weiter */ }
+  DiscordAccess.start();
   // Der Hub und seine Seiten stehen erst nach den gemeinsamen Skripten bereit.
   if (document.readyState === 'loading') await new Promise((resolve) => document.addEventListener('DOMContentLoaded', resolve, { once: true }));
   openRoomByUrl();

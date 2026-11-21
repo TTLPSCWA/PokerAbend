@@ -6,6 +6,8 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { startDomPresentationCapture } from './dom-presentation-capture.js';
 import { bindPresentation, installRoomViewAudit, isLivePeer, ServerViewLedger } from './server-view-audit.js';
+import { fakeDiscord, CLIENT, SECRET } from '../discord-fake.js';
+import { freePort } from '../free-port.js';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const password = 'BlockA-Testpasswort';
@@ -15,12 +17,19 @@ const password = 'BlockA-Testpasswort';
 export const test = base.extend({
   ticketAdminPassword: ['', { option: true }],
   adminPassword: ['', { option: true }],
+  discordOAuth: [false, { option: true }],
   // Dateien (Name → JSON-Inhalt), die vor dem Serverstart im Datenordner liegen sollen (z. B. eine vorbefüllte Bestenliste)
   seedFiles: [{}, { option: true }],
   createLimit: ['6', { option: true }],
-  app: async ({ ticketAdminPassword, adminPassword, createLimit, seedFiles }, use) => {
+  app: async ({ ticketAdminPassword, adminPassword, createLimit, seedFiles, discordOAuth }, use) => {
     const dataDir = mkdtempSync(join(tmpdir(), 'spieleabend-ui-'));
     for (const [name, content] of Object.entries(seedFiles)) writeFileSync(join(dataDir, name), JSON.stringify(content));
+    const port = discordOAuth ? await freePort() : 0;
+    const provider = discordOAuth ? await fakeDiscord() : null;
+    const discordEnv = provider ? {
+      PUBLIC_URL: `http://localhost:${port}`, DISCORD_CLIENT_ID: CLIENT, DISCORD_CLIENT_SECRET: SECRET,
+      DISCORD_API_BASE: provider.base + '/api', DISCORD_AUTHORIZE_URL: provider.base + '/oauth2/authorize',
+    } : {};
     const child = spawn(process.execPath, ['--input-type=module', '-e', `
       const { http, enableRoomViewAuditForTests } = await import('./server/index.js');
       enableRoomViewAuditForTests();
@@ -28,7 +37,7 @@ export const test = base.extend({
       if (http.listening) ready(); else http.once('listening', ready);
     `], {
       cwd: root,
-      env: { ...process.env, PORT: '0', DATA_DIR: dataDir, POKER_NO_DOTENV: '1', SITE_PASSWORD: password, TICKET_ADMIN_PASSWORD: ticketAdminPassword, ADMIN_PASSWORD: adminPassword, CREATE_LIMIT: createLimit },
+      env: { ...process.env, PORT: String(port), DATA_DIR: dataDir, POKER_NO_DOTENV: '1', SITE_PASSWORD: password, TICKET_ADMIN_PASSWORD: ticketAdminPassword, ADMIN_PASSWORD: adminPassword, CREATE_LIMIT: createLimit, ...discordEnv },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     let output = '';
@@ -44,13 +53,14 @@ export const test = base.extend({
           if (match) { clearTimeout(timer); resolve('http://localhost:' + match[1]); }
         });
       });
-      await use({ url, password, ticketAdminPassword, adminPassword });
+      await use({ url, password, ticketAdminPassword, adminPassword, provider });
     } finally {
       if (child.exitCode === null && child.signalCode === null) {
         const stopped = new Promise((resolve) => child.once('exit', resolve));
         child.kill();
         await stopped;
       }
+      if (provider) await new Promise((resolve) => provider.server.close(resolve));
     }
   },
   page: async ({ page, app }, use) => {

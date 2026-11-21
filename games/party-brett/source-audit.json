@@ -68,7 +68,7 @@
     },
     {
       "path": "public/i18n-en.js",
-      "sha256": "cdb65978d1646d94eacfe058dedc76739de132c7af6aa2f4209e7fe9f1593062"
+      "sha256": "a72fc564fce2dd0c74f22529969e5f9aa4c16b18fd1e66c075455d611c3a5797"
     },
     {
       "path": "public/index.html",
@@ -96,7 +96,7 @@
     },
     {
       "path": "test/backlog12-proof.test.js",
-      "sha256": "cd47800d5da5d71e1e3bcb9f072872553a56db79cce4e778947d0fa71920780b"
+      "sha256": "922e48887a420aabd1f33ad6aff5217d7a8db03b3016589da21ea57f4e85def2"
     },
     {
       "path": "test/backlog12.test.js",
@@ -153,6 +153,10 @@
     {
       "path": "public/achievements.js",
       "sha256": "ac49910fe9fb88f131a7ccf557f0ee7c486a30218d06d30a51160bc2a8adda62"
+    },
+    {
+      "path": "public/game-design.js",
+      "sha256": "e9934daf040df603283e2f6b51a0ff4d19f3d3e695a4b91fb82cc32b4afb4de2"
     }
   ],
   "previous_shared_sources": [
@@ -200,6 +204,11 @@
       "path": "public/achievements.js",
       "archive": "test/fixtures/party-features/v2-13/public/achievements.js",
       "sha256": "6a1470dab02d8dd1b0cfacdd04a189cda1ee5dab1d99a286d3d325d455fcb4ec"
+    },
+    {
+      "path": "public/game-design.js",
+      "archive": "test/fixtures/party-features/backlog-07/public/game-design.js",
+      "sha256": "ff22a3c1d56ee34a60361407d46b61ac3357daa283535f81067b2372e3768eb7"
     }
   ]
 }

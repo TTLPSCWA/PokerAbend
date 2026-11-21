@@ -130,7 +130,7 @@ const Identity = (() => {
     state.discord = null;
     state.claimed = [];
     paint();
-    if ($('#p-identity-body')) refresh();
+    if ($('#profile-dlg')?.open) refresh();
   });
   return { get gameId() { return state.gameId; }, open: refresh };
 })();
