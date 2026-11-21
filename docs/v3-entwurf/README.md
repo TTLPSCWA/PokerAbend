@@ -58,3 +58,7 @@ Dieser Nachtrag ergänzt den Plan um den tatsächlichen Umsetzungsstand und änd
 **Begriffe:** *Entwurf* = beschrieben, nicht beauftragt. *Freigegeben* = Umsetzung ausdrücklich beauftragt. *Implementiert* = committet und gepusht. *Abgenommen* = der vollständige CI-Volllauf auf dem Commit ist grün. *Produktiv* = durch den Healthcheck mit passender Version und Build belegt.
 
 **Weiterhin offen aus der Freigabeliste oben:** AUTH-01, ROADMAP-01 und ROADMAP-02 je einzeln, die Aktivierung des Exklusivmodus und jede Veröffentlichung bzw. jedes Deployment. Die Freigaben für die Korrekturphase QA-CI-01 und für NAV-01 wurden erteilt und sind abgeschlossen.
+
+## Nachtrag 21.11.2026 (Version 3.19.1)
+
+ROADMAP-02 wurde mit 3.19.0 umgesetzt und durch QA-REPAIR-01 in 3.19.1 korrigiert. Die Umsetzung ist abgeschlossen. Der separate Volllauf auf 3.19.1 wurde vom Projektinhaber bewusst übersprungen. Besucherfreigabe und Produktivdeployment stehen aus. Der anschließende Auftrag gibt AUTH-01 und den abhängigen NAV-01-Restpunkt N03 zur Entwicklung frei. [Nachweise zu ROADMAP-02](ROADMAP-02.md#nachtrag-21112026)

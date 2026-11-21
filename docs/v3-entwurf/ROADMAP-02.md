@@ -99,3 +99,9 @@ Schwierigkeit **3/5**. Schema, Kuratierung der ersten Fassung und Texte etwa 1�
 7. Kein Deployment, keine Änderung produktiver Daten.
 
 > **Statusnachtrag 20.11.2026:** Dieses Paket ist weiterhin **geplant und nicht implementiert**. Der Text beschreibt den Stand bei `c3d3cd6` (Version 3.17.0); `main` steht inzwischen bei Version 3.18.0 (`0f14e19`), Zeilenanker und Zahlen können abweichen. Es gilt der Umsetzungsstand im [Nachtrag der README](README.md#nachtrag-20112026-stand-version-3180).
+
+## Nachtrag 21.11.2026
+
+ROADMAP-02 ist mit 3.19.0 in `c992ba953782b94e4302ce770d7b83b3c58b9056` umgesetzt und gepusht. Push #235 war erfolgreich. Nachtlauf #236 scheiterte im Backgammon-Mobiltest. [Push #235](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44888464577) · [Nachtlauf #236](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44891231093)
+
+QA-REPAIR-01 hat in 3.19.1 (`31fa17d79e65dcbcc2fafbda8232184fad22360f`) den P1-Buildnachweis abgesichert und den Backgammon-Test auf bestätigte Serverrevisionen umgestellt. Push #237 einschließlich Image-Build war erfolgreich. Der Projektinhaber hat entschieden, den separaten Volllauf auf 3.19.1 zu überspringen. Die Umsetzung ist abgeschlossen und die vollständige CI-Abnahme steht aus. Der Besucherstatus bleibt bei `approved: false`. Ein Produktivdeployment fand im Rahmen dieser Arbeiten nicht statt. [Push #237](https://github.com/TTLPSCWA/PokerAbend/actions/runs/44912001011)

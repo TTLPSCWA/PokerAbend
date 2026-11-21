@@ -78,8 +78,12 @@ test('ROAD-T03: kein done oder verified ohne Commit und Nachweis; fehlende Nachw
   assert.equal(roadmap2.status, 'done');
   assert.deepEqual(roadmap2.stages, { planned: true, implemented: true, ci_accepted: false, deployed: false });
   assert.equal(roadmap2.evidence.commit, 'c992ba953782b94e4302ce770d7b83b3c58b9056');
-  assert.deepEqual(roadmap2.evidence.ci_runs, [235, 236]);
-  assert.deepEqual(roadmap2.evidence.ci_runs.map((number) => committed.ci_runs.find((run) => run.number === number).conclusion), ['success', 'failure']);
+  const roadmap2Runs = roadmap2.evidence.ci_runs.map((number) => committed.ci_runs.find((run) => run.number === number));
+  assert.deepEqual(roadmap2Runs.map(({ number, sha, kind, conclusion }) => ({ number, sha, kind, conclusion })), [
+    { number: 235, sha: 'c992ba9', kind: 'push', conclusion: 'success' },
+    { number: 236, sha: 'c992ba9', kind: 'nightly', conclusion: 'failure' },
+    { number: 237, sha: '31fa17d', kind: 'push', conclusion: 'success' },
+  ]);
   // ROADMAP-01: implementiert (Commit 0bae015, Push #232), Volllauf auf Entscheidung des Projektinhabers nicht durchgeführt: done, nicht verified
   assert.equal(entry(committed, 'package:ROADMAP-01').status, 'done');
   assert.equal(entry(committed, 'package:ROADMAP-01').stages.ci_accepted, false);
