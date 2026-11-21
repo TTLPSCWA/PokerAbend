@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.21.0 – 21. November 2026
+
+* Technisches Fundament für Die Spielhalle, Game Studio Tycoon und Factory Empire mit gemeinsamem Fortschritt, Offline-Berechnung und manuellen, signierten Spielständen. Die drei Spiele folgen in eigenen Paketen und erscheinen mit diesem Stand noch nicht im Spielekatalog.
+
 ## 3.20.2 – 21. November 2026
 
 * Game-ID und Gerätekopplung bleiben beim gleichzeitigen Wechsel des Discord-Anmeldestatus nutzbar.

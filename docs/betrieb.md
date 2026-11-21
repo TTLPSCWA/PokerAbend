@@ -1,6 +1,8 @@
 # Betrieb: Spieleabend aufsetzen, aktualisieren, sichern, reparieren
 
-Stand: Version **3.20.2** (21. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
+Stand: Version **3.21.0** (21. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
+
+Das [Idle-Fundament](idle-engine.md) wird mitgeliefert. HTTP-Routen, eine produktive Idle-Datenablage und ein betrieblicher Schlüsselring folgen in gesonderten Paketen. Für Version 3.21.0 ist keine Idle-Konfiguration erforderlich.
 
 **Inhalt**
 
