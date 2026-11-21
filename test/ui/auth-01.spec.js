@@ -28,6 +28,31 @@ test('AUTH-01: Seitenstart und Fokus erzeugen bei ausgeschaltetem Exklusivmodus 
   expect(requests.filter((path) => path === '/api/me/settings')).toHaveLength(1);
 });
 
+test('A01/A05: Eine erfolgreiche Identitätsantwort bleibt bei gleichzeitigem Discord-Sitzungsverlust nutzbar', async ({ page, app }) => {
+  let status = { ...guest, active: true, code: null };
+  await mockAccess(page, () => status);
+  await login(page, app);
+  await expect.poll(() => page.evaluate(() => Identity.gameId)).toMatch(/^#/);
+  const original = await page.evaluate(() => Identity.gameId);
+  const { promise: received, resolve: markReceived } = Promise.withResolvers();
+  const { promise: release, resolve: continueRequest } = Promise.withResolvers();
+  await page.route('**/api/identity', async (route) => {
+    const response = await route.fetch();
+    markReceived();
+    await release;
+    await route.fulfill({ response });
+  });
+  const refreshed = page.evaluate(async () => { await Identity.open(); return Identity.gameId; });
+  try {
+    await received;
+    status = guest;
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await expect(page.locator('#side-nav').locator(moduleLinks)).toHaveCount(0);
+    continueRequest();
+    expect(await refreshed).toBe(original);
+  } finally { continueRequest(); }
+});
+
 test('N03/A10: Gastnavigation, direkter Planlink, Sprache, Fokus und Konfigurationsfehler', async ({ page, app }) => {
   let status = guest;
   let protectedRequests = 0;

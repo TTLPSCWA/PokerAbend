@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.20.2 – 21. November 2026
+
+* Game-ID und Gerätekopplung bleiben beim gleichzeitigen Wechsel des Discord-Anmeldestatus nutzbar.
+
 ## 3.20.1 – 21. November 2026
 
 * Bestenliste und Tisch zeigen die tatsächliche Ranked-Voraussetzung an: mindestens zwei unterschiedliche Konten und eine durchgehend aktive Discord-Sitzung pro Teilnehmer. Historische Ergebnisse bleiben lesbar.

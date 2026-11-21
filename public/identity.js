@@ -20,9 +20,20 @@ const Identity = (() => {
   });
   const state = { gameId: null, claimed: [], discord: null };
   let codeTimer = null;
-  const call = (path, body) => DiscordAccess.json('/api/identity' + path,
-    { method: body ? 'POST' : 'GET', cache: 'no-store', credentials: 'same-origin', headers: body ? { 'Content-Type': 'application/json', 'X-Requested-With': 'spieleabend' } : {}, body: body ? JSON.stringify(body) : undefined },
-    ['/legacy', '/claim'].includes(path));
+  async function call(path, body) {
+    const url = '/api/identity' + path;
+    const options = { method: body ? 'POST' : 'GET', cache: 'no-store', credentials: 'same-origin' };
+    if (body) {
+      options.headers = { 'Content-Type': 'application/json', 'X-Requested-With': 'spieleabend' };
+      options.body = JSON.stringify(body);
+    }
+    if (['/legacy', '/claim'].includes(path)) return DiscordAccess.json(url, options);
+    // Eigenes Konto und Gerätekopplung bleiben bei einem Discord-Statuswechsel gültig.
+    const response = await fetch(url, options);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || I18n.t('Die Identität konnte nicht geladen werden.'));
+    return data;
+  }
   async function refresh() {
     let discordOn = false;
     try { const data = await call(''); state.gameId = data.gameId; state.claimed = data.claimed || []; discordOn = !!data.discord; }
