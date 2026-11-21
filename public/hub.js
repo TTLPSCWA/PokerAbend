@@ -126,8 +126,10 @@ const ICONS = {
   einstellungen: '<circle cx="12" cy="12" r="3"/><path d="M12 3v3m0 12v3M3 12h3m12 0h3m-2.6-6.4-2.1 2.1M8.7 15.3l-2.1 2.1m0-10.8 2.1 2.1m6.6 6.6 2.1 2.1"/>',
 };
 const PAGES = ['start', 'spiele', 'favoriten', 'tische', 'bestenliste', 'roadmap', 'tickets', 'rueckblick', 'planung', 'erfolge', 'solo', 'einstellungen'];
+const discordPages = new Set(['bestenliste', 'tickets', 'rueckblick', 'planung']);
+const discordBlocks = new Set(['leaderboard', 'tickets', 'reviews', 'planning']);
 // V2-05/V2-15: ausgeblendete Bereiche betreffen nur die Anzeige; Adressen und Einladungslinks funktionieren weiter
-const blockHidden = (id) => Settings.blockHidden(id);
+const blockHidden = (id) => Settings.blockHidden(id) || (discordBlocks.has(id) && !DiscordAccess.allowed());
 const show = (id, html) => (blockHidden(id) ? '' : html);
 let route = { page: 'start', sub: '' };
 function parseRoute() {
@@ -173,13 +175,27 @@ function renderHub(focus = false) {
   const catalog = ['spiele', 'favoriten'].includes(route.page);
   $('#hub-search-slot').innerHTML = I18n.html`<form id="hub-search-form" role="search"><label class="search"><span class="sr-only">${catalog ? I18n.t('Spiel suchen') : I18n.t('Spiele suchen')}</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="${catalog ? 'games-search' : 'hub-search'}" type="search" placeholder="Spiele suchen …" value="${catalog ? esc(gamesQuery) : ''}" autocomplete="off"></label></form>`;
   const scroll = main.scrollTop;
-  main.innerHTML = page();
+  const locked = discordPages.has(route.page) && !DiscordAccess.allowed();
+  main.innerHTML = locked
+    ? I18n.html`<section class="hub-head"><h1>${I18n.t(TITLES[route.page])}</h1>${DiscordAccess.notice()}</section>`
+    : page();
   document.title = I18n.html`${route.page === 'solo' ? (libraryGames().find((g) => g.id === route.sub)?.name || I18n.t('Einzelspieler')) : I18n.t(TITLES[route.page])} – Spieleabend`;
   if (focus || renderedPage !== route.page + route.sub) { main.focus({ preventScroll: true }); scrollTo(0, 0); } else main.scrollTop = scroll;
   renderedPage = route.page + route.sub;
-  afterPage?.();
+  if (!locked) afterPage?.();
   if (route.page === 'solo' && route.sub) Singleplayer.mount($('#singleplayer-root'), route.sub);
 }
+window.addEventListener('discordaccesschange', () => queueMicrotask(() => {
+  if (!hubVisible()) return;
+  const protectedPage = discordPages.has(route.page);
+  if (protectedPage || route.page === 'start' || route.page === 'erfolge') {
+    renderHub(protectedPage && !DiscordAccess.allowed());
+  } else {
+    $('#side-nav').innerHTML = navHTML();
+    $('#hub-tabbar').innerHTML = tabbarHTML();
+    $('#hub-menu-nav').innerHTML = navHTML();
+  }
+}));
 function pageSolo() { return route.sub ? '<div id="singleplayer-root" aria-live="off"></div>' : `<p><a href="#spiele/einzelspieler">${I18n.t('Einzelspieler')}</a></p>`; }
 let afterPage = null;
 $('#hub-more').addEventListener('click', () => $('#hub-menu').showModal());

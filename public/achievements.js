@@ -12,11 +12,10 @@ const Achievements = (() => {
     calendar: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16m-12 5 3 2 5-4"/>',
   };
   let data = null, selectedName = null, group = 'all', state = 'all', game = 'all', limit = 36, generation = 0, search = 0, timer;
+  window.addEventListener('discordaccesschange', () => { data = null; selectedName = null; generation++; search++; clearTimeout(timer); });
   const active = (g) => g === generation && hubVisible() && route.page === 'erfolge';
   async function request(path) {
-    const res = await fetch('/api/achievements' + path, { cache: 'no-store' });
-    if (!res.headers.get('content-type')?.includes('application/json')) throw new Error('Bitte melde dich erneut auf der Seite an');
-    const json = await res.json(); if (!res.ok) throw new Error(json.error || 'Erfolge konnten nicht geladen werden'); return json;
+    return DiscordAccess.json('/api/achievements' + path, { cache: 'no-store' }, false);
   }
   function cards() {
     if (!data || !$('#achievement-cards')) return;
@@ -34,7 +33,7 @@ const Achievements = (() => {
     cards();
   }
   async function load(name, g) {
-    try { const result = await request('?' + new URLSearchParams({ name, ...(name === profile.name ? { me: '1' } : {}) })); if (active(g)) render(result); }
+    try { const result = await request('?' + new URLSearchParams({ name, ...(name === profile.name || !DiscordAccess.allowed() ? { me: '1' } : {}) })); if (active(g)) render(result); }
     catch (error) { if (active(g)) $('#achievement-body').innerHTML = I18n.html`<p class="error" role="alert">${esc(error.message)}</p><button class="btn" data-achievements-refresh>Erneut versuchen</button>`; }
   }
   function page() {
@@ -59,7 +58,7 @@ const Achievements = (() => {
     if (e.target.id === 'achievement-game') { game = e.target.value; limit = 36; cards(); }
   });
   document.addEventListener('input', (e) => {
-    if (e.target.id !== 'achievement-name') return;
+    if (e.target.id !== 'achievement-name' || !DiscordAccess.allowed()) return;
     const value = e.target.value, n = ++search; clearTimeout(timer);
     timer = setTimeout(async () => {
       try { const { names } = await request('/players?' + new URLSearchParams({ q: value })); if (n === search && $('#achievement-players')) $('#achievement-players').innerHTML = names.map((name) => `<option value="${esc(name)}"></option>`).join(''); }

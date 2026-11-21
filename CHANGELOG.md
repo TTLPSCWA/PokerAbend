@@ -2,6 +2,12 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.20.0 – 21. November 2026
+
+* Discord-Anmeldung funktioniert auch ohne Discord-Server-ID, sobald der reguläre Seitenzugang vorliegt. Verknüpfte Konten können sich auf jedem Gerät anmelden.
+* Gewertete Runden setzen eine gültige Discord-Sitzung je teilnehmendem Konto voraus. Ein Sitzungsverlust lässt die Partie ungewertet weiterlaufen.
+* Betreiber können Tickets, Abendplanung, Bestenlisten und Abend-Rückblicke auf aktive Discord-Sitzungen beschränken. Bei aktiver Sperre blendet die Navigation die Bereiche für Gäste aus. Direkte Links erklären die erforderliche Anmeldung. Der Schalter ist standardmäßig aus.
+
 ## 3.19.1 – 21. November 2026
 
 * Die Besucher-Roadmap verlangt für „Neu veröffentlicht“ einen Buildnachweis, der zum laufenden Image passt. Die redaktionelle Freigabe bleibt aus.

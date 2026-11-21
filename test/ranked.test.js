@@ -18,7 +18,7 @@ const A = 'a'.repeat(32), B = 'b'.repeat(32), C = 'c'.repeat(32);
 const ID1 = '0123456789abcdef', ID2 = 'fedcba9876543210', ID3 = '1111111111111111';
 const tmp = (p = 'ranked-') => mkdtempSync(join(tmpdir(), p));
 const reg = new Set([A, B, C]);
-const env = { isRegistered: (id) => reg.has(id), resolve: (id) => id };
+const env = { authorized: (p) => reg.has(p.accountId), resolve: (id) => id };
 const human = (accountId) => ({ bot: false, accountId });
 
 test('Berechtigung: nur registrierte Menschen, mindestens zwei Konten, nie mit Bots oder Gästen', () => {
@@ -30,6 +30,7 @@ test('Berechtigung: nur registrierte Menschen, mindestens zwei Konten, nie mit B
   assert.equal(rankedReason([human(A), human(null)], env), 'gast');
   assert.equal(rankedReason([human(A)], env), 'zu-wenige');
   assert.equal(rankedReason([human(A), human(A)], env), 'zu-wenige', 'zwei Plätze desselben Kontos sind nur ein Mensch');
+  assert.equal(rankedReason([human(A), human(A), human(C)], env), 'teilnehmer');
   assert.equal(rankedReason([], env), 'zu-wenige');
   // Ein zusammengeführtes Konto zählt als dieselbe Person
   assert.equal(rankedReason([human(A), human(B)], { ...env, resolve: () => A }), 'zu-wenige');
@@ -152,14 +153,19 @@ test('Migration: alter Bestand (schemaVersion 2) bleibt unverändert, Claim funk
 });
 
 // ---------- Mit echten Räumen: Start → Einfrieren → Ergebnis / Abbruch ----------
-function wired(gameId, { accountsOf, bots = 0, humans = 2 }) {
+function wired(gameId, { accountsOf, active = accountsOf, bots = 0, humans = 2 }) {
   const dir = tmp('ranked-room-');
   const accounts = createAccountStore(dir);
   const ids = [];
   for (let i = 0; i < humans; i++) { const id = accounts.newId(); accounts.ensure(id); ids.push(id); }
   const leaderboard = createLeaderboard(dir);
   let n = 0;
-  const ranked = createRanked({ accounts, leaderboard, newId: () => (++n).toString(16).padStart(16, '0') });
+  const sessions = new Map(ids.flatMap((id, i) => active?.[i] ? [[id, 'session-' + id]] : []));
+  const ranked = createRanked({
+    accounts, leaderboard, newId: () => (++n).toString(16).padStart(16, '0'),
+    sessionOf: (player) => sessions.get(player.accountId),
+    sessionValid: (ref, id) => !!ref && sessions.get(id) === ref && accounts.isRegistered(id),
+  });
   const room = GAMES[gameId].create('RNK' + Math.floor(Math.random() * 900 + 100), {}, (kind, data) => {
     if (kind === 'roundStart') ranked.freeze(room, data.ids);
     if (kind === 'roundAbort') ranked.abort(room);
@@ -169,7 +175,7 @@ function wired(gameId, { accountsOf, bots = 0, humans = 2 }) {
   const players = ids.map((acc, i) => { const p = room.addPlayer('Mensch' + i, null); p.accountId = acc; room.sit(p.id); return p; });
   for (let i = 0; i < bots; i++) { const p = room.addPlayer('Computer' + i, null); p.bot = true; room.sit(p.id); }
   for (const [i, acc] of ids.entries()) if (accountsOf?.[i]) accounts.linkExternal(acc, 'discord', accountsOf[i]);
-  return { room, leaderboard, accounts, players, ids, ranked };
+  return { room, leaderboard, accounts, players, ids, ranked, sessions };
 }
 function playOut(room, seed = 5) {
   const rng = seeded(seed);
@@ -251,6 +257,51 @@ test('Raum: Ergebnis mit fremdem Spieler wird nicht gewertet', () => {
   ranked.record(room, { entries, ids });
   assert.equal(leaderboard.round('0000000000000001').reason, 'teilnehmer');
   assert.equal(leaderboard.round('0000000000000001').ranked, false);
+});
+
+test('A12: gleiche Anzeigenamen und zwei Sitzungen werden anhand der Sitzplätze genau einmal gewertet', () => {
+  const { room, leaderboard, ids, players, ranked } = wired('maumau', { accountsOf: ['d1', 'd2'] });
+  players[0].name = players[1].name = 'Gleicher Name';
+  room.start(room.hostId);
+  const result = { entries: players.map((p, i) => ({ name: p.name, win: i === 0, points: i })), ids: players.map((p) => p.id) };
+  assert.equal(ranked.record(room, result), true);
+  assert.equal(ranked.record(room, result), false);
+  assert.equal(leaderboard.round('0000000000000001').ranked, true);
+  assert.deepEqual(leaderboard.round('0000000000000001').players.map((p) => p.a), ids);
+});
+
+test('A02/A13/A14: nur verknüpft, Abmeldung und erneute OAuth-Sitzung bleiben ungewertet', () => {
+  const linked = wired('maumau', { accountsOf: ['d1', 'd2'], active: [true, false] });
+  linked.room.start(linked.room.hostId);
+  assert.equal(linked.room.rankedRound.reason, 'gast');
+  linked.sessions.set(linked.ids[1], 'nachtraeglich');
+  playOut(linked.room);
+  assert.equal(linked.leaderboard.round('0000000000000001').ranked, false);
+
+  const live = wired('maumau', { accountsOf: ['d1', 'd2'] });
+  live.room.start(live.room.hostId);
+  live.ranked.reconnect(live.room, live.players[0], live.sessions.get(live.ids[0]));
+  assert.equal(live.ranked.state(live.room).ranked, true);
+  live.sessions.delete(live.ids[0]);
+  live.sessions.set(live.ids[0], 'neue-oauth-sitzung');
+  playOut(live.room);
+  assert.equal(live.leaderboard.round('0000000000000001').reason, 'gast');
+});
+
+test('A14/A15: Reconnect mit anderer Sitzung und Restore ohne Sitzungsnachweis schließen die Wertung aus', () => {
+  const { room, leaderboard, players, ranked } = wired('maumau', { accountsOf: ['d1', 'd2'] });
+  room.start(room.hostId);
+  assert.equal(ranked.state(room).ranked, true);
+  const snapshot = ranked.snapshot(room);
+  assert.equal(Object.hasOwn(snapshot, 'refs'), false);
+  ranked.reconnect(room, players[0], 'fremde-sitzung');
+  assert.equal(ranked.state(room).reason, 'gast');
+  ranked.restore(room, snapshot);
+  assert.equal(room.rankedRound.id, snapshot.id);
+  assert.equal(ranked.state(room).reason, 'unbekannt');
+  playOut(room);
+  assert.equal(leaderboard.roundCount(), 1);
+  assert.equal(leaderboard.round(snapshot.id).ranked, false);
 });
 
 test('Anzeige: Vorschau und eingefrorener Stand für die Spieler', () => {

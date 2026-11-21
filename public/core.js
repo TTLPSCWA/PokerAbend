@@ -520,22 +520,84 @@ socket.on('state', (st) => {
   if (session && current && !parked && (!st.game || !mounted || st.game === mounted)) applyRoomView(st);
 });
 
+// AUTH-01: Serverstatus für geschützte Ansichten. Eine Generation bindet ausstehende Antworten an den Kontokontext.
+const DiscordAccess = (() => {
+  let current = { required: true, active: false, login: false, code: 'discord-checking', viewer: null };
+  let generation = 0, refreshId = 0;
+  const allowed = () => !current.required || current.active;
+  function update(next) {
+    if (!next || typeof next.required !== 'boolean' || typeof next.active !== 'boolean') return;
+    if (['required', 'active', 'login', 'code', 'viewer'].every((key) => current[key] === next[key])) return;
+    current = next;
+    generation++;
+    window.dispatchEvent(new Event('discordaccesschange'));
+  }
+  function invalidate() {
+    refreshId++;
+    if (current.required) update({ ...current, active: false, code: 'discord-checking' });
+  }
+  async function refresh() {
+    const id = ++refreshId;
+    try {
+      const response = await fetch('/api/discord-access', { credentials: 'same-origin', cache: 'no-store' });
+      if (!response.ok) throw new Error('Zugangsstatus nicht erreichbar');
+      const status = await response.json();
+      if (id === refreshId) update(status);
+    } catch {
+      if (id === refreshId && current.required) update({ ...current, active: false, code: 'discord-unavailable' });
+    }
+  }
+  const messages = {
+    'discord-required': 'Für diesen Bereich ist eine aktive Discord-Anmeldung erforderlich.',
+    'discord-configuration': 'Der Discord-Zugang ist nicht richtig eingerichtet.',
+    'discord-checking': 'Discord-Zugang wird geprüft …',
+    'discord-unavailable': 'Der Discord-Zugang kann gerade nicht geprüft werden.',
+  };
+  const message = () => I18n.t(messages[current.code] || messages['discord-required']);
+  function notice() {
+    const target = location.pathname + location.search + location.hash;
+    const signin = current.code === 'discord-required' && current.login
+      ? `<a class="btn btn-brass" href="/auth/discord/login?next=${esc(encodeURIComponent(target))}">${I18n.t('Mit Discord anmelden')}</a>` : '';
+    return `<p class="notice" role="status">${esc(message())}</p>${signin}`;
+  }
+  async function json(path, options, protectedRoute = true) {
+    if (protectedRoute && !allowed()) throw new Error(message());
+    const before = generation;
+    const response = await fetch(path, options);
+    if (!response.headers.get('content-type')?.includes('application/json')) throw new Error('Bitte melde dich erneut auf der Seite an');
+    const payload = await response.json();
+    if (before !== generation) throw new Error(message());
+    if (!response.ok && ['discord-required', 'discord-configuration'].includes(payload.code)) {
+      refreshId++;
+      update({ ...current, required: true, active: false, login: payload.code === 'discord-required', code: payload.code });
+    }
+    if (!response.ok) throw Object.assign(new Error(payload.error || 'Die Anfrage ist fehlgeschlagen'), { status: response.status });
+    return payload;
+  }
+  return { allowed, update, invalidate, refresh, notice, json, message };
+})();
+socket.on('connect', () => DiscordAccess.refresh());
+window.addEventListener('focus', () => DiscordAccess.refresh());
+window.addEventListener('pageshow', (event) => { if (event.persisted) { DiscordAccess.invalidate(); DiscordAccess.refresh(); } });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) DiscordAccess.refresh(); });
+setInterval(() => { if (!document.hidden) DiscordAccess.refresh(); }, 15_000);
+
 // ---------- Bestenliste über alle Abende ----------
 // Daten von /api/ranked (view 'ranked': nur qualifizierte Ergebnisse) oder /api/leaderboard (view 'stats': alte, namensbasierte Statistik)
 // Daten holen und als HTML-Teil bauen (Filter + Tabelle) – gleich für den Dialog am Tisch und die Seite #bestenliste der Startseite.
 // pre = Präfix der Element-IDs (lb im Dialog, lbp auf der Seite), damit beide nie dieselben IDs haben.
 async function fetchLeaderboard(game, period = 'all', view = 'ranked') {
+  if (!DiscordAccess.allowed()) return null;
   try {
     const url = view === 'stats' ? '/api/leaderboard' : '/api/ranked';
-    const res = await fetch(`${url}?game=${encodeURIComponent(game || '')}&period=${encodeURIComponent(period)}`, { credentials: 'same-origin' });
-    const r = await res.json();
+    const r = await DiscordAccess.json(`${url}?game=${encodeURIComponent(game || '')}&period=${encodeURIComponent(period)}`, { credentials: 'same-origin', cache: 'no-store' });
     r.view = view === 'stats' ? 'stats' : 'ranked';
     return r;
-  } catch { toast(I18n.t('Die Bestenliste ist gerade nicht erreichbar'), true); return null; }
+  } catch { if (DiscordAccess.allowed()) toast(I18n.t('Die Bestenliste ist gerade nicht erreichbar'), true); return null; }
 }
 // Warum eine Runde nicht gewertet wird (Gründe aus server/ranked.js)
 function rankedReasonText(reason) {
-  return ({ bots: I18n.t('mit Computer-Mitspielern'), gast: I18n.t('mit Gästen ohne Discord-Verknüpfung'), 'zu-wenige': I18n.t('mit zu wenigen registrierten Menschen'), teilnehmer: I18n.t('Teilnehmerkreis änderte sich'), unbekannt: I18n.t('ohne gesicherte Wertung'), aus: I18n.t('bei ausgeschalteter Ranked-Wertung') })[reason] || I18n.t('nicht gewertet');
+  return ({ bots: I18n.t('mit Computer-Mitspielern'), gast: I18n.t('ohne durchgehend aktive Discord-Sitzung'), 'zu-wenige': I18n.t('mit zu wenigen registrierten Menschen'), teilnehmer: I18n.t('Teilnehmerkreis änderte sich oder Konto mehrfach besetzt'), unbekannt: I18n.t('ohne gesicherte Wertung'), aus: I18n.t('bei ausgeschalteter Ranked-Wertung') })[reason] || I18n.t('nicht gewertet');
 }
 function leaderboardInner(r, pre = 'lb') {
   const ranked = r.view === 'ranked';
@@ -562,7 +624,7 @@ function leaderboardInner(r, pre = 'lb') {
     return I18n.html`${filters}
       <p class="lb-badge lb-badge-ranked">${I18n.t('Gewertet: nur vollständig beendete Partien zwischen mindestens zwei registrierten Menschen, ohne Gäste und Computer.')}</p>
       ${rows ? I18n.html`<div class="lb-scroll"><table class="standings lb-table"><thead><tr><th></th><th>Name</th><th class="num">${isPoker ? I18n.t('Hände') : 'Partien'}</th><th class="num">Siege</th><th class="num" title="${I18n.t('Durchschnittliche Platzierung')}">Ø Platz</th>${r.game === 'all' ? '' : `<th class="num">${esc(info?.scoreLabel || I18n.t('Punkte'))}</th>`}</tr></thead><tbody>${rows}</tbody></table></div>`
-        : I18n.html('<p class="hint lb-empty">In diesem Zeitraum gibt es noch keine gewerteten Partien. Gewertet wird erst, wenn mindestens zwei Discord-verknüpfte Menschen zusammen spielen.</p>')}
+        : I18n.html`<p class="hint lb-empty">${I18n.t('In diesem Zeitraum gibt es noch keine gewerteten Partien. Jede Person braucht eine aktive Discord-Sitzung und ein eigenes Konto.')}</p>`}
       <p class="hint" style="margin:0">${I18n.t('Gewertet')}: ${s.ranked} · ${I18n.t('nicht gewertet')}: ${s.notRanked}${why ? ` (${esc(why)})` : ''}. ${I18n.t('Nicht gewertete Partien zählen weiter in der Statistik.')} ${I18n.t('Sortiert nach Siegen.')}</p>`;
   }
   const rows = r.rows.map((x, k) => I18n.html`<tr><td><span class="rank ${k < 3 ? 'r' + (k + 1) : ''}" aria-label="Platz ${k + 1}">${k + 1}</span></td>
@@ -592,11 +654,17 @@ async function showLeaderboard(game, period, view = lbView) {
     });
   }
   const r = await fetchLeaderboard(game, period || 'all', view);
-  if (!r) return;
-  d.innerHTML = I18n.html`<div class="help-body"><h2 id="lb-title">Bestenliste</h2>${leaderboardInner(r, 'lb')}
+  if (!r && DiscordAccess.allowed()) return;
+  d.innerHTML = I18n.html`<div class="help-body"><h2 id="lb-title">Bestenliste</h2>${r && DiscordAccess.allowed() ? leaderboardInner(r, 'lb') : DiscordAccess.notice()}
     <div class="dlg-actions"><span></span><button class="btn btn-brass" data-lb-close>Schließen</button></div></div>`;
   if (!d.open) d.showModal();
 }
+window.addEventListener('discordaccesschange', () => {
+  const d = $('#lb-dlg');
+  if (!d) return;
+  if (d.open) d.close();
+  d.replaceChildren();
+});
 document.addEventListener('click', (e) => {
   const t = e.target.closest('[data-leaderboard]');
   if (t) showLeaderboard(t.dataset.leaderboard || 'poker');
@@ -668,7 +736,11 @@ async function boot() {
   try {
     const r = await fetch('/me', { credentials: 'same-origin' });
     if (r.status === 401) { location.href = '/login?next=' + encodeURIComponent(location.pathname + location.search); return; }
-    if (r.ok) { account = { games: [], ...(await r.json()) }; I18n.configureGames([...account.games, ...(account.singleplayerGames || []), ...(account.planned || [])]); }
+    if (r.ok) {
+      account = { games: [], ...(await r.json()) };
+      DiscordAccess.update(account.discordAccess);
+      I18n.configureGames([...account.games, ...(account.singleplayerGames || []), ...(account.planned || [])]);
+    }
   } catch { /* offline – Socket.IO versucht es weiter */ }
   // Der Hub und seine Seiten stehen erst nach den gemeinsamen Skripten bereit.
   if (document.readyState === 'loading') await new Promise((resolve) => document.addEventListener('DOMContentLoaded', resolve, { once: true }));

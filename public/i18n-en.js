@@ -1,6 +1,13 @@
 // Reviewed English UI messages; German source text is the fallback for missing entries.
 'use strict';
 window.EN = {
+  'Für diesen Bereich ist eine aktive Discord-Anmeldung erforderlich.': 'This area requires an active Discord sign-in.',
+  'Der Discord-Zugang ist nicht richtig eingerichtet.': 'Discord access is not configured correctly.',
+  'Discord-Zugang wird geprüft …': 'Checking Discord access …',
+  'Der Discord-Zugang kann gerade nicht geprüft werden.': 'Discord access cannot be checked right now.',
+  'ohne durchgehend aktive Discord-Sitzung': 'without a continuously active Discord session',
+  'Teilnehmerkreis änderte sich oder Konto mehrfach besetzt': 'participants changed or one account occupied multiple seats',
+  'In diesem Zeitraum gibt es noch keine gewerteten Partien. Jede Person braucht eine aktive Discord-Sitzung und ein eigenes Konto.': 'There are no ranked matches in this period. Each player needs an active Discord session and their own account.',
   'aus':'out', 'ausgeschieden':'eliminated',
   'Alle spielen gleichzeitig':'Everyone plays simultaneously', 'Runde beendet':'Round finished', 'Arena bereit':'Arena ready',
   'Richtung halten zum Bewegen':'Hold a direction to move', 'Pfeiltasten / WASD':'Arrow keys / WASD',

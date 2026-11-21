@@ -13,10 +13,19 @@ const EveningPlans = (() => {
   async function request(path, method = 'GET', data = {}) {
     const options = { method, credentials: 'same-origin', cache: 'no-store' };
     if (method !== 'GET') { options.headers = { 'Content-Type': 'application/json', 'X-Requested-With': 'spieleabend' }; options.body = JSON.stringify({ ...data, name: profile.name, avatar: profile.avatar }); }
-    const response = await fetch('/api/plans' + path, options);
-    if (!response.headers.get('content-type')?.includes('application/json')) throw new Error('Bitte melde dich erneut auf der Seite an');
-    const result = await response.json(); if (!response.ok) throw new Error(result.error || 'Die Anfrage ist fehlgeschlagen'); return result;
+    return DiscordAccess.json('/api/plans' + path, options);
   }
+  window.addEventListener('discordaccesschange', () => {
+    generation++;
+    current = null;
+    clearTimeout(timer);
+    drafts.clear();
+    for (const dialog of document.querySelectorAll('.plan-editor')) {
+      if (dialog.open) dialog.close();
+      delete dialog._planData;
+      dialog.replaceChildren();
+    }
+  });
   const errorHTML = (error) => I18n.html`<p class="error" role="alert">${esc(error.message)}</p><button class="btn" data-plan-refresh>Erneut versuchen</button>`;
   async function loadList(g) {
     try {

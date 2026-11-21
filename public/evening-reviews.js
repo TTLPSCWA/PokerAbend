@@ -8,11 +8,10 @@ const EveningReviews = (() => {
   const date = (n) => n ? new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/Berlin' }).format(n) : 'Zeitpunkt nicht erfasst';
   const table = (headers, rows) => `<div class="review-table"><table class="standings"><thead><tr>${headers.map((h) => `<th scope="col">${h}</th>`).join('')}</tr></thead><tbody>${rows.map((r) => `<tr>${r.map((v) => `<td>${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   let generation = 0, current = null, query = '', pageNumber = 1, timer;
+  window.addEventListener('discordaccesschange', () => { generation++; current = null; clearTimeout(timer); });
   const active = (g) => g === generation && hubVisible() && route.page === 'rueckblick';
   async function request(path) {
-    const res = await fetch('/api/evenings' + path, { cache: 'no-store', headers: { Accept: 'application/json' } });
-    if (res.redirected || res.status === 401) throw new Error('Bitte erneut anmelden und den Rückblick öffnen.');
-    const data = await res.json(); if (!res.ok) throw new Error(data.error || 'Rückblick konnte nicht geladen werden.'); return data;
+    return DiscordAccess.json('/api/evenings' + path, { cache: 'no-store', headers: { Accept: 'application/json' } });
   }
   function failure(target, error) {
     target.innerHTML = I18n.html`<p class="error" role="alert">${esc(error.message)}</p><button type="button" class="btn" data-review-retry>Erneut versuchen</button>`;

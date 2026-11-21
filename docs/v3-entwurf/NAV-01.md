@@ -43,3 +43,7 @@ Der obige Text ist der Planungsstand bei `c3d3cd6`. „Umsetzung separat freigeb
 - N06: ein geöffnetes Mobil-Menü per Tastatur, Fokus nach Filteränderung im Menü, Überlaufen im Englischen mit allen Schaltern.
 - Ein Idle-Spiel unter den Mehrspieler-Spielen (die Tests simulieren ein Solo-Spiel).
 - Zwei bekannte Lastflakes in bestehenden Tests, nicht durch NAV-01 verursacht (siehe Nachtrag in [QA-CI-01](QA-CI-01.md)).
+
+## N03 in Version 3.20.0
+
+Die Sichtbarkeit folgt dem AUTH-01-Status zusätzlich zu den persönlichen Ausblendungen. Mit aktiver Modulsperre erhalten Gäste bei direkten Hash-Links eine Anmeldung mit der ursprünglichen Zieladresse. Bei Konfigurationsfehlern erscheint die Meldung ohne Anmeldelink. Nach Berechtigungsverlust verschwinden die geschützten Inhalte. Desktop und Mobil sind mit simulierten Statuswechseln geprüft. Die Zugriffskontrolle selbst wird am echten Testserver geprüft. [Browserfälle](../../test/ui/auth-01.spec.js) · [HTTP-Fälle](../../test/discord.test.js)

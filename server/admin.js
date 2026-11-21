@@ -108,6 +108,16 @@ export function createAdmin({ password, secret, dataDir, secure = () => false, t
     api.post('/players/merge', guard((req) => { const info = tools.players.merge(req.body.from, req.body.to); log.add('Spieler zusammengeführt', `${info.from} → ${info.to}`); return { ok: true, ...info }; }));
   }
   if (tickets) {
+    api.get(['/tickets/export.md', '/tickets/:id/export.md'], (req, res) => {
+      try {
+        const id = req.params.id || null;
+        if (id !== null && !/^[1-9]\d{0,8}$/.test(id)) return res.status(404).json({ error: 'Ticket nicht gefunden' });
+        const body = tickets.markdown(req.query, id);
+        res.attachment(id ? `spieleabend-ticket-${id}.md` : 'spieleabend-tickets.md').type('text/markdown; charset=utf-8').send(body);
+      } catch (error) {
+        res.status(error.status >= 400 && error.status < 600 ? error.status : 500).json({ error: error.status ? error.message : 'Export fehlgeschlagen' });
+      }
+    });
     api.get('/tickets', guard((req) => tickets.list({ q: q(req, 'q', 100), status: q(req, 'status', 12), type: q(req, 'type', 8), page: Number(req.query.page) || 1 })));
     api.get('/tickets/:id', guard((req) => ({ ticket: tickets.detail(req.params.id) })));
     api.patch('/tickets/:id', guard((req) => { const t = tickets.update(req.params.id, req.body); log.add('Ticket bearbeitet', `#${t.id} ${t.title} (${t.status})`); return { ticket: t }; }));

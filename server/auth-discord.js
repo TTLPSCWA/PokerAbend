@@ -25,10 +25,13 @@ export function discordConfig(env = process.env) {
   const publicUrl = String(env.PUBLIC_URL || '').trim().replace(/\/+$/, '');
   if (!clientId || !clientSecret || !/^https?:\/\/[^/\s]+$/.test(publicUrl)) return null;
   const minutes = Number(env.DISCORD_RECHECK_MIN);
+  const rawGuild = String(env.DISCORD_GUILD_ID || '').trim(), rawRole = String(env.DISCORD_ROLE_ID || '').trim();
+  const guildId = /^\d{5,25}$/.test(rawGuild) ? rawGuild : '';
+  const roleId = /^\d{5,25}$/.test(rawRole) ? rawRole : '';
   return {
     clientId, clientSecret, publicUrl, redirectUri: `${publicUrl}/auth/discord/callback`,
-    guildId: /^\d{5,25}$/.test(String(env.DISCORD_GUILD_ID || '').trim()) ? String(env.DISCORD_GUILD_ID).trim() : '',
-    roleId: /^\d{5,25}$/.test(String(env.DISCORD_ROLE_ID || '').trim()) ? String(env.DISCORD_ROLE_ID).trim() : '',
+    guildId, roleId,
+    policyValid: (!rawGuild || !!guildId) && (!rawRole || (!!roleId && !!guildId)),
     apiBase: String(env.DISCORD_API_BASE || 'https://discord.com/api/v10').replace(/\/+$/, ''),   // nur für Tests mit nachgebautem Discord
     authorizeUrl: String(env.DISCORD_AUTHORIZE_URL || 'https://discord.com/oauth2/authorize'),
     rateMax: Number(env.DISCORD_RATE_MAX) > 0 ? Number(env.DISCORD_RATE_MAX) : 60,
@@ -80,20 +83,28 @@ export function createDiscordAuth({ config, secret, dataDir, accounts, identity,
     return 'unknown';
   }
 
+  function sessionByHash(hash) {
+    const s = typeof hash === 'string' && sessions[hash];
+    if (!s) return null;
+    if (!Number.isFinite(s.expires) || !Number.isFinite(s.lastSeen) || s.expires <= now() || now() - s.lastSeen > IDLE_DAYS * DAY) {
+      delete sessions[hash]; touched(); return null;
+    }
+    return s;
+  }
   const hasSession = (cookieHeader) => {
     const raw = parseCookies(cookieHeader)[SESSION_COOKIE];
     if (typeof raw !== 'string' || raw.length > 80) return null;
-    const hash = sha(raw), s = sessions[hash];
-    if (!s) return null;
-    if (s.expires <= now() || now() - s.lastSeen > IDLE_DAYS * DAY) { delete sessions[hash]; touched(); return null; }
-    return { hash, s };
+    const hash = sha(raw), s = sessionByHash(hash);
+    return s ? { hash, s } : null;
   };
+  const sameAccount = (s, id) => !!id && s.accountId === id && accounts.findExternal('discord', s.discordId) === id;
+  const policyMatches = (s) => config.policyValid && (!config.guildId || (s.guildId === config.guildId && s.roleId === config.roleId));
   const revoke = (hash) => { if (sessions[hash]) { delete sessions[hash]; touched(); } };
   const revokeAll = (predicate) => { let n = 0; for (const [h, s] of Object.entries(sessions)) if (predicate(s)) { delete sessions[h]; n++; } if (n) touched(); return n; };
 
   // Mitgliedschaft nach recheckMs im Hintergrund prüfen
   async function recheck(hash) {
-    const s = sessions[hash];
+    const s = sessionByHash(hash);
     if (!s || checking.has(hash)) return;
     checking.add(hash);
     try {
@@ -101,12 +112,34 @@ export function createDiscordAuth({ config, secret, dataDir, accounts, identity,
       try { r = await tokenRequest({ grant_type: 'refresh_token', refresh_token: decrypt(s.rt) }); } catch { s.nextTry = now() + retryMs; return; }
       if (r.status === 400 || r.status === 401) { revoke(hash); return; }  // Freigabe zurückgezogen oder Token ungültig
       if (r.status !== 200 || !r.body?.access_token) { s.nextTry = now() + retryMs; return; }
+      if (sessions[hash] !== s) return;
+      // Discord kann den Refresh-Token rotieren, selbst wenn die nachfolgende Prüfung vorübergehend scheitert.
+      if (r.body.refresh_token) { s.rt = encrypt(r.body.refresh_token); touched(); }
+      let me;
+      try { me = await call('/users/@me', { token: r.body.access_token }); } catch { s.nextTry = now() + retryMs; return; }
+      if ([401, 403].includes(me.status) || (me.status === 200 && String(me.body?.id) !== s.discordId)) { revoke(hash); return; }
+      if (me.status !== 200) { s.nextTry = now() + retryMs; return; }
       const state = await membership(r.body.access_token);
       if (state === 'not-member') { revoke(hash); return; }
       if (state === 'unknown') { s.nextTry = now() + retryMs; return; }
-      if (r.body.refresh_token) s.rt = encrypt(r.body.refresh_token);
+      if (sessions[hash] !== s) return;
+      s.guildId = config.guildId; s.roleId = config.roleId;
       s.lastCheck = now(); s.nextTry = 0; touched();
     } finally { checking.delete(hash); }
+  }
+
+  // Reine serverseitige Referenz fuer Ranked; aus dem Cookie wird nie ein Berechtigungsflag uebernommen.
+  function sessionValid(ref, accountId) {
+    const s = sessionByHash(ref);
+    return !!s && sameAccount(s, accountId) && policyMatches(s);
+  }
+  function sessionReference(cookieHeader, accountId) {
+    const found = hasSession(cookieHeader);
+    if (!found || !config.policyValid || !sameAccount(found.s, accountId)) return null;
+    const { hash, s } = found, t = now();
+    if (t - s.lastSeen > 60_000) { s.lastSeen = t; dirty = true; }
+    if ((!policyMatches(s) || t - s.lastCheck >= config.recheckMs) && t >= (s.nextTry || 0)) void recheck(hash);
+    return policyMatches(s) ? hash : null;
   }
 
   const pending = new Map();   // sha(state) → { verifier, nonce, purpose, accountId, next, expires }
@@ -120,7 +153,8 @@ export function createDiscordAuth({ config, secret, dataDir, accounts, identity,
     const token = b64(randomBytes(32)), t = now();
     // Rotation: ältere Sitzungen desselben Browsers/Nutzers gelten nicht weiter
     const old = hasSession(req.headers.cookie); if (old) revoke(old.hash);
-    sessions[sha(token)] = { accountId, discordId, created: t, lastSeen: t, expires: t + SESSION_DAYS * DAY, lastCheck: t, nextTry: 0, rt: encrypt(refreshToken || '') };
+    sessions[sha(token)] = { accountId, discordId, guildId: config.guildId, roleId: config.roleId,
+      created: t, lastSeen: t, expires: t + SESSION_DAYS * DAY, lastCheck: t, nextTry: 0, rt: encrypt(refreshToken || '') };
     if (Object.keys(sessions).length > 5000) for (const [h, s] of Object.entries(sessions).sort((a, b) => a[1].lastSeen - b[1].lastSeen).slice(0, 500)) delete sessions[h];
     touched();
     res.append('Set-Cookie', cookieLine(SESSION_COOKIE, token, { seconds: SESSION_DAYS * 86400, secure: secure(req) }));
@@ -150,8 +184,14 @@ export function createDiscordAuth({ config, secret, dataDir, accounts, identity,
     for (const [k, v] of Object.entries({ client_id: config.clientId, response_type: 'code', redirect_uri: config.redirectUri, scope: config.guildId ? 'identify guilds.members.read' : 'identify', state, code_challenge: b64(createHash('sha256').update(verifier).digest()), code_challenge_method: 'S256', prompt: 'none' })) url.searchParams.set(k, v);
     res.redirect(303, url.toString());
   }
-  // Wer ohne Gruppenpasswort kommt, braucht die Mitgliedschaft; ohne DISCORD_GUILD_ID gibt Discord keinen Zugang
-  router.get('/login', (req, res) => (config.guildId ? begin(req, res, 'login') : res.status(404).type('text').send('Nicht gefunden')));
+  router.get('/login', (req, res) => {
+    if (!config.policyValid) return res.status(503).json({ code: 'discord-configuration', error: 'Die Discord-Anmeldung ist nicht richtig eingerichtet.' });
+    if (!config.guildId && !siteAccess(req)) {
+      const target = '/auth/discord/login?next=' + encodeURIComponent(safeNext(req.query.next));
+      return res.redirect(303, '/login?next=' + encodeURIComponent(target));
+    }
+    begin(req, res, 'login');
+  });
   router.get('/link', (req, res) => (siteAccess(req) ? begin(req, res, 'link') : res.redirect(303, '/login')));
 
   router.get('/callback', async (req, res) => {
@@ -165,6 +205,7 @@ export function createDiscordAuth({ config, secret, dataDir, accounts, identity,
     const back = entry.purpose === 'link' ? '/' : entry.next;
     if (req.query.error) return entry.purpose === 'link' ? res.redirect(303, '/?discord=denied') : fail(req, res, 'denied', back);
     if (typeof req.query.code !== 'string' || !req.query.code || req.query.code.length > 300) return fail(req, res, 'failed', back);
+    if (entry.purpose === 'login' && (!config.policyValid || (!config.guildId && !siteAccess(req)))) return fail(req, res, 'failed', back);
     try {
       const t = await tokenRequest({ grant_type: 'authorization_code', code: req.query.code, redirect_uri: config.redirectUri, code_verifier: entry.verifier });
       if (t.status !== 200 || !t.body?.access_token) return entry.purpose === 'link' ? res.redirect(303, '/?discord=failed') : fail(req, res, 'expired', back);
@@ -187,6 +228,7 @@ export function createDiscordAuth({ config, secret, dataDir, accounts, identity,
         return res.redirect(303, '/?discord=linked');
       }
       // Anmelden: dasselbe Konto wie vor einem Cookie-Verlust; sonst hängt sich Discord an dieses Gerät
+      if (!config.guildId && !siteAccess(req)) return fail(req, res, 'failed', back);
       let account = linked ? accounts.get(linked) : current;
       if (!account) account = accounts.ensure(accounts.newId());
       if (!linked) accounts.linkExternal(account.id, 'discord', discordId);
@@ -213,7 +255,7 @@ export function createDiscordAuth({ config, secret, dataDir, accounts, identity,
   router.get('/status', needAccess, (req, res) => {
     const a = accountOf(req.headers.cookie), d = a?.discord;
     const linked = !!(a && d);
-    res.json({ enabled: true, login: !!config.guildId, linked, name: linked ? d.name : '', sync: linked ? d.sync !== false : true, adopt: linked && d.sync !== false && d.pending ? d.name : '' });
+    res.json({ enabled: true, login: config.policyValid, active: !!sessionReference(req.headers.cookie, a?.id), linked, name: linked ? d.name : '', sync: linked ? d.sync !== false : true, adopt: linked && d.sync !== false && d.pending ? d.name : '' });
   });
   router.post('/profile', csrf, needAccess, express.json({ limit: '1kb' }), (req, res) => {
     const a = accountOf(req.headers.cookie);
@@ -241,14 +283,9 @@ export function createDiscordAuth({ config, secret, dataDir, accounts, identity,
 
   return {
     router, config,
-    // Gilt die Discord-Sitzung dieser Anfrage (Mitglied, nicht abgelaufen, nicht widerrufen)?
+    sessionReference, sessionValid,
     hasAccess(cookieHeader) {
-      const found = hasSession(cookieHeader);
-      if (!found) return false;
-      const { hash, s } = found, t = now();
-      if (t - s.lastSeen > 60000) { s.lastSeen = t; dirty = true; }
-      if (t - s.lastCheck >= config.recheckMs && t >= (s.nextTry || 0)) recheck(hash);
-      return true;
+      return !!config.guildId && !!sessionReference(cookieHeader, accountOf(cookieHeader)?.id);
     },
     revokeAccount(accountId) { return revokeAll((s) => s.accountId === accountId); },
     revokeCurrent(cookieHeader) { const s = hasSession(cookieHeader); if (s) revoke(s.hash); },

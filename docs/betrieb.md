@@ -1,6 +1,6 @@
 # Betrieb: Spieleabend aufsetzen, aktualisieren, sichern, reparieren
 
-Stand: Version **3.19.1** (21. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
+Stand: Version **3.20.0** (21. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
 
 **Inhalt**
 
@@ -110,8 +110,15 @@ Alles oder nichts: `DISCORD_CLIENT_SECRET` und `PUBLIC_URL` müssen zusammen ges
 | `DISCORD_CLIENT_ID` | `1563578924007694346` | Anwendungs-ID der Discord-App (öffentlich). |
 | `DISCORD_CLIENT_SECRET` | `(nur in der .env, nie weitergeben)` | Aus dem Discord Developer Portal (OAuth2 → Client Secret). |
 | `PUBLIC_URL` | `https://spiele.example.org` | Öffentliche Adresse **ohne** Schrägstrich am Ende. Daraus entsteht die Redirect-URI `PUBLIC_URL/auth/discord/callback`, die im Portal eingetragen sein muss. |
-| `DISCORD_GUILD_ID` | `900000000000000001` | Server-ID. Gesetzt: Mitglieder kommen per Discord ohne Gruppenpasswort hinein. Leer: Discord dient nur zum Verknüpfen des Kontos. |
+| `DISCORD_GUILD_ID` | `900000000000000001` | Optional. Mit Server-ID ermöglicht bestätigte Mitgliedschaft den Seitenzugang per Discord. Ohne Server-ID stehen OAuth und Verknüpfung nach regulärem Seitenzugang zur Verfügung. |
 | `DISCORD_ROLE_ID` | `900000000000000002` | Optional: nur Mitglieder mit dieser Rolle kommen per Discord hinein. |
+| `DISCORD_EXCLUSIVE_MODULES` | `off` | Standard aus. Mit `on` erfordern Tickets, Abendplanung, Ranglisten, Altnamen und Abend-Rückblicke einschließlich Modulexporten eine aktive, zum Konto passende Discord-Sitzung. |
+
+Den Exklusivschalter erst nach einer gesonderten Betriebsfreigabe setzen. Eine gesetzte Rollen-ID setzt eine gültige Guild-ID voraus. Fehlende OAuth-Pflichtwerte, eine ungültige Mitgliedsrichtlinie oder deaktiviertes Discord führen bei aktiver Modulsperre zu HTTP 503 mit `discord-configuration`. Eine fehlende, widerrufene oder kontofremde Sitzung führt zu HTTP 403 mit `discord-required`. Das Gruppenpasswort gilt unverändert. Der unabhängige Adminzugang unter `/admin` enthält Ticket- und Statistikmoderation. Ticket-Markdown ist dort unter `/admin/api/tickets/export.md` und `/admin/api/tickets/:id/export.md` abrufbar.
+
+Ranked verlangt unabhängig vom Exklusivschalter eine gültige Sitzung pro Sitzplatz bei Rundenstart und Ergebnisbuchung. Mindestens zwei unterschiedliche Konten müssen teilnehmen. Mehrfachsitze, Bots und ein nachgewiesener Sitzungsverlust führen zu einer ungewerteten Partie. Eine Wiederanmeldung mit einer neuen Sitzung wertet dieselbe Partie nicht auf. Ein Reconnect mit derselben gültigen Sitzung kann die Wertung erhalten. Über einen Serverneustart wiederhergestellte Runden ohne verifizierbaren Sitzungsnachweis bleiben ungewertet.
+
+Discord-Sitzungen laufen nach 30 Tagen oder 14 Tagen Inaktivität ab. Bei bestätigtem Widerruf erlischt die Berechtigung. Bei vorübergehendem Providerausfall behalten bereits nach der geltenden Richtlinie bestätigte Sitzungen ihre reguläre Gültigkeitsgrenze. Neue Anmeldungen brauchen einen erfolgreichen Providernachweis.
 
 ### Funktionen und Spiele ein-/ausschalten (V2-10)
 

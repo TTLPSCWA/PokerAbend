@@ -104,6 +104,7 @@ export function createTicketAPI({ dir, games, secret, adminPassword = '', secure
   // Verwaltung über /admin (V2-17): eigener Akteur, kein Cookie-Zugang
   const must = () => { if (!store) throw ticketError(503, 'Die Ticket-Datei ist nicht lesbar'); return store; };
   const admin = {
+    markdown: (query, id) => must().markdown(query, id),
     list: (query = {}) => ({ ...must().list({ sort: 'updated', ...query }, ADMIN_ACTOR), statuses: TICKET_STATUS, types: TICKET_TYPES }),
     detail: (id) => must().detail(id, ADMIN_ACTOR),
     update: (id, data) => must().update(id, data, ADMIN_ACTOR),

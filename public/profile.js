@@ -7,13 +7,10 @@ const Profile = (() => {
   let dlg = null, current = null, token = 0;
   const date = (at) => (at ? new Date(at).toLocaleDateString(I18n.locale || undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '');
   async function call(path, body) {
-    const res = await fetch('/api/profile' + path, {
+    return DiscordAccess.json('/api/profile' + path, {
       method: body ? 'POST' : 'GET', cache: 'no-store', credentials: 'same-origin',
       headers: body ? { 'Content-Type': 'application/json', 'X-Requested-With': 'spieleabend' } : {}, body: body ? JSON.stringify(body) : undefined,
-    });
-    const json = res.headers.get('content-type')?.includes('application/json') ? await res.json() : {};
-    if (!res.ok) throw Object.assign(new Error(json.error || tx('Das Profil konnte nicht geladen werden.', 'The profile could not be loaded.')), { status: res.status });
-    return json;
+    }, false);
   }
   const hiddenNote = () => `<p class="hint profile-hidden">${esc(tx('Nicht freigegeben', 'Not shared'))}</p>`;
   function section(title, body) { return `<section class="profile-section"><h3>${esc(title)}</h3>${body}</section>`; }
@@ -69,5 +66,11 @@ const Profile = (() => {
     if (link && link.dataset.profile) { e.preventDefault(); e.stopPropagation(); open(link.dataset.profile); }
   });
   window.addEventListener('languagechange', () => { if (dlg?.open && current) show(current); });
+  window.addEventListener('discordaccesschange', () => {
+    token++;
+    current = null;
+    if (dlg?.open) dlg.close();
+    dlg?.replaceChildren();
+  });
   return { open, render };
 })();

@@ -20,12 +20,9 @@ const Identity = (() => {
   });
   const state = { gameId: null, claimed: [], discord: null };
   let codeTimer = null;
-  const call = async (path, body) => {
-    const res = await fetch('/api/identity' + path, { method: body ? 'POST' : 'GET', cache: 'no-store', credentials: 'same-origin', headers: body ? { 'Content-Type': 'application/json', 'X-Requested-With': 'spieleabend' } : {}, body: body ? JSON.stringify(body) : undefined });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.error || I18n.t('Die Identität konnte nicht geladen werden.'));
-    return data;
-  };
+  const call = (path, body) => DiscordAccess.json('/api/identity' + path,
+    { method: body ? 'POST' : 'GET', cache: 'no-store', credentials: 'same-origin', headers: body ? { 'Content-Type': 'application/json', 'X-Requested-With': 'spieleabend' } : {}, body: body ? JSON.stringify(body) : undefined },
+    ['/legacy', '/claim'].includes(path));
   async function refresh() {
     let discordOn = false;
     try { const data = await call(''); state.gameId = data.gameId; state.claimed = data.claimed || []; discordOn = !!data.discord; }
@@ -53,14 +50,15 @@ const Identity = (() => {
       <div class="identity-block"><b>Meine alten Statistiken übernehmen</b>
         <p class="hint">Bisher zählte nur dein Name. Wähle einen Namen, unter dem du früher gespielt hast. Wer zuerst übernimmt, bekommt die Statistik; eine falsche Zuordnung kann die Verwaltung zurücknehmen.</p>
         ${state.claimed.length ? `<p class="hint">${esc(I18n.t('Schon übernommen'))}: ${esc(state.claimed.join(', '))}</p>` : ''}
-        <button type="button" class="btn" id="p-legacy-load">Liste laden</button><ul class="identity-legacy" id="p-legacy-list"></ul></div>`;
+        ${DiscordAccess.allowed() ? I18n.html`<button type="button" class="btn" id="p-legacy-load">Liste laden</button><ul class="identity-legacy" id="p-legacy-list"></ul>` : DiscordAccess.notice()}</div>`;
   }
   function discordBlock() {
     const d = state.discord; if (!d) return '';
-    if (!d.linked) return `<div class="identity-block"><b>Discord</b><p class="hint">${esc(I18n.t('Mit Discord verknüpfen heißt: Wer seine Cookies verliert, meldet sich wieder mit Discord an und ist dieselbe Person. Das Gruppenpasswort bleibt der Zugang zur Seite.'))}</p><a class="btn" id="p-discord-link" href="/auth/discord/link">${esc(I18n.t('Discord verknüpfen'))}</a></div>`;
+    const login = d.login && !d.active ? `<a class="btn" href="/auth/discord/login?next=${esc(encodeURIComponent('/' + location.hash))}">${esc(I18n.t('Mit Discord anmelden'))}</a>` : '';
+    if (!d.linked) return `<div class="identity-block"><b>Discord</b><p class="hint">${esc(I18n.t('Mit Discord verknüpfen heißt: Wer seine Cookies verliert, meldet sich wieder mit Discord an und ist dieselbe Person. Das Gruppenpasswort bleibt der Zugang zur Seite.'))}</p><a class="btn" id="p-discord-link" href="/auth/discord/link">${esc(I18n.t('Discord verknüpfen'))}</a> ${login}</div>`;
     return `<div class="identity-block"><b>Discord</b><p class="hint">${esc(I18n.t('Verbunden als'))} <strong>${esc(d.name)}</strong></p>
       <label class="toggle"><span>${esc(I18n.t('Discord-Namen übernehmen'))}</span><input type="checkbox" role="switch" id="p-discord-sync" ${d.sync ? 'checked' : ''}></label>
-      <div class="identity-row"><button type="button" class="btn" id="p-discord-unlink">${esc(I18n.t('Trennen'))}</button><button type="button" class="btn btn-ghost" id="p-discord-logout-all">${esc(I18n.t('Überall abmelden'))}</button></div></div>`;
+      <div class="identity-row">${login}<button type="button" class="btn" id="p-discord-unlink">${esc(I18n.t('Trennen'))}</button><button type="button" class="btn btn-ghost" id="p-discord-logout-all">${esc(I18n.t('Überall abmelden'))}</button></div></div>`;
   }
   const discordPost = async (path, body = {}) => {
     const res = await fetch('/auth/discord' + path, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'spieleabend' }, body: JSON.stringify(body) });
@@ -96,9 +94,9 @@ const Identity = (() => {
           ? names.map((n) => I18n.html`<li><span><b>${esc(n.name)}</b> <small>${n.played} Partien, ${n.wins} Siege</small></span><button type="button" class="btn btn-ghost" data-legacy-claim="${esc(n.name)}">Übernehmen</button></li>`).join('')
           : `<li class="hint">${esc(I18n.t('Keine alten Statistiken mehr frei.'))}</li>`;
       } else if (button.id === 'p-discord-unlink') {
-        await discordPost('/unlink'); flash(I18n.t('Discord wurde getrennt.')); await refresh();
+        await discordPost('/unlink'); DiscordAccess.invalidate(); DiscordAccess.refresh(); flash(I18n.t('Discord wurde getrennt.')); await refresh();
       } else if (button.id === 'p-discord-logout-all') {
-        await discordPost('/logout-all'); flash(I18n.t('Überall abgemeldet.'));
+        await discordPost('/logout-all'); DiscordAccess.invalidate(); DiscordAccess.refresh(); flash(I18n.t('Überall abgemeldet.')); await refresh();
       } else {
         const { name } = await call('/claim', { name: button.dataset.legacyClaim });
         flash(`${I18n.t('Übernommen:')} ${name}`);
@@ -128,5 +126,11 @@ const Identity = (() => {
     if (event.key === 'Enter' && event.target.id === 'p-link-input') { event.preventDefault(); $('#p-link-redeem').click(); }
   });
   window.addEventListener('load', () => { refresh().then(discordReturn); });
+  window.addEventListener('discordaccesschange', () => {
+    state.discord = null;
+    state.claimed = [];
+    paint();
+    if ($('#p-identity-body')) refresh();
+  });
   return { get gameId() { return state.gameId; }, open: refresh };
 })();

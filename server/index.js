@@ -10,7 +10,7 @@ import { randomBytes } from 'node:crypto';
 import { createRanked } from './ranked.js';
 import { fileURLToPath } from 'node:url';
 import { GAMES, DEFAULT_GAME, gameList, singleplayerGameList, SINGLEPLAYER_GAMES, gameEvents, PLANNED, plannedGames } from '../games/index.js';
-import { createFeatures } from './features.js';
+import { createFeatures, parseSwitch } from './features.js';
 import { maintenance, assertNewRoundAllowed } from './maintenance.js';
 import { versionInfo, createAdminLog, createClientErrors, createSystemSampler, cleanClientError } from './ops.js';
 import { createAdmin } from './admin.js';
@@ -96,6 +96,7 @@ const accounts = createAccountStore(DATA_DIR, { onChange: () => save() });   // 
 // Feature-Flags (V2-10): .env (FEATURE_*, DISABLED_GAMES) und /admin → Funktionen; Standard: nichts ändert sich, nur die Kamera ist aus
 const features = createFeatures({ dir: DATA_DIR, knownGames: [...Object.keys(GAMES), ...Object.keys(SINGLEPLAYER_GAMES)] });
 const discordOn = () => !!discord && features.enabled('discord');
+const discordExclusive = parseSwitch(process.env.DISCORD_EXCLUSIVE_MODULES) === true;
 const notEnabled = (id) => `${GAMES[id]?.name || SINGLEPLAYER_GAMES[id]?.name || id} ist gerade ausgeschaltet`;
 const identity = createIdentity({ secret: SECRET });
 const leaderboard = createLeaderboard(DATA_DIR); // Bestenliste über alle Abende
@@ -132,10 +133,10 @@ const hasAccess = (cookieHeader) => auth.valid(parseCookies(cookieHeader)[COOKIE
 const loggedIn = (req) => hasAccess(req.headers.cookie);
 const discord = createDiscordAuth({
   config: discordConfig(), secret: SECRET, dataDir: DATA_DIR, accounts, identity, accountOf: (cookieHeader) => accountOf(cookieHeader),
-  siteAccess: (req) => loggedIn(req), secure: (req) => isSecure(req), trustProxy: TRUST_PROXY, onChange: () => save(),
+  siteAccess: (req) => MODE === 'open' || loggedIn(req), secure: (req) => isSecure(req), trustProxy: TRUST_PROXY, onChange: () => save(),
   merge: (from, to) => { accounts.merge(from, to); leaderboard.merge(from, to, accounts.get(to)?.name || ''); mergeAccounts(from, to); save(); },
 });
-if (discord) console.log(`Discord-Anmeldung: an${discord.config.guildId ? ' (Zugang für Mitglieder des Servers)' : ' (nur Konto verknüpfen)'}`);
+if (discord) console.log(`Discord-Anmeldung: an${discord.config.guildId ? ' (Seitenzugang für berechtigte Mitglieder)' : ' (Identität nach Seitenzugang)'}`);
 const DISCORD_ERRORS = {
   nomember: 'Du bist nicht Mitglied des Discord-Servers (oder dir fehlt die nötige Rolle). Nutze das Gruppenpasswort.',
   denied: 'Die Discord-Anmeldung wurde abgebrochen.',
@@ -148,7 +149,7 @@ const loginTpl = readFileSync(join(__dirname, 'login.html'), 'utf8');
 function renderLogin(res, status, error, next) {
   res.status(status).type('html').setHeader('Cache-Control', 'no-store');
   const n = safeNext(next);
-  const button = discordOn() && discord.config.guildId ? `<div class="lobby-alt"><a class="btn btn-big" id="discord-login" href="/auth/discord/login?next=${escHtml(encodeURIComponent(n))}" data-i18n>Mit Discord anmelden</a></div>` : '';
+  const button = discordOn() && discord.config.policyValid && discord.config.guildId ? `<div class="lobby-alt"><a class="btn btn-big" id="discord-login" href="/auth/discord/login?next=${escHtml(encodeURIComponent(n))}" data-i18n>Mit Discord anmelden</a></div>` : '';
   res.send(loginTpl.replace('{{ERROR}}', escHtml(error)).replace('{{NEXT}}', escHtml(n)).replace('{{DISCORD}}', button));
 }
 
@@ -226,9 +227,30 @@ app.use('/api', (req, res, next) => {
   res.setHeader('Retry-After', apiLimit.retryAfter(ip));
   res.status(429).json({ error: 'Zu viele Anfragen – bitte kurz warten' });
 });
+function discordAccess(req) {
+  const configured = discordOn() && discord.config.policyValid;
+  const active = !!(configured && discord.sessionReference(req.headers.cookie, req.accountId));
+  const code = discordExclusive && !active ? (configured ? 'discord-required' : 'discord-configuration') : null;
+  return { required: discordExclusive, active, login: configured, code, viewer: accounts.get(req.accountId)?.gameId || null };
+}
+const competitionAllowed = (req) => !discordExclusive || discordAccess(req).active;
+function requireDiscordModules(req, res, next) {
+  if (!discordExclusive) return next();
+  res.setHeader('Cache-Control', 'no-store');
+  const { code } = discordAccess(req);
+  if (!code) return next();
+  const configuration = code === 'discord-configuration';
+  res.status(configuration ? 503 : 403).json({
+    code, error: configuration ? 'Der Discord-Zugang ist nicht richtig eingerichtet.' : 'Für diesen Bereich ist eine aktive Discord-Anmeldung erforderlich.',
+  });
+}
+app.get('/api/discord-access', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.json(discordAccess(req));
+});
 app.get('/me', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
-  res.json({ mode: MODE, discord: { enabled: discordOn(), login: discordOn() && !!discord.config.guildId }, features: { ranked: features.enabled('ranked'), camera: features.enabled('camera') }, version: VERSION.version, commit: VERSION.short, games: features.filterGames(gameList()), singleplayerGames: features.filterGames(singleplayerGameList()), planned: plannedGames(), partyTeamGames: programGames(true).map((g) => g.id), partyDefaults: programDefaults(), programOptions: Object.fromEntries(Object.values(GAMES).map((g) => [g.id, programOptions(g)])) });
+  res.json({ mode: MODE, discord: { enabled: discordOn(), login: discordOn() && !!discord.config.guildId }, discordAccess: discordAccess(req), features: { ranked: features.enabled('ranked'), camera: features.enabled('camera') }, version: VERSION.version, commit: VERSION.short, games: features.filterGames(gameList()), singleplayerGames: features.filterGames(singleplayerGameList()), planned: plannedGames(), partyTeamGames: programGames(true).map((g) => g.id), partyDefaults: programDefaults(), programOptions: Object.fromEntries(Object.values(GAMES).map((g) => [g.id, programOptions(g)])) });
 });
 app.get('/api/whats-new', (_req, res) => {
   res.setHeader('Cache-Control', 'no-store');
@@ -257,18 +279,20 @@ app.get('/roadmap', (_req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.json(resolvedRoadmap());
 });
-app.use('/api/tickets', ticketAPI.router);
+app.use('/api/tickets', requireDiscordModules, ticketAPI.router);
 const planAPI = createPlanAPI({ dir: DATA_DIR, games: Object.values(GAMES), secret: SECRET, secure: isSecure, trustProxy: TRUST_PROXY, personOf: publicPersonOf });
-app.use('/api/plans', planAPI);
+app.use('/api/plans', requireDiscordModules, planAPI);
 // Zwei Geräte werden eine Person: alles, was dem alten Konto gehörte, gehört danach dem Ziel
 function mergeAccounts(from, to, { fromGameId, toGameId } = {}) {
+  discord?.revokeAccount(from);
   ticketAPI.rebind(from, to); planAPI.rebind(from, to); boardStore().rebind(from, to);
   if (fromGameId && toGameId) { ticketAPI.rebindGameId(fromGameId, toGameId); planAPI.rebindGameId(fromGameId, toGameId); reviews?.rebindGameId(fromGameId, toGameId); }
   for (const room of rooms.values()) for (const p of room.players.values()) if (p.accountId === from) p.accountId = to;
   for (const s of io.sockets.sockets.values()) if (s.data.accountId === from) s.data.accountId = to;
   presence.changed();
 }
-app.use('/api/identity', createIdentityAPI({ identity, accounts, leaderboard, secure: isSecure, trustProxy: TRUST_PROXY, onMerge: mergeAccounts, onChange: () => save(), discordEnabled: discordOn }));
+app.use(['/api/identity/legacy', '/api/identity/claim'], requireDiscordModules);
+app.use('/api/identity', createIdentityAPI({ identity, accounts, leaderboard, secure: isSecure, trustProxy: TRUST_PROXY, onMerge: mergeAccounts, onChange: () => save(), discordEnabled: discordOn, competitionAllowed }));
 // V2-04: Spielerprofile (Router wird erst nach Bestenliste und Erfolgen angelegt)
 let profileRouter = (_req, _res, next) => next();
 let meRouter = (_req, _res, next) => next();
@@ -276,7 +300,7 @@ app.use('/api/me', (req, res, next) => meRouter(req, res, next));
 app.use('/api/profile', (req, res, next) => profileRouter(req, res, next));
 app.get('/api/achievements/players', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
-  res.json({ names: achievements.players(req.query.q, req.accountId) });
+  res.json({ names: competitionAllowed(req) ? achievements.players(req.query.q, req.accountId) : [] });
 });
 app.get('/api/achievements', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
@@ -284,10 +308,11 @@ app.get('/api/achievements', (req, res) => {
     // me=1: die Erfolge genau dieses Kontos (gleiche Namen bleiben getrennt); sonst nach Name
     const account = req.query.me === '1' ? accounts.get(req.accountId) : null;
     if (account) { const { detail } = achievements.reconcile(account.id, account.name || req.query.name); accounts.save(); res.json(detail); }
-    else res.json(achievements.detail(req.query.name, { viewer:req.accountId }));
+    else res.json(competitionAllowed(req) ? achievements.detail(req.query.name, { viewer:req.accountId }) : achievements.catalogOnly());
   }
   catch (error) { res.status(error.status || 500).json({ error: error.message }); }
 });
+app.use(['/api/evenings', '/api/leaderboard', '/api/ranked'], requireDiscordModules);
 app.get('/api/evenings', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   if (!reviews) return res.status(503).json({ error: 'Das Rückblick-Archiv ist derzeit nicht lesbar. Die Spiele funktionieren weiterhin.' });
@@ -376,7 +401,7 @@ setInterval(() => presence.changed(), 30000).unref(); // lease expiry also updat
 const codes = createCodes(); // gemeinsam für alle Spiele
 const achievements = createAchievements({ leaderboard, games: Object.values(GAMES), accounts });
 const profiles = createProfiles({ accounts, leaderboard, achievements, games: Object.values(GAMES) });
-profileRouter = createProfileAPI({ profiles, accounts, trustProxy: TRUST_PROXY, onChange: () => { presence.changed(); save(); } });
+profileRouter = createProfileAPI({ profiles, accounts, competitionAllowed, trustProxy: TRUST_PROXY, onChange: () => { presence.changed(); save(); } });
 // V2-05: Konto-Daten löschen. Ergebnisse anderer bleiben anonymisiert; Tickets/Planungen/Bretter verlieren nur die Zuordnung zum Konto.
 const DELETED_ACCOUNT = '0'.repeat(32);
 function eraseAccount(accountId) {
@@ -438,6 +463,7 @@ function load() {
       }
       r.openedAt = Date.now();
       r.partyProgram = restoreProgram(d.partyProgram);
+      ranked.restore(r, d.rankedRound);
       attachSurvival(r);
       r.lastSnapshot = d;
       archiveReview(r, { restoring: true });
@@ -502,7 +528,12 @@ function onRoomChange(room, kind, data) {
       leaderboard.save();
       const notices = entries.map((entry,i) => ({ entry, player:participants[i].player, earned:entry.accountId ? achievements.reconcile(entry.accountId,entry.name).fresh : detailOf(entry).badges.filter(b=>b.unlocked && !before.get(entry.name).has(b.id)) }));
       accounts.save();
-      for (const { entry,player,earned } of notices) if (earned.length && player.socketId) io.to(player.socketId).emit('achievements', { names:earned.map(b=>b.title), name:entry.name });
+      for (const { entry, player, earned } of notices) {
+        const socket = io.sockets.sockets.get(player.socketId);
+        if (!socket || !earned.length) continue;
+        if (discordExclusive && (!entry.accountId || accounts.resolve(socket.data.accountId) !== entry.accountId)) continue;
+        socket.emit('achievements', { names: earned.map((badge) => badge.title), name: entry.name });
+      }
     } catch (error) { console.error('Abzeichen konnten nicht gespeichert werden:', error.message); }
     save(); return;
   }
@@ -518,9 +549,12 @@ function onRoomChange(room, kind, data) {
 // playerAccounts: welcher Spieler zu welchem Konto gehört (nur Menschen), damit die Bindung einen Neustart überlebt
 
 // ---------- Ranked-Wertung (V2-03): Logik in server/ranked.js ----------
-const ranked = createRanked({ accounts, leaderboard, enabled: () => features.enabled('ranked'), lowWins: (room) => GAME_INFO[scoreKey(room.game, room.variant || 'classic')]?.lowWins, newId: () => randomBytes(8).toString('hex') });
+const ranked = createRanked({ accounts, leaderboard, enabled: () => features.enabled('ranked'),
+  sessionOf: (player) => io.sockets.sockets.get(player.socketId)?.data.discordSession || null,
+  sessionValid: (reference, accountId) => discordOn() && discord.sessionValid(reference, accountId),
+  lowWins: (room) => GAME_INFO[scoreKey(room.game, room.variant || 'classic')]?.lowWins, newId: () => randomBytes(8).toString('hex') });
 const accountsOf = (r) => Object.fromEntries([...r.players.values()].filter((p) => p.accountId && !p.bot).map((p) => [p.id, p.accountId]));
-const snapshotOf = (r) => ({ ...r.snapshot(), game: r.game, code: r.code, unlisted: !!r.unlisted, cardWorld: r.cardWorld || null, playerAccounts: accountsOf(r), ...(r.partyProgram ? { partyProgram: r.partyProgram } : {}) });
+const snapshotOf = (r) => ({ ...r.snapshot(), game: r.game, code: r.code, unlisted: !!r.unlisted, cardWorld: r.cardWorld || null, playerAccounts: accountsOf(r), rankedRound: ranked.snapshot(r), ...(r.partyProgram ? { partyProgram: r.partyProgram } : {}) });
 
 function broadcastFrame(room) {
   if (!room.frame || rooms.get(room.code) !== room) return;
@@ -769,6 +803,7 @@ function attach(socket, room, player) {
   }
   player.socketId = socket.id;
   player.connected = true;
+  ranked.reconnect(room, player, socket.data.discordSession);
   socket.data.code = room.code;
   socket.data.playerId = player.id;
   socket.join(room.code);
@@ -781,6 +816,7 @@ io.on('connection', (socket) => {
   socket.emit('version', { version: VERSION.version, commit: VERSION.short });
   // Konto aus dem signierten Cookie der Verbindung; Clients ohne Cookie (z. B. Skripte) haben keins und spielen wie früher
   socket.data.accountId = accountOf(socket.request.headers.cookie)?.id || null;
+  socket.data.discordSession = discordOn() ? discord.sessionReference(socket.request.headers.cookie, socket.data.accountId) : null;
   if (maintenance.active) socket.emit('maintenance', maintenance.state());
   connections.set(ip, (connections.get(ip) || 0) + 1);
   socket.on('disconnect', () => {

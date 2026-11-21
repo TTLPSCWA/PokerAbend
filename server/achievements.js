@@ -63,6 +63,9 @@ export function createAchievements({ leaderboard, games, accounts = null }) {
     const privacy = accounts.privacyOf(id); return !!accounts.get(id) && !privacy.hidden && privacy.showAchievements && privacy.showStats;
   };
   const service = {
+    catalogOnly() {
+      return { ...achievementProgress({ name: '', games: [], months: [] }, games), restricted: true };
+    },
     // Nach Name: alle Gleichnamigen zusammen. Für genau ein Konto: detailFor.
     detail(name = '', { viewer = null } = {}) {
       if (typeof name !== 'string' || name.length > 16) throw Object.assign(new Error('Bitte einen Spielernamen mit höchstens 16 Zeichen angeben'), { status: 400 });

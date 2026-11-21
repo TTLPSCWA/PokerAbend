@@ -41,17 +41,21 @@ export function createProfiles({ accounts, leaderboard, achievements, games }) {
   return {
     own: (accountId) => { const a = accounts.get(accountId); return a ? build(a, { self: true }) : null; },
     // Öffentlich: nur registrierte (Discord-verknüpfte) Konten, die ihr Profil nicht versteckt haben. Gäste haben kein öffentliches Profil.
-    publicByGameId(gameId, viewerAccountId = null) {
+    publicByGameId(gameId, viewerAccountId = null, competition = true) {
       const id = normalizeGameId(gameId), a = id && accounts.byGameId(id);
       if (!a) return null;
       if (viewerAccountId && accounts.resolve(viewerAccountId) === a.id) return build(a, { self: true });
       if (!accounts.isRegistered(a.id) || accounts.privacyOf(a.id).hidden) return null;
-      return build(a, { self: false });
+      if (competition) return build(a, { self: false });
+      const privacy = accounts.privacyOf(a.id);
+      return { gameId: a.gameId, name: a.name || a.gameId, avatar: a.avatar || '', self: false, registered: true,
+        discord: privacy.showDiscord && a.discord?.name ? { name: a.discord.name } : null,
+        stats: null, favorites: null, recent: null, achievements: null, competitionRestricted: true };
     },
   };
 }
 
-export function createProfileAPI({ profiles, accounts, trustProxy = false, onChange = () => {} }) {
+export function createProfileAPI({ profiles, accounts, competitionAllowed = () => true, trustProxy = false, onChange = () => {} }) {
   const router = express.Router(), hits = limiter({ windowMs: 60000, max: 60 }), writes = limiter({ windowMs: 60000, max: 20 });
   router.use((req, res, next) => {
     res.setHeader('Cache-Control', 'no-store');
@@ -79,7 +83,7 @@ export function createProfileAPI({ profiles, accounts, trustProxy = false, onCha
     res.json(profiles.own(req.accountId));
   });
   router.get('/:id', (req, res) => {
-    const profile = profiles.publicByGameId(req.params.id, req.accountId);
+    const profile = profiles.publicByGameId(req.params.id, req.accountId, competitionAllowed(req));
     // 200 mit available:false statt 404: Browser melden 404 als Fehler, obwohl „nicht öffentlich“ ein normaler Zustand ist; die Antwort verrät nicht, ob es das Konto gibt
     if (!profile) return res.json({ available: false, error: NOT_PUBLIC });
     res.json(profile);

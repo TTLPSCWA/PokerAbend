@@ -8,7 +8,7 @@ const sha = (v) => createHash('sha256').update(v).digest('base64url');
 
 // ---------- nachgebautes Discord ----------
 export function fakeDiscord() {
-  const f = { users: new Map(), members: new Set(), codes: new Map(), access: new Map(), refresh: new Map(), down: false, expireCodes: false, tokenCalls: 0 };
+  const f = { users: new Map(), members: new Set(), roles: new Map(), codes: new Map(), access: new Map(), refresh: new Map(), down: false, expireCodes: false, tokenCalls: 0 };
   f.user = (id, name) => { f.users.set(id, { id, username: name, global_name: name }); return id; };
   const server = createServer(async (req, res) => {
     const url = new URL(req.url, 'http://x'), json = (status, body) => { res.writeHead(status, { 'content-type': 'application/json' }); res.end(JSON.stringify(body)); };
@@ -40,7 +40,7 @@ export function fakeDiscord() {
     const user = f.access.get(String(req.headers.authorization || '').replace('Bearer ', ''));
     if (!user) return json(401, { message: '401: Unauthorized' });
     if (url.pathname === '/api/users/@me') return json(200, f.users.get(user));
-    if (url.pathname === `/api/users/@me/guilds/${GUILD}/member`) return f.members.has(user) ? json(200, { roles: ['1'] }) : json(404, { message: 'Unknown Member' });
+    if (url.pathname === `/api/users/@me/guilds/${GUILD}/member`) return f.members.has(user) ? json(200, { roles: f.roles.get(user) || [] }) : json(404, { message: 'Unknown Member' });
     json(404, {});
   });
   // Der „Browser des Nutzers“ bei Discord: bestätigt oder bricht ab und liefert die Rücksprung-Adresse

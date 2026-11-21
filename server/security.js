@@ -143,8 +143,8 @@ export function clientIp(req, trustProxy) {
 
 // Nur interne Weiterleitungen nach dem Login (kein Open Redirect)
 export function safeNext(next) {
-  const n = String(next || '/');
-  return n.startsWith('/') && !n.startsWith('//') && !n.startsWith('/\\') ? n : '/';
+  return typeof next === 'string' && next.startsWith('/') && !next.startsWith('//') &&
+    !/[\\\u0000-\u001f\u007f]/.test(next) ? next : '/';
 }
 
 // Text ohne Steuerzeichen und unsichtbare Tricks (Zeilenumbrüche fliegen auch raus)

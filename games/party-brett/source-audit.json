@@ -68,7 +68,7 @@
     },
     {
       "path": "public/i18n-en.js",
-      "sha256": "978770fdf9b57e636263967126a77dc813a65d0ac81e82fca2dd6f6e84eb33d9"
+      "sha256": "cdb65978d1646d94eacfe058dedc76739de132c7af6aa2f4209e7fe9f1593062"
     },
     {
       "path": "public/index.html",
@@ -80,7 +80,7 @@
     },
     {
       "path": "server/index.js",
-      "sha256": "9dc6ecd3cb86171011f0046d2703078744bdbb086cf60a90ac2efa2edb95a16f"
+      "sha256": "9dbb191097a8fcafe464750ae4b382c61e0c5c5c0dffd44b88aca5a83b5ef240"
     },
     {
       "path": "server/party-program.js",
@@ -140,7 +140,19 @@
     },
     {
       "path": "public/hub.js",
-      "sha256": "f97420236c558f75f8c20311db1772f3ef609ed45b1bcc6fe825794d79757647"
+      "sha256": "d13a77f576fb537c3ff3590d61706c5002ce490a523700934d16b7dca2d1e5de"
+    },
+    {
+      "path": "server/achievements.js",
+      "sha256": "2794c63065dcdb705dd5c9ac45411c302c2c43f8507f2d33fe7654c795f1eca1"
+    },
+    {
+      "path": "server/ranked.js",
+      "sha256": "683e1c231e86ab113d29449dbb37b36cd3a73cdfa620365747abd618f614a62f"
+    },
+    {
+      "path": "public/achievements.js",
+      "sha256": "ac49910fe9fb88f131a7ccf557f0ee7c486a30218d06d30a51160bc2a8adda62"
     }
   ],
   "previous_shared_sources": [
@@ -173,6 +185,21 @@
       "path": "public/hub.js",
       "archive": "test/fixtures/party-features/v2-13/public/hub.js",
       "sha256": "846d2fbf270a339ac0898bfc6de141a0b8632aeac6f18b41e372222a5149587c"
+    },
+    {
+      "path": "server/achievements.js",
+      "archive": "test/fixtures/party-features/v2-13/server/achievements.js",
+      "sha256": "9948cff456d3412fc00572cea833d414b4cd00b67893ab09c52d690b16df9a09"
+    },
+    {
+      "path": "server/ranked.js",
+      "archive": "test/fixtures/party-features/v2-13/server/ranked.js",
+      "sha256": "8b0286fe292d8462d2f8879b7ec9ba44954aa38ba44e02afc3f5ee17a285b3dd"
+    },
+    {
+      "path": "public/achievements.js",
+      "archive": "test/fixtures/party-features/v2-13/public/achievements.js",
+      "sha256": "6a1470dab02d8dd1b0cfacdd04a189cda1ee5dab1d99a286d3d325d455fcb4ec"
     }
   ]
 }

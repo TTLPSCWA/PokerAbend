@@ -14,12 +14,17 @@ async function ticketFetch(path, method = 'GET', data = null) {
     options.headers = { 'Content-Type': 'application/json', 'X-Requested-With': 'spieleabend' };
     options.body = JSON.stringify({ ...data, name: profile.name, avatar: profile.avatar });
   }
-  const response = await fetch(path, options);
-  if (!response.headers.get('content-type')?.includes('application/json')) throw new Error('Bitte melde dich erneut auf der Seite an');
-  const result = await response.json();
-  if (!response.ok) throw Object.assign(new Error(result.error || 'Die Anfrage ist fehlgeschlagen'), { status: response.status });
-  return result;
+  return DiscordAccess.json(path, options);
 }
+window.addEventListener('discordaccesschange', () => {
+  ticketRequest++;
+  ticketCache = { key: '', data: null, error: '', loading: false };
+  ticketComments.clear();
+  for (const dialog of document.querySelectorAll('.ticket-dialog')) {
+    if (dialog.open) dialog.close();
+    dialog.replaceChildren();
+  }
+});
 async function loadTickets(force = false) {
   const key = ticketURL();
   if (!force && ticketCache.key === key && (ticketCache.loading || ticketCache.data)) return;

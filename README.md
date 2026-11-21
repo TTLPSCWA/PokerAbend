@@ -487,7 +487,7 @@ Bei **SIGTERM** (`docker stop`) und **SIGINT** wird ebenfalls sofort alles gespe
 
 ### Version und „Was ist neu“
 
-Die Version steht in `package.json` (jetzt **3.19.1**; die technische ART-046-Anbindung enthält keine privaten Theme-Inhalte) und klein unter dem Schriftzug „Spieleabend“ (mit Build-Kürzel), der Commit-Hash kommt als Build-Argument ins Image: Der Workflow übergibt `GIT_COMMIT` automatisch, lokal `docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) .`. Beides steht unter **Ich** und auf `/health` (`{"ok":true,"version":"2.0.0","commit":"abc1234","uptime":…}`). Für lokale Images mit Roadmap-Produktivnachweis siehe [Betriebsanleitung](docs/betrieb.md#öffentliche-roadmap-und-freigabeschalter-seit-3190).
+Die Version steht in `package.json` (jetzt **3.20.0**; die technische ART-046-Anbindung enthält keine privaten Theme-Inhalte) und klein unter dem Schriftzug „Spieleabend“ (mit Build-Kürzel), der Commit-Hash kommt als Build-Argument ins Image: Der Workflow übergibt `GIT_COMMIT` automatisch, lokal `docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) .`. Beides steht unter **Ich** und auf `/health` (`{"ok":true,"version":"2.0.0","commit":"abc1234","uptime":…}`). Für lokale Images mit Roadmap-Produktivnachweis siehe [Betriebsanleitung](docs/betrieb.md#öffentliche-roadmap-und-freigabeschalter-seit-3190).
 
 **Was ist neu** zeigt die neuesten erledigten Einträge aus `games/roadmap.js` – automatisch, sobald dort etwas auf erledigt gesetzt wird (mit Datum). Jeder Browser sieht den Hinweis **einmal pro neuer Haupt- oder Nebenversion** (reine Fehlerbehebungen x.y.Z öffnen ihn nicht) (gemerkt in `poker:seenVersion`; ein ganz neuer Browser bekommt ihn nicht), außerdem jederzeit über **Ich → Was ist neu?**.
 
@@ -570,13 +570,14 @@ Discord ist eine zweite Anmeldung neben dem Gruppenpasswort und hängt sich an d
    DISCORD_CLIENT_ID=1563578924007694346
    DISCORD_CLIENT_SECRET=…        # aus Schritt 3
    PUBLIC_URL=https://DEINE-DOMAIN
-   DISCORD_GUILD_ID=…             # Schritt 4; leer = Discord nur zum Verknüpfen, kein Zugang ohne Passwort
+   DISCORD_GUILD_ID=…             # Schritt 4; leer = OAuth nach regulärem Seitenzugang
    DISCORD_ROLE_ID=               # optional
+   DISCORD_EXCLUSIVE_MODULES=off  # erst nach Betriebsfreigabe aktivieren
    ```
    Danach `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`. Auf der Login-Seite erscheint „Mit Discord anmelden“ (nur mit `DISCORD_GUILD_ID`); unter *Ich → Identität & Geräte* gibt es „Discord verknüpfen“.
 6. Prüfen: Mit einem Discord-Konto, das Mitglied des Servers ist, anmelden; mit einem Nicht-Mitglied muss „Du bist nicht Mitglied …“ erscheinen. Meldet Discord „Invalid OAuth2 redirect_uri“, stimmt die Adresse in Schritt 2 nicht exakt mit `PUBLIC_URL` + `/auth/discord/callback` überein.
 
-Mitglieder, die den Discord-Server verlassen, verlieren den Discord-Zugang spätestens nach 24 Stunden; das Gruppenpasswort-Cookie bleibt davon unberührt. Ist Discord kurz nicht erreichbar, wird niemand ausgesperrt. Unter *Ich* gibt es „Trennen“ und „Überall abmelden“. Technische Details: [V2-02](docs/roadmap/V2-02_DISCORD.md).
+Die App prüft erforderliche Guild-Mitgliedschaften bei der Anmeldung und bei anstehenden Hintergrundprüfungen. Ein bestätigter Entzug sperrt die Discord-Sitzung. Bei vorübergehendem Providerausfall bleiben bereits nachgewiesene Sitzungen bis zu ihrem regulären Ablauf gültig. Unter *Ich* gibt es „Trennen“ und „Überall abmelden“. Die Modulrechte, Ranked und Betriebsfreigabe sind in der Betriebsanleitung beschrieben. [Betriebsanleitung](docs/betrieb.md#anmeldung-mit-discord-optional)
 
 ## Zugangsschutz
 

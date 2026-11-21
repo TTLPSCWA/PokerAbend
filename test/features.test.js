@@ -90,17 +90,18 @@ test('Kaputte oder fremde features.json: wird ignoriert (und nie überschrieben,
 test('Ranked aus: neue Runden zählen mit Grund „aus“, an: wie bisher', () => {
   const room = (players) => ({ players: new Map(players.map((p) => [p.id, p])), seats: players.map((p) => p.id) });
   const a = { id: 'a', accountId: 'A' }, b = { id: 'b', accountId: 'B' };
-  const accounts = { isRegistered: () => true, resolve: (id) => id };
+  const accounts = { resolve: (id) => id };
+  const sessions = { sessionOf: (p) => p.accountId, sessionValid: (ref, id) => !!ref && ref === id };
   let on = true;
-  const ranked = createRanked({ accounts, leaderboard: {}, newId: () => 'r1', enabled: () => on });
+  const ranked = createRanked({ accounts, leaderboard: {}, newId: () => 'r1', enabled: () => on, ...sessions });
   const r = room([a, b]);
   assert.deepEqual(ranked.state(r), { ranked: true, reason: '', frozen: false });
   on = false;
   assert.deepEqual(ranked.state(r), { ranked: false, reason: 'aus', frozen: false });
   ranked.freeze(r, ['a', 'b']);
   assert.equal(r.rankedRound.reason, 'aus');
-  assert.equal(rankedReason([a, b], { isRegistered: () => true, resolve: (id) => id }), '', 'die reine Berechtigung bleibt unverändert');
-  assert.equal(createRanked({ accounts, leaderboard: {}, newId: () => 'x' }).state(room([a, b])).ranked, true, 'ohne Flag-Funktion: wie bisher');
+  assert.equal(rankedReason([a, b], { authorized: () => true, resolve: (id) => id }), '');
+  assert.equal(createRanked({ accounts, leaderboard: {}, newId: () => 'x', ...sessions }).state(room([a, b])).ranked, true);
 });
 
 // ---------- über den echten Server (im selben Prozess) ----------
