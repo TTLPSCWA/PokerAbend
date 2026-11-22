@@ -7,14 +7,32 @@ const game = '/api/idle/spielhalle';
 const initialTime = 1_790_000_000_000;
 const evidence = fileURLToPath(new URL('../../docs/spielhalle/', import.meta.url));
 const leaseKey = 'poker:spielhalle:lease';
+const button = (page, label) => page.getByRole('button', { name: label, exact: true });
+const expectWritable = async (page, token) => {
+  await expect(button(page, 'Speichern')).toBeEnabled();
+  const ownsLease = await page.evaluate(
+    ({ key, token }) => sessionStorage.getItem(key) === token && sessionStorage.getItem(key + ':tab') === window.name,
+    { key: leaseKey, token },
+  );
+  expect(ownsLease, 'The writable board must belong to the confirmed browser session').toBe(true);
+};
 const openFromHub = async (page) => {
   await page.evaluate(() => { location.hash = '#spiele/idle'; });
   await expect(page.getByRole('heading', { name: 'Idle', exact: true })).toBeVisible();
   await page.locator('li[data-id="spielhalle"] a[href="#idle/spielhalle"]').click();
-  await page.getByRole('button', { name: 'Spiel starten', exact: true }).click();
+  // The preview already shows SH-P1 while the session request is in flight.
+  const opening = page.waitForResponse((response) => new URL(response.url()).pathname === game + '/session' &&
+    response.request().method() === 'POST');
+  await button(page, 'Spiel starten').click();
+  const response = await opening;
+  expect(response.ok()).toBe(true);
+  const { readOnly, token } = await response.json();
+  expect(readOnly).toBe(false);
+  expect(typeof token).toBe('string');
+  await expectWritable(page, token);
   await expect(page.locator('.hall-shell')).toHaveAttribute('data-phase', 'SH-P1');
+  return token;
 };
-const button = (page, label) => page.getByRole('button', { name: label, exact: true });
 
 test('ohne Freigabeschalter fehlt die Spielhalle im Katalog und in der öffentlichen API', async ({ page, app }) => {
   await login(page, app);
@@ -31,9 +49,8 @@ test.describe('Spielhalle auf ausdrücklich aktiviertem Testserver', () => {
   test('der echte Server erreicht aus einem neuen Konto alle fünf Phasen und sämtliche Abschlussziele', async ({ page, app }, info) => {
     test.setTimeout(90_000); // includes six views and twenty-plus authorised game actions
     await login(page, app);
-    await openFromHub(page);
+    const token = await openFromHub(page);
     let at = initialTime;
-    const token = await page.evaluate((key) => sessionStorage.getItem(key), leaseKey);
     const api = async (path, data) => {
       const headers = { 'x-idle-token': token, 'x-requested-with': 'spieleabend' };
       const endpoint = app.url + game + path;
@@ -73,6 +90,7 @@ test.describe('Spielhalle auf ausdrücklich aktiviertem Testserver', () => {
         if (phase > 1) {
           Object.assign(session, await api('/save', fields()));
           await page.reload();
+          await expectWritable(page, token);
         }
         await expect(page.locator('.hall-shell')).toHaveAttribute('data-phase', 'SH-P' + phase);
         if (complete) await expect(page.getByRole('heading', { name: 'Alle Abschlussziele erreicht' })).toBeVisible();
