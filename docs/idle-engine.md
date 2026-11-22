@@ -27,7 +27,7 @@ Für die Ansicht liefern `view` und optionale Modulmethoden Fortschritt je Ziel,
 - `produceBatches` aggregiert unabhängige Zyklen ohne Schleife pro Takt. Es behält den begonnenen Takt in Millisekunden und begrenzt die Zahl fertiger Zyklen anhand von Eingaben, Lager und verfügbarer Absatzmenge. Ausgefallene Zyklen werden später nicht nachgezahlt. Mehrstufige Netze, konkurrierende Eingänge und andere dynamische Regeln liegen beim jeweiligen Spielmodul.
 - Es gibt kein pauschales Offline-Zeitlimit. Das Ergebnis enthält Anker, Zielzeit und Segmentzahl. Standardmäßig begrenzt die Engine einen Aufruf auf 10.000 Segmente. Ungültige Segmente, Rückwärtszeit oder eine Überschreitung liefern einen Fehler ohne Teilergebnis. Vor der öffentlichen Nutzung müssen die echten Spielmodule lange Intervalle durch Aggregation nachweislich innerhalb des Rechenbudgets verarbeiten.
 
-## Phasen und spätere Spielmodule
+## Phasen und Spielmodule
 
 | Spiel | Phasen | Fortschritt und Modulaufgaben |
 | --- | --- | --- |
@@ -35,7 +35,7 @@ Für die Ansicht liefern `view` und optionale Modulmethoden Fortschritt je Ziel,
 | Game Studio Tycoon | `GS-P1` bis `GS-P5` | Releases und Fans, Wertung und Marketingforschung, Verkaufsumsatz und Mitarbeiterzahl, Engine III und Releases aus zwei Studios. Das Spielmodul verantwortet Projektbudgets, QA, Releases und endliche Märkte. |
 | Factory Empire | `FE-P1` bis `FE-P5` | Erzverkauf, zwei Güterflüsse mit Banddiagnose, Motorenauftrag und Stromforschung, interregionale Lieferungen und Industrieforschung. Rezepte, Strom, Pflichtreserven, Produktionsgraph und Rettungspfade gehören zum Spielmodul. |
 
-Die Engine wertet die Übergänge der Reihe nach aus und zeigt am Ende die jeweiligen Abschlussziele. Die Tests erreichen alle zwölf Übergänge über kontrollierte Zustandsfakten. Freiwilliges und gedeckeltes Prestige ist eine Fachvorgabe für die Spielmodule. Der dafür erforderliche atomare neue Run mit Anspruchsregister gehört in das zuständige Folgepaket.
+Die Engine wertet die Übergänge der Reihe nach aus und zeigt am Ende die jeweiligen Abschlussziele. Die Tests prüfen alle zwölf Übergänge anhand kontrollierter Zustandsfakten und zusätzlich über reguläre Spielaktionen. Die drei Spielmodule bieten freiwilliges und gedeckeltes Prestige mit atomarem Neustart und Anspruchsregister.
 
 ## Speichern, Wiederaufnahme und Import
 
@@ -49,7 +49,7 @@ Vor der Umsetzung der Speicheroberfläche ist zu klären, wann sie für die bere
 
 ## HTTP und Konten
 
-Endpunkte unter `/api/idle` werden erst mit einem ausdrücklich im Servercode registrierten und in der Betriebsumgebung freigegebenen Modul bereitgestellt. Registrierbar sind `spielhalle` seit 3.23.0 und `studio` seit 3.24.0. Beide Schalter sind unabhängig und standardmäßig aus. Die isolierten Infrastrukturtests registrieren ihr synthetisches Modul ausschließlich im Testprozess.
+Endpunkte unter `/api/idle` werden erst mit einem ausdrücklich im Servercode registrierten und in der Betriebsumgebung freigegebenen Modul bereitgestellt. Registrierbar sind `spielhalle` seit 3.23.0, `studio` seit 3.24.0 und `factory` seit 3.25.0. Die drei Schalter sind unabhängig und standardmäßig aus. Die isolierten Infrastrukturtests registrieren ihr synthetisches Modul ausschließlich im Testprozess.
 
 Es gelten der vorhandene Seitenzugang und ein gültiges Gast-Cookie für ein bereits bestehendes Konto. Das gilt auch für ein mit Discord verknüpftes Konto. Die API ermittelt die kanonische ID aus dem Cookie und akzeptiert keine Konto-ID vom Client. Schreibanfragen benötigen JSON, den Header `X-Requested-With: spieleabend` und eine Prüfung des aufrufenden Ursprungs. API-Antworten setzen `Cache-Control: no-store`. Anfragegröße und -häufigkeit sind begrenzt.
 
@@ -103,3 +103,5 @@ Die technische Prüfung läuft mit `node --test test/idle-engine.test.js test/id
 IDLE-04 bindet [Die Spielhalle](spielhalle.md) an Konto, Savepoint und synchronisierte Tab-Übernahme an. Die Anwendungstests benutzen ein freigegebenes Testprofil mit kontrollierter Uhr und echten Spielaktionen.
 
 IDLE-06 und IDLE-11 binden [Game Studio Tycoon](studio.md) an dieselbe konto- und spielgebundene Infrastruktur an. Projektreservierungen und Absatzstände bleiben beim kontrollierten Prozesswechsel ab der bestätigten Revision erhalten.
+
+IDLE-07 und IDLE-08 binden [Factory Empire](factory.md) an. Der Spielstand enthält Platzierungen, Materialkonten, Produktionszähler und Zugmanifeste. Der Produktionssolver setzt die Berechnung nach dem Wiederöffnen ab der bestätigten Revision fort. Tests vergleichen ganze mit geteilten Offline-Intervallen und prüfen eine gespeicherte Zugfahrt über die Ankunftsschwelle.

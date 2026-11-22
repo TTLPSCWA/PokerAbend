@@ -487,9 +487,9 @@ Bei **SIGTERM** (`docker stop`) und **SIGINT** wird ebenfalls sofort alles gespe
 
 ### Version und „Was ist neu“
 
-Die Version steht in `package.json` (jetzt **3.24.0**) und klein unter dem Schriftzug „Spieleabend“ (mit Build-Kürzel), der Commit-Hash kommt als Build-Argument ins Image: Der Workflow übergibt `GIT_COMMIT` automatisch, lokal `docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) .`. Beides steht unter **Ich** und auf `/health` (`{"ok":true,"version":"2.0.0","commit":"abc1234","uptime":…}`). Für lokale Images mit Roadmap-Produktivnachweis siehe [Betriebsanleitung](docs/betrieb.md#öffentliche-roadmap-und-freigabeschalter-seit-3190).
+Die Version steht in `package.json` (jetzt **3.25.0**) und klein unter dem Schriftzug „Spieleabend“ (mit Build-Kürzel), der Commit-Hash kommt als Build-Argument ins Image: Der Workflow übergibt `GIT_COMMIT` automatisch, lokal `docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) .`. Beides steht unter **Ich** und auf `/health` (`{"ok":true,"version":"2.0.0","commit":"abc1234","uptime":…}`). Für lokale Images mit Roadmap-Produktivnachweis siehe [Betriebsanleitung](docs/betrieb.md#öffentliche-roadmap-und-freigabeschalter-seit-3190).
 
-Version 3.24.0 ergänzt [Game Studio Tycoon](docs/studio.md). Das Studio und [Die Spielhalle](docs/spielhalle.md) haben getrennte Spielschalter. Jedes Spiel erscheint erst nach eigener Freigabe und mit gültiger Idle-Speicherkonfiguration. Die technische ART-046-Anbindung enthält keine privaten Theme-Inhalte.
+Version 3.25.0 ergänzt [Factory Empire](docs/factory.md). Factory Empire, [Game Studio Tycoon](docs/studio.md) und [Die Spielhalle](docs/spielhalle.md) haben getrennte Spielschalter. Jedes Spiel erscheint erst nach eigener Freigabe und mit gültiger Idle-Speicherkonfiguration. Die technische ART-046-Anbindung enthält keine privaten Theme-Inhalte.
 
 **Was ist neu** zeigt die neuesten erledigten Einträge aus `games/roadmap.js` – automatisch, sobald dort etwas auf erledigt gesetzt wird (mit Datum). Jeder Browser sieht den Hinweis **einmal pro neuer Haupt- oder Nebenversion** (reine Fehlerbehebungen x.y.Z öffnen ihn nicht) (gemerkt in `poker:seenVersion`; ein ganz neuer Browser bekommt ihn nicht), außerdem jederzeit über **Ich → Was ist neu?**.
 

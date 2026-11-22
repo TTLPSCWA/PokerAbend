@@ -21,12 +21,13 @@ export const test = base.extend({
   discordOAuth: [false, { option: true }],
   idleHall: [false, { option: true }],
   idleStudio: [false, { option: true }],
+  idleFactory: [false, { option: true }],
   // Dateien (Name → JSON-Inhalt), die vor dem Serverstart im Datenordner liegen sollen (z. B. eine vorbefüllte Bestenliste)
   seedFiles: [{}, { option: true }],
   createLimit: ['6', { option: true }],
-  app: async ({ ticketAdminPassword, adminPassword, createLimit, seedFiles, discordOAuth, idleHall, idleStudio }, use) => {
+  app: async ({ ticketAdminPassword, adminPassword, createLimit, seedFiles, discordOAuth, idleHall, idleStudio, idleFactory }, use) => {
     const dataDir = mkdtempSync(join(tmpdir(), 'spieleabend-ui-'));
-    const idle = idleHall || idleStudio;
+    const idle = idleHall || idleStudio || idleFactory;
     for (const [name, content] of Object.entries(seedFiles)) writeFileSync(join(dataDir, name), JSON.stringify(content));
     const port = discordOAuth ? await freePort() : 0;
     const provider = discordOAuth ? await fakeDiscord() : null;
@@ -35,7 +36,7 @@ export const test = base.extend({
       DISCORD_API_BASE: provider.base + '/api', DISCORD_AUTHORIZE_URL: provider.base + '/oauth2/authorize',
     } : {};
     const child = spawn(process.execPath, ['--input-type=module', '-e', `
-      if (process.env.IDLE_SPIELHALLE_ENABLED === 'on' || process.env.IDLE_STUDIO_ENABLED === 'on') {
+      if (process.env.IDLE_SPIELHALLE_ENABLED === 'on' || process.env.IDLE_STUDIO_ENABLED === 'on' || process.env.IDLE_FACTORY_ENABLED === 'on') {
         const { register } = await import('node:module');
         const url = new URL('./server/idle/runtime.js', import.meta.url).href;
         const wrapper = 'import { createIdleRuntime as create, isIdleRequest } from ' +
@@ -59,6 +60,7 @@ export const test = base.extend({
       env: { ...process.env, PORT: String(port), DATA_DIR: dataDir, POKER_NO_DOTENV: '1', SITE_PASSWORD: password, TICKET_ADMIN_PASSWORD: ticketAdminPassword, ADMIN_PASSWORD: adminPassword, CREATE_LIMIT: createLimit,
         IDLE_SPIELHALLE_ENABLED: idleHall ? 'on' : 'off',
         IDLE_STUDIO_ENABLED: idleStudio ? 'on' : 'off',
+        IDLE_FACTORY_ENABLED: idleFactory ? 'on' : 'off',
         IDLE_SAVE_KEYRING: idle ? JSON.stringify({ active: 'ui-test', keys: [{ id: 'ui-test', key: 'ab'.repeat(32) }] }) : '',
         ...discordEnv },
       stdio: idle ? ['ignore', 'pipe', 'pipe', 'ipc'] : ['ignore', 'pipe', 'pipe'],

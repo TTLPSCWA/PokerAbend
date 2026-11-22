@@ -72,7 +72,7 @@
     },
     {
       "path": "public/index.html",
-      "sha256": "165bfc4d8004d45af3de0b253b7912fac380606cc737aa0dffaea9ec60b5187d"
+      "sha256": "2a785e43ea817f35f4a5d6c27191a3e0f911c44a1815d02983e941703e6c497a"
     },
     {
       "path": "public/party-program.js",
@@ -80,7 +80,7 @@
     },
     {
       "path": "server/index.js",
-      "sha256": "01a78481399dcc517ba1cf79d2e02f44fab034983d7664e912a697af5b44aa90"
+      "sha256": "00bd61dccaa08cfef33ade0c24e49d09150c7baf145c5fa8fbca6c561e943022"
     },
     {
       "path": "server/party-program.js",
@@ -140,7 +140,7 @@
     },
     {
       "path": "public/hub.js",
-      "sha256": "bbcd90b9de16b2643edb4ba3d4fb8209de32a6800de4fa6ddbfce95addd23fe8"
+      "sha256": "9bf619f227f392eba6480653ffb3acbe1ad1fd19a198c366216ef672dd48d815"
     },
     {
       "path": "server/achievements.js",

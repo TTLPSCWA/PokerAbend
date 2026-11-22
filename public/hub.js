@@ -213,11 +213,13 @@ function pageIdle() {
 }
 async function mountIdle(root, id) {
   try {
-    const mount = id === 'studio' ? (await import('/idle/studio.js')).mountStudio :
+    const mount = id === 'factory' ? (await import('/idle/factory.js')).mountFactory :
+      id === 'studio' ? (await import('/idle/studio.js')).mountStudio :
       (await import('/idle/spielhalle.js')).mountHall;
     if (root.isConnected) idleView = mount(root, { english: I18n.language === 'en', esc, played: () => markPlayed(id) });
   } catch {
-    if (root.isConnected) root.textContent = id === 'studio' ?
+    if (root.isConnected) root.textContent = id === 'factory' ?
+      I18n.content('Die Fabrik konnte nicht geladen werden.', 'The factory could not load.') : id === 'studio' ?
       I18n.content('Das Studio konnte nicht geladen werden.', 'The studio could not load.') :
       I18n.content('Die Spielhalle konnte nicht geladen werden.', 'The game hall could not load.');
   }
@@ -228,7 +230,8 @@ $('#hub-menu-nav').addEventListener('click', (e) => { if (e.target.closest('a'))
 window.addEventListener('hashchange', () => {
   if (!hubVisible() || roomCodeFromUrl()) return;
   const next = parseRoute();
-  const confirmLeave = route.sub === 'studio' ?
+  const confirmLeave = route.sub === 'factory' ?
+    I18n.content('Du hast ungespeicherte Aktionen. Fabrik verlassen?', 'You have unsaved actions. Leave the factory?') : route.sub === 'studio' ?
     I18n.content('Du hast ungespeicherte Aktionen. Studio verlassen?', 'You have unsaved actions. Leave the studio?') :
     I18n.content('Du hast ungespeicherte Aktionen. Spielhalle verlassen?', 'You have unsaved actions. Leave the game hall?');
   if (route.page === 'idle' && (next.page !== 'idle' || next.sub !== route.sub) && idleView?.unsaved() &&

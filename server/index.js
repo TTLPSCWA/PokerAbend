@@ -281,6 +281,11 @@ app.get('/me', (req, res) => {
     minPlayers: 1, maxPlayers: 1, duration: 15, art: '<span class="studio-emblem" aria-hidden="true">✧</span>',
     description: 'Entwickle Spiele, baue ein Team auf und führe dein eigenes Medienhaus.',
     descriptionEn: 'Make games, grow your team and build your own media company.',
+  }, {
+    id: 'factory', name: 'Factory Empire', nameEn: 'Factory Empire', category: 'idle', idle: true,
+    minPlayers: 1, maxPlayers: 1, duration: 15, art: '<span class="factory-emblem" aria-hidden="true">⚙</span>',
+    description: 'Baue Produktionsstraßen, versorge Maschinen mit Strom und verbinde vier Regionen.',
+    descriptionEn: 'Build production lines, power your machines and connect four regions.',
   }].filter(({ id }) => idle.availableGames().includes(id));
   res.json({ mode: MODE, discord: { enabled: discordOn(), login: discordOn() && !!discord.config.guildId }, discordAccess: discordAccess(req), features: { ranked: features.enabled('ranked'), camera: features.enabled('camera') }, version: VERSION.version, commit: VERSION.short, games: features.filterGames(gameList()), singleplayerGames: features.filterGames(singleplayerGameList()), idleGames, planned: plannedGames(), partyTeamGames: programGames(true).map((g) => g.id), partyDefaults: programDefaults(), programOptions: Object.fromEntries(Object.values(GAMES).map((g) => [g.id, programOptions(g)])) });
 });

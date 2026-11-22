@@ -50,6 +50,17 @@ const errors = {
   'studio-research': [400, 'Für diese Forschung fehlen Forschungspunkte.'],
   'studio-portfolio': [400, 'Der Titel ist für diese Aktion nicht verfügbar oder das Portfolio ist ausgelastet.'],
   'studio-contract': [400, 'Dieser Vertrag ist nicht verfügbar oder seine Bedingungen sind noch nicht erfüllt.'],
+  'factory-budget': [400, 'Für diesen Bau oder diese Forschung fehlen verfügbare Credits.'],
+  'factory-placement': [400, 'Die Kacheln sind nicht frei oder liegen außerhalb der Region.'],
+  'factory-cycle': [400, 'Diese Verbindung würde einen Materialkreislauf schließen.'],
+  'factory-field': [400, 'Hier ist kein passendes freigegebenes Vorkommen.'],
+  'factory-stock': [400, 'Die passenden freien oder gebundenen Mengen fehlen oder das Ziel ist voll.'],
+  'factory-wait': [409, 'Die nächste manuelle Förderung ist noch nicht bereit.'],
+  'factory-dock': [409, 'Am Dock wartet bereits eine manuelle Buchung.'],
+  'factory-band': [400, 'Dieses Band zeigt derzeit keinen Bandengpass.'],
+  'factory-research': [400, 'Prüfe Labor, Strom, Forschungsziel und Voraussetzungen.'],
+  'factory-order': [400, 'Dieser Auftrag kann gerade nicht angenommen oder beliefert werden.'],
+  'factory-rail': [400, 'Prüfe die Verbindung, Güter, freie Ladung und den Strom beider Bahnhöfe.'],
 };
 
 function input(body, schema) {

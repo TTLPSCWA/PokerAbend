@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.25.0 – 22. November 2026
+
+- Factory Empire (IDLE-07 und IDLE-08) entwickelt eine Erzmine in fünf Phasen zu einem regionsübergreifenden Industrienetz. Förderraten, Lager, Strom und Bahn begrenzen die Produktion. Der Fortschritt läuft offline weiter und lässt sich manuell speichern und signiert exportieren. Der eigene Spielschalter ist standardmäßig aus.
+
 ## 3.24.0 – 22. November 2026
 
 - Game Studio Tycoon (IDLE-06 und IDLE-11) führt über fünf Phasen vom Einzelentwickler zum Medienhaus. Projekte reservieren Phasenkosten, Verkäufe haben endliche Märkte und der Spielstand kann manuell gespeichert und signiert exportiert werden. Der eigene Spielschalter ist standardmäßig aus.
