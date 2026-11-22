@@ -175,7 +175,7 @@ export function createIdleEngine(module, phases, { maxSegments = 10_000 } = {}) 
   function phaseView(snapshot) {
     const index = progression.findIndex((phase) => phase.id === snapshot.phase);
     const phase = progression[index];
-    const facts = module.facts(snapshot.data);
+    const facts = module.facts(snapshot.data, phase.id, snapshot.at);
     const reached = progression.slice(0, index + 1);
     const goals = progression[index + 1]?.enter ?? phase.complete ?? [];
     return { phase: structuredClone(phase), next: progression[index + 1]?.id ?? null,
@@ -187,8 +187,11 @@ export function createIdleEngine(module, phases, { maxSegments = 10_000 } = {}) 
 
   function promote(snapshot) {
     let index = progression.findIndex((phase) => phase.id === snapshot.phase);
-    const facts = module.facts(snapshot.data);
-    while (progression[index + 1]?.enter.every((rule) => gateMet(rule, facts))) index++;
+    while (progression[index + 1]) {
+      const facts = module.facts(snapshot.data, progression[index].id, snapshot.at);
+      if (!progression[index + 1].enter.every((rule) => gateMet(rule, facts))) break;
+      index++;
+    }
     snapshot.phase = progression[index].id;
     return snapshot;
   }
@@ -220,15 +223,23 @@ export function createIdleEngine(module, phases, { maxSegments = 10_000 } = {}) 
     },
     view(snapshot) {
       const state = structuredClone(validate(snapshot));
-      return { ...phaseView(state), at: state.at, data: module.deriveView?.(state.data) ?? state.data,
-        blockers: module.explainBlockers?.(state.data) ?? [] };
+      return { ...phaseView(state), at: state.at, data: module.deriveView?.(state.data, state.phase, state.at) ?? state.data,
+        blockers: module.explainBlockers?.(state.data, state.phase, state.at) ?? [] };
     },
     command(snapshot, at, action) {
       plainData(action);
       const { snapshot: state } = advance(snapshot, at);
-      state.data = module.command(state.data, structuredClone(action), phaseView(state));
+      state.data = module.command(state.data, structuredClone(action), phaseView(state), state.at);
       return promote(validate(state));
     },
+    ...(typeof module.reset === 'function' ? {
+      reset(snapshot, expectedClaims) {
+        const state = structuredClone(validate(snapshot));
+        state.data = module.reset(state.data, state.phase, state.at, expectedClaims);
+        state.phase = progression[0].id;
+        return validate(state);
+      },
+    } : {}),
     migrate(snapshot, migrate) {
       plainData(snapshot);
       requireIdle(snapshot?.gameId === gameId && typeof migrate === 'function', 'unsupported-version');

@@ -49,7 +49,7 @@ Vor der Umsetzung der Speicheroberfläche ist zu klären, wann sie für die bere
 
 ## HTTP und Konten
 
-Endpunkte unter `/api/idle` werden erst mit einem ausdrücklich im Servercode registrierten Modul bereitgestellt. Version 3.22.0 liefert eine leere Registry. Eine Konfiguration allein öffnet keine Spielroute. Die Tests registrieren ihr synthetisches Modul ausschließlich im Testprozess.
+Endpunkte unter `/api/idle` werden erst mit einem ausdrücklich im Servercode registrierten und in der Betriebsumgebung freigegebenen Modul bereitgestellt. Seit Version 3.23.0 ist `spielhalle` das einzige registrierbare Spiel. Der Spielschalter ist standardmäßig aus. Die isolierten Infrastrukturtests registrieren ihr synthetisches Modul ausschließlich im Testprozess.
 
 Es gelten der vorhandene Seitenzugang und ein gültiges Gast-Cookie für ein bereits bestehendes Konto. Das gilt auch für ein mit Discord verknüpftes Konto. Die API ermittelt die kanonische ID aus dem Cookie und akzeptiert keine Konto-ID vom Client. Schreibanfragen benötigen JSON, den Header `X-Requested-With: spieleabend` und eine Prüfung des aufrufenden Ursprungs. API-Antworten setzen `Cache-Control: no-store`. Anfragegröße und -häufigkeit sind begrenzt.
 
@@ -61,6 +61,7 @@ Es gelten der vorhandene Seitenzugang und ein gültiges Gast-Cookie für ein ber
 | `POST /:gameId/actions`, `POST /:gameId/save` | Autoritative Aktion oder manueller Save mit Schreib-Token, Sitzungs- und Datensatzrevision und Anfragen-ID. |
 | `GET /:gameId/export`, `POST /:gameId/export` | Aktuellen bestätigten Stand herunterladen oder ausdrücklich speichern und genau diese Revision exportieren. |
 | `POST /:gameId/import/preview`, `POST /:gameId/import/confirm` | Datei serverseitig prüfen und nur nach `confirm: true` neu laden. Die Datei muss zum aktuellen bestätigten Datensatz passen. |
+| `POST /:gameId/prestige` | Spielabhängiger, freiwilliger Neustart. Schreibt nach Bestätigung der aktuellen Rekordliste einen neuen Lauf und eine neue Revision in einer Transaktion. |
 
 Fehler enthalten `code` und eine verständliche Meldung. Wichtige Zustände sind `401 invalid-account`, `404 wrong-game`, `409 lease-conflict`, `409 session-conflict`, `409 revision-conflict`, `409 no-ledger`, `413 payload-too-large` und `503 idle-unavailable`. Eine ältere Datei liefert einen Revisionskonflikt mit dem Hinweis, dass nur der aktuell bestätigte Stand importiert werden kann.
 
@@ -95,8 +96,8 @@ Für konsistente Backups Konto- und Idle-Daten bei gestopptem Server gemeinsam s
 | Gutschriften und Prestige | Abrechnungsanker auf jetzt setzen und kontoweite, bereits verbuchte Prestigeansprüche erhalten. Run-ID, neuer Zeitanker, Revision, Anspruchsregister und Wiederholungsbeleg müssen gemeinsam transaktional geschrieben werden. Alte Leases und Vorschauen werden entwertet. |
 | Entscheidung vor dem Bau | Projektinhaber legt fest, ob Spieler einen ersetzenden Rollback auslösen dürfen oder nur der Betreiber. Aufbewahrung, maximal belegte Revision, Audit und Verhalten bei verlorenen Schlüsseln müssen vor Umsetzung feststehen. |
 
-## Abnahme vor dem ersten Idle-Spiel
+## Spielmodulabnahme
 
 Die technische Prüfung läuft mit `node --test test/idle-engine.test.js test/idle-savepoints.test.js test/idle-integration.test.js`. Der Playwright-Fall N05 prüft die Sichtbarkeit im Hub mit und ohne registriertes Idle-Spiel.
 
-IDLE-04 kann die vorhandenen Verträge für Konto, Savepoint und synchronisierte Tab-Übernahme verwenden. Zu prüfen sind die Zustandsvalidierung der Spielhalle, Schutz der exportierbaren Daten, echte Offline-Aggregation mit Gäste- und Standby-Regeln, Bedienung der Speicher- und Konfliktdialoge sowie Smartphone-Leistung. Die Registrierung und die Benutzeroberfläche brauchen ihre eigene Freigabe.
+IDLE-04 bindet [Die Spielhalle](spielhalle.md) an Konto, Savepoint und synchronisierte Tab-Übernahme an. Die Anwendungstests benutzen ein freigegebenes Testprofil mit kontrollierter Uhr und echten Spielaktionen.

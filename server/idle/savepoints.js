@@ -142,6 +142,7 @@ export function createIdleSaveService({ engines, store, codec, migrations = {},
       ...(readOnly ? {} : { token: active.token }),
       readOnly, revision: active.base, sessionVersion: active.version, savedAt: active.savedAt,
       dirty: active.dirty, settlement: { ...active.settlement },
+      unsavedActions: active.unsavedActions,
       view: ctx.engine.view(active.snapshot),
     };
   }
@@ -174,11 +175,11 @@ export function createIdleSaveService({ engines, store, codec, migrations = {},
 
   const receipt = (record) => ({ revision: record.revision, savedAt: record.snapshot.at });
 
-  function save(ctx, { token, sessionVersion, revision, id }, withExport = false) {
+  function save(ctx, { token, sessionVersion, revision, id }, withExport = false, claims) {
     requireIdle(typeof id === 'string' && actionPattern.test(id), 'invalid-operation');
     requireIdle(typeof token === 'string' && uuidPattern.test(token) && revisionOK(revision) &&
       revisionOK(sessionVersion), 'invalid-operation');
-    const digest = fingerprint({ id, token, sessionVersion, revision });
+    const digest = fingerprint({ id, token, sessionVersion, revision, ...(claims ? { claims } : {}) });
     const previous = read(ctx);
     if (previous?.operation.id === id) {
       requireIdle(previous.operation.digest === digest, 'operation-conflict');
@@ -188,17 +189,23 @@ export function createIdleSaveService({ engines, store, codec, migrations = {},
     const active = writer(ctx, token);
     requireIdle(active.version === sessionVersion && active.base === revision &&
       revision === (previous?.revision ?? 0) && revisionOK(revision + 1), 'revision-conflict');
-    const { snapshot } = ctx.engine.advance(active.snapshot, timestamp(now()));
-    const next = { format: 1, revision: revision + 1, runId: active.runId, snapshot,
+    const { snapshot: advanced } = ctx.engine.advance(active.snapshot, timestamp(now()));
+    const snapshot = claims ? ctx.engine.reset(advanced, claims) : advanced;
+    const next = { format: 1, revision: revision + 1, runId: claims ? randomUUID() : active.runId, snapshot,
       operation: { id, digest, keyId: codec.activeKeyId } };
     const file = codec.encode(ctx.accountId, next);
     beforeSave();
     store.compareAndSet(ctx.accountId, ctx.gameId, revision, next);
     active.base = next.revision;
+    active.runId = next.runId;
     active.savedAt = snapshot.at;
     active.snapshot = snapshot;
     active.dirty = false;
     active.unsavedActions = false;
+    if (claims) {
+      active.commands.clear();
+      active.preview = null;
+    }
     active.settlement = { from: snapshot.at, to: snapshot.at, segments: 0 };
     refreshLease(active);
     return { record: next, file: withExport ? file : undefined };
@@ -283,6 +290,11 @@ export function createIdleSaveService({ engines, store, codec, migrations = {},
     saveAndExport(accountId, gameId, request) {
       const { record, file } = save(select(accountId, gameId), request, true);
       return { ...receipt(record), file };
+    },
+    prestige(accountId, gameId, request) {
+      const ctx = select(accountId, gameId);
+      requireIdle(typeof ctx.engine.reset === 'function', 'wrong-game');
+      return receipt(save(ctx, request, false, request.claims).record);
     },
     exportConfirmed(accountId, gameId) {
       const ctx = select(accountId, gameId);

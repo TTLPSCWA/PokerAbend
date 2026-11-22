@@ -1,2 +1,5 @@
-// A separately released game must export an engine here before its Idle routes can be used.
-export const idleEngines = Object.freeze([]);
+import { parseSwitch } from '../features.js';
+import { spielhalleEngine } from './spielhalle.js';
+
+// A registered game must also be explicitly enabled on this server.
+export const idleEngines = Object.freeze(parseSwitch(process.env.IDLE_SPIELHALLE_ENABLED) === true ? [spielhalleEngine] : []);

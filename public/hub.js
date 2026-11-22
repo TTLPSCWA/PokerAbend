@@ -98,10 +98,14 @@ async function joinAndEnter(code, mode = '') {
 // ---------- Seiten und Navigation ----------
 const GAME_CATEGORIES = [['karten', 'Kartenspiele'], ['wuerfel', 'Würfelspiele'], ['brett', 'Brettspiele'], ['party', 'Party'], ['einzelspieler', 'Einzelspieler'], ['idle', 'Idle']]; // wie games/index.js und server/settings.js
 // Ausgeblendete Kategorien fehlen in Bibliothek und Listen, bleiben aber über Adresse (#spiele/brett) und Einladungslinks erreichbar
-const libraryGames = () => [...(account.games || []), ...(account.singleplayerGames || [])].filter((g) => !Settings.categoryHidden(g.category || 'karten') || route.sub === (g.category || 'karten'));
+const catalogGames = () => [...(account.games || []), ...(account.singleplayerGames || []), ...(account.idleGames || [])];
+const libraryGames = () => catalogGames().filter((g) => !Settings.categoryHidden(g.category || 'karten') || route.sub === (g.category || 'karten'));
+const idleGame = (id) => (account.idleGames || []).find((g) => g.id === id);
+const displayName = (g) => g.nameEn ? I18n.content(g.name, g.nameEn) : I18n.t(g.name);
+const displayDescription = (g) => g.descriptionEn ? I18n.content(g.description, g.descriptionEn) : I18n.t(g.description || '');
 // NAV-01: eine gemeinsame Sichtbarkeitsregel für Seitenleiste, Mobil-Tabs, Kategorie-Chips und Startseite.
 // Idle gibt es erst mit einem registrierten Idle-Spiel; ausgeblendet ist nur die Anzeige, nie der Zugriff.
-const catOffered = (id) => id !== 'idle' || [...(account.games || []), ...(account.singleplayerGames || [])].some((g) => g.category === 'idle');
+const catOffered = (id) => id !== 'idle' || catalogGames().some((g) => g.category === 'idle');
 const catShown = (id) => catOffered(id) && !Settings.categoryHidden(id);
 Settings.setCategoryAvailable(catOffered);
 const hubVisible = () => !$('#hub').hidden;
@@ -125,17 +129,18 @@ const ICONS = {
   tickets: '<path d="M4 4h16v5a3 3 0 0 0 0 6v5H4v-5a3 3 0 0 0 0-6z"/><path d="M12 7v2m0 3v2m0 3v1"/>',
   einstellungen: '<circle cx="12" cy="12" r="3"/><path d="M12 3v3m0 12v3M3 12h3m12 0h3m-2.6-6.4-2.1 2.1M8.7 15.3l-2.1 2.1m0-10.8 2.1 2.1m6.6 6.6 2.1 2.1"/>',
 };
-const PAGES = ['start', 'spiele', 'favoriten', 'tische', 'bestenliste', 'roadmap', 'tickets', 'rueckblick', 'planung', 'erfolge', 'solo', 'einstellungen'];
+const PAGES = ['start', 'spiele', 'favoriten', 'tische', 'bestenliste', 'roadmap', 'tickets', 'rueckblick', 'planung', 'erfolge', 'solo', 'idle', 'einstellungen'];
 const discordPages = new Set(['bestenliste', 'tickets', 'rueckblick', 'planung']);
 const discordBlocks = new Set(['leaderboard', 'tickets', 'reviews', 'planning']);
 // V2-05/V2-15: ausgeblendete Bereiche betreffen nur die Anzeige; Adressen und Einladungslinks funktionieren weiter
 const blockHidden = (id) => Settings.blockHidden(id) || (discordBlocks.has(id) && !DiscordAccess.allowed());
 const show = (id, html) => (blockHidden(id) ? '' : html);
 let route = { page: 'start', sub: '' };
+let hallView = null;
 function parseRoute() {
   const [p = 'start', s = ''] = location.hash.replace(/^#/, '').split('/');
   const page = PAGES.includes(p) ? p : 'start';
-  return { page, sub: page === 'spiele' && GAME_CATEGORIES.some(([id]) => id === s && catOffered(id)) || page === 'solo' && Singleplayer.ids.includes(s) || page === 'einstellungen' && Settings.SECTIONS.includes(s) || page === 'tickets' && /^[1-9]\d{0,8}$/.test(s) || page === 'roadmap' && s === 'verlauf' || page === 'rueckblick' && EveningReviews.validId(s) || page === 'planung' && EveningPlans.validId(s) ? s : '' };
+  return { page, sub: page === 'spiele' && GAME_CATEGORIES.some(([id]) => id === s && catOffered(id)) || page === 'solo' && Singleplayer.ids.includes(s) || page === 'idle' && idleGame(s) || page === 'einstellungen' && Settings.SECTIONS.includes(s) || page === 'tickets' && /^[1-9]\d{0,8}$/.test(s) || page === 'roadmap' && s === 'verlauf' || page === 'rueckblick' && EveningReviews.validId(s) || page === 'planung' && EveningPlans.validId(s) ? s : '' };
 }
 const hashOf = (page, sub = '') => `#${page}${sub ? '/' + sub : ''}`;
 let hubTables = [];                      // offene Tische (vom Server, siehe Teil H3)
@@ -163,13 +168,15 @@ const TITLES = { start: 'Start', spiele: 'Spiele', favoriten: 'Favoriten', tisch
 let renderedPage = null;
 function renderHub(focus = false) {
   route = parseRoute();
+  hallView?.destroy();
+  hallView = null;
   if (route.page === 'spiele' && route.sub === 'einzelspieler' && RANGES[gamesFilter]) gamesFilter = 'all';
   Singleplayer.leave(route.page === 'solo' ? route.sub : '');
   $('#hub-language').innerHTML = I18n.selector();
   $('#side-nav').innerHTML = navHTML();
   $('#hub-tabbar').innerHTML = tabbarHTML();
   $('#hub-menu-nav').innerHTML = navHTML();
-  const page = { start: pageStart, spiele: pageGames, favoriten: pageGames, tische: pageTables, bestenliste: pageBoard, roadmap: pageRoadmap, tickets: pageTickets, rueckblick: EveningReviews.page, planung: EveningPlans.page, erfolge: Achievements.page, solo: pageSolo, einstellungen: Settings.page }[route.page];
+  const page = { start: pageStart, spiele: pageGames, favoriten: pageGames, tische: pageTables, bestenliste: pageBoard, roadmap: pageRoadmap, tickets: pageTickets, rueckblick: EveningReviews.page, planung: EveningPlans.page, erfolge: Achievements.page, solo: pageSolo, idle: pageIdle, einstellungen: Settings.page }[route.page];
   const main = $('#hub-main');
   $('#hub').dataset.page = route.page;
   const catalog = ['spiele', 'favoriten'].includes(route.page);
@@ -179,11 +186,14 @@ function renderHub(focus = false) {
   main.innerHTML = locked
     ? I18n.html`<section class="hub-head"><h1>${I18n.t(TITLES[route.page])}</h1>${DiscordAccess.notice()}</section>`
     : page();
-  document.title = I18n.html`${route.page === 'solo' ? (libraryGames().find((g) => g.id === route.sub)?.name || I18n.t('Einzelspieler')) : I18n.t(TITLES[route.page])} – Spieleabend`;
+  const title = route.page === 'idle' ? (idleGame(route.sub) ? displayName(idleGame(route.sub)) : I18n.t('Spiele')) :
+    route.page === 'solo' ? (libraryGames().find((g) => g.id === route.sub)?.name || I18n.t('Einzelspieler')) : I18n.t(TITLES[route.page]);
+  document.title = I18n.html`${title} – Spieleabend`;
   if (focus || renderedPage !== route.page + route.sub) { main.focus({ preventScroll: true }); scrollTo(0, 0); } else main.scrollTop = scroll;
   renderedPage = route.page + route.sub;
   if (!locked) afterPage?.();
   if (route.page === 'solo' && route.sub) Singleplayer.mount($('#singleplayer-root'), route.sub);
+  if (route.page === 'idle' && route.sub) mountHall($('#hall-root'), route.sub);
 }
 window.addEventListener('discordaccesschange', () => queueMicrotask(() => {
   if (!hubVisible()) return;
@@ -197,10 +207,30 @@ window.addEventListener('discordaccesschange', () => queueMicrotask(() => {
   }
 }));
 function pageSolo() { return route.sub ? '<div id="singleplayer-root" aria-live="off"></div>' : `<p><a href="#spiele/einzelspieler">${I18n.t('Einzelspieler')}</a></p>`; }
+function pageIdle() {
+  return route.sub ? '<div id="hall-root"></div>' :
+    `<p>${I18n.content('Dieses Spiel ist hier nicht freigegeben.','This game is unavailable on this server.')}</p><p><a href="#spiele">${I18n.t('Spiele')}</a></p>`;
+}
+async function mountHall(root, id) {
+  try {
+    const { mountHall: mount } = await import('/idle/spielhalle.js');
+    if (root.isConnected) hallView = mount(root, { english: I18n.language === 'en', esc, played: () => markPlayed(id) });
+  } catch {
+    if (root.isConnected) root.textContent = I18n.content('Die Spielhalle konnte nicht geladen werden.', 'The game hall could not load.');
+  }
+}
 let afterPage = null;
 $('#hub-more').addEventListener('click', () => $('#hub-menu').showModal());
 $('#hub-menu-nav').addEventListener('click', (e) => { if (e.target.closest('a')) $('#hub-menu').close(); });
-window.addEventListener('hashchange', () => { if (hubVisible() && !roomCodeFromUrl()) renderHub(true); }); // in einem Raum (?t=) rührt die Startseite die Adresse nie an
+window.addEventListener('hashchange', () => {
+  if (!hubVisible() || roomCodeFromUrl()) return;
+  if (route.page === 'idle' && parseRoute().page !== 'idle' && hallView?.unsaved() &&
+      !window.confirm(I18n.content('Du hast ungespeicherte Aktionen. Spielhalle verlassen?', 'You have unsaved actions. Leave the game hall?'))) {
+    history.replaceState(null, '', hashOf(route.page, route.sub));
+    return;
+  }
+  renderHub(true);
+});
 
 // Startseite zeigen. keepUrl: die Adresse stimmt schon („Zurück“ aus dem Raum); sonst wird ein übrig gebliebenes ?t=CODE entfernt.
 function showHub(error = '', { keepUrl = false } = {}) {
@@ -329,7 +359,7 @@ const playersText = (g) => (g.minPlayers === g.maxPlayers ? I18n.html`${g.maxPla
 // Sortierung: Favoriten zuerst, dann zuletzt gespielt, dann alphabetisch; Geplantes ans Ende
 function sortGames(list) {
   const f = favs(), r = recent();
-  return [...list].sort((a, b) => (a.planned ? 1 : 0) - (b.planned ? 1 : 0) || f.has(b.id) - f.has(a.id) || (r[b.id] || 0) - (r[a.id] || 0) || I18n.t(a.name).localeCompare(I18n.t(b.name), I18n.locale));
+  return [...list].sort((a, b) => (a.planned ? 1 : 0) - (b.planned ? 1 : 0) || f.has(b.id) - f.has(a.id) || (r[b.id] || 0) - (r[a.id] || 0) || displayName(a).localeCompare(displayName(b), I18n.locale));
 }
 const visibleGames = () => filterGames(allGames());
 function filterGames(list) {
@@ -340,20 +370,25 @@ function filterGames(list) {
     if (route.sub && (g.category || 'karten') !== route.sub) return false;
     if (filter === 'fav') return !g.planned && f.has(g.id);
     if (RANGES[filter]) return g.minPlayers <= RANGES[filter][1] && g.maxPlayers >= RANGES[filter][0];
-    if (filter === 'short') return g.duration < 15;
+    if (filter === 'short') return !g.idle && g.duration < 15;
     return true;
-  }).filter((g) => !q || [g.name, g.description || '', I18n.t(g.name), I18n.t(g.description || '')].some((text) => text.toLocaleLowerCase(I18n.locale).includes(q))));
+  }).filter((g) => !q || [g.name, g.description || '', displayName(g), displayDescription(g)].some((text) => text.toLocaleLowerCase(I18n.locale).includes(q))));
 }
 function gameHTML(g, tiles) {
   const fav = favs().has(g.id);
+  const name = esc(displayName(g));
   const count = g.minPlayers === g.maxPlayers ? g.minPlayers : `${g.minPlayers}–${g.maxPlayers}`;
-  const meta = I18n.html`<span class="gr-meta"><span aria-label="${esc(playersText(g))}">${ico(ICONS.tische)}${esc(count)}</span><span>${ico('<circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/>')}ca. ${g.duration} Min.</span></span>`;
+  const meta = g.idle ? `<span class="gr-meta">${I18n.content('Offline-Fortschritt', 'Offline progress')}</span>` :
+    I18n.html`<span class="gr-meta"><span aria-label="${esc(playersText(g))}">${ico(ICONS.tische)}${esc(count)}</span><span>${ico('<circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/>')}ca. ${g.duration} Min.</span></span>`;
   const star = g.planned ? '' : `<button type="button" class="star" data-fav="${esc(g.id)}" aria-pressed="${fav}" aria-label="${uiText(g.name)} ${fav ? I18n.t('aus den Favoriten nehmen') : I18n.t('zu den Favoriten')}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg></button>`;
   const detail = g.planned ? I18n.html`<button type="button" class="btn btn-ghost" data-plan="${esc(g.id)}" aria-label="${uiText(g.name)}: Beschreibung und Regeln">Regeln</button>` : '';
-  const action = g.planned ? `<span class="soon">${g.status === 'next' ? I18n.t('Bald') : I18n.t('Geplant')}</span>` : g.local ? `<button type="button" class="btn btn-brass" data-solo-start="${esc(g.id)}">${Singleplayer.hasSave(g.id) ? I18n.t('Fortsetzen') : I18n.t('Spielen')}</button>` : I18n.html`<button type="button" class="btn btn-brass" data-host="${esc(g.id)}" aria-label="${uiText(g.name)} hosten">Hosten</button>`;
+  const action = g.planned ? `<span class="soon">${g.status === 'next' ? I18n.t('Bald') : I18n.t('Geplant')}</span>` :
+    g.idle ? `<a class="btn btn-brass" href="#idle/${esc(g.id)}">${I18n.t('Spielen')}</a>` :
+    g.local ? `<button type="button" class="btn btn-brass" data-solo-start="${esc(g.id)}">${Singleplayer.hasSave(g.id) ? I18n.t('Fortsetzen') : I18n.t('Spielen')}</button>` :
+    I18n.html`<button type="button" class="btn btn-brass" data-host="${esc(g.id)}" aria-label="${name} hosten">Hosten</button>`;
   return `<li class="game-${tiles ? 'tile' : 'row'} cat-${esc(g.category)}${g.planned ? ' planned' : ''}" data-id="${esc(g.id)}" ${g.planned ? 'aria-disabled="true"' : ''}>
       <div class="ga">${g.art}</div>
-      <div class="gr-main">${g.planned ? `<b>${uiText(g.name)}</b>` : I18n.html`<button type="button" class="game-title" data-game-open="${esc(g.id)}" aria-label="${uiText(g.name)} auswählen"><b>${uiText(g.name)}</b></button>`}<small>${uiText(catTitle(g.category))}</small>${meta}<span>${variantBadgesHTML(g)}</span><span class="gr-desc">${uiText(g.description)}</span></div>
+      <div class="gr-main">${g.planned ? `<b>${name}</b>` : I18n.html`<button type="button" class="game-title" data-game-open="${esc(g.id)}" aria-label="${name} auswählen"><b>${name}</b></button>`}<small>${uiText(catTitle(g.category))}</small>${meta}<span>${variantBadgesHTML(g)}</span><span class="gr-desc">${esc(displayDescription(g))}</span></div>
       <div class="gr-actions">${g.planned ? detail : star}${action}</div></li>`;
 }
 function gamesToolbarHTML() {
@@ -465,7 +500,13 @@ document.addEventListener('click', (e) => {
   if (!hubVisible()) return;
   if (e.target.closest('[data-create-table]')) { openGamePicker(); return; }
   const selected = e.target.closest('[data-game-open]');
-  if (selected) { if (Singleplayer.ids.includes(selected.dataset.gameOpen)) location.hash = '#solo/' + selected.dataset.gameOpen; else openHost(selected.dataset.gameOpen); return; }
+  if (selected) {
+    const id = selected.dataset.gameOpen;
+    if (idleGame(id)) location.hash = '#idle/' + id;
+    else if (Singleplayer.ids.includes(id)) location.hash = '#solo/' + id;
+    else openHost(id);
+    return;
+  }
   const solo = e.target.closest('[data-solo-start]');
   if (solo) { location.hash = '#solo/' + solo.dataset.soloStart; return; }
   const host = e.target.closest('[data-host]');

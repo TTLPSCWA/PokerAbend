@@ -43,6 +43,7 @@ export function createIdleRuntime({ dataDir, engines, keyring, accountMembers, p
 
   const mergeError = (status, code, message) => Object.assign(new Error(message), { status, code });
   return Object.freeze({
+    availableGames: () => service ? [...games] : [],
     assertAccountHistory(loadedFromDisk) {
       requireIdle(loadedFromDisk || !store?.hasSavepoints(), 'identity-store-unavailable');
     },

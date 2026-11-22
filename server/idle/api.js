@@ -8,6 +8,7 @@ const uuid = (value) => typeof value === 'string' && /^[a-f0-9]{8}(?:-[a-f0-9]{4
 const object = (value) => value && Object.getPrototypeOf(value) === Object.prototype;
 const string = (value) => typeof value === 'string';
 const confirmed = (value) => value === true;
+const claims = (value) => Array.isArray(value) && value.length > 0 && value.length <= 140 && value.every(id);
 const fields = { token: uuid, revision: revisionOK, sessionVersion: revisionOK, id };
 
 const errors = {
@@ -30,9 +31,19 @@ const errors = {
   'invalid-request': [400, 'Die Anfrage enthält fehlende oder ungültige Felder.'],
   'payload-too-large': [413, 'Die Anfrage oder der Spielstand ist zu groß.'],
   'corrupt-save': [503, 'Der bestätigte Spielstand ist beschädigt und wurde beibehalten.'],
+  'invalid-game-state': [503, 'Der bestätigte Spielstand ist ungültig und wurde beibehalten.'],
   'storage-unavailable': [503, 'Der Spielstandspeicher ist vorübergehend nicht verfügbar.'],
   'session-capacity': [503, 'Der Server kann derzeit keine weitere Schreibsitzung öffnen.'],
   'work-budget': [503, 'Die Rückkehr konnte nicht vollständig berechnet werden.'],
+  'prestige-conflict': [409, 'Die erreichbaren Meilensteine haben sich geändert. Bitte öffne die Vorschau erneut.'],
+  'locked': [400, 'Diese Aktion ist noch gesperrt.'],
+  'not-enough-coins': [400, 'Nicht genug Münzen.'],
+  'not-enough-knowledge': [400, 'Nicht genug Know-how.'],
+  'no-space': [400, 'Für diese Station fehlt freie Fläche.'],
+  'guest-wait': [409, 'Der nächste Gast ist noch unterwegs.'],
+  'loss-warning': [409, 'Der Wiederanlauf würde dein Guthaben belasten.'],
+  'cooldown': [409, 'Für dieses Ereignis läuft noch die Wartezeit.'],
+  'event-active': [409, 'Hier läuft bereits ein Ereignis.'],
 };
 
 function input(body, schema) {
@@ -100,6 +111,7 @@ export function createIdleAPI({ service, games, accounts, trustProxy = false }) 
   post('actions', { ...fields, action: object }, (account, game, body) => service.command(account, game, body));
   post('save', fields, (account, game, body) => service.save(account, game, body));
   post('export', fields, (account, game, body) => service.saveAndExport(account, game, body));
+  post('prestige', { ...fields, claims, confirm: confirmed }, (account, game, body) => service.prestige(account, game, body));
   post('import/preview', { token: uuid, file: string },
     (account, game, body) => service.previewImport(account, game, body), importJSON);
   post('import/confirm', { token: uuid, previewId: uuid, confirm: confirmed },

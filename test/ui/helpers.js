@@ -1,5 +1,6 @@
 import { test as base, expect } from '@playwright/test';
 import { spawn } from 'node:child_process';
+import { once } from 'node:events';
 import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -18,10 +19,11 @@ export const test = base.extend({
   ticketAdminPassword: ['', { option: true }],
   adminPassword: ['', { option: true }],
   discordOAuth: [false, { option: true }],
+  idleHall: [false, { option: true }],
   // Dateien (Name → JSON-Inhalt), die vor dem Serverstart im Datenordner liegen sollen (z. B. eine vorbefüllte Bestenliste)
   seedFiles: [{}, { option: true }],
   createLimit: ['6', { option: true }],
-  app: async ({ ticketAdminPassword, adminPassword, createLimit, seedFiles, discordOAuth }, use) => {
+  app: async ({ ticketAdminPassword, adminPassword, createLimit, seedFiles, discordOAuth, idleHall }, use) => {
     const dataDir = mkdtempSync(join(tmpdir(), 'spieleabend-ui-'));
     for (const [name, content] of Object.entries(seedFiles)) writeFileSync(join(dataDir, name), JSON.stringify(content));
     const port = discordOAuth ? await freePort() : 0;
@@ -31,14 +33,32 @@ export const test = base.extend({
       DISCORD_API_BASE: provider.base + '/api', DISCORD_AUTHORIZE_URL: provider.base + '/oauth2/authorize',
     } : {};
     const child = spawn(process.execPath, ['--input-type=module', '-e', `
+      if (process.env.IDLE_SPIELHALLE_ENABLED === 'on') {
+        const { register } = await import('node:module');
+        const url = new URL('./server/idle/runtime.js', import.meta.url).href;
+        const wrapper = 'import { createIdleRuntime as create, isIdleRequest } from ' +
+          JSON.stringify(url + '?original') + '; export { isIdleRequest };' +
+          'export function createIdleRuntime(opts) { return create({ ...opts, now: () => globalThis.fixtureIdleNow }); }';
+        const loader = 'const url=' + JSON.stringify(url) + ';const wrapper=' + JSON.stringify(wrapper) +
+          ';export function load(value,context,next) {return value===url ? {format:"module",source:wrapper,shortCircuit:true} : next(value,context);}';
+        register('data:text/javascript,' + encodeURIComponent(loader), import.meta.url);
+        globalThis.fixtureIdleNow = 1790000000000;
+        process.on('message', ({ idleNow }) => {
+          globalThis.fixtureIdleNow = idleNow;
+          process.send({ idleNow });
+        });
+      }
       const { http, enableRoomViewAuditForTests } = await import('./server/index.js');
       enableRoomViewAuditForTests();
       const ready = () => console.log('TEST_READY:' + http.address().port);
       if (http.listening) ready(); else http.once('listening', ready);
     `], {
       cwd: root,
-      env: { ...process.env, PORT: String(port), DATA_DIR: dataDir, POKER_NO_DOTENV: '1', SITE_PASSWORD: password, TICKET_ADMIN_PASSWORD: ticketAdminPassword, ADMIN_PASSWORD: adminPassword, CREATE_LIMIT: createLimit, ...discordEnv },
-      stdio: ['ignore', 'pipe', 'pipe'],
+      env: { ...process.env, PORT: String(port), DATA_DIR: dataDir, POKER_NO_DOTENV: '1', SITE_PASSWORD: password, TICKET_ADMIN_PASSWORD: ticketAdminPassword, ADMIN_PASSWORD: adminPassword, CREATE_LIMIT: createLimit,
+        IDLE_SPIELHALLE_ENABLED: idleHall ? 'on' : 'off',
+        IDLE_SAVE_KEYRING: idleHall ? JSON.stringify({ active: 'ui-test', keys: [{ id: 'ui-test', key: 'ab'.repeat(32) }] }) : '',
+        ...discordEnv },
+      stdio: idleHall ? ['ignore', 'pipe', 'pipe', 'ipc'] : ['ignore', 'pipe', 'pipe'],
     });
     let output = '';
     child.stderr.on('data', (d) => { output += d; });
@@ -53,7 +73,12 @@ export const test = base.extend({
           if (match) { clearTimeout(timer); resolve('http://localhost:' + match[1]); }
         });
       });
-      await use({ url, password, ticketAdminPassword, adminPassword, provider });
+      const setIdleTime = idleHall ? async (idleNow) => {
+        const ack = once(child, 'message');
+        child.send({ idleNow });
+        expect((await ack)[0].idleNow).toBe(idleNow);
+      } : undefined;
+      await use({ url, password, ticketAdminPassword, adminPassword, provider, setIdleTime });
     } finally {
       if (child.exitCode === null && child.signalCode === null) {
         const stopped = new Promise((resolve) => child.once('exit', resolve));

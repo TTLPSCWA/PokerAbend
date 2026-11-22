@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.23.0 – 22. November 2026
+
+* Die Spielhalle ist das erste Idle-Spiel. Aus einem Kartentisch können in fünf Phasen ein Casino und bis zu fünf Standorte werden. Personal, Forschung und Automatisierung verändern den Gästebetrieb auch offline. Gespeichert wird von Hand. Der Betreiber schaltet das Spiel ausdrücklich frei.
+
 ## 3.22.0 – 21. November 2026
 
 * Die Idle-Plattform kann manuelle Spielstände sicher einem Spieleabend-Konto zuordnen. Dazu gehören Gerätewechsel, signierte Exporte, Importvorschau, Schlüsselwechsel und das Löschen der eigenen Daten. Die drei geplanten Idle-Spiele erscheinen nach ihrer jeweiligen Freigabe.
