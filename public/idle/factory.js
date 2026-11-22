@@ -50,6 +50,7 @@ export function mountFactory(root, { english, esc, played }) {
     const info = focus ?? (attr ? [attr, focused.getAttribute(attr)] : null);
     const scroller = root.querySelector('.fe-map-scroll');
     const pos = scroller && [scroller.scrollLeft, scroller.scrollTop];
+    const tabScroll = root.querySelector('.fe-tabs')?.scrollLeft ?? 0;
     const phase = snapshot?.view?.phase.id, active = Boolean(snapshot?.sessionId && phase);
     const status = snapshot?.readOnly ? tr('Nur Ansicht', 'Read only') :
       snapshot?.unsavedActions ? tr('Ungespeicherte Aktionen', 'Unsaved actions') :
@@ -71,6 +72,7 @@ export function mountFactory(root, { english, esc, played }) {
       (active ? factoryMarkup(snapshot.view, ui, { esc, english, readonly: snapshot.readOnly }) : '') +
       '</div><dialog class="fe-dialog"></dialog>';
     if (pos) root.querySelector('.fe-map-scroll')?.scrollTo(...pos);
+    root.querySelector('.fe-tabs')?.scrollTo(tabScroll, 0);
     if (info) [...root.querySelectorAll('[' + info[0] + ']')].find((el) => el.getAttribute(info[0]) === info[1])?.focus({ preventScroll: true });
   }
 

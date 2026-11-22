@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.25.1 – 22. November 2026
+
+- Auf kleinen Bildschirmen bleiben in Game Studio Tycoon und Factory Empire die aktiven Tabs bei der laufenden Aktualisierung sichtbar. In Factory Empire benennt der Inspektor einen nicht verbundenen Ausgang und zeigt, wie er sich verbinden lässt. [Qualitätsprüfung der drei Idle-Spiele](docs/idle-quality.md)
+
 ## 3.25.0 – 22. November 2026
 
 - Factory Empire (IDLE-07 und IDLE-08) entwickelt eine Erzmine in fünf Phasen zu einem regionsübergreifenden Industrienetz. Förderraten, Lager, Strom und Bahn begrenzen die Produktion. Der Fortschritt läuft offline weiter und lässt sich manuell speichern und signiert exportieren. Der eigene Spielschalter ist standardmäßig aus.

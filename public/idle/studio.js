@@ -298,6 +298,7 @@ export function mountStudio(root, { english, esc, played }) {
     const focused = root.contains(document.activeElement) ? document.activeElement : null;
     const key = ['data-gs-action', 'data-gs-local', 'data-gs-tab', 'name'].find((attr) => focused?.hasAttribute(attr));
     const value = key && focused.getAttribute(key);
+    const tabScroll = root.querySelector('.gs-tabs')?.scrollLeft ?? 0;
     const v = snapshot?.view;
     const active = snapshot?.sessionId && v;
     root.innerHTML = '<div class="gs-shell"' + (active ? ' data-phase="' + v.phase.id + '"' : '') +
@@ -307,6 +308,7 @@ export function mountStudio(root, { english, esc, played }) {
         '</p>' + (snapshot ? local(snapshot.revision ? tr('Bestätigten Stand öffnen', 'Open confirmed save') :
           tr('Studio starten', 'Start studio'), 'open') : local(tr('Ansicht neu laden', 'Reload view'), 'refresh')))) +
       '</div><dialog class="gs-dialog"></dialog>';
+    root.querySelector('.gs-tabs')?.scrollTo(tabScroll, 0);
     if (key) [...root.querySelectorAll('[' + key + ']')].find((el) => el.getAttribute(key) === value)?.focus({ preventScroll: true });
   }
 
@@ -402,7 +404,10 @@ export function mountStudio(root, { english, esc, played }) {
     if (!button || busy || button.getAttribute('aria-disabled') === 'true') return;
     if (button.dataset.gsTab) {
       tabId = button.dataset.gsTab; render();
-      root.querySelector('#gs-tab-' + tabId)?.focus(); return;
+      const selected = root.querySelector('#gs-tab-' + tabId);
+      selected?.focus({ preventScroll: true });
+      selected?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      return;
     }
     if (button.dataset.gsAction) { gameAction(JSON.parse(button.dataset.gsAction)); return; }
     switch (button.dataset.gsLocal) {

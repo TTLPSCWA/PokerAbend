@@ -45,8 +45,9 @@ function temp(t) {
 }
 
 async function start(dir, { modules = true, keys = initialKeys, at = epoch, discord, failure } = {}) {
-  // Substitute the registry only in the test process. Production has no injection switch.
-  const sources = modules ? { [registryUrl]: fixtureEngine, [runtimeUrl]: fixtureRuntime } : {};
+  // The test process controls the clock. Use the normal registry for the cross-game case.
+  const real = modules === 'real';
+  const sources = modules ? { [runtimeUrl]: fixtureRuntime, ...(!real ? { [registryUrl]: fixtureEngine } : {}) } : {};
   const hook = 'const sources = ' + JSON.stringify(sources) + ';' +
     'export function load(url, ctx, next) { return Object.hasOwn(sources, url) ?' +
     ' { format: "module", shortCircuit: true, source: sources[url] } : next(url, ctx); }';
@@ -69,7 +70,9 @@ async function start(dir, { modules = true, keys = initialKeys, at = epoch, disc
     cwd: new URL('..', import.meta.url),
     env: { ...process.env, NODE_ENV: 'test', POKER_NO_DOTENV: '1', PORT: String(port), DATA_DIR: dir,
       SITE_PASSWORD: sitePassword, SESSION_SECRET: '', DISCORD_EXCLUSIVE_MODULES: 'off',
-      IDLE_SAVE_KEYRING: keys, DISCORD_CLIENT_ID: discord ? CLIENT : '', DISCORD_CLIENT_SECRET: discord ? SECRET : '',
+      IDLE_SAVE_KEYRING: keys, IDLE_SPIELHALLE_ENABLED: real ? 'on' : 'off',
+      IDLE_STUDIO_ENABLED: real ? 'on' : 'off', IDLE_FACTORY_ENABLED: real ? 'on' : 'off',
+      DISCORD_CLIENT_ID: discord ? CLIENT : '', DISCORD_CLIENT_SECRET: discord ? SECRET : '',
       DISCORD_GUILD_ID: '', DISCORD_ROLE_ID: '', FEATURE_DISCORD: '', DISCORD_API_BASE: discord ? discord.base + '/api' : '',
       DISCORD_AUTHORIZE_URL: discord ? discord.base + '/oauth2/authorize' : '', PUBLIC_URL: discord ? 'http://localhost:' + port : '',
     },
@@ -163,6 +166,114 @@ test('Der reguläre Server bietet ohne registriertes Spiel keine Idle-Routen und
     assert.equal((await b.post('/api/idle/spielhalle/session')).status, 404);
     assert.equal(existsSync(join(dir, 'idle')), false);
   } finally { await server.stop(); }
+});
+
+test('QA-IDLE-01: drei echte Module halten Saves, Leases, Geräte und Signaturen getrennt', { timeout: 45_000 }, async (t) => {
+  const games = ['spielhalle', 'studio', 'factory'];
+  const paths = Object.fromEntries(games.map((id) => [id, '/api/idle/' + id]));
+  const dir = temp(t);
+  let app = await start(dir, { modules: 'real' });
+  try {
+    const owner = await browser(app).login();
+    const other = await browser(app).login();
+    const later = await browser(app).login();
+    const sameTab = browser(app, owner.cookies);
+    const call = (who, id, tail = '', body) =>
+      body === undefined ? who.get(paths[id] + tail) : who.post(paths[id] + tail, body);
+    const sessions = {};
+    const files = {};
+    const send = async (id, requestId, action) => {
+      const state = sessions[id];
+      const body = { ...operation(state, requestId), action };
+      const accepted = await expectJSON(await call(owner, id, '/actions', body));
+      assert.deepEqual(await expectJSON(await call(owner, id, '/actions', body)), accepted);
+      Object.assign(state, accepted);
+    };
+    assert.deepEqual((await expectJSON(await owner.get('/api/idle'))).games, games);
+    for (const id of games) {
+      sessions[id] = await expectJSON(await call(owner, id, '/session', {}));
+      assert.equal(sessions[id].revision, 0);
+    }
+    assert.equal(new Set(games.map((id) => sessions[id].token)).size, 3);
+    await send('spielhalle', 'first', { type: 'manual' });
+    await send('spielhalle', 'second', { type: 'auto' });
+    await send('studio', 'first', { type: 'start', name: 'Probeprojekt', size: 'mini', depth: 'normal',
+      genre: 'puzzle', topic: 'animals', audience: 'casual', platform: 'pc', team: 1 });
+    await send('factory', 'first', { type: 'layout', region: 1, build: [{ type: 'drill', x: 9, y: 5, rotation: 0 }] });
+    assert.deepEqual((await expectJSON(await owner.get('/api/me/export'))).idleSaves ?? [], []);
+    for (const id of games) {
+      files[id] = await expectJSON(await call(owner, id, '/export', operation(sessions[id], 'initial-save')));
+      assert.equal(files[id].revision, 1);
+      Object.assign(sessions[id], files[id]);
+    }
+    const spectator = await expectJSON(await call(sameTab, 'factory', '/session', {}));
+    assert.equal(spectator.readOnly, true);
+    const replacement = await expectJSON(await call(sameTab, 'factory', '/takeover', {
+      revision: spectator.revision, sessionVersion: spectator.sessionVersion, sessionId: spectator.sessionId, confirm: true,
+    }));
+    await expectJSON(await call(owner, 'factory', '/session/heartbeat', { token: sessions.factory.token }), 409, 'lease-conflict');
+    sessions.factory = replacement;
+    await expectJSON(await call(owner, 'studio', '/session/heartbeat', { token: sessions.studio.token }));
+    await expectJSON(await call(owner, 'spielhalle', '/session/heartbeat', { token: sessions.spielhalle.token }));
+    await send('factory', 'unconfirmed', { type: 'rotate', id: 5 });
+    await send('studio', 'unconfirmed', { type: 'cancel', id: 1, confirm: true });
+    await expectJSON(await link(owner, later), 409, 'idle-unsaved-actions');
+    const otherStudio = await expectJSON(await call(other, 'studio', '/session', {}));
+    await expectJSON(await call(other, 'studio', '/save', operation(otherStudio, 'other-save')));
+
+    const future = epoch + 3650 * 86_400_000;
+    await app.stop();
+    app = await start(dir, { modules: 'real', at: future, keys: keyring(nextKey.id, nextKey, oldKey) });
+    const sameOwner = browser(app, owner.cookies);
+    const otherAfter = browser(app, other.cookies);
+    const nextDevice = browser(app, later.cookies);
+    const expected = {
+      spielhalle: (v) => v.phase.id === 'SH-P2' && BigInt(v.data.guests) > 1n,
+      studio: (v) => v.data.projects.some(({ stage, plan }) => stage === 'gate' && plan.name === 'Probeprojekt'),
+      factory: (v) => v.phase.id === 'FE-P2' && v.data.buildings.some(({ type, rotation }) => type === 'drill' && rotation === 0),
+    };
+    for (const id of games) {
+      const current = await expectJSON(await call(sameOwner, id, '/session', {}));
+      sessions[id] = current;
+      assert.equal(current.revision, 1);
+      assert.equal(current.savedAt, epoch);
+      assert.equal(current.at ?? current.view.at, future);
+      assert.ok(expected[id](current.view), id + ' must resume from its committed state');
+      const fields = { token: current.token, file: files[id].file };
+      await expectJSON(await call(sameOwner, id, '/import/preview', fields));
+      const [key, payload, signature] = fields.file.split('.');
+      const changed = (signature[0] === 'A' ? 'B' : 'A') + signature.slice(1);
+      await expectJSON(await call(sameOwner, id, '/import/preview', { ...fields, file: [key, payload, changed].join('.') }),
+        400, 'invalid-signature');
+      assert.ok((await expectJSON(await call(sameOwner, id, '/export'))).file.startsWith('next.'));
+      await expectJSON(await call(sameOwner, id, '/save', operation(current, 'after-restart')));
+      await expectJSON(await call(sameOwner, id, '/import/preview', fields), 409, 'revision-conflict');
+    }
+    await expectJSON(await call(sameOwner, 'studio', '/import/preview', { token: sessions.studio.token, file: files.factory.file }),
+      404, 'wrong-game');
+    await expectJSON(await link(sameOwner, otherAfter), 409, 'idle-account-save-conflict');
+    await expectJSON(await link(sameOwner, nextDevice));
+    const copy = await expectJSON(await nextDevice.get('/api/me/export'));
+    assert.deepEqual(copy.idleSaves.map(({ gameId }) => gameId).sort(), [...games].sort());
+    assert.ok(copy.idleSaves.every(({ revision, savedAt }) => revision === 2 && savedAt === future));
+
+    const folder = join(dir, 'idle', 'factory');
+    const path = join(folder, readdirSync(folder)[0]);
+    const healthy = readFileSync(path);
+    writeFileSync(path, '{broken');
+    await expectJSON(await call(nextDevice, 'factory'), 503, 'corrupt-save');
+    assert.equal((await expectJSON(await call(nextDevice, 'studio'))).revision, 2);
+    assert.equal((await expectJSON(await call(nextDevice, 'spielhalle'))).revision, 2);
+    assert.equal(readFileSync(path, 'utf8'), '{broken');
+    writeFileSync(path, healthy);
+    const targetId = (await expectJSON(await nextDevice.get('/api/identity'))).gameId;
+    await expectJSON(await nextDevice.post('/api/me/delete', { confirm: targetId }));
+    for (const id of games) {
+      await expectJSON(await call(sameOwner, id), 401, 'invalid-account');
+      assert.equal(readdirSync(join(dir, 'idle', id)).length, id === 'studio' ? 1 : 0);
+    }
+    assert.equal((await expectJSON(await call(otherAfter, 'studio'))).revision, 1);
+  } finally { await app.stop(); }
 });
 
 test('Gast-Savepoints, GET-Vorschau, explizite Tab-Übernahme, alte Revision und doppelter Save über den echten Server', { timeout: 45_000 }, async (t) => {

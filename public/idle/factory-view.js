@@ -113,7 +113,9 @@ export function factoryMarkup(view, ui, common) {
       select(tr('Materialkreislauf', 'Material circuit'), 'scope', ['free', d.scope], chosen.scope) +
       submit(tr('Kreislauf setzen', 'Set circuit')) + '</form>' : '';
     const canHandleStock = storeNode(chosen) && chosen.good;
-    const recovery = {
+    const recovery = chosen.disconnectedOutput ?
+      tr('Der Ausgang ist nicht verbunden. Drehe die Maschine zum Eingang eines Abnehmers oder lege ein Band zum Ausgang.',
+        'The outlet is disconnected. Rotate the machine towards a consumer input or connect a conveyor to the outlet.') : {
       'no-power': tr('Pausiere andere Verbraucher oder verbinde ein zusätzliches Kraftwerk. Markiere wichtige Maschinen als kritisch.',
         'Pause other consumers or connect another generator. Mark essential machines as critical.'),
       full: tr('Trage Ware ins Hoflager und nutze das Dock oder schließe ab Phase 3 einen freien Abnehmer an.',

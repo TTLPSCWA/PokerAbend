@@ -664,11 +664,15 @@ function deriveView(data, id, at) {
           effective(data, lane) === scope).reduce((sum, lane) => sum + read(data, deposit(id, lane)), 0n))])) })),
     buildings: data.buildings.map((node) => {
       const active = flows.some(({ from, to }) => from === node.id || to === node.id);
+      const powered = hasPower(node, plan.power);
+      const model = machines[node.type];
+      const producesOrRoutes = model.field || model.recipes || ['belt', 'splitter', 'merger'].includes(node.type);
       return { ...node, scope: effective(data, node.scope), tiles: footprint(node), inventory: String(read(data, stored(node.id))),
         capacity: String(isStore(node) ? maximum(data, node) : 0n),
-        status: !node.enabled ? 'paused' : !hasPower(node, plan.power) ? 'no-power' :
+        status: !node.enabled ? 'paused' : !powered ? 'no-power' :
           active || node.type === 'generator' ? 'working' :
             isStore(node) && read(data, stored(node.id)) >= maximum(data, node) ? 'full' : 'waiting',
+        disconnectedOutput: Boolean(node.enabled && powered && producesOrRoutes && !plan.graph.output.get(node.id).length),
         band: bandBottleneck(data, node, plan) };
     }),
     power: plan.power.grids, flows, tracks: data.tracks, free: String(read(data, money('free'))),
