@@ -1,8 +1,8 @@
 # Betrieb: Spieleabend aufsetzen, aktualisieren, sichern, reparieren
 
-Stand: Version **3.23.0** (22. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
+Stand: Version **3.24.0** (22. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
 
-Für einen autorisierten, isolierten Testserver können Betreiber [Die Spielhalle](spielhalle.md) durch den Spielschalter und einen gültigen serverseitigen [Idle-Schlüsselring](idle-engine.md#schlüsselring-und-rotation) verfügbar machen. Die Einstellung ist standardmäßig aus. Der einzelne schreibende Prozess braucht ein eigenes, beschreibbares Datenverzeichnis.
+Für einen autorisierten, isolierten Testserver können Betreiber [Die Spielhalle](spielhalle.md) und [Game Studio Tycoon](studio.md) über ihre getrennten Spielschalter und einen gültigen serverseitigen [Idle-Schlüsselring](idle-engine.md#schlüsselring-und-rotation) verfügbar machen. Beide Einstellungen sind standardmäßig aus. Der einzelne schreibende Prozess braucht ein eigenes, beschreibbares Datenverzeichnis.
 
 **Inhalt**
 
@@ -117,6 +117,7 @@ Alles oder nichts: `DISCORD_CLIENT_SECRET` und `PUBLIC_URL` müssen zusammen ges
 | `DISCORD_EXCLUSIVE_MODULES` | `off` | Standard aus. Mit `on` erfordern Tickets, Abendplanung, Ranglisten, Altnamen und Abend-Rückblicke einschließlich Modulexporten eine aktive, zum Konto passende Discord-Sitzung. |
 | `IDLE_SAVE_KEYRING` | leer | Serverseitiger JSON-Schlüsselring für die Signatur von Idle-Spielständen. Einrichtung und Rotation stehen in der [Idle-Betriebsdokumentation](idle-engine.md#schlüsselring-und-rotation). |
 | `IDLE_SPIELHALLE_ENABLED` | `off` | Schaltet die Spielhalle auf diesem Server ausdrücklich frei. Sichtbar im Hub nur mit gültigem Idle-Schlüsselring. |
+| `IDLE_STUDIO_ENABLED` | `off` | Schaltet Game Studio Tycoon auf diesem Server ausdrücklich frei. Sichtbar im Hub nur mit gültigem Idle-Schlüsselring. |
 
 Den Exklusivschalter erst nach einer gesonderten Betriebsfreigabe setzen. Eine gesetzte Rollen-ID setzt eine gültige Guild-ID voraus. Fehlende OAuth-Pflichtwerte, eine ungültige Mitgliedsrichtlinie oder deaktiviertes Discord führen bei aktiver Modulsperre zu HTTP 503 mit `discord-configuration`. Eine fehlende, widerrufene oder kontofremde Sitzung führt zu HTTP 403 mit `discord-required`. Das Gruppenpasswort gilt unverändert. Der unabhängige Adminzugang unter `/admin` enthält Ticket- und Statistikmoderation. Ticket-Markdown ist dort unter `/admin/api/tickets/export.md` und `/admin/api/tickets/:id/export.md` abrufbar.
 

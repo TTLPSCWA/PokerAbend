@@ -271,12 +271,17 @@ app.get('/api/discord-access', (req, res) => {
 });
 app.get('/me', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
-  const idleGames = idle.availableGames().includes('spielhalle') ? [{
+  const idleGames = [{
     id: 'spielhalle', name: 'Die Spielhalle', nameEn: 'The Game Hall', category: 'idle', idle: true,
     minPlayers: 1, maxPlayers: 1, duration: 10, art: '<span class="hall-emblem" aria-hidden="true">♣</span>',
     description: 'Bediene Gäste und baue deine Spielhalle in fünf Phasen aus.',
     descriptionEn: 'Serve guests and grow your game hall through five phases.',
-  }] : [];
+  }, {
+    id: 'studio', name: 'Game Studio Tycoon', nameEn: 'Game Studio Tycoon', category: 'idle', idle: true,
+    minPlayers: 1, maxPlayers: 1, duration: 15, art: '<span class="studio-emblem" aria-hidden="true">✧</span>',
+    description: 'Entwickle Spiele, baue ein Team auf und führe dein eigenes Medienhaus.',
+    descriptionEn: 'Make games, grow your team and build your own media company.',
+  }].filter(({ id }) => idle.availableGames().includes(id));
   res.json({ mode: MODE, discord: { enabled: discordOn(), login: discordOn() && !!discord.config.guildId }, discordAccess: discordAccess(req), features: { ranked: features.enabled('ranked'), camera: features.enabled('camera') }, version: VERSION.version, commit: VERSION.short, games: features.filterGames(gameList()), singleplayerGames: features.filterGames(singleplayerGameList()), idleGames, planned: plannedGames(), partyTeamGames: programGames(true).map((g) => g.id), partyDefaults: programDefaults(), programOptions: Object.fromEntries(Object.values(GAMES).map((g) => [g.id, programOptions(g)])) });
 });
 app.get('/api/whats-new', (_req, res) => {

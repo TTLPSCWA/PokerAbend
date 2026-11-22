@@ -20,11 +20,13 @@ export const test = base.extend({
   adminPassword: ['', { option: true }],
   discordOAuth: [false, { option: true }],
   idleHall: [false, { option: true }],
+  idleStudio: [false, { option: true }],
   // Dateien (Name → JSON-Inhalt), die vor dem Serverstart im Datenordner liegen sollen (z. B. eine vorbefüllte Bestenliste)
   seedFiles: [{}, { option: true }],
   createLimit: ['6', { option: true }],
-  app: async ({ ticketAdminPassword, adminPassword, createLimit, seedFiles, discordOAuth, idleHall }, use) => {
+  app: async ({ ticketAdminPassword, adminPassword, createLimit, seedFiles, discordOAuth, idleHall, idleStudio }, use) => {
     const dataDir = mkdtempSync(join(tmpdir(), 'spieleabend-ui-'));
+    const idle = idleHall || idleStudio;
     for (const [name, content] of Object.entries(seedFiles)) writeFileSync(join(dataDir, name), JSON.stringify(content));
     const port = discordOAuth ? await freePort() : 0;
     const provider = discordOAuth ? await fakeDiscord() : null;
@@ -33,7 +35,7 @@ export const test = base.extend({
       DISCORD_API_BASE: provider.base + '/api', DISCORD_AUTHORIZE_URL: provider.base + '/oauth2/authorize',
     } : {};
     const child = spawn(process.execPath, ['--input-type=module', '-e', `
-      if (process.env.IDLE_SPIELHALLE_ENABLED === 'on') {
+      if (process.env.IDLE_SPIELHALLE_ENABLED === 'on' || process.env.IDLE_STUDIO_ENABLED === 'on') {
         const { register } = await import('node:module');
         const url = new URL('./server/idle/runtime.js', import.meta.url).href;
         const wrapper = 'import { createIdleRuntime as create, isIdleRequest } from ' +
@@ -56,9 +58,10 @@ export const test = base.extend({
       cwd: root,
       env: { ...process.env, PORT: String(port), DATA_DIR: dataDir, POKER_NO_DOTENV: '1', SITE_PASSWORD: password, TICKET_ADMIN_PASSWORD: ticketAdminPassword, ADMIN_PASSWORD: adminPassword, CREATE_LIMIT: createLimit,
         IDLE_SPIELHALLE_ENABLED: idleHall ? 'on' : 'off',
-        IDLE_SAVE_KEYRING: idleHall ? JSON.stringify({ active: 'ui-test', keys: [{ id: 'ui-test', key: 'ab'.repeat(32) }] }) : '',
+        IDLE_STUDIO_ENABLED: idleStudio ? 'on' : 'off',
+        IDLE_SAVE_KEYRING: idle ? JSON.stringify({ active: 'ui-test', keys: [{ id: 'ui-test', key: 'ab'.repeat(32) }] }) : '',
         ...discordEnv },
-      stdio: idleHall ? ['ignore', 'pipe', 'pipe', 'ipc'] : ['ignore', 'pipe', 'pipe'],
+      stdio: idle ? ['ignore', 'pipe', 'pipe', 'ipc'] : ['ignore', 'pipe', 'pipe'],
     });
     let output = '';
     child.stderr.on('data', (d) => { output += d; });
@@ -73,7 +76,7 @@ export const test = base.extend({
           if (match) { clearTimeout(timer); resolve('http://localhost:' + match[1]); }
         });
       });
-      const setIdleTime = idleHall ? async (idleNow) => {
+      const setIdleTime = idle ? async (idleNow) => {
         const ack = once(child, 'message');
         child.send({ idleNow });
         expect((await ack)[0].idleNow).toBe(idleNow);

@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.24.0 – 22. November 2026
+
+- Game Studio Tycoon (IDLE-06 und IDLE-11) führt über fünf Phasen vom Einzelentwickler zum Medienhaus. Projekte reservieren Phasenkosten, Verkäufe haben endliche Märkte und der Spielstand kann manuell gespeichert und signiert exportiert werden. Der eigene Spielschalter ist standardmäßig aus.
+
 ## 3.23.0 – 22. November 2026
 
 * Die Spielhalle ist das erste Idle-Spiel. Aus einem Kartentisch können in fünf Phasen ein Casino und bis zu fünf Standorte werden. Personal, Forschung und Automatisierung verändern den Gästebetrieb auch offline. Gespeichert wird von Hand. Der Betreiber schaltet das Spiel ausdrücklich frei.

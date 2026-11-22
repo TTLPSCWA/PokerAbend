@@ -49,7 +49,7 @@ Vor der Umsetzung der Speicheroberfläche ist zu klären, wann sie für die bere
 
 ## HTTP und Konten
 
-Endpunkte unter `/api/idle` werden erst mit einem ausdrücklich im Servercode registrierten und in der Betriebsumgebung freigegebenen Modul bereitgestellt. Seit Version 3.23.0 ist `spielhalle` das einzige registrierbare Spiel. Der Spielschalter ist standardmäßig aus. Die isolierten Infrastrukturtests registrieren ihr synthetisches Modul ausschließlich im Testprozess.
+Endpunkte unter `/api/idle` werden erst mit einem ausdrücklich im Servercode registrierten und in der Betriebsumgebung freigegebenen Modul bereitgestellt. Registrierbar sind `spielhalle` seit 3.23.0 und `studio` seit 3.24.0. Beide Schalter sind unabhängig und standardmäßig aus. Die isolierten Infrastrukturtests registrieren ihr synthetisches Modul ausschließlich im Testprozess.
 
 Es gelten der vorhandene Seitenzugang und ein gültiges Gast-Cookie für ein bereits bestehendes Konto. Das gilt auch für ein mit Discord verknüpftes Konto. Die API ermittelt die kanonische ID aus dem Cookie und akzeptiert keine Konto-ID vom Client. Schreibanfragen benötigen JSON, den Header `X-Requested-With: spieleabend` und eine Prüfung des aufrufenden Ursprungs. API-Antworten setzen `Cache-Control: no-store`. Anfragegröße und -häufigkeit sind begrenzt.
 
@@ -101,3 +101,5 @@ Für konsistente Backups Konto- und Idle-Daten bei gestopptem Server gemeinsam s
 Die technische Prüfung läuft mit `node --test test/idle-engine.test.js test/idle-savepoints.test.js test/idle-integration.test.js`. Der Playwright-Fall N05 prüft die Sichtbarkeit im Hub mit und ohne registriertes Idle-Spiel.
 
 IDLE-04 bindet [Die Spielhalle](spielhalle.md) an Konto, Savepoint und synchronisierte Tab-Übernahme an. Die Anwendungstests benutzen ein freigegebenes Testprofil mit kontrollierter Uhr und echten Spielaktionen.
+
+IDLE-06 und IDLE-11 binden [Game Studio Tycoon](studio.md) an dieselbe konto- und spielgebundene Infrastruktur an. Projektreservierungen und Absatzstände bleiben beim kontrollierten Prozesswechsel ab der bestätigten Revision erhalten.

@@ -136,7 +136,7 @@ const discordBlocks = new Set(['leaderboard', 'tickets', 'reviews', 'planning'])
 const blockHidden = (id) => Settings.blockHidden(id) || (discordBlocks.has(id) && !DiscordAccess.allowed());
 const show = (id, html) => (blockHidden(id) ? '' : html);
 let route = { page: 'start', sub: '' };
-let hallView = null;
+let idleView = null;
 function parseRoute() {
   const [p = 'start', s = ''] = location.hash.replace(/^#/, '').split('/');
   const page = PAGES.includes(p) ? p : 'start';
@@ -168,8 +168,8 @@ const TITLES = { start: 'Start', spiele: 'Spiele', favoriten: 'Favoriten', tisch
 let renderedPage = null;
 function renderHub(focus = false) {
   route = parseRoute();
-  hallView?.destroy();
-  hallView = null;
+  idleView?.destroy();
+  idleView = null;
   if (route.page === 'spiele' && route.sub === 'einzelspieler' && RANGES[gamesFilter]) gamesFilter = 'all';
   Singleplayer.leave(route.page === 'solo' ? route.sub : '');
   $('#hub-language').innerHTML = I18n.selector();
@@ -193,7 +193,7 @@ function renderHub(focus = false) {
   renderedPage = route.page + route.sub;
   if (!locked) afterPage?.();
   if (route.page === 'solo' && route.sub) Singleplayer.mount($('#singleplayer-root'), route.sub);
-  if (route.page === 'idle' && route.sub) mountHall($('#hall-root'), route.sub);
+  if (route.page === 'idle' && route.sub) mountIdle($('#hall-root'), route.sub);
 }
 window.addEventListener('discordaccesschange', () => queueMicrotask(() => {
   if (!hubVisible()) return;
@@ -211,12 +211,15 @@ function pageIdle() {
   return route.sub ? '<div id="hall-root"></div>' :
     `<p>${I18n.content('Dieses Spiel ist hier nicht freigegeben.','This game is unavailable on this server.')}</p><p><a href="#spiele">${I18n.t('Spiele')}</a></p>`;
 }
-async function mountHall(root, id) {
+async function mountIdle(root, id) {
   try {
-    const { mountHall: mount } = await import('/idle/spielhalle.js');
-    if (root.isConnected) hallView = mount(root, { english: I18n.language === 'en', esc, played: () => markPlayed(id) });
+    const mount = id === 'studio' ? (await import('/idle/studio.js')).mountStudio :
+      (await import('/idle/spielhalle.js')).mountHall;
+    if (root.isConnected) idleView = mount(root, { english: I18n.language === 'en', esc, played: () => markPlayed(id) });
   } catch {
-    if (root.isConnected) root.textContent = I18n.content('Die Spielhalle konnte nicht geladen werden.', 'The game hall could not load.');
+    if (root.isConnected) root.textContent = id === 'studio' ?
+      I18n.content('Das Studio konnte nicht geladen werden.', 'The studio could not load.') :
+      I18n.content('Die Spielhalle konnte nicht geladen werden.', 'The game hall could not load.');
   }
 }
 let afterPage = null;
@@ -224,8 +227,12 @@ $('#hub-more').addEventListener('click', () => $('#hub-menu').showModal());
 $('#hub-menu-nav').addEventListener('click', (e) => { if (e.target.closest('a')) $('#hub-menu').close(); });
 window.addEventListener('hashchange', () => {
   if (!hubVisible() || roomCodeFromUrl()) return;
-  if (route.page === 'idle' && parseRoute().page !== 'idle' && hallView?.unsaved() &&
-      !window.confirm(I18n.content('Du hast ungespeicherte Aktionen. Spielhalle verlassen?', 'You have unsaved actions. Leave the game hall?'))) {
+  const next = parseRoute();
+  const confirmLeave = route.sub === 'studio' ?
+    I18n.content('Du hast ungespeicherte Aktionen. Studio verlassen?', 'You have unsaved actions. Leave the studio?') :
+    I18n.content('Du hast ungespeicherte Aktionen. Spielhalle verlassen?', 'You have unsaved actions. Leave the game hall?');
+  if (route.page === 'idle' && (next.page !== 'idle' || next.sub !== route.sub) && idleView?.unsaved() &&
+      !window.confirm(confirmLeave)) {
     history.replaceState(null, '', hashOf(route.page, route.sub));
     return;
   }

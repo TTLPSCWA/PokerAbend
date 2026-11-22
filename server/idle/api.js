@@ -44,6 +44,12 @@ const errors = {
   'loss-warning': [409, 'Der Wiederanlauf würde dein Guthaben belasten.'],
   'cooldown': [409, 'Für dieses Ereignis läuft noch die Wartezeit.'],
   'event-active': [409, 'Hier läuft bereits ein Ereignis.'],
+  'studio-budget': [400, 'Für diesen Schritt reicht das verfügbare Budget nicht.'],
+  'studio-team': [400, 'Dieses Team arbeitet bereits oder hat keinen freien Personalplatz.'],
+  'studio-stage': [400, 'Das Projekt ist für diese Aktion noch nicht bereit.'],
+  'studio-research': [400, 'Für diese Forschung fehlen Forschungspunkte.'],
+  'studio-portfolio': [400, 'Der Titel ist für diese Aktion nicht verfügbar oder das Portfolio ist ausgelastet.'],
+  'studio-contract': [400, 'Dieser Vertrag ist nicht verfügbar oder seine Bedingungen sind noch nicht erfüllt.'],
 };
 
 function input(body, schema) {
