@@ -145,6 +145,9 @@ test('Geräte: Einstellungen folgen der Spieler-ID auf ein per Code verbundenes 
 
 test('Meine Daten: Export als JSON und Löschen mit Game-ID-Bestätigung', async ({ page, app }) => {
   await open(page, app, 'daten');
+  // B07 (OPEN-FLAKE-IDENTITY): Identity lädt die Game-ID asynchron vom Server (public/identity.js).
+  // Unter Last war sie beim Lesen noch null; erst auf die geladene Identität warten.
+  await expect.poll(() => page.evaluate(() => Identity.gameId)).toBeTruthy();
   const id = await page.evaluate(() => Identity.gameId);
   const [download] = await Promise.all([page.waitForEvent('download'), page.locator('[data-set-export]').click()]);
   expect(download.suggestedFilename()).toBe(`spieleabend-daten-${id.slice(1)}.json`);

@@ -83,7 +83,9 @@ Zusätzlich wirken Höhen- und Seitenverhältnis-Bedingungen: `max-height: 480�
 | Prüfung | Datei | Wann |
 | --- | --- | --- |
 | Messfunktion und Viewport-Liste | `test/ui/responsive-measure.js` | gemeinsam genutzt |
-| Regression (Pilotspiele, Hub, Dialoge, Navigation, lange Namen/Englisch, Tastatur und Touch, Spielerzahlen 2–5) | `test/ui/responsive.spec.js` | jeder Browser-Lauf (nachts in der CI) |
+| Regression (Pilotspiele Poker, Mau-Mau, UNO, Vier gewinnt, Schach, Kniffel, Schätzmeister; Hub, Dialoge, Navigation, lange Namen/Englisch, Solo 2048, Spielhalle, Studio, Factory, Tastatur und Touch, Spielerzahlen 2–4) | `test/ui/responsive.spec.js` | jeder Browser-Lauf (nachts in der CI, Chrome) |
+| Barrierefreiheit (Tastaturfokus, Touchziele, Safe Areas, Bildschirmtastatur und dynamische Höhe, vergrößerte Standardschrift) | `test/ui/b24-a11y.spec.js` | jeder Browser-Lauf (Chrome); Schrift nur im Firefox-Projekt |
+| Browserübergreifend: Regression und Barrierefreiheit in Firefox, WebKit, WebKit mit Touch, Firefox mit 24-px-Standardschrift | `test/ui/b24-browsers.config.js` | manuell: `npx playwright test -c test/ui/b24-browsers.config.js` |
 | Gesamt-Audit aller Oberflächen mit Screenshots | `test/ui/b24-responsive-audit.spec.js` | manuell: `B24_AUDIT=1 B24_RUN=<name> npx playwright test test/ui/b24-responsive-audit.spec.js --project=desktop --workers=4` → `artifacts/b24/<name>/` |
 
 Optionen des Audits: `B24_GAMES=id1,id2` (Auswahl), `B24_SHOTS=320x568,…` (Screenshot-Größen).
@@ -121,8 +123,39 @@ Schnelle Folgen von Größenereignissen werden zu einem Neuzeichnen pro Bild zus
 - **Backgammon:** Liegen sechs oder mehr Steine auf einer Zunge, wird die Zungenreihe höher als ihre Brett-Hälfte; der überstehende Teil ist unsichtbare Trefferfläche (die Darstellung zeigt fünf Steine und „+1“). Zustandsabhängig, ohne sichtbare Auswirkung, unverändert gelassen.
 - **Monopoly am Handy** nutzt bewusst eine verschieb- und zoombare Brettansicht (keine Änderung).
 - **Unter 375 px** dürfen einzelne Ziele unter 44 px fallen, nie unter 24 px (WCAG 2.5.8 AA), z. B. die Spalten bei Vier gewinnt (dafür über 250 px hoch).
-- **Vergrößerte Standardschrift des Browsers** wirkt nur auf `rem`/`em`-Werte; die bestehenden Oberflächen nutzen überwiegend Pixelwerte. Browser-Zoom (getestet bis 200 %) ist der wirksame Weg.
-- **iOS Safari und Firefox** wurden nicht automatisch geprüft (lokal nur Chrome; die bestehende WebKit-Konfiguration deckt V2-13/14 ab). Verwendete Techniken (`dvh`, `clamp()`, `:has()`, `safe center`, `env(safe-area-inset-*)`, `visualViewport`) sind in aktuellen Versionen beider Browser verfügbar.
+- **Vergrößerte Standardschrift des Browsers:** Mit 24 px statt 16 px (echte Firefox-Einstellung) bleiben Startseite und Mau-Mau ohne Überbreite oder Abschneiden. Der Text wächst aber kaum mit, weil die Oberflächen überwiegend Pixelwerte nutzen. Wirksam ist Browser-Zoom (bis 200 % geprüft, WCAG 1.4.4). Eine Umstellung auf `rem` wäre ein eigener Folgeauftrag.
+- **Firefox und WebKit** sind seit B07 automatisch geprüft (Playwright, Desktop und Touch). **iOS Safari auf echter Hardware** ist damit nicht abgenommen; die Playwright-WebKit-Engine ist nicht Safari auf einem iPhone.
+
+## Browser- und Barrierefreiheitsabnahme (B07, 2026-11-23)
+
+| Prüfung | Chrome | Firefox | WebKit | WebKit Touch | Ergebnis |
+| --- | --- | --- | --- | --- | --- |
+| Regression `responsive.spec.js` (16 Fälle, 11 Viewports inkl. 200 % Zoom, Größenwechsel in laufender Partie, Hoch- und Querformat) | ✓ | ✓ 16/16 | ✓ 16/16 | ✓ Touch-Fall | bestanden |
+| Tastaturfokus (30 bzw. 25 Tab-Schritte, Fokus im Bild und sichtbar markiert) | ✓ | – | – | – | bestanden |
+| Touchziele ≥ 24 px (390 und 320 px; Startseite, Kopf, Aktionsleiste) | ✓ Mobil | – | – | ✓ | bestanden |
+| Safe Areas (CDP-Emulation 47 px oben, 34 px unten; Tableiste und Aktionsleiste frei) | ✓ | – | – | – | bestanden |
+| Bildschirmtastatur und dynamische Höhe (Höhe 844 → 420 mit Fokus im Suchfeld; Partie bei 844/640/480/360) | ✓ | – | – | – | bestanden |
+| Vergrößerte Standardschrift 24 px | – | ✓ | – | – | bestanden (ohne Überlauf; Text wächst kaum, siehe oben) |
+
+Keine reproduzierbaren Kompatibilitätsfehler gefunden; deshalb keine CSS-Änderung in B07. Emulationen ersetzen keine echten Geräte.
+
+## Manuelle Geräteabnahme (ausstehend)
+
+Gilt erst als bestanden, wenn sie auf dem Gerät tatsächlich durchgeführt wurde. Stand 2026-11-23: **nicht durchgeführt**.
+
+| Prüfschritt | iPhone (Safari) | Android (Chrome) | iPad (Safari) |
+| --- | --- | --- | --- |
+| Startseite hoch und quer: Tableiste, ☰-Menü, Schriftzug mit Version, keine seitliche Scrollleiste | offen | offen | offen |
+| Notch und Home-Indikator verdecken weder Tableiste noch Aktionsleiste (Safe Areas) | offen | offen | – |
+| Tisch erstellen, Host-Dialog vollständig bedienbar, im Querformat und nach dem Drehen | offen | offen | offen |
+| Poker: eigene Karten, Raise-Betrag per Bildschirmtastatur eingeben, Feld bleibt sichtbar, Aktionen erreichbar | offen | offen | offen |
+| Mau-Mau oder UNO: Karte antippen und spielen, Hand bleibt erreichbar, Querformat mit Aktionen neben dem Tisch | offen | offen | offen |
+| Schach oder Vier gewinnt: Brett vollständig sichtbar, Züge per Tippen | offen | offen | offen |
+| Spielhalle, Studio oder Factory: Tabs, Speichern, Drehen ohne Verlust des Spielstands | offen | offen | offen |
+| Systemschrift vergrößert (Bedienungshilfen): keine abgeschnittenen Knöpfe | offen | offen | offen |
+| Browser-Zoom bzw. Seitenzoom 200 % | offen | offen | offen |
+
+Ergebnis je Zelle mit Gerät, Betriebssystem- und Browserversion, Datum und prüfender Person eintragen.
 
 ## Verbleibende Risiken
 

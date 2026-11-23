@@ -20,8 +20,10 @@ async function sweep(page, label, check) {
   }
 }
 
-// Die Viewport-Matrix gilt unabhängig vom Projekt; Touch prüft der Mobil-Lauf.
-const desktopOnly = (info) => test.skip(info.project.name !== 'desktop', 'Viewports werden explizit gesetzt; einmal reicht.');
+// Die Viewport-Matrix setzt ihre Größen selbst: im Standardlauf einmal (Projekt „desktop“), mit
+// b24-browsers.config.js zusätzlich in Firefox und WebKit. Touch prüft der Mobil- bzw. Touch-Lauf.
+const desktopOnly = (info) => test.skip(info.project.name === 'mobil' || !!info.project.use.hasTouch, 'Viewports werden explizit gesetzt; einmal je Browser reicht.');
+const touch = (info) => !!info.project.use.hasTouch;
 
 test('B24 Hub: Start, Bibliothek und Tische ohne Überbreite, Abschneiden oder Verdecken', async ({ page, app }, info) => {
   desktopOnly(info);
@@ -98,6 +100,9 @@ const PILOTS = [
   { id: 'viergewinnt', players: 2, shape: { sel: '.vg-disc', ratio: 1 } },
   { id: 'kniffel', players: 3 },
   { id: 'schaetzmeister', players: 2 },
+  // B07/B24-QA: UNO (Kartenbedienung) und Schach als weitere Karten- und Brettspiele
+  { id: 'farbenchaos', players: 3 },
+  { id: 'schach', players: 2 },
 ];
 for (const pilot of PILOTS) {
   test(`B24 Pilot ${pilot.id}: laufende Partie (${pilot.players} Spieler) übersteht jeden Größenwechsel`, async ({ page, app }, info) => {
@@ -194,6 +199,30 @@ test.describe('B24 Idle', () => {
 });
 const button = (page, label) => page.getByRole('button', { name: label, exact: true });
 
+// Game Studio Tycoon und Factory Empire: Oberfläche, Tabs und Speichern überstehen jeden Größenwechsel.
+for (const [id, flag, start, shell] of [['studio', 'idleStudio', 'Studio starten', '.gs-shell'], ['factory', 'idleFactory', 'Fabrik starten', '.fe-shell']]) {
+  test.describe(`B24 Idle ${id}`, () => {
+    test.use({ [flag]: true });
+    test(`${id}: kein Überlauf, Phase und Spielstand bleiben bei jedem Größenwechsel`, async ({ page, app }, info) => {
+      desktopOnly(info);
+      test.setTimeout(90000);
+      await page.setViewportSize({ width: 1280, height: 720 });
+      await login(page, app);
+      await page.evaluate(() => { location.hash = '#spiele/idle'; });
+      await page.locator(`li[data-id="${id}"] a[href="#idle/${id}"]`).click();
+      await button(page, start).click();
+      await expect(button(page, 'Speichern')).toBeEnabled();
+      const phase = await page.locator(shell).getAttribute('data-phase');
+      await page.evaluate(() => { window.__b24Mark = 1; });
+      await sweep(page, id);
+      expect(await page.evaluate(() => window.__b24Mark)).toBe(1);
+      await expect(page.locator(shell)).toHaveAttribute('data-phase', phase);
+      await page.setViewportSize({ width: 1280, height: 720 });
+      await expect(button(page, 'Speichern')).toBeEnabled();
+    });
+  });
+}
+
 test('B24 Tastatur und Touch: Aktionsleiste ist in kleinen Viewports erreichbar und bedienbar', async ({ page, app }, info) => {
   test.setTimeout(90000);
   await login(page, app);
@@ -204,7 +233,7 @@ test('B24 Tastatur und Touch: Aktionsleiste ist in kleinen Viewports erreichbar 
   await emit(page, 'addBot');
   await emit(page, 'start');
   await expect.poll(() => page.evaluate(() => lastState?.phase)).toBe('playing');
-  if (info.project.name === 'mobil') await page.setViewportSize({ width: 320, height: 568 });
+  if (touch(info)) await page.setViewportSize({ width: 320, height: 568 });
   // Warten, bis man selbst dran ist, dann eine Spalte per Tippen (Touch) bzw. Tastatur setzen.
   await expect.poll(() => page.evaluate(() => lastState.turnId === lastState.you.id), { timeout: 15000 }).toBe(true);
   const col = page.locator('button.vg-col').nth(3);
@@ -212,7 +241,7 @@ test('B24 Tastatur und Touch: Aktionsleiste ist in kleinen Viewports erreichbar 
   await expect(col).toBeInViewport();
   const moves = () => page.evaluate(() => (lastState.g?.board || lastState.board || []).flat().filter(Boolean).length);
   const n = await moves();
-  if (info.project.name === 'mobil') await col.tap();
+  if (touch(info)) await col.tap();
   else { await col.focus(); await page.keyboard.press('Enter'); }
   await expect.poll(moves).toBeGreaterThan(n);
 });
