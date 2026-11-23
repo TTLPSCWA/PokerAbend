@@ -101,11 +101,44 @@ test.describe('Spielhalle auf ausdrücklich aktiviertem Testserver', () => {
       },
     });
     expect(session.view.data.locations).toHaveLength(5);
+    for (const profile of ['hafen', 'kurort', 'altstadt']) {
+      const site = page.locator('[data-hall-site="' + profile + '"]');
+      await site.click();
+      await expect(site).toHaveAttribute('aria-pressed', 'true');
+    }
+    const afterSiteSelection = await api('');
+    expect(afterSiteSelection.view.data.locations).toEqual(session.view.data.locations);
+    expect(afterSiteSelection.revision).toBe(session.revision);
+    const claims = session.view.data.prestige;
+    expect(claims.length).toBeGreaterThan(0);
+    const revisionBeforeReset = session.revision;
     await button(page, 'Renommee-Vorschau').click();
     const dialog = page.locator('dialog[open]');
-    await expect(dialog).toContainText('wird gespeichert');
+    await expect(dialog.getByRole('heading', { name: 'Renommee bestätigen' })).toBeVisible();
+    await expect(dialog).toContainText('Du erhältst ' + claims.length +
+      ' neue Sterne. Münzen, Anlagen, Personal und operative Forschung beginnen neu. Deine Rekorde bleiben und der Neustart wird gespeichert.');
     await dialog.getByRole('button', { name: 'Abbrechen' }).click();
+    await expect(dialog).toHaveCount(0);
     await expect(page.locator('.hall-shell')).toHaveAttribute('data-phase', 'SH-P5');
+    const afterCancel = await api('');
+    expect(afterCancel.revision).toBe(revisionBeforeReset);
+    expect(afterCancel.view.data.prestige).toEqual(claims);
+    expect(afterCancel.view.data.complete).toBe(true);
+
+    await button(page, 'Renommee-Vorschau').click();
+    const resetSaved = page.waitForResponse((response) => new URL(response.url()).pathname === game + '/prestige' &&
+      response.request().method() === 'POST');
+    await dialog.getByRole('button', { name: 'Bestätigen' }).click();
+    const resetResponse = await resetSaved;
+    expect(resetResponse.ok()).toBe(true);
+    expect(resetResponse.request().postDataJSON()).toMatchObject({ revision: revisionBeforeReset, claims, confirm: true });
+    expect(await resetResponse.json()).toEqual({ revision: revisionBeforeReset + 1, savedAt: at });
+    await expect(page.locator('.hall-shell')).toHaveAttribute('data-phase', 'SH-P1');
+    const afterReset = await api('');
+    expect(afterReset.view.data.stars).toBe(claims.length);
+    expect(afterReset.view.data.guests).toBe('0');
+    expect(afterReset.view.data.locations).toHaveLength(1);
+    expect(afterReset.view.data.prestige).toBeNull();
   });
 
   test('Speichern, Datei-Import, Reconnect, Tab-Übernahme und Englisch bleiben bedienbar', async ({ page, app, context }) => {
@@ -113,6 +146,7 @@ test.describe('Spielhalle auf ausdrücklich aktiviertem Testserver', () => {
     await login(page, app);
     await openFromHub(page);
     await page.getByRole('button', { name: /Kartenrunde spielen/ }).click();
+    await expect(page.getByText('Ungespeicherte Aktionen', { exact: true })).toBeVisible();
     const downloadEvent = page.waitForEvent('download');
     await button(page, 'Speichern & exportieren').click();
     const download = await downloadEvent;
@@ -163,8 +197,9 @@ test.describe('Spielhalle auf ausdrücklich aktiviertem Testserver', () => {
 
   test('ein verbundenes Gerät lädt den bestätigten Stand desselben Kontos', async ({ page, app, browser }) => {
     await login(page, app);
-    await openFromHub(page);
+    const oldLease = await openFromHub(page);
     await page.getByRole('button', { name: /Kartenrunde spielen/ }).click();
+    await expect(page.getByText('Ungespeicherte Aktionen', { exact: true })).toBeVisible();
     await button(page, 'Speichern').click();
     await expect(page.getByText('Gespeichert · Rev. 1')).toBeVisible();
     const post = async (device, path, data = {}) => device.request.post(app.url + path, {
@@ -173,13 +208,20 @@ test.describe('Spielhalle auf ausdrücklich aktiviertem Testserver', () => {
     const link = await post(page, '/api/identity/link/create');
     expect(link.ok()).toBe(true);
     const { code } = await link.json();
-    const other = await browser.newContext({ viewport: page.viewportSize() });
+    const originalDevice = page.context();
+    const viewport = page.viewportSize();
+    // Linking deliberately fences the first writer. Check its old lease via
+    // HTTP, independently of when the first tab's background polling runs.
+    await page.close();
+    const other = await browser.newContext({ viewport });
     try {
       const device = await other.newPage();
       await login(device, app, 'Ben');
       expect((await (await device.request.get(app.url + game)).json()).revision).toBe(0);
       const redeem = await post(device, '/api/identity/link/redeem', { code });
       expect(redeem.ok(), await redeem.text()).toBe(true);
+      const oldView = await originalDevice.request.get(app.url + game, { headers: { 'x-idle-token': oldLease } });
+      expect(oldView.status()).toBe(409);
       expect((await (await device.request.get(app.url + game)).json()).revision).toBe(1);
       await device.evaluate(() => { location.hash = '#idle/spielhalle'; });
       await button(device, 'Bestätigten Stand öffnen').click();
