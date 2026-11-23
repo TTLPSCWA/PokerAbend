@@ -732,7 +732,9 @@ function kitGame(def) {
         // A snapshot on entry or reconnect restores the current turn without replaying its sound.
         if (prev?.code === st.code && !restoring && !xp?.turn(st, prev)) {
           beep(740, 140, 0.06);
-          setTimeout(() => beep(988, 160, 0.05), 140);
+          // B07: Der zweite Ton folgt nur, wenn Verbindung, Raum, Runde und eigener Zug noch gelten.
+          const turnCode = st.code, turnRound = st.roundNo;
+          setTimeout(() => { if (socket.connected && isMine() && S?.code === turnCode && S.roundNo === turnRound && S.turnId === S.you?.id) beep(988, 160, 0.05); }, 140);
         }
         if (document.hidden) document.title = I18n.t('● Du bist dran – Spieleabend');
       }

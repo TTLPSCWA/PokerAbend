@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.26.1 – 23. November 2026
+
+- Echtzeit-, Arcade- und Expeditionsspiele halten ihren Spieltakt: Kurze Verzögerungen des Servers summieren sich nicht mehr auf, der Countdown dauert wieder genau drei Sekunden, und nach einer Überlast springt das Spiel nicht in einem Schwall vor. Der Zug-Hinweiston spielt seinen zweiten Ton nur noch, wenn Verbindung und Spielzug noch bestehen. Spielregeln und Spielstände bleiben unverändert.
+
 ## 3.26.0 – 23. November 2026
 
 - Die Seite passt sich an jede Bildschirmgröße an, vom kleinen Smartphone (320 Pixel) bis zum Super-Ultrawide-Monitor, auch bei 200 % Browser-Zoom und im Querformat. Auf großen Monitoren werden Pokertisch, Karten und Würfel größer und die Bedienung rückt zur Mitte. Auf kleinen Handys bleiben Brett, Karten und Aktionen erreichbar, Dialoge passen immer auf den Bildschirm. Spielregeln und Spielstände bleiben unverändert. [Adaptive Responsive UI (B24)](docs/design/RESPONSIVE.md)

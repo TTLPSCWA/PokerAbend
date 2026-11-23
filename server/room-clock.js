@@ -1,5 +1,7 @@
 // Eigene Spielzeit pro Tisch: Pausen zählen weder für Fristen noch für Wertungen.
 // Netzwerk, Persistenz und Offline-Erkennung verwenden weiterhin die echte Uhr.
+// Höchstens so viele verpasste Intervalle holt ein Takt nach einer Verzögerung nach (B07).
+const MAX_CATCHUP = 4;
 export class RoomClock {
   constructor() {
     this.pausedAt = null;
@@ -37,7 +39,13 @@ export class RoomClock {
       timer.native = null;
       if (this.paused || !this.timers.has(timer)) return;
       if (!timer.repeat) this.timers.delete(timer);
-      else timer.due = this.now() + timer.delay;
+      else {
+        // B07: fester Takt. Der nächste Termin folgt dem geplanten, nicht dem tatsächlichen Auslösezeitpunkt;
+        // sonst summieren sich Timerverspätungen (z. B. 50 → 62,5 ms) zu bleibendem Spielzeitverlust.
+        // Liegt der Takt nach Überlast mehr als MAX_CATCHUP Intervalle zurück, richtet er sich neu aus statt aufzuholen.
+        const next = timer.due + timer.delay;
+        timer.due = next < this.now() - timer.delay * MAX_CATCHUP ? this.now() + timer.delay : next;
+      }
       try { timer.fn(); }
       finally { if (timer.repeat) this.arm(timer); }
     }, Math.max(0, timer.due - this.now()));

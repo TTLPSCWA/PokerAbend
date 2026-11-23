@@ -12,7 +12,7 @@
       "path": "public/games/kit.js",
       "archive": "test/fixtures/release-2026-11-08/baseline/public/games/kit.js",
       "baseline_sha256": "0b71e0da9f3c489f48d2f202a7fc7168a8f3dfdcbbf44366fb9f7fe7cd7401c1",
-      "current_sha256": "1396e13e4c1aea9ea014844cfecf178e1a23ea9ff5d2356a84d20e5d2125e8b7"
+      "current_sha256": "305a7252d5501b7a2c744d03cda95a1ee676441cd0fe324b2f4c61a18e99664f"
     },
     {
       "path": "public/games/stapelrennen/stapelrennen.js",
@@ -60,7 +60,7 @@
       "path": "public/games/poker/poker.js",
       "archive": "test/fixtures/release-2026-11-08/baseline/public/games/poker/poker.js",
       "baseline_sha256": "749a043080acb4aedba22ed4d6a8d8f54a1aa799c10c4891ea8bdef68bff34b5",
-      "current_sha256": "047f3047c0aa7e62aed2a23587f0b3da2f70016a04e32a0b8a888bc2a6edd103"
+      "current_sha256": "66e94e695ac1e2ea0a62acf2f30280fb2c384decb5291c83a03146c380eec07b"
     }
   ]
 }

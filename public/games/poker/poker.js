@@ -132,7 +132,8 @@ const {chipClass,chipStack,animateChips}=PokerChips.create({getState:()=>S,$,$$}
 
 // ---------- Töne ----------
 const sounds = {
-  turn: () => { beep(740, 140, 0.06); setTimeout(() => beep(988, 160, 0.05), 140); },
+  // B07: Der zweite Ton folgt nur, wenn Verbindung, Tisch, Hand und eigener Zug noch gelten.
+  turn: () => { beep(740, 140, 0.06); const code = S?.code, no = S?.hand?.no; setTimeout(() => { if (socket.connected && S?.code === code && S?.hand?.no === no && S?.legal) beep(988, 160, 0.05); }, 140); },
   chips: () => { beep(2200, 40, 0.03, 'triangle'); setTimeout(() => beep(1800, 50, 0.025, 'triangle'), 50); },
   win: () => { [523, 659, 784].forEach((f, i) => setTimeout(() => beep(f, 180, 0.05), i * 110)); },
   bigWin: () => { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 220, 0.055), i * 120)); },
