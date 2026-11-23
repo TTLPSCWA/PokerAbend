@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.26.0 – 23. November 2026
+
+- Die Seite passt sich an jede Bildschirmgröße an, vom kleinen Smartphone (320 Pixel) bis zum Super-Ultrawide-Monitor, auch bei 200 % Browser-Zoom und im Querformat. Auf großen Monitoren werden Pokertisch, Karten und Würfel größer und die Bedienung rückt zur Mitte. Auf kleinen Handys bleiben Brett, Karten und Aktionen erreichbar, Dialoge passen immer auf den Bildschirm. Spielregeln und Spielstände bleiben unverändert. [Adaptive Responsive UI (B24)](docs/design/RESPONSIVE.md)
+
 ## 3.25.1 – 22. November 2026
 
 - Auf kleinen Bildschirmen bleiben in Game Studio Tycoon und Factory Empire die aktiven Tabs bei der laufenden Aktualisierung sichtbar. In Factory Empire benennt der Inspektor einen nicht verbundenen Ausgang und zeigt, wie er sich verbinden lässt. [Qualitätsprüfung der drei Idle-Spiele](docs/idle-quality.md)

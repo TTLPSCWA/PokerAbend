@@ -29,3 +29,7 @@
 .kg-monopoly .kg-main { background: radial-gradient(120% 90% at 50% 0, #2f4a3a, #101c15); }
 .mo-board.mo-classic { box-shadow: 0 12px 30px #0008, inset 0 0 0 3px #00000030; }
 .kg-monopoly .kg-acts button, .kg-monopoly .btn { min-height: 44px; }
+
+/* B24: Bei sehr wenig Höhe (Handy quer, 200 % Zoom) passt Werkzeugleiste plus Brett nicht
+   in die Fläche. Dann scrollt die Spielfläche, statt Bedienelemente abzuschneiden. */
+@media (max-height:480px) { .kg-monopoly .kg-main { overflow:auto; } }

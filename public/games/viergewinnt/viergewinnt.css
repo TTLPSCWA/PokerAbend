@@ -43,3 +43,10 @@ body.marks .vg-dot .cm { display: block; }
 @media (max-height: 560px) { .vg-stage { padding: 6px; gap: 4px; } .vg-stage > .wk-head { display: none; } }
 @media (max-height: 560px) { .vg-foot { display: none; } .vg-stage { border-width: 0; box-shadow: none; } }
 @media (max-height: 560px) { .vg-stage button.vg-col { min-width: 0; min-height: 0; } }
+
+/* B24: Unter 375 px passen sieben 44-px-Spalten nicht nebeneinander. Die Spalten
+   sind dort über 250 px hoch und bleiben gut zu treffen (WCAG 2.5.8: ≥ 24 px). */
+@media (max-width: 374px) {
+  .vg-stage button.vg-col { min-width: 0; }
+  .vg-stage { padding: 8px; }
+}

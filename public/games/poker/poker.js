@@ -1355,7 +1355,8 @@ function padPress(i) {
     renderDock();
   }
 }
-window.addEventListener('resize', () => render());
+// B24: gemeinsamer, pro Bildschirmbild gedrosselter Größentakt statt Neuzeichnen bei jedem resize-Ereignis
+if (window.Responsive) Responsive.onResize(() => render()); else window.addEventListener('resize', () => render());
 
 $('#copy-link').addEventListener('click', async () => {
   const link = I18n.html`${location.origin}/?t=${S?.code || ''}`;

@@ -1,0 +1,117 @@
+/* =====================================================================
+   B24 Adaptive Responsive UI – gemeinsame Layoutschicht
+   ---------------------------------------------------------------------
+   Wird als letztes globales Stylesheet geladen und ergänzt die
+   vorhandenen Regeln (style.css, hub.css, ui-theme.css), statt sie zu
+   ersetzen. Spielspezifische Korrekturen stehen in der CSS-Datei des
+   jeweiligen Spiels; hier nur, was viele Oberflächen gemeinsam nutzen.
+
+   Stufen (gleich in responsive.js, data-rs-size am <html>):
+     xs  < 375     sehr kleine Smartphones (320er)
+     s   375–640   Smartphones (bestehende 640-px-Grenze)
+     m   641–1099  Tablets, kleine Fenster
+     l   1100–1799 Laptop bis Full HD
+     xl  1800–2999 QHD, große Monitore
+     xxl ≥ 3000    Ultrawide, Super-Ultrawide
+   Maßgeblich ist die verfügbare Fläche (CSS-Pixel), nicht das Gerät.
+   ===================================================================== */
+
+:root {
+  /* Abstände und Breiten, die mit der Fläche mitwachsen */
+  --rs-gutter: clamp(8px, 2.4vw, 40px);
+  --rs-text-max: 72ch;          /* lesbare Zeilenlänge für Fließtext */
+  --rs-content-max: 1760px;     /* Inhaltsbreite auf Ultrawide */
+  --rs-touch: 44px;             /* Zielgröße für Bedienelemente */
+  /* Sichere Bereiche (Notch, Home-Indikator) */
+  --rs-safe-top: env(safe-area-inset-top, 0px);
+  --rs-safe-right: env(safe-area-inset-right, 0px);
+  --rs-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --rs-safe-left: env(safe-area-inset-left, 0px);
+  /* Sichtbare Höhe; responsive.js setzt --rs-vvh aus visualViewport (Tastatur) */
+  --rs-dialog-max-h: calc(min(100dvh, var(--rs-vvh, 100dvh)) - 16px - var(--rs-safe-top) - var(--rs-safe-bottom));
+}
+/* Auf sehr kleinen Flächen dürfen Ziele unter 44 px fallen, nie unter 24 px (WCAG 2.5.8). */
+@media (max-width: 374px) { :root { --rs-touch: 36px; } }
+
+/* ---------- Grundschutz gegen Überbreite ---------- */
+/* Lange Namen, Codes und Übersetzungen umbrechen statt die Seite zu verbreitern. */
+.hub-main, #game-root, dialog { overflow-wrap: break-word; }
+.hub-main img, #game-root img, dialog img { max-width: 100%; height: auto; }
+
+/* ---------- Dialoge: immer vollständig erreichbar ---------- */
+/* Jeder modale Dialog passt in den sichtbaren Bereich und scrollt innen,
+   auch bei 200 % Zoom, im Querformat und mit eingeblendeter Tastatur.
+   :where() hält die Spezifität bei null: Dialoge mit eigener Größe
+   (Host-Seitenpanel, .dlg) behalten ihre Regeln. */
+:where(dialog[open]:modal) {
+  max-width: calc(100vw - 16px - var(--rs-safe-left) - var(--rs-safe-right));
+  max-height: var(--rs-dialog-max-h);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+/* ---------- Hub: Navigation ---------- */
+/* Sehr kleine Smartphones (unter 375 px): sieben Tabs passen nicht lesbar in eine
+   Zeile. Selten genutzte Bereiche wandern in das ☰-Menü (#hub-menu enthält die
+   vollständige Navigation); der aktive Bereich bleibt immer sichtbar. */
+@media (max-width: 374px) {
+  .hub-tabbar .tab-item:is([href="#roadmap"], [href="#tickets"], [href="#einstellungen"]):not([aria-current]) { display: none; }
+  .hub-tabbar .tab-item span { overflow-wrap: normal; hyphens: manual; }
+  .hub-top { gap: 8px; padding-inline: 12px; }
+  /* Schriftzug mit Versionsnummer bleibt vollständig sichtbar (Versionskontrolle nach dem Deploy). */
+  .hub-top .wordmark { font-size: clamp(17px, 5.6vw, 25px); white-space: nowrap; }
+  .hub-top-actions { gap: 4px; }
+  #hub-language select { max-width: 78px; padding-inline: 6px; font-size: 13px; }
+  .hub-main { padding-inline: 12px; }
+}
+
+/* Blockköpfe (Überschrift + „Alle … →“): Der Link rutscht bei Platzmangel in die
+   nächste Zeile, statt die Seite zu verbreitern. */
+.hub-block-head { flex-wrap: wrap; }
+.hub-block-head > :first-child { min-width: 0; }
+.hub-block-head > a { margin-left: auto; }
+/* Touch: kleine Textlinks bekommen eine ausreichende Trefferfläche. */
+@media (pointer: coarse) { .hub-block-head > a { display: inline-flex; align-items: center; min-height: var(--rs-touch); } }
+
+/* Ultrawide: Inhalte nicht über die volle Breite ziehen; Fließtext bleibt lesbar. */
+@media (min-width: 1800px) {
+  .hub-head p, .roadmap-intro, .hub-main .lead { max-width: var(--rs-text-max); }
+}
+
+/* ---------- Spielflächen (gemeinsames Spiel-Kit #kg) ---------- */
+/* Die Lobby (Einstellungen, Figurenwahl, Plätze) scrollt immer – auch in Spielen,
+   die ihre Spielfläche für ein eigenes Brett-Panning sperren. „safe center“
+   verhindert, dass zentrierter, überhoher Inhalt oben unerreichbar wird. */
+#game-root .kg-main:has(.kg-lobby) { overflow: auto; place-items: safe center; }
+
+/* Große Monitore (QHD, Ultrawide): Karten und Würfel wachsen mit der kürzeren
+   Bildschirmseite, statt auf Laptop-Größe zu bleiben. Bretter haben je Spiel eigene
+   Raster und werden nur spielweise und geprüft vergrößert (B24-C). Spiele mit
+   eigenen Größen (spielspezifische Selektoren) behalten diese. */
+@media (min-width: 1800px) and (min-height: 1000px) {
+  /* Hand, Hinweis und Aktionen bleiben nah beieinander statt an den Rändern. */
+  .kg-dock-in { max-width: 1800px; margin-inline: auto; }
+  .kc { --w: clamp(56px, 4.6vmin, 88px); }
+  .kc.big { --w: clamp(84px, 6.6vmin, 128px); }
+  .die { --d: clamp(34px, 3vmin, 52px); }
+  .die.big { --d: clamp(58px, 5vmin, 90px); }
+  .kg-table { width: min(100%, clamp(940px, 52vw, 1500px)); }
+}
+/* Ultrawide (Seitenverhältnis ab 2:1): Im Rundtisch-Layout sitzen die Gegner sonst
+   an den äußersten Bildschirmrändern. Die Spielfläche bleibt höchstens 1,9 × so
+   breit wie hoch und steht mittig. */
+@media (min-width: 1800px) and (min-aspect-ratio: 2/1) {
+  #game-root .kg-main.ring { justify-self: center; width: min(100%, calc(100dvh * 1.9)); }
+}
+
+/* Aktionsleiste: Braucht sie mehr als knapp zwei Drittel der Höhe (Handy quer,
+   200 % Zoom, viele Aktionen), scrollt sie in sich, statt Knöpfe unter den
+   Bildschirmrand zu schieben. Niedrige Spezifität (:where): Spiele mit eigener
+   Grenze (Kartenbedienung 48dvh, einzelne Spiele „none“) behalten ihre Regel. */
+:where(#game-root) .kg-dock { max-height: 62dvh; overflow-y: auto; overscroll-behavior: contain; }
+/* Ausnahme: Im bestehenden Querformat-Layout (game-design.css) ist das Dock eine
+   volle Seitenspalte und scrollt dort bereits selbst. Spiele mit Kartenbedienung
+   behalten dort ihre eigene 48dvh-Grenze. */
+@media (max-height: 560px) and (min-width: 520px) and (orientation: landscape) {
+  :where(#game-root) .kg:not(.cix-game)[data-scene-layout='table'] > .kg-dock { max-height: none; }
+}

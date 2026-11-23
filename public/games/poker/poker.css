@@ -532,3 +532,47 @@ body.cards-xl { --cs: 1.5; }
 .felt { background-image: radial-gradient(ellipse at 50% 35%, #1f6a4d, #0f3b2b 70%); }
 [data-scene='omaha'] .felt { background-image: radial-gradient(ellipse at 50% 35%, #254b78, #112640 70%); }
 .seat .pot-box, .pot-box { border: 1px solid #e8c36a55; }
+
+/* ---------- B24: adaptive Größen ---------- */
+/* Smartphones mit wenig Höhe (z. B. 320×568): kompakteres Dock, damit der Tisch
+   nicht zur Briefmarke wird. Die Chancen bleiben über die Handstärke im
+   Hände-Panel erreichbar. */
+@media (max-width: 640px) and (max-height: 700px) {
+  .mine .strength .odds-bars { display: none; }
+  .dock { gap: 6px; padding-block: 6px calc(6px + env(safe-area-inset-bottom)); }
+  .mine .cards { --card-w: calc(44px * var(--cs, 1)); }
+  .act-main .btn { min-height: 48px; }
+}
+/* Unter 600 px Höhe entfallen die Schnelleinsätze (½ Pot …); jeder Betrag bleibt
+   über Regler und Zahlenfeld einstellbar. */
+@media (max-width: 640px) and (max-height: 600px) { .presets { display: none; } }
+/* Schmale Geräte: Handstärke schrumpft mit, statt rechts abgeschnitten zu werden. */
+@media (max-width: 640px) {
+  .mine-info { flex: 1 1 auto; }
+  .mine .strength { max-width: 100%; min-width: 0; }
+  .mine .strength > span { overflow-wrap: anywhere; }
+}
+/* Große Monitore (QHD, Ultrawide): Tisch, Plätze und Karten wachsen mit; die
+   Bedienelemente im Dock rücken zur Mitte statt an die äußersten Ränder. */
+@media (min-width: 1800px) and (min-height: 1000px) {
+  :root { --seat-w: 196px; --av: 50px; }
+  .table-wrap { padding: 80px 170px 90px; }
+  .table { width: min(100%, 1700px, calc((100dvh - 400px - var(--program-h, 0px)) * 2.05)); }
+  .board { --card-w: min(76px, 11cqw); }
+  .mine .cards { --card-w: calc(84px * var(--cs, 1)); }
+  .dock { padding-inline: max(var(--s-4), calc((100vw - 2200px) / 2)); }
+}
+/* Sehr flaches Querformat unter 641 px (iPhone SE quer, 200 % Zoom auf 1280×720):
+   Tisch links, Aktionsleiste rechts mit eigenem Scrollbereich. Ab 641 px gilt die
+   bestehende Regel für niedrige Bildschirme. */
+@media (max-width: 640px) and (max-height: 480px) and (orientation: landscape) {
+  .game, .game.has-program { grid-template-columns: minmax(0, 1fr) minmax(250px, 50%); }
+  .game { grid-template-rows: auto minmax(0, 1fr); }
+  .game.has-program { grid-template-rows: auto auto minmax(0, 1fr); }
+  .game > .topbar, #poker-program { grid-column: 1 / -1; }
+  .table-wrap { grid-column: 1; grid-row: -2 / -1; padding: 22px 26px 18px; container-type: size; }
+  .table { width: min(100%, calc(100cqh * 2.05)); }
+  .dock { grid-column: 2; grid-row: -2 / -1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; align-content: start;
+    border-top: 0; border-left: 1px solid var(--gold-line); padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); }
+  .mine .strength .odds-bars { display: none; }
+}

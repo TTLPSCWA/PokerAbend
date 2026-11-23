@@ -1,0 +1,130 @@
+# B24 – Adaptive Responsive UI
+
+Stand: 2026-11-23 · Paket B24 (Aufgaben-Roadmap im Vault) · Version **3.26.0** · Basis `a82c6f9` (3.25.1 mit B04-Tests)
+
+Die Seite passt sich an die **tatsächlich verfügbare Fläche** an: Fenstergröße, Seitenverhältnis, Zoom, Ausrichtung und Bildschirmtastatur. Die physische Monitorgröße spielt keine Rolle. Spiellogik, Socket-Protokolle, Rechte und Spielstände bleiben unverändert; B24 ändert ausschließlich Darstellung und Bedienbarkeit.
+
+## Architektur
+
+B24 führt **kein zweites UI-System** ein. Es ergänzt die bestehenden Schichten (`style.css` → `hub.css` → `ui-theme.css` → Spiel-CSS) um eine schlanke gemeinsame Schicht und um eng begrenzte Korrekturen in gemeinsamen Renderern.
+
+| Baustein | Datei | Aufgabe |
+| --- | --- | --- |
+| Gemeinsame Layoutschicht | `public/responsive.css` | Stufen, Tokens (`--rs-*`), Dialogschutz, Navigation auf kleinsten Geräten, Lobby- und Dock-Scrollen, Karten- und Würfelgrößen auf großen Monitoren, Rundtisch auf Ultrawide. Als **letztes globales Stylesheet** geladen; Spiel-CSS wird später nachgeladen und behält Vorrang. |
+| Laufzeithilfe | `public/responsive.js` | **Ein** pro Bildschirmbild gedrosselter Größentakt für die ganze Seite (`Responsive.onResize`, `onChange`), Größenklasse und Ausrichtung als `data-rs-size`/`data-rs-orient` am `<html>`, sichtbare Höhe `--rs-vvh` und Tastaturhöhe `--rs-kb` aus `visualViewport`, **ein** gemeinsamer `ResizeObserver` (`Responsive.observe`). Keine Listener pro Karte oder Feld. |
+| Gemeinsame Renderer | `public/game-design.css`, `public/games/world-kit.css`, `public/games/card-worlds.css` | Querformat-Tischlayout ab 520 px statt 641 px; schlanker Spielwelt-Kopf auf niedrigen Handys; breitere Bühne auf großen Monitoren. |
+| Spielspezifisch | `public/games/<spiel>/<spiel>.css` | Nur dort, wo ein Spiel eigene feste Maße hat (siehe unten). |
+
+### Stufen
+
+Gleich in CSS und `responsive.js`; die vorhandenen Grenzen 640 px und 1100 px bleiben gültig.
+
+| Stufe | Breite (CSS-Pixel) | Typisch |
+| --- | --- | --- |
+| `xs` | < 375 | kleine Smartphones (320 × 568) |
+| `s` | 375–640 | Smartphones |
+| `m` | 641–1099 | Tablets, kleine Fenster |
+| `l` | 1100–1799 | Laptop bis Full HD |
+| `xl` | 1800–2999 | QHD, große Monitore |
+| `xxl` | ≥ 3000 | Ultrawide, Super-Ultrawide |
+
+Zusätzlich wirken Höhen- und Seitenverhältnis-Bedingungen: `max-height: 480–700px` (Handy quer, 200 % Zoom, kleine Handys), `min-aspect-ratio: 2/1` (Ultrawide).
+
+### Regeln für Erweiterungen (auch für B22)
+
+- Neue Größenlogik zuerst in CSS. JavaScript nur, wenn ein Renderer echte Containermaße braucht, dann über `Responsive.observe(el, fn)` oder `Responsive.onResize(fn)`, nie über eigene `resize`-Listener.
+- Gemeinsame Regeln gehören in `responsive.css`, mit niedriger Spezifität (`:where()` oder Klassenselektor), damit Spiel-CSS sie überschreiben kann. Spielspezifisches bleibt in der Spieldatei.
+- Für das spätere Refactoring B22 ist die Schicht bewusst entkoppelt: Sie hängt nur an stabilen Klassen des Spiel-Kits (`.kg`, `.kg-main`, `.kg-dock`, `.kg-dock-in`, `.kc`, `.die`, `.wk-*`) und am Hub (`.hub-*`). Bleiben diese Namen erhalten oder werden sie gemeinsam umbenannt, funktioniert B24 unverändert.
+
+## Was B24 konkret ändert
+
+### Fundament (B24-A)
+
+- Dialoge ohne eigene Größe passen immer in den sichtbaren Bereich und scrollen innen (`:where(dialog[open]:modal)`, Spezifität 0). Host-Panel und `.dlg` behalten ihre Regeln.
+- Hub unter 375 px: Roadmap, Tickets und Einstellungen verlassen die untere Leiste (sie stehen vollständig im ☰-Menü); der aktive Bereich bleibt sichtbar; kein Worttrennen mehr in Tab-Beschriftungen; Schriftzug und Sprachwahl überlappen nicht mehr.
+- Blockköpfe der Startseite („Alle Tische →“) brechen um statt die Seite zu verbreitern (vorher 13 px Überbreite bei 320 px). Auf Touch-Geräten bekommen diese Textlinks eine 44-px-Trefferfläche.
+- Lobbys scrollen immer, auch in Spielen mit gesperrter Spielfläche; `safe center` verhindert unerreichbaren Inhalt oberhalb.
+- Aktionsleiste (`.kg-dock`) scrollt in sich, sobald sie mehr als 62 % der Höhe bräuchte (Kartenbedienung weiter 48 %).
+
+### Pilotspiele (B24-B)
+
+- *Poker (Texas Hold'em):* Neuzeichnen beim Größenwechsel über den gedrosselten Takt statt bei jedem `resize`-Ereignis; Handstärke schrumpft statt abgeschnitten zu werden; auf niedrigen Handys kompakteres Dock (Chancen im Hände-Panel, unter 600 px Höhe ohne Schnelleinsätze – Regler und Zahlenfeld bleiben); flaches Querformat unter 641 px mit Tisch links und Aktionen rechts; auf QHD/Ultrawide wachsen Tisch (bis 1700 px), Plätze und Karten, die Aktionen rücken zur Mitte.
+- *Mau-Mau (Kartenspiel):* über das gemeinsame Querformat-Layout und die Dock-Regeln; auf Ultrawide größere Karten und zusammengerückter Rundtisch.
+- *Vier gewinnt (Brett):* unter 375 px passen die sieben Spalten (vorher Spalte 6 und 7 abgeschnitten); Steine bleiben kreisrund.
+- *Kniffel (Würfel), Schätzmeister (Party), Spielhalle (Idle), 2048 (Solo):* in allen Viewports ohne Befund; geprüft in `responsive.spec.js`.
+
+### Integration (B24-C)
+
+- Querformat-Tischlayout ab 520 px in `game-design.css` und den abhängigen Spielregeln (Kartenwelten, Farbenchaos, Scotland Yard, Stapelrennen, Zehn Etappen); Navigationssymbole bleiben darin sichtbar.
+- Spielwelt-Bühne (`world-kit.css`, 29 Spiele): schlanker Kopf auf niedrigen Handys, breitere Bühne auf großen Monitoren.
+- Monopoly und Spiel des Lebens: Spielfläche scrollt bei wenig Höhe, statt Werkzeugleiste und Landschaft abzuschneiden.
+- Karten (`.kc`) und Würfel (`.die`) skalieren ab 1800 × 1000 mit der kürzeren Bildschirmseite; der Dockinhalt bleibt höchstens 1800 px breit und mittig.
+
+## Unterstützte Viewports und Testmatrix
+
+| Gerätetyp | Viewport | Hub | Lobby | Partie (95 Spiele) | Solo (12) | Idle (3) |
+| --- | --- | --- | --- | --- | --- | --- |
+| Kleines Smartphone | 320 × 568 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Smartphone | 390 × 844 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Tablet hoch | 768 × 1024 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Tablet quer | 1024 × 768 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Kleiner Laptop | 1280 × 720 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Full HD | 1920 × 1080 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| QHD | 2560 × 1440 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Ultrawide | 3440 × 1440 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Super-Ultrawide | 5120 × 1440 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 200 % Zoom auf 1280 × 720 | 640 × 360 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 200 % Zoom auf 1920 × 1080 | 960 × 540 | ✓ | ✓ | ✓ | ✓ | ✓ |
+
+✓ = automatisch gemessen ohne Befund (Ausnahmen unter „Bekannte Sonderfälle“). Gemessen werden je Viewport: horizontaler Seiten-Overflow, abgeschnittene Bedienelemente (mit Ursache), dauerhaft verdeckte Bedienelemente, unerreichbare Elemente in fixierten Ebenen und leere Knöpfe. Jede Partie wird **einmal** gestartet und dann durch alle Viewports gezogen; danach wird geprüft, dass die Seite nicht neu geladen wurde und Raum, Identität und Spiel erhalten sind.
+
+### Werkzeuge
+
+| Prüfung | Datei | Wann |
+| --- | --- | --- |
+| Messfunktion und Viewport-Liste | `test/ui/responsive-measure.js` | gemeinsam genutzt |
+| Regression (Pilotspiele, Hub, Dialoge, Navigation, lange Namen/Englisch, Tastatur und Touch, Spielerzahlen 2–5) | `test/ui/responsive.spec.js` | jeder Browser-Lauf (nachts in der CI) |
+| Gesamt-Audit aller Oberflächen mit Screenshots | `test/ui/b24-responsive-audit.spec.js` | manuell: `B24_AUDIT=1 B24_RUN=<name> npx playwright test test/ui/b24-responsive-audit.spec.js --project=desktop --workers=4` → `artifacts/b24/<name>/` |
+
+Optionen des Audits: `B24_GAMES=id1,id2` (Auswahl), `B24_SHOTS=320x568,…` (Screenshot-Größen).
+
+## Ergebnisse
+
+### Messung vorher/nachher
+
+Gleiche Messung (`responsive-measure.js`) auf beiden Ständen, 111 Oberflächen × 11 Viewports, Chrome, eine Partie je Spiel mit Bots bzw. drei menschlichen Teilnehmern (Partyspiele, die keine Bots zulassen).
+
+| | Vorher (`f97b486`, 3.25.1) | Nachher (B24) |
+| --- | --- | --- |
+| Oberflächen mit Befund | **16** | **0** |
+| Seiten-Overflow | Startseite bei 320 px (333 px breit) | keiner |
+| Abgeschnittene Bedienelemente | Poker 320 px und 200 % Zoom, alle Poker-Varianten bei 200 % Zoom, Skat, Doppelkopf, Mau-Mau, Monopoly Deal, Story-Chaos bei 200 % Zoom, Monopoly (Lobby und Partie), Spiel des Lebens, Vier gewinnt 320 px | keine |
+| Spielzustand nach allen Größenwechseln | erhalten | erhalten (kein Neuladen, gleicher Raum, gleiche Identität) |
+
+Screenshots: `artifacts/b24/vorher/shots/` und `artifacts/b24/nachher/shots/` (nicht versioniert; mit dem Audit jederzeit neu erzeugbar). Ausgewählte Vergleiche sind im Code-Vault verlinkt.
+
+### Performance (Größenwechsel am Pokertisch, Median aus 5 Läufen)
+
+| Messung | Vorher | Nachher |
+| --- | --- | --- |
+| 40 resize-Ereignisse im selben Bild (Rechenzeit) | 160 ms | 0 ms |
+| 40 resize-Ereignisse im selben Bild (DOM-Änderungen) | 1001 | 0 |
+| 10 echte Fenstergrößen nacheinander (DOM-Änderungen) | 280 | 280 |
+| 10 echte Fenstergrößen nacheinander (Wandzeit inkl. Playwright) | 444 ms | 490 ms (Messstreuung) |
+
+Schnelle Folgen von Größenereignissen werden zu einem Neuzeichnen pro Bild zusammengefasst; echte Größenwechsel kosten gleich viel wie vorher.
+
+## Bekannte Sonderfälle
+
+- **Bretter auf Ultrawide:** Reversi, Dame, Mühle, Hex, Vier gewinnt und Schach behalten ihre bisherigen Obergrenzen (520–560 px bzw. Schach-Spalte 560 px). Eine pauschale Vergrößerung verzerrte bei Reversi die Feldreihen; Bretter werden nur spielweise und geprüft vergrößert. Spielbar und vollständig sichtbar sind sie in allen Viewports.
+- **Zweizeilige Kopfleiste unter 1000 px** ist Teil des Redesigns und bleibt. Auf 320 × 568 bleibt die Spielfläche deshalb knapp; Poker gleicht das über das kompaktere Dock aus.
+- **Backgammon:** Liegen sechs oder mehr Steine auf einer Zunge, wird die Zungenreihe höher als ihre Brett-Hälfte; der überstehende Teil ist unsichtbare Trefferfläche (die Darstellung zeigt fünf Steine und „+1“). Zustandsabhängig, ohne sichtbare Auswirkung, unverändert gelassen.
+- **Monopoly am Handy** nutzt bewusst eine verschieb- und zoombare Brettansicht (keine Änderung).
+- **Unter 375 px** dürfen einzelne Ziele unter 44 px fallen, nie unter 24 px (WCAG 2.5.8 AA), z. B. die Spalten bei Vier gewinnt (dafür über 250 px hoch).
+- **Vergrößerte Standardschrift des Browsers** wirkt nur auf `rem`/`em`-Werte; die bestehenden Oberflächen nutzen überwiegend Pixelwerte. Browser-Zoom (getestet bis 200 %) ist der wirksame Weg.
+- **iOS Safari und Firefox** wurden nicht automatisch geprüft (lokal nur Chrome; die bestehende WebKit-Konfiguration deckt V2-13/14 ab). Verwendete Techniken (`dvh`, `clamp()`, `:has()`, `safe center`, `env(safe-area-inset-*)`, `visualViewport`) sind in aktuellen Versionen beider Browser verfügbar.
+
+## Verbleibende Risiken
+
+- Spielzustände, die der Audit nicht erreicht (z. B. Rundenende mit vielen Ergebnissen, selten geöffnete Panels), sind nur über die bestehenden Spieltests abgedeckt.
+- Echte Geräte mit Notch und Bildschirmtastatur sind nur emuliert; ein Test auf einem echten Smartphone steht aus.

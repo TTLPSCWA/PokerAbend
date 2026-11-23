@@ -29,3 +29,9 @@
 @media (max-width:600px) { .wk-stage { padding:12px; gap:10px; border-radius:14px; } .wk-chip { font-size:12px; } }
 @media (prefers-reduced-motion:reduce) { .wk-stage * { transition:none !important; animation:none !important; } }
 body.calm .wk-stage * { transition:none !important; animation:none !important; }
+/* B24: Smartphones mit wenig Höhe – der Kopf der Spielwelt wird schlanker, damit
+   Brett und Aktionen im ersten Bildschirm liegen. Die Überzeile ist reine Zierde;
+   Titel und Chips bleiben sichtbar. */
+@media (max-width:640px) and (max-height:700px) { .wk-stage { padding:8px; gap:8px; } .wk-eyebrow { display:none; } .wk-title { font-size:19px; } .wk-chip { min-height:28px; padding:3px 9px; } }
+/* B24: große Monitore – die Bühne darf breiter werden, Spiele mit eigener --wk-max behalten ihre Grenze. */
+@media (min-width:1800px) and (min-height:1000px) { .wk-stage { max-width:var(--wk-max,1180px); } }
