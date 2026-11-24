@@ -176,7 +176,7 @@ Object.assign(GAMES, {
   'wer-bin-ich': { bots: 0, humans: 2, settings: { turnTime: 0 }, scene: '.wb-stage', async act(page) { await page.waitForTimeout(500); } },
   kronenjagd: { bots: 1, settings: {}, scene: '#rt-canvas', async act(page) { await page.waitForTimeout(800); await page.keyboard.press('ArrowRight'); await page.waitForTimeout(300); } },
   'laser-huepfer': { bots: 1, settings: {}, scene: '#rt-canvas', async act(page) { await page.waitForTimeout(800); await page.keyboard.press('ArrowRight'); await page.waitForTimeout(300); } },
-  broeckelboden: { bots: 3, settings: {}, scene: '#rt-canvas', async act(page) { await page.waitForTimeout(800); await page.keyboard.press('ArrowLeft'); await page.waitForTimeout(300); } },
+  broeckelboden: { bots: 3, settings: { playSecs: 20 }, scene: '#rt-canvas', async act(page) { await page.waitForTimeout(800); await page.keyboard.press('ArrowLeft'); await page.waitForTimeout(300); } },
   'sechs-nimmt': { bots: 2, settings: { turnTime: 0 }, scene: '.sn-table', async act(page) { await tryClick(page, '[data-g=choose]:not([disabled])'); await quiet(page); } },
   durak: { bots: 1, settings: { turnTime: 0 }, scene: '.du-wrap', async act(page) { await lastTurn(page); await tryClick(page, '.kg-hand .kc:not([disabled])'); await tryClick(page, '[data-g=attack]'); await quiet(page); } },
   muehle: { bots: 1, settings: { turnTime: 0 }, scene: '.mu-stage', async act(page) { await lastTurn(page); await tryClick(page, '.mu-pt.can'); await quiet(page); } },
@@ -268,7 +268,18 @@ for (const id of only) {
       }
       await shot(page, `table-${width}x${height}`);
     } else if (!cfg.relaxed) expect(await overflow(page)).toBe(true);
-    // Englisch: Kurzregeln im Hilfedialog (vor dem Ergebnis, solange der Tisch läuft)
+
+    if (id === 'broeckelboden') {
+      // Die Echtzeitrunde endet auch während der Bildschirmaufnahmen.
+      // Das Ergebnis über die echte Schließen-Schaltfläche verlassen, bevor die Hilfe geprüft wird.
+      await expect.poll(() => state(page).then((s) => s.phase), { timeout: 45000 }).toBe('over');
+      const result = page.locator('.kg-over');
+      await expect(result).toBeVisible();
+      await shot(page, 'result');
+      await result.locator('[data-kit=closeResult]').click();
+      await expect(result).toBeHidden();
+    }
+    // Englisch: Kurzregeln im Hilfedialog prüfen.
     await page.evaluate(() => I18n.select('en')); await page.locator(cfg.help || '[data-kit=help]').first().click();
     await expect(page.locator('#help-dlg')).toBeVisible(); await shot(page, 'english-rules'); await page.keyboard.press('Escape');
     if (cfg.finish) { await page.setViewportSize(info.project.name === 'desktop' ? { width: 1440, height: 900 } : page.viewportSize()); await cfg.finish(page); await expect.poll(() => state(page).then((s) => s.phase), { timeout: 60000 }).toBe('over'); await shot(page, 'result');
