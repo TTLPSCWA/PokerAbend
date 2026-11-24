@@ -171,6 +171,14 @@ test('SH-006: Zeit ohne Betrieb ersetzt keinen Meilenstein, S2 und S3 greifen an
   assert.equal(BigInt(s2.data.guests), 100n * UNIT);
   assert.deepEqual(engine.advance(justBeforeS2, s2.at).snapshot, s2);
 
+  const buyDice = { type: 'buy', station: 'dice' };
+  assert.throws(() => engine.command(player.state, s2.at - 1, buyDice), { code: 'locked' });
+  const bought = engine.command(player.state, s2.at, buyDice);
+  assert.equal(bought.data.locations[0].stations.dice.owned, 1);
+  assert.equal(bought.data.guests, s2.data.guests);
+  assert.equal(BigInt(s2.data.coins) - BigInt(bought.data.coins), 170n * UNIT);
+  assert.deepEqual(engine.command(s2, s2.at, buyDice), bought);
+
   const hall = game(s2);
   hall.command({ type: 'buy', station: 'dice' });
   hall.command({ type: 'buy', station: 'chess' });
@@ -414,10 +422,20 @@ test('Spielhalle: Ereignis endet offline, Kosten und variable Raten liefern gesp
   const split = engine.advance(saved, saved.at + minute).snapshot;
   assert.deepEqual(engine.advance(split, saved.at + hour).snapshot, direct.snapshot);
   const net0 = BigInt(player.view.data.rates.net);
-  player.command({ type: 'marketing', budget: '10' });
+  // 450 coins at 0.25 coins/s expire with the 1,800-second theme event.
+  player.command({ type: 'marketing', budget: '450' });
   assert.notEqual(BigInt(player.view.data.rates.net), net0);
-  player.wait(minute);
-  assert.equal(player.view.data.locations[0].marketing, '0');
+  const simultaneous = player.state;
+  const boundary = simultaneous.at + 1_800_000;
+  const immediatelyBefore = engine.advance(simultaneous, boundary - 1).snapshot;
+  const exactlyAt = engine.advance(simultaneous, boundary).snapshot;
+  assert.equal(immediatelyBefore.data.locations[0].event.id, 'theme');
+  assert.equal(immediatelyBefore.data.locations[0].marketing, '250000000');
+  assert.equal(exactlyAt.data.locations[0].event, null);
+  assert.equal(exactlyAt.data.locations[0].marketing, '0');
+  assert.deepEqual(engine.advance(immediatelyBefore, boundary).snapshot, exactlyAt);
+  assert.deepEqual(engine.advance(exactlyAt, boundary + minute).snapshot,
+    engine.advance(simultaneous, boundary + minute).snapshot);
 });
 
 test('Spielhalle: Filialstrategien, Baulistenbudget und sicherer Wiederanlauf ändern nur ausgewählte Standorte', async () => {

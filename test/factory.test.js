@@ -148,7 +148,10 @@ test('Factory: Spielweg, geschützte Pflichtmengen, Lieferzeit, Endgame, Export 
   const view = () => service.view(user, id, session.token).view;
   const fields = () => ({ id: 'factory-test-' + ++seq, token: session.token,
     sessionVersion: session.sessionVersion, revision: session.revision });
-  let early, checkedTrain = false;
+  let early, checkedTrain = false, checkedPhaseBoundary = false;
+  const ordered = (state, order) => engine.view(state).data.orders.find(({ id }) => id === order);
+  const cash = (state) => Object.entries(state.data.amounts)
+    .filter(([key]) => key.startsWith('cash:')).reduce((sum, [, value]) => sum + BigInt(value), 0n);
   await playFactory({
     view,
     command(action) {
@@ -158,19 +161,58 @@ test('Factory: Spielweg, geschützte Pflichtmengen, Lieferzeit, Endgame, Export 
       Object.assign(session, answer);
     },
     wait(ms) {
-      if (ms === 239_000 && !checkedTrain) {
-        const before = now;
-        const save = service.save(user, id, fields());
-        Object.assign(session, save);
+      if (ms === 239_000) {
+        Object.assign(session, service.save(user, id, fields()));
         const active = disk.read(user, id).snapshot;
-        const target = before + 241_000;
-        const whole = engine.advance(active, target).snapshot;
-        const justBeforeArrival = engine.advance(active, before + 239_999).snapshot;
-        assert.equal(engine.view(justBeforeArrival).data.orders.find(({ id }) => id === 'F4-03').received, '0');
-        const split = engine.advance(justBeforeArrival, target).snapshot;
-        assert.deepEqual(whole, split);
-        assert.equal(engine.view(whole).data.orders.find(({ id }) => id === 'F4-03').received, '50000');
-        checkedTrain = true;
+        const at = (offset) => engine.advance(active, active.at + offset).snapshot;
+        if (active.data.activeOrders.includes('F4-03')) {
+          const track = active.data.tracks[0];
+          assert.equal(track.wagons, 1);
+          assert.equal(track.manifest, null);
+          const firstLeg = at(239_999);
+          const firstUnload = at(240_000);
+          const modelDeadline = at(360_000);
+          const secondLeg = at(479_999);
+          const completed = at(480_000);
+          assert.deepEqual(firstLeg.data.tracks[0].manifest,
+            { good: 'motor', scope: 'rail', amount: '50000', unloaded: '0', elapsed: 239 });
+          const stock = (state) => BigInt(state.data.amounts['stock:' + track.source] ?? '0');
+          assert.equal(stock(active) - stock(firstLeg), 50000n);
+          assert.equal(ordered(firstLeg, 'F4-03').received, '0');
+          assert.equal(ordered(firstUnload, 'F4-03').received, '50000');
+          assert.equal(firstUnload.data.tracks[0].manifest, null);
+          assert.deepEqual(modelDeadline.data.tracks[0].manifest,
+            { good: 'motor', scope: 'rail', amount: '10000', unloaded: '0', elapsed: 120 });
+          assert.equal(stock(firstUnload) - stock(modelDeadline), 10000n);
+          assert.equal(ordered(modelDeadline, 'F4-03').received, '50000');
+          assert.equal(ordered(secondLeg, 'F4-03').complete, false);
+          assert.equal(ordered(secondLeg, 'F4-03').received, '50000');
+          assert.equal(ordered(completed, 'F4-03').received, '60000');
+          assert.equal(completed.data.tracks[0].manifest, null);
+          assert.equal(completed.data.completeOrders.filter((name) => name === 'F4-03').length, 1);
+          assert.equal(cash(completed) - cash(secondLeg), 2200000n);
+          let split = firstLeg;
+          for (const offset of [240_000, 360_000, 479_999, 480_000]) {
+            split = engine.advance(split, active.at + offset).snapshot;
+          }
+          assert.deepEqual(split, completed);
+          assert.equal(cash(at(481_000)), cash(completed));
+          checkedTrain = true;
+        }
+        if (active.data.activeOrders.includes('F4-01')) {
+          // The third interregional order is two 50-unit manifests with no idle gap.
+          assert.equal(active.data.completeOrders.filter((name) => name.startsWith('F4-')).length, 2);
+          assert.equal(active.data.research.industry3, true);
+          const before = at(479_999);
+          const after = at(480_000);
+          assert.equal(before.phase, 'FE-P4');
+          assert.equal(ordered(before, 'F4-01').received, '50000');
+          assert.equal(after.phase, 'FE-P5');
+          assert.equal(ordered(after, 'F4-01').received, '100000');
+          assert.equal(cash(after) - cash(before), 700000n);
+          assert.deepEqual(engine.advance(before, after.at).snapshot, after);
+          checkedPhaseBoundary = true;
+        }
       }
       now += ms;
     },
@@ -190,6 +232,7 @@ test('Factory: Spielweg, geschützte Pflichtmengen, Lieferzeit, Endgame, Export 
     },
   });
   assert.equal(checkedTrain, true);
+  assert.equal(checkedPhaseBoundary, true);
   const claims = view().data.eligible;
   assert.ok(claims.length > 0);
   Object.assign(session, service.saveAndExport(user, id, fields()));

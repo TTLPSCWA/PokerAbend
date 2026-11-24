@@ -177,6 +177,68 @@ test('Studio: zwei Teams, endliche Verkäufe, Publisher-Vorschuss, Patch und Liz
   assert.deepEqual(late.snapshot.data, settled.data);
 });
 
+test('CORE-011 Studio: fällige Forschung, Auto-Release und zwei gleichzeitig auslaufende Märkte', async () => {
+  const setup = game((await checkpoints())[4]);
+  setup.command({ type: 'studio' });
+  setup.command({ type: 'team', studio: 2 });
+  setup.command({ type: 'hire', role: 'research', team: 2 });
+  for (const id of ['templates', 'releaseRules']) setup.command({ type: 'research', id });
+
+  const lab = game(setup.snapshot);
+  lab.command({ type: 'lab', team: 2 });
+  lab.command(blueprint('Release an der Forschungsgrenze', { autoScore: 1 }));
+  for (const stage of ['concept', 'development']) {
+    const [project] = lab.snapshot.data.projects;
+    assert.equal(project.stage, stage);
+    lab.wait(project.slot.end - lab.at);
+  }
+  const fixture = structuredClone(lab.snapshot);
+  const project = fixture.data.projects[0];
+  const due = project.slot.end;
+  // Move only the research deadline of a valid two-team session to the QA deadline.
+  fixture.data.lab.end = due;
+  const before = engine.advance(fixture, due - 1).snapshot;
+  const after = engine.advance(fixture, due).snapshot;
+  assert.equal(before.data.projects[0].stage, 'qa');
+  assert.equal(before.data.lab.end, due);
+  assert.equal(after.data.lab, null);
+  assert.equal(after.data.projects.length, 0);
+  assert.equal(after.data.numReleases, before.data.numReleases + 1);
+  assert.equal(after.data.releases.find(({ id }) => id === project.id).markets[0].at, due);
+  assert.equal(after.data.researchPoints - before.data.researchPoints, 9);
+  assert.equal(BigInt(after.data.spent) - BigInt(before.data.spent), 21600n + BigInt(project.slot.total));
+  assert.deepEqual(engine.advance(before, due).snapshot, after);
+
+  const titles = game(setup.snapshot);
+  const earlierMarkets = titles.snapshot.data.releases.flatMap(({ markets }) => markets);
+  const earlierEnd = Math.max(titles.at, ...earlierMarkets.map(({ at, half }) => at + 24 * half));
+  titles.wait(earlierEnd - titles.at);
+  assert.ok(titles.snapshot.data.releases.every(({ markets }) => markets.every(({ sold, cap }) => sold === cap)));
+  titles.command(blueprint('Erster paralleler Titel'));
+  titles.command(blueprint('Zweiter paralleler Titel', { team: 2 }));
+  titles.wait(day);
+  const ready = [...titles.snapshot.data.projects];
+  assert.equal(ready.length, 2);
+  assert.ok(ready.every(({ stage }) => stage === 'gate'));
+  for (const { id } of ready) titles.command({ type: 'release', id });
+  const released = titles.snapshot.data.releases.filter(({ id }) => ready.some((p) => p.id === id));
+  const markets = released.map(({ markets: [market] }) => market);
+  assert.equal(markets.length, 2);
+  assert.ok(markets.every((market) => market.at === titles.at && market.half === markets[0].half && market.cap < 2 ** 23));
+  const marketEnd = titles.at + 24 * markets[0].half;
+  const beforeEnd = engine.advance(titles.snapshot, marketEnd - 1).snapshot;
+  const atEnd = engine.advance(titles.snapshot, marketEnd).snapshot;
+  for (const { id, markets: [{ cap }] } of released) {
+    assert.equal(beforeEnd.data.releases.find((row) => row.id === id).markets[0].sold, cap - 1);
+    assert.equal(atEnd.data.releases.find((row) => row.id === id).markets[0].sold, cap);
+  }
+  assert.equal(BigInt(atEnd.data.runSales) - BigInt(beforeEnd.data.runSales), 2n);
+  assert.equal(BigInt(atEnd.data.salesRevenue) - BigInt(beforeEnd.data.salesRevenue),
+    released.reduce((sum, title) => sum + BigInt(title.margin), 0n));
+  assert.deepEqual(engine.advance(beforeEnd, marketEnd).snapshot, atEnd);
+  assert.equal(engine.advance(atEnd, marketEnd + day).snapshot.data.salesRevenue, atEnd.data.salesRevenue);
+});
+
 test('Studio: vollständiger regulärer Spielweg mit Savepoints, Prozesswechsel, Importgrenze und Prestige', async (t) => {
   const directory = mkdtempSync(join(tmpdir(), 'studio-saves-'));
   t.after(() => rmSync(directory, { recursive: true, force: true }));
