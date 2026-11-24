@@ -10,7 +10,7 @@ import { setTimeout as sleep } from 'node:timers/promises';
 const exec = promisify(execFile);
 const source = new URL('../scripts/agent-koordination.mjs', import.meta.url);
 
-function sandbox(t, withRemote = false) {
+function sandbox(t, withRemote = false, preload = '') {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'pokerabend-coordination-'));
   t.after(() => {
     assert.equal(path.dirname(path.resolve(temp)), path.resolve(os.tmpdir()));
@@ -28,7 +28,8 @@ function sandbox(t, withRemote = false) {
   };
   const cli = async (...args) => {
     try {
-      const { stdout, stderr } = await exec(process.execPath, ['scripts/agent-koordination.mjs', ...args], { cwd: repo });
+      const nodeArgs = preload ? ['--import', preload] : [];
+      const { stdout, stderr } = await exec(process.execPath, [...nodeArgs, 'scripts/agent-koordination.mjs', ...args], { cwd: repo });
       return { code: 0, out: stdout + stderr };
     } catch (error) {
       return { code: error.code, out: (error.stdout || '') + (error.stderr || '') };
@@ -70,6 +71,40 @@ test('concurrent init and messages preserve every event across Node invocations'
   ok(await cli('init'));
   assert.deepEqual(state().events, events);
   for (const message of sent) assert.ok(read('.agent-coordination/AKTUELL.md').includes(message + '\n'));
+});
+
+test('atomic state replacement retries transient file locks without deleting the old state', async (t) => {
+  const preload = `import fs from 'node:fs';
+import { syncBuiltinESMExports } from 'node:module';
+const rename = fs.renameSync;
+let attempts = 0;
+fs.renameSync = (from, to) => {
+  if (process.argv[2] === 'note' && to.endsWith('state.json')) {
+    const outcome = process.argv[6];
+    const before = JSON.parse(fs.readFileSync(to, 'utf8'));
+    if (before.events.length !== 0) throw Error('old state must remain installed');
+    if (outcome !== 'transient' || ++attempts <= 2) {
+      const code = outcome === 'fatal' ? 'EACCES' : 'EPERM';
+      throw Object.assign(Error(code + ': injected replacement failure'), { code });
+    }
+  }
+  return rename(from, to);
+};
+syncBuiltinESMExports();`;
+  const fixture = sandbox(t, false, 'data:text/javascript,' + encodeURIComponent(preload));
+  const { cli, state, repo } = fixture;
+  ok(await cli('init'));
+  const files = () => fs.readdirSync(path.join(repo, '.agent-coordination')).sort();
+  const expected = ['AKTUELL.md', 'state.json'];
+  denied(await cli('note', 'codex', 'LOCK', 'INFO', 'fatal'), /EACCES/);
+  assert.deepEqual(state().events, []);
+  assert.deepEqual(files(), expected);
+  denied(await cli('note', 'codex', 'LOCK', 'INFO', 'persistent'), /EPERM/);
+  assert.deepEqual(state().events, []);
+  assert.deepEqual(files(), expected);
+  ok(await cli('note', 'codex', 'LOCK', 'INFO', 'transient'));
+  assert.deepEqual(state().events.map(event => event.text), ['transient']);
+  assert.deepEqual(files(), expected);
 });
 
 test('exclusive file, path aliases, overlapping trees, different paths, and owner-only release', async (t) => {

@@ -19,15 +19,37 @@ for (const id of KEYBOARD_GAMES) {
     await page.evaluate(() => {
       window.__emits = []; const emit = socket.emit.bind(socket); socket.emit = (...a) => { window.__emits.push(a[0]); return emit(...a); };
       // Serverzeit der Runde aus den Arena-Frames: negativ während des Countdowns, ab 0 nimmt der Server Eingaben an.
-      window.__arenaElapsed = null; socket.on('arena', (frame) => { window.__arenaElapsed = frame?.elapsed ?? null; });
+      window.__arenaFrame = null;
+      socket.on('arena', (frame) => { window.__arenaFrame = frame; });
     });
     const start = page.getByRole('button', { name: 'Runde starten', exact: true }).first();
     await expect(start).toBeEnabled(); await start.click();
     await expect.poll(() => page.evaluate(() => lastState.phase)).toBe('playing');
-    // B07: statt fester 3,5 s auf das Countdown-Ende warten, das der Server meldet. Unter Last lief die
-    // feste Wartezeit vor dem Serverstart ab; die Engines lehnen Eingaben bei elapsed < 0 ab.
-    await expect.poll(() => page.evaluate(() => window.__arenaElapsed), { timeout: 15000 }).toBeGreaterThanOrEqual(0);
-    const y0 = await page.evaluate(() => scrollY), from = await page.evaluate(() => window.__emits.length);
+    const { y: y0, from } = await page.evaluate(() => ({ y: scrollY, from: window.__emits.length }));
+    if (id === 'broeckelboden') {
+      // Die Startplatte bricht bereits 900 ms nach dem ersten Spieltick. Richtung während
+      // des Countdowns halten und die Bewegung im Serverframe derselben Runde nachweisen.
+      await page.waitForFunction(() => {
+        const frame = window.__arenaFrame;
+        return frame?.game === 'broeckelboden' && frame.elapsed < 0 && frame.runId === lastState.g.runId;
+      });
+      const initial = await page.evaluate(() => {
+        const frame = window.__arenaFrame;
+        return { runId: frame.runId, id: lastState.you.id, x: frame.bodies.find(body => body.id === lastState.you.id).x };
+      });
+      await page.keyboard.down('ArrowLeft');
+      try {
+        await expect.poll(() => page.evaluate(({ runId, id, x }) => {
+          const frame = window.__arenaFrame;
+          return frame?.runId === runId && frame.elapsed >= 0 && frame.bodies.some(body => body.id === id && body.x < x);
+        }, initial)).toBe(true);
+      } finally {
+        await page.keyboard.up('ArrowLeft');
+      }
+    } else {
+      // Nicht von der Host-Wanduhr ableiten, wann die serverseitige Runde Eingaben verarbeitet.
+      await expect.poll(() => page.evaluate(() => window.__arenaFrame?.elapsed ?? null), { timeout: 15000 }).toBeGreaterThanOrEqual(0);
+    }
     for (const key of ['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp']) { await page.keyboard.down(key); await page.waitForTimeout(250); await page.keyboard.up(key); }
     await page.keyboard.press('Space'); await page.waitForTimeout(300); await page.keyboard.press('Space'); await page.waitForTimeout(400);
     const after = await page.evaluate((n) => ({ y: scrollY, events: window.__emits.slice(n) }), from);

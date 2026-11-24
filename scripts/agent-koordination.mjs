@@ -25,6 +25,22 @@ const own = (entry, owner) => entry?.agent === owner.agent && entry?.task === ow
 const covers = (a, b) => a === b || b.startsWith(a + '/');
 const overlaps = (a, b) => covers(a, b) || covers(b, a);
 
+function replaceFile(temporary, file) {
+  // Ein externer Windows-Leser kann das Ziel kurz ohne FILE_SHARE_DELETE öffnen.
+  // Nur die Umbenennung wiederholen. Das alte Ziel bleibt bis zum Erfolg intakt.
+  const signal = new Int32Array(new SharedArrayBuffer(4));
+  for (const delay of [10, 20, 40, 80, 160]) {
+    try {
+      fs.renameSync(temporary, file);
+      return;
+    } catch (error) {
+      if (error.code !== 'EPERM' && error.code !== 'EBUSY') throw error;
+      Atomics.wait(signal, 0, 0, delay);
+    }
+  }
+  fs.renameSync(temporary, file);
+}
+
 function atomicWrite(file, text, exclusive = false) {
   const temporary = path.join(path.dirname(file), '.coord-' + randomUUID() + '.tmp');
   let fd;
@@ -35,7 +51,7 @@ function atomicWrite(file, text, exclusive = false) {
     fs.closeSync(fd);
     fd = undefined;
     if (exclusive) fs.linkSync(temporary, file);
-    else fs.renameSync(temporary, file);
+    else replaceFile(temporary, file);
   } finally {
     if (fd !== undefined) fs.closeSync(fd);
     if (stat(temporary)) fs.unlinkSync(temporary);

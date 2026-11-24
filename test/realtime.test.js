@@ -51,6 +51,29 @@ test('Bröckelboden: Löcher, gleichzeitiges Fallen, schrumpfender Rand und Plat
   r.step(); assert.equal(r.tiles[0], -1); assert.equal(r.bodies[0].alive, false); r.dispose();
 });
 
+test('Bröckelboden: stationary start falls before a late input, held direction crosses the start tile', () => {
+  const idle = setup('broeckelboden');
+  const moving = setup('broeckelboden');
+  try {
+    const still = idle.r.bodies[0], runner = moving.r.bodies[0];
+    const start = moving.r.tileOf(runner);
+    // Refresh a held key through the countdown as the browser does.
+    for (let elapsed = 0; elapsed < 4000; elapsed += STEP_MS) {
+      if (elapsed % 200 === 0) input(moving.r, runner.id, { x: -1 });
+      advance(moving.r, STEP_MS);
+      advance(idle.r, STEP_MS);
+    }
+    assert.equal(still.alive, false);
+    assert.throws(() => input(idle.r, still.id, { x: -1 }));
+    assert.equal(runner.alive, true);
+    assert.notEqual(moving.r.tileOf(runner), start);
+    assert.ok(runner.x < still.x);
+  } finally {
+    idle.r.dispose();
+    moving.r.dispose();
+  }
+});
+
 test('Bröckelboden: Startlöcher bleiben von Startplätzen weg; erlaubter Sprung überbrückt ein Loch', () => {
   const { r, ids: [a] } = setup('broeckelboden', 3, { holes: true, jump: true });
   for (const p of r.bodies) assert.notEqual(r.tiles[r.tileOf(p)], -1);
