@@ -176,11 +176,68 @@ test('Signierter Export ist konto- und spielgebunden. Vorschau und Wiederholung 
   failure(() => service.previewImport(account, game, { token: opened.token, file: saved.file }), 'revision-conflict');
 });
 
+test('SAVE-006: 20 Wiederholungen eines alten Exports ändern weder Vorschau noch bestätigten Stand', (t) => {
+  const f = fixture(t), service = f.service(), session = service.open(account, game);
+  f.time(2500);
+  const old = service.saveAndExport(account, game, request(session, 'old'));
+  f.time(7200);
+  const latest = service.saveAndExport(account, game, request({ ...session, ...old }, 'latest'));
+  const path = join(f.directory, readdirSync(f.directory)[0]);
+  const committed = readFileSync(path);
+
+  f.time(10_500);
+  const before = service.view(account, game, session.token);
+  assert.equal(before.view.data.balances.coins, '10');
+  for (let attempt = 0; attempt < 20; attempt++) {
+    failure(() => service.previewImport(account, game, { token: session.token, file: old.file }), 'revision-conflict');
+    assert.deepEqual(service.view(account, game, session.token), before);
+    assert.deepEqual(readFileSync(path), committed);
+  }
+  assert.deepEqual(service.exportConfirmed(account, game), latest);
+  const resumed = f.service().open(account, game);
+  assert.equal(resumed.revision, 2);
+  assert.equal(resumed.savedAt, base + 7200);
+  assert.equal(resumed.view.data.balances.coins, '10');
+});
+
+test('CORE-012: erschöpftes Segmentbudget lässt Save und Zeitanker unverändert', (t) => {
+  const f = fixture(t);
+  const bounded = createIdleEngine({
+    id: game, stateVersion: 1, rulesVersion: 1, facts: () => ({}),
+    create: () => ({ coins: '0' }),
+    validate: (data) => quantity(data.coins) >= 0n,
+    command: (data) => data,
+    advance(data, { from, to }) {
+      const until = Math.min(from + 1000, to);
+      return { until, data: { coins: String(quantity(data.coins) + BigInt(until - from)) } };
+    },
+  }, phasesFor(game), { maxSegments: 2 });
+  const service = f.service({ engines: [bounded] });
+  const session = service.open(account, game);
+  f.time(1000);
+  const saved = service.saveAndExport(account, game, request(session, 'before-budget'));
+  const path = join(f.directory, readdirSync(f.directory)[0]);
+  const committed = readFileSync(path);
+
+  f.time(4000);
+  failure(() => service.saveAndExport(account, game, request({ ...session, ...saved }, 'retry')), 'work-budget');
+  failure(() => f.service({ engines: [bounded] }).open(account, game), 'work-budget');
+  assert.deepEqual(readFileSync(path), committed);
+  assert.deepEqual(service.exportConfirmed(account, game), saved);
+
+  f.time(3000);
+  const resumed = f.service({ engines: [bounded] }).open(account, game);
+  assert.equal(resumed.revision, 1);
+  assert.equal(resumed.view.data.coins, '3000');
+  assert.deepEqual(resumed.settlement, { from: base + 1000, to: base + 3000, segments: 2 });
+});
+
 test('Defekte Datei, Rückwärtsuhr und Speicherfehler ändern weder bestätigte Revision noch Zeitanker', (t) => {
   const f = fixture(t), service = f.service(), start = service.open(account, game);
   f.time(3000);
-  service.save(account, game, request(start, 'initial'));
+  const saved = service.saveAndExport(account, game, request(start, 'initial'));
   f.time(2000);
+  failure(() => service.previewImport(account, game, { token: start.token, file: saved.file }), 'clock-regressed');
   failure(() => f.service().open(account, game), 'clock-regressed');
   assert.equal(f.store.read(account, game).snapshot.at, base + 3000);
   f.time(4000);

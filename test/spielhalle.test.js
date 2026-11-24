@@ -509,3 +509,48 @@ test('SH-007 / CORE-016: Renommee übernimmt nur neue Ansprüche, setzt den Run 
   assert.deepEqual(secondRecord.snapshot.data.claims, [...claims, ...newClaims]);
   assert.equal(secondRecord.snapshot.data.stars, claims.length + newClaims.length);
 });
+
+test('SAVE-012: Münzen und Endgame-Umsätze der Spielhalle bleiben beim signierten Datei-Rundlauf exakt', async (t) => {
+  const directory = mkdtempSync(join(tmpdir(), 'spielhalle-precision-'));
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  const codec = createIdleExportCodec({ keys: { test: Buffer.alloc(32, 13) }, current: 'test' });
+  const account = 'a'.repeat(32), id = 'spielhalle';
+  let now = start, seq = 0;
+  const createService = () => createIdleSaveService({
+    engines: [engine], store: createIdleFileStore(directory), codec, now: () => now,
+  });
+  const service = createService();
+  const session = service.open(account, id);
+  const fields = () => ({
+    id: 'precision-' + ++seq, token: session.token, revision: session.revision, sessionVersion: session.sessionVersion,
+  });
+  await playHall({
+    command(action) { Object.assign(session, service.command(account, id, { ...fields(), action })); },
+    wait(ms) { now += ms; },
+    milestone(phase) { assert.equal(service.view(account, id, session.token).view.data.phase, phase); },
+  });
+  now += 3650 * day;
+  const before = service.view(account, id, session.token).view;
+  assert.equal(before.phase.id, 'SH-P5');
+  const economy = ({ coins, revenue, casino }) => ({ coins, revenue, casino });
+  for (const value of Object.values(economy(before.data))) {
+    assert.match(value, /^[0-9]+$/);
+    assert.ok(BigInt(value) > 2n ** 53n);
+  }
+
+  const saved = service.saveAndExport(account, id, fields());
+  const persisted = createIdleFileStore(directory).read(account, id);
+  const decoded = codec.decode(account, id, saved.file);
+  assert.deepEqual(economy(persisted.snapshot.data), economy(before.data));
+  assert.deepEqual(decoded.snapshot, persisted.snapshot);
+
+  const restarted = createService();
+  const resumed = restarted.open(account, id);
+  assert.equal(resumed.revision, saved.revision);
+  assert.equal(resumed.savedAt, now);
+  assert.deepEqual(economy(resumed.view.data), economy(before.data));
+  const { previewId } = restarted.previewImport(account, id, { token: resumed.token, file: saved.file });
+  restarted.confirmImport(account, id, { token: resumed.token, previewId });
+  assert.deepEqual(economy(restarted.view(account, id, resumed.token).view.data), economy(before.data));
+  assert.deepEqual(restarted.exportConfirmed(account, id), saved);
+});

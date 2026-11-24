@@ -69,6 +69,44 @@ Der gemeinsame Konto-Store prüft Gerätecode, Discord und Administration vor ei
 
 Der personenbezogene Kontoexport enthält die bestätigten Idle-Spielstände des eigenen Kontos und seiner Aliase. Die bestätigte Kontolöschung entwertet aktive Sitzungen und entfernt diese Stände und zugehörige temporäre Dateien. Schlägt ein Löschschritt fehl, kann die Operation wiederholt werden. Bereits gelöschte Dateien werden bei Wiederholung übersprungen. Die Verantwortlichkeit für ältere Sicherungskopien liegt bei den Aufbewahrungs- und Löschfristen des Betreibers.
 
+## Vertragsstand für Snapshots, HTTP und Dateien
+
+Die Beispiele gelten für die drei registrierbaren Spielmodule mit `stateVersion: 1` und `rulesVersion: 1`. Die beiden Versionsnummern werden unabhängig vom persistenten Dateiformat und der Transporthülle geprüft. Änderungen am Spielzustand oder an fachlichen Regeln benötigen eine ausdrückliche Entscheidung über Versionswechsel und Kompatibilität. Die Anwendungsversion aus `package.json` ersetzt diese Prüfungen nicht.
+
+| Ebene | Form und Version |
+| --- | --- |
+| Engine-Snapshot | Genau sechs Felder. `gameId`, `stateVersion`, `rulesVersion`, `at`, `phase` und `data`. Die Spiel-ID und die beiden Versionen müssen zum Modul passen. `at` ist UTC in Millisekunden, `phase` muss im Modul definiert sein und `data` folgt dessen Validator. |
+| HTTP | Die Pfade, Feldschemas und Fehlercodes sind in [api.js](../server/idle/api.js) definiert. Spielzustands- und Dateiversion werden nicht über einen vom Browser angegebenen HTTP-Vertragswert gewählt. Schreibanfragen enthalten weder einen Snapshot noch einen Zeitanker. |
+| Bestätigter Datensatz | `format: 1`, `revision`, `runId`, `snapshot` und `operation`. Die Kopie auf dem Server enthält im letzten Anfragebeleg eine ID, einen Digest und bei neuen Saves die Signaturkennung. Der Signaturschlüssel liegt außerhalb der Datei. |
+| Signierte Datei | `keyId.base64url(payload).base64url(mac)`. Der kanonische UTF-8-Inhalt enthält genau `version: 1`, `gameId`, `runId`, `revision`, `savedAt`, `binding` und `snapshot`. `savedAt` muss dem Snapshot-Anker entsprechen. Die HMAC-Signatur gilt für Kennung und Nutzinhalt. |
+
+Der folgende Strukturbeleg verwendet das reduzierte Testmodul `fixture-idle` aus [idle-integration.test.js](../test/idle-integration.test.js). Die Spielmodule haben eigene fachliche Felder. Der Mengenwert in diesem Beispiel zeigt das Zahlenformat.
+
+```json
+{
+  "gameId": "fixture-idle",
+  "stateVersion": 1,
+  "rulesVersion": 1,
+  "at": 1790000000000,
+  "phase": "fixture-phase",
+  "data": { "units": "9007199254740993", "carry": 0 }
+}
+```
+
+Ein regulärer Save verwendet die aus der Schreibsitzung gelesenen Revisionen. Der folgende Token ist ein syntaktischer Beispielwert.
+
+```http
+POST /api/idle/spielhalle/save
+Content-Type: application/json
+X-Requested-With: spieleabend
+
+{"token":"00000000-0000-4000-8000-000000000000","revision":3,"sessionVersion":8,"id":"manual-save-4"}
+```
+
+Auf einen bestätigten Save folgt beispielsweise `{"revision":4,"savedAt":1790000000000}`. Dieselbe noch gespeicherte Anfragen-ID mit exakt denselben Parametern liefert denselben Beleg. Eine veraltete Revision ohne gültigen Replay-Beleg ergibt `409 revision-conflict`. Eine freigegebene Spiel-ID ohne verwendbaren Schlüsselring ergibt `503 idle-unavailable`. Eine übergroße Datei ergibt `413 payload-too-large`, eine ungültige Signatur `400 invalid-signature`.
+
+Die [Exportprüfung](../server/idle/exports.js) lehnt eine andere Hüllenversion mit `unsupported-envelope` ab. Eine gültig signierte Datei mit unbekannter Zustands- oder Regelversion bleibt ohne registrierte Migration bei `unsupported-version`. Der [Migrationstest](../test/idle-savepoints.test.js) verwendet ein Testmodul mit einem ausdrücklich konfigurierten Übergang von Zustand 1 zu 2 bei Regelversion 1. Er belegt den Mechanismus für Kopie, Zeitanker und manuelle Bestätigung. Für historische Ressourcen-Aliase der drei tatsächlichen Spiele braucht es je Quellversion einen eigenen fachlichen Vertrag und Testdaten.
+
 ## Schlüsselring und Rotation
 
 `IDLE_SAVE_KEYRING` wird serverseitig aus der Betriebsumgebung geladen. Es ist ein JSON-Objekt mit `active` und `keys`. `active` enthält eine Signaturkennung. `keys` ist eine Liste aus `{ "id": "kennung", "key": "<64 hex-Zeichen>" }` mit ein bis acht Einträgen. Jeder Schlüssel besteht aus 32 kryptografisch zufälligen Bytes. Kennungen und Schlüssel müssen eindeutig sein. Schlüssel gehören in die geschützte Betriebsumgebung und in eine getrennte, zugriffsbeschränkte Sicherung.
