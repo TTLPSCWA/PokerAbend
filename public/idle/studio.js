@@ -26,7 +26,7 @@ export function mountStudio(root, { english, esc, played }) {
   if (!window.name.startsWith('poker-hall-')) window.name = 'poker-hall-' + uid();
   const tab = window.name;
   let snapshot, tabId = 'projects', status = '', busy = false, ended = false;
-  let form = {}, details = false, onConfirm, retry, phaseSeen, beat = 0;
+  let form = {}, details = false, retry, phaseSeen, beat = 0;
 
   const section = (caption, html) => '<section class="gs-card"><h2>' + esc(caption) + '</h2>' + html + '</section>';
   const action = (label, data, reason = '') => '<button type="button" data-gs-action="' + esc(JSON.stringify(data)) +
@@ -296,7 +296,7 @@ export function mountStudio(root, { english, esc, played }) {
   function render() {
     if (ended) return;
     const focused = root.contains(document.activeElement) ? document.activeElement : null;
-    const key = ['data-gs-action', 'data-gs-local', 'data-gs-tab', 'name'].find((attr) => focused?.hasAttribute(attr));
+    const key = ['data-gs-action', 'data-gs-local', 'data-gs-tab', 'data-gs-import', 'name'].find((attr) => focused?.hasAttribute(attr));
     const value = key && focused.getAttribute(key);
     const tabScroll = root.querySelector('.gs-tabs')?.scrollLeft ?? 0;
     const v = snapshot?.view;
@@ -307,9 +307,12 @@ export function mountStudio(root, { english, esc, played }) {
         tr('Plane dein erstes Spiel und entwickle das Studio über fünf Phasen.', 'Plan your first game and grow the studio through five phases.') +
         '</p>' + (snapshot ? local(snapshot.revision ? tr('Bestätigten Stand öffnen', 'Open confirmed save') :
           tr('Studio starten', 'Start studio'), 'open') : local(tr('Ansicht neu laden', 'Reload view'), 'refresh')))) +
-      '</div><dialog class="gs-dialog"></dialog>';
+      '</div><dialog class="gs-dialog" aria-labelledby="gs-dialog-title" aria-describedby="gs-dialog-description"></dialog>';
     root.querySelector('.gs-tabs')?.scrollTo(tabScroll, 0);
-    if (key) [...root.querySelectorAll('[' + key + ']')].find((el) => el.getAttribute(key) === value)?.focus({ preventScroll: true });
+    if (key) {
+      const target = [...root.querySelectorAll('[' + key + ']')].find((el) => el.getAttribute(key) === value);
+      (target ?? root.querySelector('[data-gs-local="save"], [data-gs-local="takeover"]'))?.focus({ preventScroll: true });
+    }
   }
 
   async function request(path = '', body, token) {
@@ -357,14 +360,15 @@ export function mountStudio(root, { english, esc, played }) {
   }
   function confirm(heading, paragraph, operation) {
     const dlg = root.querySelector('dialog');
-    onConfirm = operation;
-    dlg.innerHTML = '<form method="dialog"><h2>' + esc(heading) + '</h2><p>' + esc(paragraph) +
+    const trigger = document.activeElement;
+    dlg.innerHTML = '<form method="dialog"><h2 id="gs-dialog-title">' + esc(heading) +
+      '</h2><p id="gs-dialog-description">' + esc(paragraph) +
       '</p><div class="gs-actions"><button value="cancel" autofocus>' + tr('Abbrechen', 'Cancel') +
       '</button><button value="confirm">' + tr('Bestätigen', 'Confirm') + '</button></div></form>';
     dlg.returnValue = '';
     dlg.addEventListener('close', () => {
-      const run = onConfirm; onConfirm = null;
-      if (dlg.returnValue === 'confirm') run?.();
+      if (trigger.isConnected) trigger.focus({ preventScroll: true });
+      if (dlg.returnValue === 'confirm') operation();
     }, { once: true });
     dlg.showModal();
   }
@@ -466,6 +470,7 @@ export function mountStudio(root, { english, esc, played }) {
         event.target.form?.dataset.gsForm === 'project') { render(); return; }
     if (!event.target.matches('[data-gs-import]') || !event.target.files[0]) return;
     const file = event.target.files[0];
+    event.target.value = '';
     perform(async () => {
       if (file.size > 350000) throw Object.assign(new Error('file'), { code: 'payload-too-large' });
       const { previewId, revision, savedAt } = await request('/import/preview', { token: snapshot.token, file: await file.text() });

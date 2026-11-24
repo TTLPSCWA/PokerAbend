@@ -37,7 +37,7 @@ export function mountHall(root, { english, esc, played }) {
   const datum = (label, data) => '<div class="hall-datum"><dt>' + esc(label) + '</dt><dd>' + esc(data) + '</dd></div>';
   const title = tr('Die Spielhalle', 'The Game Hall');
   let snapshot, menu = 'stations', selected = 'altstadt', busy = false, disposed = false;
-  let message = '', phaseMessage = '', failedOperation = null, confirmAction = null, lastPreview = null;
+  let message = '', phaseMessage = '', failedOperation = null, lastPreview = null;
   let previousPhase = '', timer;
 
   async function request(path = '', data, token) {
@@ -235,7 +235,7 @@ export function mountHall(root, { english, esc, played }) {
   function render() {
     if (disposed) return;
     const focus = root.contains(document.activeElement) ? document.activeElement : null;
-    const selector = ['data-hall-action', 'data-hall-local', 'data-hall-menu', 'data-hall-site'].find((key) => focus?.hasAttribute(key));
+    const selector = ['data-hall-action', 'data-hall-local', 'data-hall-menu', 'data-hall-site', 'data-hall-import', 'name'].find((key) => focus?.hasAttribute(key));
     const on = selector ? focus.getAttribute(selector) : null;
     const data = snapshot?.view?.data;
     const opening = !snapshot?.sessionId;
@@ -252,20 +252,24 @@ export function mountHall(root, { english, esc, played }) {
           (snapshot.readOnly || !data.prestige.length ? '<p>' + tr('Kein neuer Rekord verfügbar.', 'There is no new record to claim.') + '</p>' :
             localButton(tr('Renommee-Vorschau', 'Renown preview'), 'prestige'))) : '') + '</aside></div>';
     })();
-    root.innerHTML = '<div class="hall-shell"' + (data ? ' data-phase="' + snapshot.view.phase.id + '"' : '') + '>' + banner + body + '</div><dialog class="hall-dialog"></dialog>';
-    if (selector) [...root.querySelectorAll('[' + selector + ']')].find((el) => el.getAttribute(selector) === on)?.focus({ preventScroll: true });
+    root.innerHTML = '<div class="hall-shell"' + (data ? ' data-phase="' + snapshot.view.phase.id + '"' : '') + '>' + banner + body + '</div><dialog class="hall-dialog" aria-labelledby="hall-dialog-title" aria-describedby="hall-dialog-description"></dialog>';
+    if (selector) {
+      const target = [...root.querySelectorAll('[' + selector + ']')].find((el) => el.getAttribute(selector) === on);
+      (target ?? root.querySelector('[data-hall-local="save"], [data-hall-local="takeover"]'))?.focus({ preventScroll: true });
+    }
   }
 
   function dialog(title, text, confirm, caption = tr('Bestätigen', 'Confirm')) {
     const host = root.querySelector('dialog');
-    confirmAction = confirm;
-    host.innerHTML = '<form method="dialog"><h2>' + esc(title) + '</h2><p>' + esc(text) +
+    const trigger = document.activeElement;
+    host.innerHTML = '<form method="dialog"><h2 id="hall-dialog-title">' + esc(title) +
+      '</h2><p id="hall-dialog-description">' + esc(text) +
       '</p><div class="hall-actions"><button class="hall-button" value="cancel" autofocus>' + tr('Abbrechen', 'Cancel') +
       '</button><button class="hall-button primary" value="confirm">' + esc(caption) + '</button></div></form>';
+    host.returnValue = '';
     host.addEventListener('close', () => {
-      const next = confirmAction;
-      confirmAction = null;
-      if (host.returnValue === 'confirm') next?.();
+      if (trigger.isConnected) trigger.focus({ preventScroll: true });
+      if (host.returnValue === 'confirm') confirm();
     }, { once: true });
     host.showModal();
   }
@@ -388,6 +392,7 @@ export function mountHall(root, { english, esc, played }) {
   root.addEventListener('change', async (event) => {
     if (!event.target.hasAttribute('data-hall-import') || !event.target.files[0] || busy) return;
     const file = event.target.files[0];
+    event.target.value = '';
     lastPreview = null;
     await perform(async () => {
       if (file.size > 350_000) throw Object.assign(new Error('file'), { code: 'payload-too-large' });

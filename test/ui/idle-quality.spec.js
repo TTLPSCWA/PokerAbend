@@ -122,3 +122,119 @@ for (const entry of [games[1], games[2]]) {
     await expect(tabs.getByRole('tab').first()).toBeFocused();
   });
 }
+
+const accessibilityCases = [
+  { ...games[0], file: '[data-hall-import]', importTitle: 'Ungespeicherte Aktionen verwerfen' },
+  { ...games[1], file: '[data-gs-import]', importTitle: 'Bestätigte Revision laden' },
+  { ...games[2], file: '[data-fe-import]', importTitle: 'Bestätigte Revision laden' },
+];
+
+async function makeUnsavedChanges(page, id) {
+  if (id === 'spielhalle') {
+    const round = page.getByRole('button', { name: /^Kartenrunde spielen/ });
+    await round.focus();
+    await round.press('Space');
+  } else if (id === 'studio') {
+    const project = button(page, 'Projekt starten');
+    await project.focus();
+    await project.press('Enter');
+  } else {
+    const tabs = page.getByRole('tablist');
+    const start = tabs.getByRole('tab').first();
+    await start.focus();
+    await start.press('ArrowRight');
+    const inspector = tabs.getByRole('tab', { name: 'Inspektor' });
+    await expect(inspector).toBeFocused();
+    await inspector.press('ArrowRight');
+    await expect(tabs.getByRole('tab', { name: 'Material' })).toBeFocused();
+    const mine = button(page, 'Manuell abbauen · Eisenerz');
+    await mine.focus();
+    await mine.press('Space');
+  }
+  await expect(page.getByText('Ungespeicherte Aktionen', { exact: true })).toBeVisible();
+}
+
+for (const game of accessibilityCases) {
+  test('Idle Bedienung: ' + game.id + ' hält den Tastaturfokus bei Start, Datei und modaler Bestätigung', async ({ page, app }) => {
+    await login(page, app, 'Idle Tastatur');
+    await page.goto(app.url + '/#idle/' + game.id);
+    const start = button(page, game.start);
+    await start.focus();
+    await start.press('Enter');
+    const shell = page.locator(game.shell + '[data-phase]');
+    await expect(shell).toBeVisible();
+    const save = button(page, 'Speichern');
+    await expect(save).toBeFocused();
+    expect(await save.evaluate((node) => getComputedStyle(node).outlineStyle)).toBe('solid');
+
+    const exportButton = button(page, 'Speichern & exportieren');
+    await exportButton.focus();
+    const download = page.waitForEvent('download');
+    await exportButton.press('Space');
+    const path = await (await download).path();
+    const saved = page.getByText('Gespeichert · Rev. 1', { exact: true });
+    await expect(saved).toBeVisible();
+
+    const file = page.locator(game.file);
+    await file.focus();
+    await file.setInputFiles({ name: 'too-large.spieleabend', mimeType: 'text/plain', buffer: Buffer.alloc(350_001) });
+    const notice = shell.getByRole('status');
+    await expect(notice).not.toBeEmpty();
+    await expect(saved).toBeVisible();
+    await expect(file).toBeFocused();
+
+    await makeUnsavedChanges(page, game.id);
+    await file.focus();
+    await file.setInputFiles(path);
+    const modal = page.getByRole('dialog');
+    const cancel = modal.getByRole('button', { name: 'Abbrechen', exact: true });
+    const confirm = modal.getByRole('button', { name: 'Bestätigen', exact: true });
+    await expect(modal).toBeVisible();
+    await expect(modal).toHaveAccessibleName(game.importTitle);
+    await expect(modal).toHaveAccessibleDescription(/bestätigt|geprüft/i);
+    await expect(cancel).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(confirm).toBeFocused();
+    await page.keyboard.press('Shift+Tab');
+    await expect(cancel).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(modal).toBeHidden();
+    await expect(file).toBeFocused();
+    await expect(file).toHaveValue('');
+    await expect(page.getByText('Ungespeicherte Aktionen', { exact: true })).toBeVisible();
+  });
+}
+
+test('Idle Bedienung: fünf Bildschirmgrößen und reduzierte Bewegung', async ({ page, app }) => {
+  test.setTimeout(60_000);
+  await login(page, app, 'Idle Viewports');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const game of accessibilityCases) {
+    await openGame(page, game);
+    const shell = page.locator(game.shell + '[data-phase]');
+    for (const width of [320, 375, 390, 768, 1440]) {
+      await page.setViewportSize({ width, height: width <= 390 ? 740 : 900 });
+      await expect(shell).toBeVisible();
+      const save = button(page, 'Speichern');
+      await save.scrollIntoViewIfNeeded();
+      const rect = await save.boundingBox();
+      expect(rect.x, game.id + ' save left at ' + width).toBeGreaterThanOrEqual(-1);
+      expect(rect.x + rect.width, game.id + ' save right at ' + width).toBeLessThanOrEqual(width + 1);
+      expect(rect.height, game.id + ' save hit target at ' + width).toBeGreaterThanOrEqual(44);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth), game.id + ' document width at ' + width).toBeLessThanOrEqual(width + 1);
+    }
+    if (game.id !== 'spielhalle') {
+      await page.setViewportSize({ width: 320, height: 740 });
+      const tabs = shell.getByRole('tablist').getByRole('tab');
+      await tabs.first().focus();
+      await tabs.first().press('End');
+      await expect(tabs.last()).toBeFocused();
+      await expect(tabs.last()).toHaveAttribute('aria-selected', 'true');
+      await expect(tabs.last()).toBeVisible();
+    }
+    expect(await shell.evaluate((node) => ({
+      reduced: matchMedia('(prefers-reduced-motion: reduce)').matches,
+      moving: node.getAnimations({ subtree: true }).filter((animation) => animation.playState === 'running').length,
+    }))).toEqual({ reduced: true, moving: 0 });
+  }
+});

@@ -45,7 +45,7 @@ export function mountFactory(root, { english, esc, played }) {
   function render(focus = null) {
     if (ended) return;
     const focused = root.contains(document.activeElement) ? document.activeElement : null;
-    const attr = ['data-fe-tile', 'data-fe-panel', 'data-fe-local', 'data-fe-region', 'data-fe-action', 'name']
+    const attr = ['data-fe-tile', 'data-fe-panel', 'data-fe-local', 'data-fe-region', 'data-fe-action', 'data-fe-import', 'name']
       .find((key) => focused?.hasAttribute(key));
     const info = focus ?? (attr ? [attr, focused.getAttribute(attr)] : null);
     const scroller = root.querySelector('.fe-map-scroll');
@@ -70,10 +70,14 @@ export function mountFactory(root, { english, esc, played }) {
       '<h1>Factory Empire</h1>' + actions + '</header><div class="fe-status" role="status">' + esc(message) +
       (retries ? local(tr('Aktion wiederholen', 'Retry action'), 'retry') : '') + '</div>' +
       (active ? factoryMarkup(snapshot.view, ui, { esc, english, readonly: snapshot.readOnly }) : '') +
-      '</div><dialog class="fe-dialog"></dialog>';
+      '</div><dialog class="fe-dialog" aria-labelledby="fe-dialog-title" aria-describedby="fe-dialog-description"></dialog>';
     if (pos) root.querySelector('.fe-map-scroll')?.scrollTo(...pos);
     root.querySelector('.fe-tabs')?.scrollTo(tabScroll, 0);
-    if (info) [...root.querySelectorAll('[' + info[0] + ']')].find((el) => el.getAttribute(info[0]) === info[1])?.focus({ preventScroll: true });
+    if (info) {
+      const [attribute, value] = info;
+      const target = [...root.querySelectorAll('[' + attribute + ']')].find((el) => el.getAttribute(attribute) === value);
+      (target ?? root.querySelector('[data-fe-local="save"], [data-fe-local="takeover"]'))?.focus({ preventScroll: true });
+    }
   }
 
   async function request(path = '', body, token) {
@@ -142,11 +146,16 @@ export function mountFactory(root, { english, esc, played }) {
 
   function dialog(title, paragraph, approved) {
     const dlg = root.querySelector('dialog');
-    dlg.innerHTML = '<form method="dialog"><h2>' + esc(title) + '</h2><p>' + esc(paragraph) +
+    const trigger = document.activeElement;
+    dlg.innerHTML = '<form method="dialog"><h2 id="fe-dialog-title">' + esc(title) +
+      '</h2><p id="fe-dialog-description">' + esc(paragraph) +
       '</p><div class="fe-actions"><button value="cancel" autofocus>' + tr('Abbrechen', 'Cancel') +
       '</button><button value="confirm">' + tr('Bestätigen', 'Confirm') + '</button></div></form>';
     dlg.returnValue = '';
-    dlg.addEventListener('close', () => { if (dlg.returnValue === 'confirm') approved(); }, { once: true });
+    dlg.addEventListener('close', () => {
+      if (trigger.isConnected) trigger.focus({ preventScroll: true });
+      if (dlg.returnValue === 'confirm') approved();
+    }, { once: true });
     dlg.showModal();
   }
 
@@ -255,6 +264,7 @@ export function mountFactory(root, { english, esc, played }) {
     }
     if (!event.target.matches('[data-fe-import]') || !event.target.files[0] || !snapshot?.token) return;
     const file = event.target.files[0];
+    event.target.value = '';
     perform(async () => {
       if (file.size > 350000) throw Object.assign(new Error('file'), { code: 'payload-too-large' });
       const { previewId, revision, savedAt } = await request('/import/preview', { token: snapshot.token, file: await file.text() });

@@ -1,6 +1,6 @@
 # Betrieb: Spieleabend aufsetzen, aktualisieren, sichern, reparieren
 
-Stand: Version **3.26.1** (23. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
+Stand: Version **3.26.2** (24. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
 
 Für einen autorisierten, isolierten Testserver können Betreiber [Die Spielhalle](spielhalle.md), [Game Studio Tycoon](studio.md) und [Factory Empire](factory.md) über ihre getrennten Spielschalter und einen gültigen serverseitigen [Idle-Schlüsselring](idle-engine.md#schlüsselring-und-rotation) verfügbar machen. Die drei Einstellungen sind standardmäßig aus. Der einzelne schreibende Prozess braucht ein eigenes, beschreibbares Datenverzeichnis.
 

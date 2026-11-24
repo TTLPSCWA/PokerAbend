@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.26.2 – 24. November 2026
+
+- In den drei Idle-Spielen führt der Tastaturfokus nach dem Öffnen zu den Speicheraktionen. Der Dateiimport behält den Fokus bei Fehlern und nach dem Schließen. Bestätigungsdialoge benennen Aktion und Folgen für assistive Technik.
+
 ## 3.26.1 – 23. November 2026
 
 - Echtzeit-, Arcade- und Expeditionsspiele halten ihren Spieltakt: Kurze Verzögerungen des Servers summieren sich nicht mehr auf, der Countdown dauert wieder genau drei Sekunden, und nach einer Überlast springt das Spiel nicht in einem Schwall vor. Der Zug-Hinweiston spielt seinen zweiten Ton nur noch, wenn Verbindung und Spielzug noch bestehen. Spielregeln und Spielstände bleiben unverändert.
