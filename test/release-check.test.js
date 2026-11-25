@@ -3,7 +3,7 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync, writeFileSync, readdirSync, readFileSync, statSync, utimesSync, mkdirSync } from 'node:fs';
+import { existsSync, mkdtempSync, writeFileSync, readdirSync, readFileSync, statSync, utimesSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -11,7 +11,9 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../', import.meta.url)).replace(/[\\/]$/, '');
 const SCRIPT = join(root, 'scripts', 'release-check.sh').split('\\').join('/');
 const VERSION = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version;
-const probe = spawnSync('bash', ['-c', 'command -v tar >/dev/null && echo bash-ok'], { encoding: 'utf8' });
+const gitBash = join(process.env.ProgramFiles || 'C:/Program Files', 'Git', 'bin', 'bash.exe');
+const shell = process.platform === 'win32' && existsSync(gitBash) ? gitBash : 'bash';
+const probe = spawnSync(shell, ['-c', 'command -v tar >/dev/null && echo bash-ok'], { encoding: 'utf8', timeout: 5000 });
 const HAS_BASH = probe.status === 0 && probe.stdout.includes('bash-ok');
 const skip = HAS_BASH ? false : 'bash oder tar nicht verfügbar';
 const posix = (p) => p.split('\\').join('/');
@@ -48,7 +50,7 @@ function backupDir({ ageHours = 1, corrupt = false, files = ['leaderboard.json',
 }
 function envFile(text = GOOD_ENV) { const dir = mkdtempSync(join(tmpdir(), 'rc-env-')); const file = join(dir, '.env'); writeFileSync(file, text, { mode: 0o600 }); return file; }
 function run(mode, env = {}) {
-  const r = spawnSync('bash', [SCRIPT, mode], { encoding: 'utf8', env: { PATH: process.env.PATH, HOME: process.env.HOME || '', SYSTEMROOT: process.env.SYSTEMROOT || '', RELEASE_CHECK_SKIP_DOCKER: '1', HEALTH_WAIT_S: '3', ...env }, timeout: 60000 });
+  const r = spawnSync(shell, [SCRIPT, mode], { encoding: 'utf8', env: { PATH: process.env.PATH, HOME: process.env.HOME || '', SYSTEMROOT: process.env.SYSTEMROOT || '', RELEASE_CHECK_SKIP_DOCKER: '1', HEALTH_WAIT_S: '3', ...env }, timeout: 60000 });
   return { code: r.status, out: (r.stdout || '') + (r.stderr || '') };
 }
 const snapshot = (dir) => readdirSync(dir).sort().map((f) => `${f}:${statSync(join(dir, f)).size}:${statSync(join(dir, f)).mtimeMs}`).join('|');
@@ -131,6 +133,24 @@ test('Nur prüfen, nichts verändern: .env, Sicherungsordner und Repository-Ordn
     assert.doesNotMatch(code, forbidden, String(forbidden));
   }
   mkdirSync(join(tmpdir(), 'rc-done'), { recursive: true });
+});
+
+test('Release-Abnahme verlangt die angeforderte Build-Identität auch bei HTTP 200', { skip }, () => {
+  const env = { ENV_FILE: posix(envFile()), HEALTH_URL: healthUrl, EXPECTED_COMMIT: 'abc1234' + '0'.repeat(33) };
+  try {
+    setHealth({ ok: true, commit: 'abc1234' });
+    assert.match(run('nachher', env).out, /Versionsangabe in \/health fehlt/);
+    for (const commit of [undefined, '', 'unknown', 'abc12340']) {
+      setHealth({ ok: true, version: VERSION, commit });
+      const result = run('nachher', env);
+      assert.equal(result.code, 1, result.out);
+      assert.match(result.out, /Commit in \/health/);
+    }
+    setHealth({ ok: true, version: VERSION, commit: 'abc1234' });
+    assert.equal(run('nachher', env).code, 0);
+  } finally {
+    setHealth({ ok: true, version: VERSION, commit: 'abc1234' });
+  }
 });
 
 test('Aufruf: unbekannter Modus → Exit 2, --help zeigt die Hilfe', { skip }, () => {

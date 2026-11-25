@@ -395,6 +395,8 @@ scripts/release-check.sh nachher      # Healthcheck muss ok sein und die erwarte
 scripts/release-check.sh              # beides nacheinander
 ```
 
+Für die Abnahme `EXPECTED_VERSION` und `EXPECTED_COMMIT` des vorgesehenen Builds angeben. `nachher` verlangt die Versionsangabe und den angeforderten Commit-Nachweis auch bei erfolgreichem HTTP-Status. `/health` liefert sieben hexadezimale Stellen. Prüfe den vollständigen Commit und den Digest zusätzlich am tatsächlich laufenden Image. Ein Match des kurzen Health-Werts allein identifiziert keinen vollständigen Image-Digest.
+
 Was geprüft wird:
 
 * **`.env`:** Datei vorhanden und nicht für alle lesbar, nicht in Git eingecheckt, `DOMAIN`/`IMAGE`/`SITE_PASSWORD` gesetzt, Passwörter nicht leer/kurz/Platzhalter, Discord ganz oder gar nicht, `PUBLIC_URL` mit https ohne Schrägstrich, Discord-IDs nur Ziffern, `FEATURE_*` = on/off, `DISABLED_GAMES` mit gültigen IDs, Zahlenwerte positiv, unbekannte Variablen (Tippfehler).

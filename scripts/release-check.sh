@@ -14,7 +14,7 @@
 #   MAX_BACKUP_AGE_H=26                so alt darf die neueste Sicherung höchstens sein
 #   HEALTH_URL=https://meine.domain/health   Standard: https://$DOMAIN/health aus der .env
 #   EXPECTED_VERSION=3.0.0             Standard: "version" aus package.json im Repository
-#   EXPECTED_COMMIT=abc1234            optional: Commit-Hash, den /health melden muss
+#   EXPECTED_COMMIT=abc1234            optional: Image-Commit und erwarteter /health-Präfix (öffentlich 7 Stellen)
 #   HEALTH_WAIT_S=45                   so lange auf einen gesunden Start warten (nur "nachher")
 #   COMPOSE_FILES="-f docker-compose.yml -f docker-compose.prod.yml"
 #   RELEASE_CHECK_SKIP_DOCKER=1        Docker-Prüfungen überspringen (z. B. auf einem Rechner ohne Docker)
@@ -38,6 +38,12 @@ warn() { echo "  WARNUNG   $*"; WARNINGS=$((WARNINGS + 1)); }
 fail() { echo "  FEHLER    $*"; ERRORS=$((ERRORS + 1)); }
 info() { echo "  ·         $*"; }
 section() { echo; echo "== $* =="; }
+
+commit_matches() {
+  local reported="$1" expected="$2"
+  [[ "$reported" =~ ^[0-9a-f]{7,40}$ && "$expected" =~ ^[0-9a-f]{7,40}$ ]] || return 1
+  [[ "$reported" == "$expected"* || ( "$3" = "health" && ${#reported} -eq 7 && "$expected" == "$reported"* ) ]]
+}
 
 # Wert einer Variablen aus der .env (ohne die Datei auszuführen: nur "NAME=Wert", Anführungszeichen und Zeilenende-Kommentare entfernt)
 declare -A ENVV=()
@@ -156,7 +162,9 @@ check_image() {
       elif [ "$inside" = "$expected" ]; then ok "Version im Image: $inside (erwartet $expected)"
       else fail "Version im Image ist $inside, erwartet wird $expected – falsches oder altes Image?"; fi
     fi
-    if [ -n "${EXPECTED_COMMIT:-}" ] && [ -n "$commit" ] && [[ "$commit" != "${EXPECTED_COMMIT}"* && "${EXPECTED_COMMIT}" != "$commit"* ]]; then fail "Commit im Image ($commit) passt nicht zu EXPECTED_COMMIT ($EXPECTED_COMMIT)"; fi
+    if [ -n "${EXPECTED_COMMIT:-}" ] && ! commit_matches "$commit" "$EXPECTED_COMMIT" image; then
+      fail "Commit im Image fehlt, ist ungültig oder passt nicht zu EXPECTED_COMMIT"
+    fi
   else
     warn "Image $image ist lokal noch nicht vorhanden (es wird beim Aufspielen geladen) – die Version kann erst danach geprüft werden"
   fi
@@ -217,13 +225,14 @@ check_health() { # $1 = streng (nachher): muss gesund und in der erwarteten Vers
   ok "/health antwortet ok"
   local ver commit; ver="$(printf '%s' "$body" | sed -n 's/.*"version":"\([^"]*\)".*/\1/p')"; commit="$(printf '%s' "$body" | sed -n 's/.*"commit":"\([^"]*\)".*/\1/p')"
   info "läuft: Version ${ver:-?}, Commit ${commit:-?}"
-  if [ -n "$expected" ] && [ -n "$ver" ]; then
-    if [ "$ver" = "$expected" ]; then ok "Version $ver entspricht der erwarteten"
+  if [ -n "$expected" ]; then
+    if [ -z "$ver" ] && [ "$strict" = 1 ]; then fail "Versionsangabe in /health fehlt"
+    elif [ "$ver" = "$expected" ]; then ok "Version $ver entspricht der erwarteten"
     elif [ "$strict" = 1 ]; then fail "Es läuft Version $ver, erwartet wird $expected"
     else info "Noch die alte Version ($ver); erwartet nach dem Aufspielen: $expected"; fi
   fi
-  if [ -n "${EXPECTED_COMMIT:-}" ] && [ -n "$commit" ] && [[ "$commit" != "${EXPECTED_COMMIT}"* && "${EXPECTED_COMMIT}" != "$commit"* ]]; then
-    if [ "$strict" = 1 ]; then fail "Commit $commit passt nicht zu EXPECTED_COMMIT ($EXPECTED_COMMIT)"; else info "Commit $commit (erwartet nach dem Aufspielen: $EXPECTED_COMMIT)"; fi
+  if [ -n "${EXPECTED_COMMIT:-}" ] && ! commit_matches "$commit" "$EXPECTED_COMMIT" health; then
+    if [ "$strict" = 1 ]; then fail "Commit in /health fehlt, ist ungültig oder passt nicht zu EXPECTED_COMMIT"; else info "Aktueller Commit passt noch nicht zum erwarteten Build."; fi
   fi
   # Container-Gesundheit laut Docker (HEALTHCHECK im Image)
   if [ "$strict" = 1 ] && docker_ok && docker info >/dev/null 2>&1; then

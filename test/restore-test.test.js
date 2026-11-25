@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdtempSync, writeFileSync, readFileSync, readdirSync, rmSync, utimesSync } from 'node:fs';
+import { existsSync, mkdtempSync, writeFileSync, readFileSync, readdirSync, rmSync, statSync, utimesSync } from 'node:fs';
 import { createConnection } from 'node:net';
 import { networkInterfaces, tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -12,6 +12,13 @@ import { io } from 'socket.io-client';
 import { createLeaderboard } from '../server/leaderboard.js';
 import { extractRestoreArchive } from '../scripts/restore-archive.mjs';
 import { launchRestoreCheck } from '../scripts/restore-test.mjs';
+import { createAccountStore } from '../server/account-store.js';
+import { createIdleExportCodec } from '../server/idle/exports.js';
+import { createIdleSaveService } from '../server/idle/savepoints.js';
+import { openIdleStorage } from '../server/idle/storage.js';
+import { spielhalleEngine } from '../server/idle/spielhalle.js';
+import { studioEngine } from '../server/idle/studio.js';
+import { factoryEngine } from '../server/idle/factory.js';
 
 const gitBash = join(process.env.ProgramFiles || 'C:/Program Files', 'Git', 'bin', 'bash.exe');
 const shell = process.platform === 'win32' && existsSync(gitBash) ? gitBash : 'bash';
@@ -85,6 +92,62 @@ test('restore-test.sh: aufgeräumt wird immer, die Archivquelle bleibt unberühr
   assert.equal(readFileSync(join(data, 'rooms.json'), 'utf8'), before);
   assert.deepEqual(readFileSync(file), archive);
   assert.deepEqual(readdirSync(temp), []);
+});
+
+test('B11: konsistentes Archiv enthält Konto, Sitzungsschlüssel und alle drei Idle-Savepoints', { skip: !hasBash && 'bash nicht verfügbar' }, async (t) => {
+  const data = await realisticData(t);
+  const accounts = createAccountStore(data);
+  const account = accounts.ensure(accounts.newId());
+  accounts.save({ flush: true });
+  const secret = 'synthetic-restore-cookie-key';
+  writeFileSync(join(data, 'secret.key'), secret, { mode: 0o600 });
+  const engines = [spielhalleEngine, studioEngine, factoryEngine];
+  const makeCodec = () => createIdleExportCodec({ current: 'restore-fixture', keys: { 'restore-fixture': Buffer.alloc(32, 84) } });
+  const savedAt = 1_790_000_000_000;
+  function recoverableStore(root, owners) {
+    return openIdleStorage(join(root, 'idle'), { enabled: true, accountMembers: owners.members });
+  }
+  const originalStore = recoverableStore(data, accounts);
+  const exports = new Map();
+  try {
+    const service = createIdleSaveService({ engines, store: originalStore, codec: makeCodec(), now: () => savedAt });
+    for (const { gameId } of engines) {
+      const open = service.open(account.id, gameId);
+      exports.set(gameId, service.saveAndExport(account.id, gameId, {
+        token: open.token, sessionVersion: open.sessionVersion, revision: open.revision, id: 'before-backup',
+      }));
+    }
+  } finally { originalStore.close(); }
+
+  const { file } = archiveOf(t, data);
+  const originalBytes = readFileSync(file);
+  const restored = join(scratch(t), 'restored');
+  await extractRestoreArchive(file, restored, AbortSignal.timeout(5000));
+  for (const filename of ['accounts.json', 'rooms.json', 'leaderboard.json', 'tickets.json', 'secret.key']) {
+    assert.deepEqual(readFileSync(join(restored, filename)), readFileSync(join(data, filename)));
+    if (process.platform !== 'win32') assert.equal(statSync(join(restored, filename)).mode & 0o777, 0o600);
+  }
+  const recoveredAccounts = createAccountStore(restored);
+  assert.equal(recoveredAccounts.loadedFromDisk, true);
+  assert.equal(recoveredAccounts.get(account.id).gameId, account.gameId);
+  const recoveredStore = recoverableStore(restored, recoveredAccounts);
+  try {
+    const codec = makeCodec();
+    const service = createIdleSaveService({ engines, store: recoveredStore, codec, now: () => savedAt });
+    for (const { gameId } of engines) {
+      const expected = exports.get(gameId);
+      assert.deepEqual(service.exportConfirmed(account.id, gameId), expected);
+      assert.equal(service.preview(account.id, gameId).revision, 1);
+      assert.equal(codec.decode(account.id, gameId, expected.file).revision, 1);
+    }
+  } finally { recoveredStore.close(); }
+  const check = await launchRestoreCheck(restored, AbortSignal.timeout(30_000));
+  try {
+    assert.equal((await (await check.request('/health')).json()).ok, true);
+    assert.equal(check.address.rooms, 1);
+    assert.equal(check.dataFailed(), false);
+  } finally { await check.stop(); }
+  assert.deepEqual(readFileSync(file), originalBytes);
 });
 
 test('restore-test.sh: kaputtes Archiv, fehlendes Backup und beschädigte Daten schlagen mit Fehler fehl', { skip: !hasBash && 'bash nicht verfügbar' }, async (t) => {
