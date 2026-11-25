@@ -12,7 +12,7 @@
       "path": "public/games/kit.js",
       "archive": "test/fixtures/release-2026-11-08/baseline/public/games/kit.js",
       "baseline_sha256": "0b71e0da9f3c489f48d2f202a7fc7168a8f3dfdcbbf44366fb9f7fe7cd7401c1",
-      "current_sha256": "305a7252d5501b7a2c744d03cda95a1ee676441cd0fe324b2f4c61a18e99664f"
+      "current_sha256": "1985b22a9f02c7b0a5be2177786dd16e8b2123e6e5cbca4835da39e50093636f"
     },
     {
       "path": "public/games/stapelrennen/stapelrennen.js",

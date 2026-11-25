@@ -234,6 +234,7 @@ function kitGame(def) {
   WIDE.addEventListener('change', () => { if (isMine()) render(); });
   const FINE = matchMedia('(pointer: fine)');
   let dockKeyPrev = null; // Schlüssel der zuletzt gezeichneten Aktionsleiste (dockKey)
+  let pickedPrev = new Set(); // CARD-UX-01: zuletzt gezeichnete Auswahl (Kartenschlüssel)
   let resultFresh = false;
   let xp = null; // Erlebnis-Modul dieses Spiels (EXP-Paket), falls vorhanden
   experienceKit.then(m => m?.attach(def.id)).then(x => { xp = x || null; if (xp && isMine()) { xp.enter(); xp.onState(S, null); render(); } }).catch(() => {});
@@ -362,6 +363,7 @@ function kitGame(def) {
     lobbyLife?.observe(S, $('#kg'));
 
     // Aktionsleiste
+    let reveal = null;
     const baseDockKey = def.dockKey ? def.dockKey(S, myTurn) : null;
     const dkey = baseDockKey === null ? null : `${baseDockKey}|${S.partyProgram?.status || ''}|${S.partyProgram?.index ?? ''}`;
     if (dkey === null || dkey !== dockKeyPrev || !$('#kg-dock').firstChild) { const html=dockHTML(myTurn);if(def.cardUX)CardInteraction.patch($('#kg-dock'),html);else $('#kg-dock').innerHTML=html;dockKeyPrev=dkey; }
@@ -370,10 +372,16 @@ function kitGame(def) {
       $('#kg').classList.toggle('cix-pending',actionGate.busy);$('#kg-dock').setAttribute('aria-busy',String(actionGate.busy));
       if(blocked)$$('#kg [data-g],#kg .kg-sort').forEach((el)=>{if(el.matches('button,input,select'))el.disabled=true;});
       tickClock();
+      // CARD-UX-01: Die Auswahlzeile verschiebt die Hand im Dock. Eine neu gewählte Karte bleibt sichtbar,
+      // manuelles Scrollen ohne Auswahlwechsel bleibt unberührt.
+      const picked=$$('#kg-dock .kg-hand [data-card-key][aria-pressed=true]'),fresh=picked.filter((el)=>!pickedPrev.has(el.dataset.cardKey));
+      pickedPrev=new Set(picked.map((el)=>el.dataset.cardKey));
+      reveal=fresh.at(-1)||null;
     }
     GameDesign.scaleCards($('#kg'));
     setupHand();
     document.documentElement.style.setProperty('--dock-h', $('#kg-dock').offsetHeight + 'px');
+    if(reveal?.isConnected)reveal.scrollIntoView({block:'nearest',inline:'nearest'});
     if (panel) renderPanel();
     const stage = $('#kg [data-result-stage]');
     const stageKey = stage && resultKey(S);

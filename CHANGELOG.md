@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.27.3 – 25. November 2026
+
+- UNO, Skip-Bo und Phase 10: Eine gerade ausgewählte Karte bleibt sichtbar, auch bei großem Browser-Zoom oder kleinem Fenster, wenn die Auswahlzeile die Hand verschiebt.
+
 ## 3.27.2 – 25. November 2026
 
 - Doppelkopf: Wer beide Kreuz-Damen hat und „gesund“ meldet, spielt allein gegen drei. Die Abrechnung gibt dieser Person jetzt wie beim Solo den dreifachen Wert, sodass die Punkte aller vier Spieler wieder zusammen null ergeben. Die Ergebnisanzeige nennt „allein gegen drei (dreifach)“.

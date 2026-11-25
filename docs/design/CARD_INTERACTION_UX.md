@@ -132,3 +132,24 @@ Implementierungscommit auf `main`: **[`95b2327ce4b234ddd8678c5b4c2d7f3aa2769901`
 Vor Commit/Push wurde `origin/main` erneut abgeglichen. Der bestehende Push-Workflow führt Node-Tests aus und baut bei Erfolg das GHCR-Image. Das ist kein Produktivdeployment. Auf dem Produktivserver wurde nichts veröffentlicht. Weitere Spiele werden in diesem Auftrag nicht umgesetzt. Offen bleiben die reale iPhone-Hardware-Abnahme und der separat dokumentierte bestehende Mau-Mau-Bot-Zyklus.
 
 Der abschließende [Korrekturlauf für `2dd1d4b`](https://github.com/TTLPSCWA/PokerAbend/actions/runs/41223705226) ist **erfolgreich**: 915 Node-Tests bestanden, anschließend wurde das GHCR-Image erfolgreich gebaut und veröffentlicht. Der Arbeitsbereich war danach sauber und mit `origin/main` synchron. Der anschließend separat beauftragte Ausbau von „Weitere Spiele“ steht in [der Backlog-Paket-Dokumentation](../backlog/WEITERE_SPIELE.md); er gehört nicht zum hier abgeschlossenen Karten-UX-Auftrag.
+
+## CARD-UX-01 – Nachprüfung vom 25.11.2026 (3.27.3)
+
+Ausgangsstand 3.27.2 (`de6d769`). Die Grundlagen aus CUX-001 bis CUX-003 wurden nicht neu gebaut. Geprüft wurden die verbliebenen Punkte der Bedienungs-Checkliste. Gemessen wurde mit zwei Browser-Spielern in UNO, Skip-Bo und Phase 10 bei 360×640, 720×450 (entspricht 1440×900 bei 200 % Browser-Zoom) und 1440×900.
+
+| Befund | Messung vorher | Maßnahme | Nachher |
+| --- | --- | --- | --- |
+| Bei 200 % Zoom verschwindet die gerade gewählte Karte aus dem Bild. Die eingeblendete Auswahlzeile schiebt die Hand im Dock nach unten. | UNO: Karte bei y = 382–452, Skip-Bo: y = 432–502, Fensterhöhe 450 | Der gemeinsame Karten-UX-Pfad in `public/games/kit.js` scrollt nur eine **neu** gewählte Karte nach dem Layout mit `block: 'nearest'` ins Bild. Gilt nur für Spiele mit `cardUX: true`. Manuelles Scrollen ohne Auswahlwechsel bleibt unberührt. | UNO y = 341–411, Skip-Bo y = 343–413, sichtbar. Ohne die Korrektur schlägt die neue Regression fehl. |
+| Firefox fehlte in der Karten-UX-Suite. | – | `playwright.card-ux.config.js` hat die Projekte `firefox-desktop` und `firefox-schmal` | Firefox: 46 bestehende Fälle bestanden, 22 bewusst übersprungen (Vorher-Läufe, Touch-Wege) |
+| Doppelklick auf eine Karte | keine Spielaktion, Hand und Revision unverändert | keine | als Regression gesichert |
+| Horizontaler Seitenüberlauf, Zugbanner im Bild, Handkarten mindestens 44 px breit | in allen drei Größen erfüllt | keine | als Regression gesichert |
+| „Sortieren“ ist auf dem Desktop 32 px hoch | auf Touch-Breiten 44 px (bestehende Regel) | keine: für Maus genügt die Mindestgröße von 24 px (WCAG 2.5.8) | – |
+
+**Interaktionsrichtlinie, ergänzt:** Karte auswählen → erlaubte Aktionen und Ziele erkennen → ausdrücklich ausführen (unverändert). Neu: Eine neu gewählte Karte bleibt im sichtbaren Bereich, auch wenn Hinweise oder die Auswahlzeile das Layout verschieben. Ein Doppelklick wirkt wie zwei einzelne Auswahl-Tipps und spielt nie.
+
+**Regression:** `test/ui/card-ux-audit.spec.js`, neun Fälle (drei Spiele × drei Größen).
+
+- **Lokal:** fünf Profile (Chromium Desktop und Touch, WebKit iPhone, Firefox Desktop und schmal), 45/45 bestanden.
+- **CI:** führt sie über die Standardkonfiguration mit Chromium Desktop und Mobil aus. Firefox und WebKit laufen nur lokal über `npx playwright test --config=playwright.card-ux.config.js`.
+
+**Verbleibende manuelle Prüfungen:** echte Smartphones (Touch-Scroll gegen Antippen), echter Browser-Zoom über die Browsereinstellung statt Viewport-Emulation, Screenreader-Ansage der Auswahlzeile.
