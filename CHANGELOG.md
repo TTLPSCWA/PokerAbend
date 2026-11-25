@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.27.4 – 25. November 2026
+
+- Game Studio Tycoon: Speichern bleibt bedienbar, während das Studio im Hintergrund neue Daten abfragt. Eine verspätete Antwort ersetzt keinen bereits bestätigten Spielstand.
+
 ## 3.27.3 – 25. November 2026
 
 - UNO, Skip-Bo und Phase 10: Eine gerade ausgewählte Karte bleibt sichtbar, auch bei großem Browser-Zoom oder kleinem Fenster, wenn die Auswahlzeile die Hand verschiebt.

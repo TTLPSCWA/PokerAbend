@@ -27,6 +27,7 @@ export function mountStudio(root, { english, esc, played }) {
   const tab = window.name;
   let snapshot, tabId = 'projects', status = '', busy = false, ended = false;
   let form = {}, details = false, retry, phaseSeen, beat = 0;
+  let pollPending = false, foregroundRevision = 0, pressedPointer;
 
   const section = (caption, html) => '<section class="gs-card"><h2>' + esc(caption) + '</h2>' + html + '</section>';
   const action = (label, data, reason = '') => '<button type="button" data-gs-action="' + esc(JSON.stringify(data)) +
@@ -345,18 +346,22 @@ export function mountStudio(root, { english, esc, played }) {
       adopt(await request('', undefined, sessionStorage.getItem(leaseKey)));
     } else adopt(await request());
   }
+  async function recover(err, current = () => !ended) {
+    status = messageFor(err.code);
+    if (err.code !== 'lease-conflict') return;
+    sessionStorage.removeItem(leaseKey);
+    try {
+      const value = await request();
+      if (current()) adopt(value);
+    } catch { if (current()) snapshot = null; }
+  }
   async function perform(fn, repaint = true) {
     if (busy || ended) return;
+    foregroundRevision++;
     busy = true;
     try { await fn(); }
-    catch (err) {
-      status = messageFor(err.code);
-      if (err.code === 'lease-conflict') {
-        sessionStorage.removeItem(leaseKey);
-        try { adopt(await request()); } catch { snapshot = null; }
-      }
-      repaint = true;
-    } finally { busy = false; if (repaint) render(); }
+    catch (err) { await recover(err); repaint = true; }
+    finally { busy = false; if (repaint) render(); }
   }
   function confirm(heading, paragraph, operation) {
     const dlg = root.querySelector('dialog');
@@ -504,17 +509,59 @@ export function mountStudio(root, { english, esc, played }) {
     if (snapshot?.unsavedActions && !snapshot.readOnly) { event.preventDefault(); event.returnValue = ''; }
   };
   window.addEventListener('beforeunload', unload);
-  const timer = setInterval(() => {
-    if (busy || root.querySelector('dialog[open]') || !snapshot?.sessionId) return;
-    const editing = root.contains(document.activeElement) && document.activeElement.closest('[data-gs-form], .gs-file');
-    perform(async () => {
-      if (snapshot.token && ++beat % 12 === 0) await request('/session/heartbeat', { token: snapshot.token });
-      if (!editing) await refresh();
-    }, !editing);
+  const press = (event) => {
+    if (event.isPrimary && event.button === 0 && event.target.closest('button')) pressedPointer = event;
+  };
+  const release = (event) => {
+    const pressEvent = pressedPointer;
+    if (pressEvent?.pointerId !== event.pointerId) return;
+    // Keep the button through the click that follows pointerup.
+    setTimeout(() => { if (pressedPointer === pressEvent) pressedPointer = undefined; }, 0);
+  };
+  const clearPress = () => { pressedPointer = undefined; };
+  root.addEventListener('pointerdown', press);
+  window.addEventListener('pointerup', release, true);
+  window.addEventListener('pointercancel', release, true);
+  window.addEventListener('blur', clearPress);
+
+  const canRefresh = () => !pressedPointer && !root.querySelector('dialog[open]') &&
+    (!root.contains(document.activeElement) || !document.activeElement.closest('[data-gs-form], .gs-file'));
+  const timer = setInterval(async () => {
+    if (busy || pollPending || !snapshot?.sessionId) return;
+    const token = snapshot.token;
+    if (!token) {
+      if (canRefresh()) perform(refresh);
+      return;
+    }
+    // Foreground actions can run during a background read. Its response may
+    // only replace the view if it still belongs to the same foreground state.
+    const revision = foregroundRevision;
+    const current = () => !ended && revision === foregroundRevision && canRefresh();
+    pollPending = true;
+    try {
+      if (++beat % 12 === 0) await request('/session/heartbeat', { token });
+      if (!current()) return;
+      const value = await request('', undefined, token);
+      if (!current()) return;
+      adopt(value);
+      render();
+    } catch (err) {
+      if (!current()) return;
+      await recover(err, current);
+      if (current()) render();
+    } finally { pollPending = false; }
   }, 5000);
   perform(refresh);
   return {
     unsaved: () => Boolean(snapshot?.unsavedActions && !snapshot.readOnly),
-    destroy() { ended = true; clearInterval(timer); window.removeEventListener('beforeunload', unload); },
+    destroy() {
+      ended = true;
+      clearInterval(timer);
+      root.removeEventListener('pointerdown', press);
+      window.removeEventListener('pointerup', release, true);
+      window.removeEventListener('pointercancel', release, true);
+      window.removeEventListener('blur', clearPress);
+      window.removeEventListener('beforeunload', unload);
+    },
   };
 }

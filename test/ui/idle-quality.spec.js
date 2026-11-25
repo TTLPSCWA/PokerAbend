@@ -205,6 +205,87 @@ for (const game of accessibilityCases) {
   });
 }
 
+async function holdStudioView(page, endpoint) {
+  await page.evaluate((url) => {
+    const fetchView = window.fetch;
+    let received, release;
+    const held = new Promise((resolve) => { release = resolve; });
+    window.studioViewProbe = { received: new Promise((resolve) => { received = resolve; }), release };
+    window.fetch = async (input, init) => {
+      if (new URL(input, location.href).href !== url || (init?.method ?? 'GET') !== 'GET') {
+        return fetchView.call(window, input, init);
+      }
+      window.fetch = fetchView;
+      const response = await fetchView.call(window, input, init);
+      received(await response.clone().json());
+      await held;
+      return response;
+    };
+  }, endpoint);
+}
+
+async function releaseStudioView(page) {
+  await page.evaluate(async () => {
+    window.studioViewProbe.release();
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  });
+}
+async function settleStudioView(page, delivered) {
+  const response = await delivered;
+  expect(response.ok()).toBe(true);
+  await response.finished();
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+}
+
+test('Studio: Speichern bleibt bei einer laufenden Hintergrundabfrage bedienbar', async ({ page, app }, info) => {
+  await login(page, app, 'Studio Resize QA');
+  await page.clock.install();
+  await openGame(page, games[1]);
+  const save = button(page, 'Speichern');
+  await save.focus();
+  const endpoint = app.url + '/api/idle/studio';
+
+  const refreshed = page.waitForResponse((response) => response.url() === endpoint);
+  const previousSave = await save.elementHandle();
+  await page.clock.runFor(5100);
+  await settleStudioView(page, refreshed);
+  await expect.poll(() => previousSave.evaluate((node) => node.isConnected)).toBe(false);
+  await expect(save).toBeFocused();
+
+  // Hold a real server response at revision 0 until the first save is confirmed.
+  await holdStudioView(page, endpoint);
+  await page.clock.runFor(5000);
+  expect((await page.evaluate(() => window.studioViewProbe.received)).revision).toBe(0);
+  if (info.project.name === 'mobil') await save.tap();
+  else await save.click();
+  await expect(page.getByText('Gespeichert · Rev. 1', { exact: true })).toBeVisible();
+  await releaseStudioView(page);
+  // The next write must use revision 1, even after the old response arrived.
+  await save.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByText('Gespeichert · Rev. 2', { exact: true })).toBeVisible();
+});
+
+test('Studio: Hintergrunddaten ersetzen keinen gedrückten Speicherbutton', async ({ page, app }) => {
+  await login(page, app, 'Studio Pointer QA');
+  await page.clock.install();
+  await openGame(page, games[1]);
+  const save = button(page, 'Speichern');
+  await save.scrollIntoViewIfNeeded();
+  const before = await save.elementHandle();
+  const rect = await save.boundingBox();
+  await holdStudioView(page, app.url + '/api/idle/studio');
+  await page.clock.runFor(5100);
+  expect((await page.evaluate(() => window.studioViewProbe.received)).revision).toBe(0);
+  await page.mouse.move(rect.x + rect.width / 2, rect.y + rect.height / 2);
+  await page.mouse.down();
+  try {
+    await releaseStudioView(page);
+    expect(await before.evaluate((node) => node.isConnected)).toBe(true);
+  } finally { await page.mouse.up(); }
+  await expect(page.getByText('Gespeichert · Rev. 1', { exact: true })).toBeVisible();
+});
+
 test('Idle Bedienung: fünf Bildschirmgrößen und reduzierte Bewegung', async ({ page, app }) => {
   test.setTimeout(60_000);
   await login(page, app, 'Idle Viewports');
@@ -215,13 +296,19 @@ test('Idle Bedienung: fünf Bildschirmgrößen und reduzierte Bewegung', async (
     for (const width of [320, 375, 390, 768, 1440]) {
       await page.setViewportSize({ width, height: width <= 390 ? 740 : 900 });
       await expect(shell).toBeVisible();
-      const save = button(page, 'Speichern');
-      await save.scrollIntoViewIfNeeded();
-      const rect = await save.boundingBox();
-      expect(rect.x, game.id + ' save left at ' + width).toBeGreaterThanOrEqual(-1);
-      expect(rect.x + rect.width, game.id + ' save right at ' + width).toBeLessThanOrEqual(width + 1);
+      await expect(button(page, 'Speichern')).toBeVisible();
+      // Read and scroll the current element in the same frame. A refresh can
+      // replace the button between separate Playwright scroll and bounds calls.
+      const rect = await shell.evaluate((node) => {
+        const save = node.querySelector('[data-hall-local="save"], [data-gs-local="save"], [data-fe-local="save"]');
+        save.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'instant' });
+        const { left, right, height } = save.getBoundingClientRect();
+        return { left, right, height, documentWidth: document.documentElement.scrollWidth };
+      });
+      expect(rect.left, game.id + ' save left at ' + width).toBeGreaterThanOrEqual(-1);
+      expect(rect.right, game.id + ' save right at ' + width).toBeLessThanOrEqual(width + 1);
       expect(rect.height, game.id + ' save hit target at ' + width).toBeGreaterThanOrEqual(44);
-      expect(await page.evaluate(() => document.documentElement.scrollWidth), game.id + ' document width at ' + width).toBeLessThanOrEqual(width + 1);
+      expect(rect.documentWidth, game.id + ' document width at ' + width).toBeLessThanOrEqual(width + 1);
     }
     if (game.id !== 'spielhalle') {
       await page.setViewportSize({ width: 320, height: 740 });

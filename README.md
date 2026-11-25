@@ -480,7 +480,7 @@ Bei **SIGTERM** (`docker stop`) und **SIGINT** wird ebenfalls sofort alles gespe
 
 ### Version und „Was ist neu“
 
-Die Version steht in `package.json` (jetzt **3.27.3**) und klein unter dem Schriftzug „Spieleabend“ (mit Build-Kürzel), der Commit-Hash kommt als Build-Argument ins Image: Der Workflow übergibt `GIT_COMMIT` automatisch, lokal `docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) .`. Beides steht unter **Ich** und auf `/health` (`{"ok":true,"version":"2.0.0","commit":"abc1234","uptime":…}`). Für lokale Images mit Roadmap-Produktivnachweis siehe [Betriebsanleitung](docs/betrieb.md#öffentliche-roadmap-und-freigabeschalter-seit-3190).
+Die Version steht in `package.json` (jetzt **3.27.4**) und klein unter dem Schriftzug „Spieleabend“ (mit Build-Kürzel), der Commit-Hash kommt als Build-Argument ins Image: Der Workflow übergibt `GIT_COMMIT` automatisch, lokal `docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) .`. Beides steht unter **Ich** und auf `/health` (`{"ok":true,"version":"2.0.0","commit":"abc1234","uptime":…}`). Für lokale Images mit Roadmap-Produktivnachweis siehe [Betriebsanleitung](docs/betrieb.md#öffentliche-roadmap-und-freigabeschalter-seit-3190).
 
 Version 3.25.0 ergänzt [Factory Empire](docs/factory.md). Factory Empire, [Game Studio Tycoon](docs/studio.md) und [Die Spielhalle](docs/spielhalle.md) haben getrennte Spielschalter. Jedes Spiel erscheint erst nach eigener Freigabe und mit gültiger Idle-Speicherkonfiguration. Die technische ART-046-Anbindung enthält keine privaten Theme-Inhalte.
 
