@@ -247,6 +247,7 @@ export class Room extends TurnRoom {
     return {
       top: this.discard[this.discard.length - 1] ?? null,
       wish: this.wish, pending: this.pending, deck: this.deck.length,
+      seq: this.moveNo, // CARD-ACTION-02: Zugzähler, den eine Kartenaktion aus dem Browser mitsendet
       hand: this.hands[viewerId] ? [...this.hands[viewerId]] : null,
       // Was der Aktive gerade machen kann (nur für ihn)
       playable: mine && this.phase === 'playing' ? this.hands[viewerId].filter((c) => (!this.drawn || c === this.drawn) && this.canPlay(c) && this.allowed(c, viewerId)) : [],

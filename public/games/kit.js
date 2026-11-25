@@ -778,7 +778,7 @@ function kitShedding(opts) {
   function prepare(c, S) {
     if (opts.needsTarget?.(c, S) && !chosenTarget) { targetFor = c; kit.render(); return; }
     if (opts.needsWish(c, S)) { wishFor = c; kit.render(); return; }
-    send('play', { card: c, call: callArmed, target: chosenTarget }); chosenTarget = null; callArmed = false;
+    send('play', { card: c, call: callArmed, target: chosenTarget, seq: S.g.seq }); chosenTarget = null; callArmed = false; // CARD-ACTION-02: Zugzähler
   }
   const kit = kitGame({
     id: opts.id, name: opts.name, house: opts.house, sort: opts.sort, prefs: opts.prefs, translate: opts.translate, intro: opts.intro,
@@ -856,14 +856,16 @@ function kitShedding(opts) {
       acts = opts.specialDock?.(S, myTurn) ?? acts;
       return I18n.html`<div class="kg-hand" role="group" aria-label="Deine Karten">${hand}</div><div class="kg-acts">${acts}</div>`;
     },
-    onClick(t, S) {
+    onClick(t, S, e) {
       if (opts.onClick?.(t, S)) return;
       const g = t.dataset.g;
+      // CARD-ACTION-02: Der zweite Klick eines Doppelklicks träfe nach dem Neuzeichnen die nächste Karte – ignorieren.
+      if (e?.detail > 1 && (g === 'card' || g === 'wish' || g === 'target')) return;
       if (g === 'card') {
         const c = t.dataset.card;
         chosenTarget = null; prepare(c, S);
       } else if (g === 'target') { const c = targetFor; targetFor = null; chosenTarget = t.dataset.target; prepare(c, S); }
-      else if (g === 'wish') { send('play', { card: wishFor, wish: t.dataset.wish, call: callArmed, target: chosenTarget }); wishFor = null; callArmed = false; chosenTarget = null; }
+      else if (g === 'wish') { send('play', { card: wishFor, wish: t.dataset.wish, call: callArmed, target: chosenTarget, seq: S.g.seq }); wishFor = null; callArmed = false; chosenTarget = null; }
       else if (g === 'call') { callArmed = !callArmed; kit.render(); }
       else if (g === 'nowish') { wishFor = null; targetFor = null; chosenTarget = null; kit.render(); }
       else if (g === 'draw') send('draw');

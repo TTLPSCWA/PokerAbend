@@ -12,13 +12,13 @@
       "path": "public/games/kit.js",
       "archive": "test/fixtures/release-2026-11-08/baseline/public/games/kit.js",
       "baseline_sha256": "0b71e0da9f3c489f48d2f202a7fc7168a8f3dfdcbbf44366fb9f7fe7cd7401c1",
-      "current_sha256": "1985b22a9f02c7b0a5be2177786dd16e8b2123e6e5cbca4835da39e50093636f"
+      "current_sha256": "c3fba9d5dfc6ff9d8e86acbf2295252d7fafb3fa3b4678a7f0c058fa0a6deb12"
     },
     {
       "path": "public/games/stapelrennen/stapelrennen.js",
       "archive": "test/fixtures/release-2026-11-08/baseline/public/games/stapelrennen/stapelrennen.js",
       "baseline_sha256": "b706b482d8a653e9a3938066dcdae208598163ff7ff16324dfb1250bebf63a55",
-      "current_sha256": "4d457717885471a60d8b6aea40fb319fcc9fc311d2a938eff12d7893bad6d52f"
+      "current_sha256": "96aefe778540923d8e0c65ff8e5c7ab901081f90853af420250603715e2b4bbd"
     },
     {
       "path": "public/games/maumau/maumau.js",
@@ -54,7 +54,7 @@
       "path": "public/games/blackjack/blackjack.js",
       "archive": "test/fixtures/release-2026-11-08/baseline/public/games/blackjack/blackjack.js",
       "baseline_sha256": "6ce31dc402d61f7465e175e6df818fc6d5d250197b548f32e86fc07e30a0c2b1",
-      "current_sha256": "4e849e9c8f33f09d215e119251f270dbcfefd8605e2f08116ffc0bef432c6fb8"
+      "current_sha256": "2ef17f6ed201de47a7043d353f4ac5a88913ea711b20ab9937f7062f61339d8b"
     },
     {
       "path": "public/games/poker/poker.js",

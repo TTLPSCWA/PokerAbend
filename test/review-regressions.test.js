@@ -86,7 +86,8 @@ test('Skip-Bo: leerer Nachziehstapel erlaubt Weitergeben, Handkarten müssen wei
   assert.equal(r.view(a).g.canPass, true);
   assert.equal(r.view(b).g.canPass, false);
   assert.throws(() => r.pass(b), /nicht dran/);
-  GAMES.stapelrennen.events.pass(r, r.players.get(a));
+  assert.throws(() => GAMES.stapelrennen.events.pass(r, r.players.get(a), {}), /nicht mehr aktuell/); // CARD-ACTION-01: ohne Revision abgelehnt
+  GAMES.stapelrennen.events.pass(r, r.players.get(a), { rev: r.revision, round: r.roundNo });
   assert.equal(r.currentId, b);
   r.play(b, { kind: 'stock' }, 0);
   assert.equal(r.phase, 'over');

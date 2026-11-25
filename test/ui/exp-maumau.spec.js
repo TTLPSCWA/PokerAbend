@@ -13,7 +13,7 @@ async function turn(pages) {
   let p = null, over = false; await expect.poll(async () => { over = await pages[0].evaluate(() => lastState.phase !== 'playing'); for (const c of pages) if (await c.evaluate(() => lastState.phase === 'playing' && lastState.turnId === lastState.you.id)) p = c; return over || !!p; }).toBe(true);
   if (over) return { p: null, kind: 'over' };
   const g = await p.evaluate(() => lastState.g);
-  if (g.playable.length && !g.pending) { const card = g.playable[0]; const r = await send(p, 'play', { card, wish: card[0] === 'J' ? 'h' : null, call: g.hand.length === 2, target: null }); if (r.ok) return { p, kind: 'play' }; }
+  if (g.playable.length && !g.pending) { const card = g.playable[0]; const r = await send(p, 'play', { card, wish: card[0] === 'J' ? 'h' : null, call: g.hand.length === 2, target: null, seq: g.seq }); if (r.ok) return { p, kind: 'play' }; }
   if (g.drawn) { await send(p, 'pass'); return { p, kind: 'pass' }; }
   const r = await send(p, 'draw'); return { p, kind: r.ok ? 'draw' : 'none' };
 }

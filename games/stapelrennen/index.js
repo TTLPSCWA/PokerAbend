@@ -17,8 +17,9 @@ export default turnGame(Room, {
   players: '2–6 Spieler',
   createFields: [{ key: 'stockSize', label: 'Karten im eigenen Stapel', type: 'number', min: 5, value: 20 }],
   events: {
-    play: (room, p, { from: f, to }) => room.play(p.id, from(f), to),
-    discard: (room, p, { index, pile }) => room.throwAway(p.id, index, pile),
-    pass: (room, p) => room.pass(p.id),
+    // CARD-ACTION-01: Browseraktionen nennen Revision, Runde, Karte und Ziel; der Server prüft alles vor jeder Änderung.
+    play: (room, p, d = {}) => room.playChecked(p.id, from(d.from), d),
+    discard: (room, p, d = {}) => room.discardChecked(p.id, d),
+    pass: (room, p, d = {}) => room.passChecked(p.id, d),
   },
 });

@@ -233,6 +233,12 @@ export class Room extends TurnRoom {
     if (this.step !== 'play') throw new Error('Gerade nicht');
     return this.hands[id][this.handIdx];
   }
+  // CARD-ACTION-02: Browseraktionen nennen die Hand und deren Kartenzahl, wie sie angezeigt wurden. Ein Doppelklick,
+  // ein zweites Fenster oder eine Aktion nach Zeitablauf trifft sonst die nächste Karte bzw. die nächste geteilte Hand.
+  expectHand(id, d) {
+    const hand = this.current(id);
+    if (!d || d.hand !== this.handIdx || d.cards !== hand.cards.length) throw new Error('Diese Kartenaktion ist nicht mehr aktuell – der Spielstand wurde aktualisiert');
+  }
   hit(id) {
     const hand = this.current(id);
     hand.cards.push(this.draw());

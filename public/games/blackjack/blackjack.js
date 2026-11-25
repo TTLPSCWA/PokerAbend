@@ -117,14 +117,20 @@
       return '';
     },
     onChange(t) { if (t.dataset.g === 'amount') { amount = Math.floor(Number(t.value)) || amount; kit.render(); } },
-    onClick(t, S) {
+    onClick(t, S, e) {
       const g = t.dataset.g;
       const max = Math.min(S.g.maxBet, S.g.stack ?? 0);
       if (g === 'add') { amount = Math.min(max, amount + Number(t.dataset.v)); kit.render(); }
       else if (g === 'resetBet') { amount = S.g.minBet; kit.render(); }
       else if (g === 'maxBet') { amount = max; kit.render(); }
       else if (g === 'bet') send('bet', { amount });
-      else if (['sitOut', 'dealNow', 'hit', 'stay', 'double', 'split', 'rebuy'].includes(g)) send(g);
+      else if (['hit', 'stay', 'double', 'split'].includes(g)) {
+        if (e?.detail > 1) return; // zweiter Klick eines Doppelklicks: keine zweite Karte, kein Stehen auf der nächsten Hand
+        // CARD-ACTION-02: angezeigte Hand und Kartenzahl mitsenden; der Server lehnt Doppelklicks und veraltete Stände ab.
+        const hand = S.g.hands?.[S.you?.id]?.[S.g.handIdx];
+        if (hand) send(g, { hand: S.g.handIdx, cards: hand.cards.length });
+      }
+      else if (['sitOut', 'dealNow', 'rebuy'].includes(g)) send(g);
       else if (g === 'insure') send('insure', { yes: !!t.dataset.yes });
     },
     rules: I18n.html`<p>Gespielt wird gegen den Dealer (die Bank) mit 6 Decks. Ziel: näher an 21 als der Dealer, ohne über 21 zu kommen.</p>

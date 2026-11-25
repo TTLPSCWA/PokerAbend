@@ -2,6 +2,13 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.28.1 – 25. November 2026
+
+- Skip-Bo: Eine Kartenaktion aus einem veralteten Spielstand wird abgelehnt, statt eine andere Karte zu spielen. Das betrifft etwa ein zweites Fenster oder eine verspätete Antwort; danach siehst du sofort den aktuellen Stand.
+- Blackjack: Ein Doppelklick auf „Karte“ zieht nur noch eine Karte. Bei geteilter Hand beendet ein Doppelklick auf „Stehen“ nur die angezeigte Hand.
+- Mau-Mau: Nach „Ass – nochmal dran“ spielt ein Doppelklick auf eine Karte nicht zusätzlich die nächste.
+- Wer einen Raum in einem zweiten Tab öffnet, hat im alten Tab keine Fehler mehr im Hintergrund.
+
 ## 3.28.0 – 25. November 2026
 
 - Doppelkopf: Wertung, Ansagen und Hochzeit folgen jetzt den Turnierregeln des Deutschen Doppelkopf-Verbands (Stand 21.02.2026).

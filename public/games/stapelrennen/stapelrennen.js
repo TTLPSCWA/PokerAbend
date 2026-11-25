@@ -24,7 +24,9 @@
   }
   const currentSource=(S)=>sel&&sel.context===CardInteraction.context(S)?sel:null;
   const fits=(S,from,to)=>!!(from&&S.phase==='playing'&&!S.gamePaused&&S.turnId===S.you?.id&&S.g.build[to]&&(from.value===0||from.value===S.g.build[to].next));
-  const payload=(s)=>({kind:s.kind,index:s.index,...(s.owner?{owner:s.owner}:{})});
+  // CARD-ACTION-01: Kartenkennung, erwarteter Wert, Revision und Runde gehen mit; veraltete Aktionen lehnt der Server ab.
+  const payload=(s)=>({kind:s.kind,index:s.index,value:s.value,...(s.kind==='hand'?{card:kit.S.g.handIds?.[s.index]}:{}),...(s.owner?{owner:s.owner}:{})});
+  const expect=(S)=>({rev:S.g.revision,round:S.roundNo});
   async function submit(event,data){const before=sel,result=await kit.command(event,data);if(result?.ok&&sel===before)sel=null;kit.render();}
 
   // ART-009: sichtbare Stapelhöhe in vier Stufen (0 = eine Karte … 3 = hoher Stapel), nur Darstellung.
@@ -83,8 +85,8 @@
     canDrop(src,z,S){const from=source(src,S);return z.dataset.drop==='build'?fits(S,from,Number(z.dataset.i)):z.dataset.drop==='pile'&&from?.kind==='hand'&&S.turnId===S.you?.id&&!S.gamePaused;},
     onDrop(src, z, S) {
       const from=source(src,S);if(!from)return;sel=from;
-      if(z.dataset.drop==='build'&&fits(S,from,Number(z.dataset.i)))submit('play',{from:payload(from),to:Number(z.dataset.i)});
-      else if(z.dataset.drop==='pile'&&from.kind==='hand')submit('discard',{index:from.index,pile:Number(z.dataset.i)});
+      if(z.dataset.drop==='build'&&fits(S,from,Number(z.dataset.i)))submit('play',{...expect(S),from:payload(from),to:Number(z.dataset.i),need:S.g.build[Number(z.dataset.i)].next});
+      else if(z.dataset.drop==='pile'&&from.kind==='hand')submit('discard',{...expect(S),index:from.index,card:S.g.handIds?.[from.index],value:from.value,pile:Number(z.dataset.i)});
     },
     main(S, ui = {}) {
       const g = S.g;
@@ -128,10 +130,10 @@
         const next = source(t,S);if(!next)return;
         sel = same(sel, next) ? null : next;
         kit.render();
-      } else if (g === 'build' && fits(S,currentSource(S),Number(t.dataset.i)))submit('play',{from:payload(sel),to:Number(t.dataset.i)});
-      else if (g === 'drop' && currentSource(S)?.kind === 'hand')submit('discard',{index:sel.index,pile:Number(t.dataset.i)});
+      } else if (g === 'build' && fits(S,currentSource(S),Number(t.dataset.i)))submit('play',{...expect(S),from:payload(sel),to:Number(t.dataset.i),need:S.g.build[Number(t.dataset.i)].next});
+      else if (g === 'drop' && currentSource(S)?.kind === 'hand')submit('discard',{...expect(S),index:sel.index,card:S.g.handIds?.[sel.index],value:sel.value,pile:Number(t.dataset.i)});
       else if (g === 'clear-selection') {sel=null;kit.render();}
-      else if (g === 'pass')submit('pass',{});
+      else if (g === 'pass')submit('pass',expect(S));
       else if (g === 'look') openLook(kit.lookSheet(kit.S));
     },
     rules: I18n.html`<p>Wer zuerst seinen eigenen <b>Stapel</b> los ist, gewinnt.</p>

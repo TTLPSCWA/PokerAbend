@@ -22,10 +22,11 @@ export default turnGame(Room, {
     sitOut: (room, p) => room.sitOut(p.id),
     dealNow: (room, p) => room.dealNow(p.id),
     insure: (room, p, { yes }) => room.insure(p.id, !!yes),
-    hit: (room, p) => room.hit(p.id),
-    stay: (room, p) => room.stay(p.id),
-    double: (room, p) => room.double(p.id),
-    split: (room, p) => room.split(p.id),
+    // CARD-ACTION-02: Hand und Kartenzahl müssen zum aktuellen Stand passen (Schutz vor Doppelklick und veralteten Fenstern).
+    hit: (room, p, d) => { room.expectHand(p.id, d); return room.hit(p.id); },
+    stay: (room, p, d) => { room.expectHand(p.id, d); return room.stay(p.id); },
+    double: (room, p, d) => { room.expectHand(p.id, d); return room.double(p.id); },
+    split: (room, p, d) => { room.expectHand(p.id, d); return room.split(p.id); },
     rebuy: (room, p) => room.rebuy(p.id),
   },
 });

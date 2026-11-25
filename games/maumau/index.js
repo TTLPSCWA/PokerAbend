@@ -15,7 +15,12 @@ export default turnGame(Room, {
   players: '2–8 Spieler',
   createFields: [{ key: 'handSize', label: 'Karten pro Spieler', type: 'number', min: 3, value: 5 }],
   events: {
-    play: (room, p, { card, wish, call }) => room.play(p.id, str(card), str(wish) || null, !!call),
+    // CARD-ACTION-02: Ein Klick spielt sofort. Nach „Ass – nochmal dran“ träfe ein Doppelklick sonst die Karte, die nun an
+    // derselben Stelle liegt. Der mitgesendete Zugzähler muss deshalb zum aktuellen Stand passen.
+    play: (room, p, { card, wish, call, seq }) => {
+      if (seq !== room.moveNo) throw new Error('Diese Kartenaktion ist nicht mehr aktuell – der Spielstand wurde aktualisiert');
+      return room.play(p.id, str(card), str(wish) || null, !!call);
+    },
     draw: (room, p) => room.draw(p.id),
     pass: (room, p) => room.pass(p.id),
   },

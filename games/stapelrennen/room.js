@@ -18,7 +18,39 @@ export class Room extends TurnRoom {
     super(code, settings, onChange, { minPlayers: 2, maxPlayers: 6, lowWins: false, scoreLabel: 'Punkte' });
     this.resetTable();
   }
-  resetTable() { this.deck = []; this.used = []; this.build = [[], [], [], []]; this.stock = {}; this.hand = {}; this.piles = {}; }
+  resetTable() { this.deck = []; this.used = []; this.build = [[], [], [], []]; this.stock = {}; this.hand = {}; this.handIds = {}; this.piles = {}; }
+  // CARD-ACTION-01: Kartenwerte kommen mehrfach vor. Jede Handkarte trägt deshalb eine eindeutige Kennung, und jeder
+  // Zustandswechsel erhöht die Revision. Eine Aktion aus dem Browser nennt beides und wird sonst unverändert abgelehnt.
+  bump() { this.revision = (this.revision || 0) + 1; }
+  cardIds(id) {
+    const hand = this.hand[id] || [], ids = (this.handIds ||= {})[id] ||= [];
+    while (ids.length < hand.length) ids.push(`k${this.cardSeq = (this.cardSeq || 0) + 1}`);
+    ids.length = hand.length;
+    return ids;
+  }
+  expectState(id, d) {
+    this.requireTurn(id);
+    if (!d || d.rev !== this.revision || d.round !== this.roundNo) throw new Error('Diese Kartenaktion ist nicht mehr aktuell – der Spielstand wurde aktualisiert');
+  }
+  // Aktion aus dem Browser: Revision, Runde, Kartenkennung bzw. erwarteter Wert und Ziel müssen zum aktuellen Stand passen.
+  playChecked(id, from, d) {
+    this.expectState(id, d);
+    const to = d.to;
+    if (!Number.isInteger(to) || !this.build[to]) throw new Error('Diese Baureihe gibt es nicht');
+    const value = this.source(id, from);
+    if (from.kind === 'hand' && this.cardIds(id)[from.index] !== d.from?.card) throw new Error('Diese Kartenaktion ist nicht mehr aktuell – der Spielstand wurde aktualisiert');
+    if (d.from?.value !== value) throw new Error('Diese Kartenaktion ist nicht mehr aktuell – der Spielstand wurde aktualisiert');
+    if (d.need !== undefined && d.need !== this.build[to].length + 1) throw new Error('Diese Kartenaktion ist nicht mehr aktuell – der Spielstand wurde aktualisiert');
+    return this.play(id, from, to);
+  }
+  discardChecked(id, d) {
+    this.expectState(id, d);
+    const i = d.index;
+    if (!Number.isInteger(i) || this.hand[id][i] === undefined) throw new Error('Diese Handkarte gibt es nicht');
+    if (this.cardIds(id)[i] !== d.card || this.hand[id][i] !== d.value) throw new Error('Diese Kartenaktion ist nicht mehr aktuell – der Spielstand wurde aktualisiert');
+    return this.throwAway(id, i, d.pile);
+  }
+  passChecked(id, d) { this.expectState(id, d); return this.pass(id); }
   defaultSettings() { return { stockSize: 20 }; }
 
   validateStart(ids) {
@@ -37,19 +69,22 @@ export class Room extends TurnRoom {
     this.deck = shuffle(deck);
     for (const id of this.order) {
       this.stock[id] = this.deck.splice(-this.settings.stockSize);
-      this.hand[id] = [];
+      this.hand[id] = []; this.handIds[id] = [];
       this.piles[id] = [[], [], [], []];
     }
+    this.bump();
   }
 
-  onTurnStart() { if (this.currentId) this.fill(this.currentId); }
+  onTurnStart() { if (this.currentId) this.fill(this.currentId); this.bump(); }
 
   // Hand auf 5 auffüllen; ist der Stapel leer, werden fertige Baureihen neu gemischt
   fill(id) {
     while (this.hand[id].length < HAND) {
       if (!this.deck.length) { this.deck = shuffle(this.used); this.used = []; }
       if (!this.deck.length) break;
+      this.cardIds(id);
       this.hand[id].push(this.deck.pop());
+      this.cardIds(id);
     }
   }
 
@@ -63,7 +98,7 @@ export class Room extends TurnRoom {
   }
   take(id, from) {
     id = this.sourceOwner(id, from);
-    if (from.kind === 'hand') return this.hand[id].splice(from.index, 1)[0];
+    if (from.kind === 'hand') { this.cardIds(id).splice(from.index, 1); return this.hand[id].splice(from.index, 1)[0]; }
     if (from.kind === 'stock') return this.stock[id].pop();
     return this.piles[id][from.index].pop();
   }
@@ -75,6 +110,7 @@ export class Room extends TurnRoom {
     const c = this.source(id, from);
     const need = b.length + 1;
     if (c !== need && c !== JOKER) throw new Error(`Auf diese Reihe gehört eine ${need}`);
+    this.bump();
     this.take(id, from);
     b.push(c);
     this.say(`${this.name(id)} legt ${c === JOKER ? `Joker (als ${need})` : c}${from.kind === 'stock' ? ' vom Stapel' : ''}`, 'info', from.kind === 'stock' ? 'win' : 'action');
@@ -88,7 +124,9 @@ export class Room extends TurnRoom {
     this.requireTurn(id);
     const i = Number(handIndex), p = Number(pile);
     if (this.hand[id][i] === undefined) throw new Error('Diese Handkarte gibt es nicht');
-    if (!(p >= 0 && p < 4)) throw new Error('Diese Ablage gibt es nicht');
+    if (!(Number.isInteger(p) && p >= 0 && p < 4)) throw new Error('Diese Ablage gibt es nicht');
+    this.bump();
+    this.cardIds(id).splice(i, 1);
     this.piles[id][p].push(this.hand[id].splice(i, 1)[0]);
     this.say(`${this.name(id)} legt ab`, 'info', 'action');
     this.act(id, 'legt ab');
@@ -102,6 +140,7 @@ export class Room extends TurnRoom {
     const canContinue = this.order.some((p) => this.hand[p].length ||
       [this.stock[p].at(-1), ...this.piles[p].map((pile) => pile.at(-1))]
         .some((c) => c === JOKER || this.build.some((b) => b.length + 1 === c)));
+    this.bump();
     if (!canContinue) return this.finishRound([], 'Keine Karten mehr spielbar – Runde unentschieden');
     this.say(`${this.name(id)} gibt weiter – keine Handkarte und kein Nachziehen möglich`, 'info', 'action');
     this.act(id, 'gibt weiter');
@@ -126,7 +165,8 @@ export class Room extends TurnRoom {
   onDropOut(p) {
     if (this.variant === 'team') { const winners = this.order.filter((id) => id !== p.id && id !== this.partner(p.id)); this.finishRound(winners, 'Teamspiel durch Ausscheiden beendet', Object.fromEntries(winners.map((id) => [id, 25]))); }
     for (const list of [this.stock[p.id], this.hand[p.id], ...(this.piles[p.id] || [])]) if (list) this.used.push(...list);
-    delete this.stock[p.id]; delete this.hand[p.id]; delete this.piles[p.id];
+    delete this.stock[p.id]; delete this.hand[p.id]; delete this.handIds?.[p.id]; delete this.piles[p.id];
+    this.bump();
   }
 
   publicPlayer(p) {
@@ -138,6 +178,8 @@ export class Room extends TurnRoom {
     return {
       build: this.build.map((b) => ({ next: b.length + 1, count: b.length, jokers: b.map((c, i) => (c === JOKER ? i : -1)).filter((i) => i >= 0) })),
       hand: this.hand[viewerId] ? [...this.hand[viewerId]] : null,
+      handIds: this.hand[viewerId] ? [...this.cardIds(viewerId)] : null,
+      revision: this.revision || 0,
       partner: this.partner(viewerId),
       deck: this.deck.length,
       canPass: this.phase === 'playing' && this.currentId === viewerId && !this.hand[viewerId]?.length && !this.deck.length && !this.used.length,

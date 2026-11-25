@@ -471,6 +471,8 @@ window.addEventListener('pageshow', (e) => { if (e.persisted) location.reload();
 // Statt eines schwarzen Bildschirms: Ist der Raum sichtbar, aber nichts gemountet oder keine Verbindung da, kommt nach 3 s ein Hinweis
 let brokenSince = 0;
 setInterval(() => {
+  // Nach „replaced“ (dasselbe Konto spielt in einem anderen Tab weiter) ist die Seite ersetzt – nichts mehr zu prüfen.
+  if (!$('#game-root') || !$('#lost')) return;
   const broken = !$('#game-root').hidden && (!mounted || !socket.connected || !lastState);
   if (!broken) { brokenSince = 0; $('#lost').hidden = true; return; }
   brokenSince ||= Date.now();
