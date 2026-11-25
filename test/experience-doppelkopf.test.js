@@ -9,6 +9,14 @@ test('EXP-087: Ansage und geklärte Partei', () => {
   assert.deepEqual(events(G({}), G({ levels: { re: 1, kontra: 0 }, known: { a: 're' } })), [{ type: 'call', party: 're' }, { type: 'party', id: 'a', party: 're' }]);
   assert.deepEqual(events(G({ levels: { re: 1, kontra: 0 } }), G({ levels: { re: 1, kontra: 1 } })), [{ type: 'call', party: 'kontra' }]);
 });
+test('EXP-087: two confirmed calls in one frame, without replay on the same state or a new deal', () => {
+  const previous = G({});
+  const announced = G({ levels: { re: 1, kontra: 1 } });
+  assert.deepEqual(events(previous, announced), [{ type: 'call', party: 're' }, { type: 'call', party: 'kontra' }]);
+  assert.deepEqual(events(announced, structuredClone(announced)), []);
+  assert.deepEqual(events(previous, G({ dealKey: 'other-deal', levels: announced.g.levels })), []);
+  assert.deepEqual(events(null, announced), []);
+});
 test('EXP-087: Stich, Fuchs (gefangen nur bei bekannten, verschiedenen Parteien) und Doko', () => {
   const trick = { winner: 'b', points: 41, cards: [{ id: 'a', card: 'Ad1' }, { id: 'b', card: 'Tc' }, { id: 'c', card: 'Kc' }, { id: 'd', card: 'Qc' }] };
   assert.deepEqual(events(G({ trick: [{}, {}, {}] }), G({ lastTrick: trick, known: {} })), [{ type: 'sweep', winner: 'b', points: 41 }, { type: 'fox', from: 'a', to: 'b', caught: false }]);
