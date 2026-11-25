@@ -1,12 +1,14 @@
 # PokerAbend V2 – Roadmap (nur Planung)
 > **Nicht implementieren**, bis der Nutzer ausdrücklich die Arbeit an einer benannten ID freigibt.
-> Stand: 30. Oktober 2026 · konsolidierte Baseline: `main` `aa25517` · 46 registrierte Spiele.
+> Historische Konsolidierung vom 30. Oktober 2026 · Baseline: `main` `aa25517` · 46 registrierte Spiele.
 > Maschinenlesbarer Status: [plan.json](./plan.json). Vollständiger Ursprung: [MASTERPROMPT_V2_SOURCE.md](./MASTERPROMPT_V2_SOURCE.md).
 
 ## Ziel
 Ein dauerhaftes, optionales Discord-Accountsystem mit verifizierter Identität für Rankings und Erfolge, echte temporäre Gäste, unveränderte Computerbots, öffentliche zufällige Game-IDs, personalisierbare Ansichten und das reduzierte Liquid-Glass-Design. Optional später eine sichere eigene Browser-Tischkamera (nicht Discord-Videocall) – **keine Freundesliste, kein 3D**.
 
-## Arbeitspakete
+## Arbeitspakete · historischer Planungs- und Übergabestand
+
+Aktueller Nachweis steht im [Masterplan](plan.json). Dort sind 17 von 18 Paketen umgesetzt. V2-08 (Tischkamera) bleibt geplant.
 | ID | Priorität | Inhalt | Voraussetzung | Status |
 |---|---|---|---|---|
 | V2-00 | critical | Bestandsaufnahme, Sicherheitsmodell und Daten-Sicherung | – | Umgesetzt (01.11.2026) |
@@ -37,7 +39,7 @@ Ein dauerhaftes, optionales Discord-Accountsystem mit verifizierter Identität f
 
 **Wichtig:** `Risiko-Würfeln` in `games/planned.js` ist nicht das neue Strategiebrettspiel Risiko. Die Strategie- und Hexfeldspiele erfordern eigenständige Grafik/Namen und eine Prüfung von Marken-/Designrechten. Der vorhandene Ticket-Admin ist nicht automatisch Plattform-Admin; die neue Admin-Zentrale soll mit nachweisbaren Berechtigungen und Audit arbeiten.
 
-Die bestehenden Backlog-IDs `gebietskampf` und `staedtehandel` sind verbindlich; weder ein zweites Risiko-/Catan-Spiel noch alternative Implementierungsverzeichnisse dafür anlegen. Das vorhandene Liquid-Glass-Redesign bleibt erhalten. V2-06 ist die noch nicht umgesetzte Konto-/Profilintegration; bereits vorhandene Gestaltung ist kein Nachweis für ihren Abschluss. Alle 18 Pakete bleiben `planned`.
+Die bestehenden Backlog-IDs `gebietskampf` und `staedtehandel` sind verbindlich; weder ein zweites Risiko-/Catan-Spiel noch alternative Implementierungsverzeichnisse dafür anlegen. Das vorhandene Liquid-Glass-Redesign bleibt erhalten. Die zuerst geplante Konto-/Profilintegration V2-06 wurde inzwischen umgesetzt. Der Nachweis steht im [Masterplan](plan.json) und in der [UI-Dokumentation](../ui-redesign.md).
 
 ## Umsetzungsgrenzen
 - Namen dürfen weder zur Accountidentifizierung noch zur Bot-Filterung oder Rechtezuordnung dienen.

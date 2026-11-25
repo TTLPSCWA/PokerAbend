@@ -160,7 +160,7 @@ Die fachliche Zuordnung folgt dem ursprünglichen Konzept (`THEME_WORLDS.md`, Ab
 
 Die Asset-Pipeline aus ART-046 Paket F (`MONOPOLY_THEME_ASSETS.md`) und Schriften als selbst gehostete OFL-Dateien (wie bei den Kartenwelten) werden **innerhalb** dieser Pakete genutzt, wenn eine Welt Rastergrafiken oder Webfonts braucht.
 
-## 10. Technische Risiken (Stand 3.13.0)
+## 10. Technische Risiken (einschließlich ART-W3 und ART-W4)
 
 | Risiko | Auswirkung | Umgang |
 |---|---|---|

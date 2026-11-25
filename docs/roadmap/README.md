@@ -3,6 +3,8 @@
 **GitHub-Repository:** TTLPSCWA/PokerAbend
 **Verwendbar durch:** Codex, Claude Code und andere Coding-Agenten.
 
+Die [Projektübersicht](../../README.md#spiele) beschreibt das aktuelle Angebot. Der [Entwicklungsindex](INDEX.md) führt Umsetzung, CI-Abnahme und Produktivbereitstellung getrennt.
+
 ## Wichtige Dateien
 
 - [V2-06: Liquid Glass in den Konto-Seiten](../ui-redesign.md): Profil, Einstellungen, Bestenliste, Erfolge und Admin mit den Tokens des Hubs; keine Logikänderung.
@@ -14,7 +16,7 @@
 
 - [V2-16: Bot-Schwierigkeit](V2-16_BOT_SCHWIERIGKEIT.md): elf Piloten, Host-Auswahl, Informationsgrenzen, Budgets, 2.200 Vergleichspartien und vollständiger Browser-Prüfverlauf. Die übrigen nicht umgesetzten Pakete bleiben geplant.
 
-- **Separate visuelle Planung:** [Design-Roadmap für alle Spiele](../design/GAME_VISUAL_ROADMAP.md), [JSON-Pakete](../design/game-visual-roadmap.json) und [Designstandard](../design/GAME_VISUAL_GUIDELINES.md). Nach dem ausdrücklich beauftragten BACKLOG-04 sind vierzehn VIS-Pakete abgeschlossen. Die weiteren 93 VIS-Pakete (51 spielbare Spiele und 42 Konzepte; Stand 01.11.2026) benötigen eigene Freigaben und ändern keine V2-Statusangaben.
+- **Separate visuelle Planung:** [Design-Roadmap für alle Spiele](../design/GAME_VISUAL_ROADMAP.md), [JSON-Pakete](../design/game-visual-roadmap.json) und [Designstandard](../design/GAME_VISUAL_GUIDELINES.md). Der VIS-Status steht in der JSON-Quelle. Visuelle Pakete haben eigene Freigaben und ändern keine V2-Statusangaben.
 - `docs/roadmap/V2_ADDENDUM_2026-10-30.md`: Sieben ergänzte Vorhaben zu Risiko, Catan-artigem Spiel, mehr Erfolgen, Presence, Einstellungen, Bot-Schwierigkeit und Adminverwaltung. Teil der verbindlichen Planung.
 - `docs/roadmap/plan.json`: Maschinenlesbare Master-Roadmap mit stabilen Arbeitspaket-IDs, Abhängigkeiten, Sicherheit, Akzeptanz und Status.
 - `docs/roadmap/POKERABEND_V2_ROADMAP.md`: Menschenlesbare Zusammenfassung, Prioritäten und Arbeitsanweisung.
@@ -35,7 +37,7 @@
 
 **Historische Konsolidierungsbasis (30.10.2026):** `main` bei `aa25517`, damals 46 registrierte Spiele und bereits vorhandenes Liquid-Glass-Redesign (siehe `docs/ui-redesign.md`). Die V2-Konto-/Profilintegration dieses Designs bleibt ausdrücklich geplant. Die 18 Pakete werden durch die Konsolidierung nicht als implementiert markiert.
 
-**Aktuelle Spielesammlung (01.11.2026):** 62 registrierte Raumspiele plus drei lokale Einzelspieler. Der Ausbau um Scotland Yard, Hex und Würfelduell steht in [Umsetzung und Prüfungen](../scotland-yard-und-kleine-spiele.md). Die ersten beiden [Backlog-Päckchen](../backlog/WEITERE_SPIELE.md) ergänzen sechs kleine Spiele; BACKLOG-03 ergänzt Backgammon, Hearts und Five Card Draw mit Bots und individuellen Spielwelten. BACKLOG-04 ergänzt Scrabble, Omaha Hi/Lo, Short Deck Poker und Seven Card Stud. In „Weitere Spiele“ sind damit 13 von 41 Einträgen erledigt. Nach diesem ausdrücklich begrenzten Auftrag stoppen. `plan.json.baseline` bleibt die unveränderte historische Konsolidierungsbasis; dieser Spiele-Ausbau implementiert kein V2-Paket.
+**Historischer Ausbau (01.11.2026):** 62 registrierte Raumspiele plus drei lokale Einzelspieler. Der Ausbau um Scotland Yard, Hex und Würfelduell steht in [Umsetzung und Prüfungen](../scotland-yard-und-kleine-spiele.md). Die ersten beiden [Backlog-Päckchen](../backlog/WEITERE_SPIELE.md) ergänzen sechs kleine Spiele; BACKLOG-03 ergänzt Backgammon, Hearts und Five Card Draw mit Bots und individuellen Spielwelten. BACKLOG-04 ergänzt Scrabble, Omaha Hi/Lo, Short Deck Poker und Seven Card Stud. In „Weitere Spiele“ sind damit 13 von 41 Einträgen erledigt. `plan.json.baseline` bleibt die unveränderte historische Konsolidierungsbasis; dieser Spiele-Ausbau implementiert kein V2-Paket.
 
 **Schema:** `goal` enthält die Aufgabenbeschreibung. Jedes Paket führt ID, Titel, Priorität, Abhängigkeiten, betroffene Dateien, Sicherheitsanforderungen, Akzeptanzkriterien, `status`, `test_results`, `commits`, `implementation_commit` und `completed_at`. Ohne Implementierung bleiben Ergebnis-/Commitlisten leer und Abschlussfelder `null`. `public_roadmap_ids` verknüpft jedes Paket mit vorhandenen Besucher-Einträgen; Roadmap-Tests prüfen diese Zuordnung und die Abhängigkeiten. `consolidation.json` ist ein Herkunfts-/Altbranch-Inventar, keine zweite aktive Entwicklungsplanung.
 

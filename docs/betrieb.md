@@ -153,14 +153,14 @@ Siehe [Abschnitt 4](#4-funktionen-und-spiele-ein--und-ausschalten).
 
 Die Anschluss-Grenzen zählen pro IP-Adresse. In der Produktionsvariante aktiviert `docker-compose.prod.yml` die Weitergabe vom direkten Traefik-Proxy. Mit `TRUST_PROXY_PEERS` lässt sich dessen Vertrauensgrenze auf konkrete Adressen begrenzen. [Abschnitt 9](#9-was-sebi-für-traefik-wissen-muss)
 
-### Fest eingestellt (nicht in die `.env`)
+### Werte aus der Compose-Konfiguration
 
 | Variable | Wert | Wo |
 | --- | --- | --- |
 | `PORT` | `3000` | Dockerfile. Muss zum Traefik-Label `loadbalancer.server.port` passen. |
 | `DATA_DIR` | `/app/data` | Dockerfile. Das Volume hängt hier. |
 | `TRUST_PROXY` | `1` | `docker-compose.prod.yml` (Besucher-IP und HTTPS vom unmittelbaren Proxy). |
-| `TRUST_PROXY_PEERS` | leer | Optional bei aktivem Proxy-Vertrauen. Kommagetrennte Liste der konkreten Traefik-Adressen (IPv4 oder IPv6). |
+| `TRUST_PROXY_PEERS` | leer | Optional in `.env` setzen. Beide Compose-Varianten übernehmen die kommagetrennte Liste konkreter Traefik-Adressen (IPv4 oder IPv6). |
 | `NODE_ENV` | `production` | Dockerfile. |
 | `APP_COMMIT` | Commit-Hash | Build-Argument `GIT_COMMIT`; steht unter „Ich“ und auf `/health`. |
 
@@ -316,19 +316,9 @@ Der Restore-Test läuft mit Node.js aus dem Projektverzeichnis. Ohne Pfad verwen
 
 Das Skript entpackt reguläre Dateien und Verzeichnisse in einen privaten temporären Datenordner. Archive mit Links, Sonderdateien, erweiterten Tar-Einträgen oder ungültigen Pfaden werden abgewiesen. Der Prüfserver bindet ausschließlich an `127.0.0.1` und erhält seinen freien Port vom Betriebssystem. Für den API-Test wird eine eigene temporäre Anmeldung erzeugt. Das Skript setzt die interne Markierung `POKER_RESTORE_CHECK` ausschließlich für seinen Prüfprozess. Produktionskonfiguration und Originalarchiv bleiben getrennt. Nach dem Test oder einem abfangbaren Abbruch werden Server und Datenordner bereinigt. Nach einem erzwungenen Prozessabbruch oder Systemausfall den eventuell verbliebenen Ordner `pokerabend-restore-*` im temporären Verzeichnis des ausführenden Kontos prüfen und bei Bedarf separat bereinigen.
 
-**Zurückspielen:**
+**Daten-Rollback:** Vor der Freigabe das Archiv mit `scripts/restore-test.sh` prüfen. Die Daten in ein neues, eindeutig benanntes Volume wiederherstellen und das bisherige Volume unverändert aufbewahren. Vor dem Umschalten den vorgesehenen Image-Digest mit dieser Kopie, dem richtigen Schlüsselstand und geeigneten isolierten Zugangsdaten prüfen. Ein reiner Image-Rollback kann dasselbe Volume nur verwenden, wenn die Rückwärtskompatibilität für den tatsächlichen Datenstand belegt ist. Nach Freigabe und Umschaltung den aktiven Mount und `scripts/release-check.sh nachher` kontrollieren.
 
-```bash
-docker compose -f docker-compose.yml -f docker-compose.prod.yml stop poker
-docker run --rm -v spieleabend_poker-data:/data -v /var/backups/spieleabend:/backup alpine:3 \
-  sh -c "rm -rf /data/* && tar xzf /backup/spieleabend-2026-11-08_0430.tar.gz -C /data"
-docker compose -f docker-compose.yml -f docker-compose.prod.yml start poker
-scripts/release-check.sh nachher
-```
-
-Den Volume-Namen vorher mit `docker volume ls | grep poker-data` nachsehen. Die `rm -rf /data/*` löscht den aktuellen Inhalt des Volumes: nur mit gestopptem Container und einer geprüften Sicherung ausführen.
-
-**Wichtig:** `secret.key` gehört in die Sicherung. Wird nach einer Wiederherstellung ein anderer Schlüssel benutzt, gelten alle Cookies nicht mehr.
+`secret.key`, ein separat gesetztes `SESSION_SECRET` und der Idle-Signaturschlüsselring haben getrennte Aufgaben. Die Volume-Sicherung erfasst die Datei im Volume. Separat gesetzte Geheimnisse müssen zum restaurierten Stand passen und getrennt gesichert sein. Ein abweichender Sitzungsschlüssel entwertet die damit signierten Zugangs- und Gast-Cookies. Idle-Dateien verwenden den eigenen Signaturschlüsselring.
 
 ## 8. Fehlersuche
 

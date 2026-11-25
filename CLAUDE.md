@@ -34,7 +34,7 @@ Jeder Commit, der etwas an der Seite ändert (Fehlerbehebung, Paket, Feinschliff
 
 Zusätzlich vollständig `AGENTS.md` und `docs/roadmap/README.md` beachten. Die zentrale Planung ist `docs/roadmap/plan.json` mit 18 Paketen V2-00 bis V2-17. Ein Paket nur nach ausdrücklicher Freigabe seiner ID bearbeiten; anschließend stoppen. Konsolidierung und Dokumentation geben keine neue Implementierung frei.
 
-`MASTERPROMPT_V2_SOURCE.md` und `PROMPT.md` sind historische Quellen; ihre alten Implementierungs-/Branch-Anweisungen gelten nicht als Auftrag. Bestehende 46 Spiele, das vorhandene Redesign, Rechte, Cookies, Räume und Produktionsdaten erhalten. Keine Freundesliste, keine Discord-Video-Übernahme, keine 3D-Arbeit und kein Produktivdeployment ohne gesonderten Auftrag. Beauftragte GHCR-Builds sind vom Serverdeployment zu unterscheiden.
+`MASTERPROMPT_V2_SOURCE.md` und `PROMPT.md` sind historische Quellen; ihre alten Implementierungs-/Branch-Anweisungen gelten nicht als Auftrag. Alle aktuell registrierten Spiele, das vorhandene Redesign, Rechte, Cookies, Räume und Produktionsdaten erhalten. Keine Freundesliste, keine Discord-Video-Übernahme, keine 3D-Arbeit und kein Produktivdeployment ohne gesonderten Auftrag. Beauftragte GHCR-Builds sind vom Serverdeployment zu unterscheiden.
 
 ## Individuelle visuelle Spielpakete
 
@@ -42,7 +42,7 @@ Die verbindliche visuelle Planung steht in [docs/design/game-visual-roadmap.json
 
 VIS-Pakete sind unabhängig von Gameplay und V2-Arbeitspaketen. Nur das ausdrücklich freigegebene Spiel bzw. VIS-Paket umsetzen; Namen und technische ID anhand der JSON-Datei zuordnen. VIS-IDs stabil erhalten. Reihenfolge oder Planungsdateien geben keine Implementierung frei. Ein nicht implementiertes Spiel erhält dadurch keine Engine.
 
-Andere Spiele bleiben unverändert; gemeinsame Komponenten nur unmittelbar notwendig und eng begrenzt ändern. Nach echter Umsetzung Designstatus, Tests, dauerhafte Screenshots und tatsächlichen Commit dokumentieren und stoppen. Nicht umgesetzte Pakete bleiben `planned`, ohne erfundene Nachweise. Scotland Yard ist der abgeschlossene Pilot; danach wurden die ausdrücklich freigegebenen Kartenwelten UNO (VIS-004), Skip-Bo (VIS-009) und Phase 10 (VIS-008) abgeschlossen. Der ausdrückliche Solo-Auftrag ergänzt Sudoku (VIS-096), 2048 (VIS-097) und Wellenwacht (VIS-098) als abgeschlossen. Die übrigen 100 individuellen Pakete sind nur geplant.
+Andere Spiele bleiben unverändert; gemeinsame Komponenten nur unmittelbar notwendig und eng begrenzt ändern. Nach echter Umsetzung Designstatus, Tests, dauerhafte Screenshots und tatsächlichen Commit dokumentieren und stoppen. Nicht umgesetzte Pakete bleiben `planned`, ohne erfundene Nachweise. Scotland Yard ist der abgeschlossene Pilot; danach wurden die ausdrücklich freigegebenen Kartenwelten UNO (VIS-004), Skip-Bo (VIS-009) und Phase 10 (VIS-008) abgeschlossen. Der ausdrückliche Solo-Auftrag ergänzt Sudoku (VIS-096), 2048 (VIS-097) und Wellenwacht (VIS-098) als abgeschlossen. Den aktuellen VIS-Status aus `docs/design/game-visual-roadmap.json` lesen.
 
 ## Erlebnis-Pakete (EXP): Sound, Animation, Figuren
 
@@ -50,7 +50,9 @@ Stufe 2 nach den VIS-Paketen steht in [docs/design/GAME_EXPERIENCE_ROADMAP.md](d
 
 ## Grafik-Pakete (ART): Tische, Chips, Figuren, freie Grafiken
 
-Stufe 3 steht in [docs/design/GAME_ART_ROADMAP.md](docs/design/GAME_ART_ROADMAP.md) (Quelle) und [docs/design/game-art-roadmap.json](docs/design/game-art-roadmap.json) (erzeugt mit `node scripts/build-art-roadmap.mjs`). ART-Nummern entsprechen den VIS-Nummern (ART-002 ↔ VIS-002). Anders als bei VIS/EXP sind freie Fremdgrafiken erlaubt (CC0 bevorzugt; MIT/ISC/OFL; CC BY nur mit Namensnennung), jede Datei mit Herkunft in [docs/design/ART_LICENSES.md](docs/design/ART_LICENSES.md). 3D nur als vorgerenderte Bilder, keine WebGL-Szene ohne gesonderten Auftrag. Nur ausdrücklich freigegebene IDs umsetzen, Spiellogik unverändert, danach Status, Commit und Nachweise eintragen und stoppen. Kartenwelten für UNO, Skip-Bo und Phase 10 laufen als eigene Pakete ART-T1 bis ART-T5 (Host wählt für den Raum, nur Aussehen); Aufbau in `docs/design/CARD_WORLDS.md`, Bilder per `node scripts/build-card-worlds.mjs`.
+Stufe 3 steht in [docs/design/GAME_ART_ROADMAP.md](docs/design/GAME_ART_ROADMAP.md) (Quelle) und [docs/design/game-art-roadmap.json](docs/design/game-art-roadmap.json) (erzeugt mit `node scripts/build-art-roadmap.mjs`). ART-Nummern entsprechen den VIS-Nummern (ART-002 ↔ VIS-002). Anders als bei VIS/EXP sind freie Fremdgrafiken erlaubt (CC0 bevorzugt; MIT/ISC/OFL; CC BY nur mit Namensnennung), jede Datei mit Herkunft in [docs/design/ART_LICENSES.md](docs/design/ART_LICENSES.md). 3D nur als vorgerenderte Bilder, keine WebGL-Szene ohne gesonderten Auftrag. Nur ausdrücklich freigegebene IDs umsetzen, Spiellogik unverändert, danach Status, Commit und Nachweise eintragen und stoppen. Kartenwelten für UNO, Skip-Bo und Phase 10 laufen als eigene Pakete ART-T1 bis ART-T6 (Host wählt für den Raum, nur Aussehen); Aufbau in `docs/design/CARD_WORLDS.md`, Bilder per `node scripts/build-card-worlds.mjs`.
+
+Themenwelten folgen der separaten ART-W-Reihe in [THEME_WORLDS.md](docs/design/THEME_WORLDS.md) und der [ART-Roadmap](docs/design/GAME_ART_ROADMAP.md). Die Freigabe gilt je Paket-ID.
 
 ## Design-Entwürfe (SVG)
 

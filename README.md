@@ -412,7 +412,7 @@ Die Seite lässt sich auf den Homescreen legen und startet dann ohne Browserleis
 
 Dafür gibt es `public/manifest.webmanifest`, Icons in `public/icons/` und einen kleinen Service Worker (`public/sw.js`), der nichts zwischenspeichert – gespielt wird immer live. Manifest und Icons sind auch ohne Passwort abrufbar, alles andere nicht.
 
-## Was V1.0 kann
+## Historischer Funktionsüberblick V1.0
 
 | Bereich | Funktionen |
 | --- | --- |
@@ -456,7 +456,7 @@ Einstellbar über Umgebungsvariablen: `BACKUP_DIR` (Standard `/var/backups/spiel
 BACKUP_RCLONE_TARGET=meinremote:spieleabend scripts/backup.sh
 ```
 
-**Wiederherstellung prüfen:** Ein Backup, das sich nicht einspielen lässt, ist wertlos. `scripts/restore-test.sh` entpackt das neueste Backup (oder ein angegebenes Archiv) in einen temporären Ordner, startet den Server mit `DATA_DIR` darauf, prüft `/health` und das Laden von Bestenliste, Tickets und Tischen und räumt anschließend alles wieder auf. Die echten Daten und das laufende System bleiben unberührt. Es braucht Node 20+ und `tar` und endet mit 0 nur, wenn alles gelesen werden konnte.
+**Wiederherstellung prüfen:** `scripts/restore-test.sh` validiert das ausgewählte Archiv, startet eine isolierte Datenkopie mit separater Anmeldung auf Loopback und prüft Health, Bestenliste, Tickets und Tische. Details zur benötigten Laufzeit, zum Archivformat und zur Reinigung stehen in der [Betriebsanleitung](docs/betrieb.md#7-sichern-und-wiederherstellen).
 
 ```bash
 scripts/restore-test.sh                                   # neuestes Backup in /var/backups/spieleabend
@@ -466,14 +466,7 @@ scripts/restore-test.sh /pfad/spieleabend-2026-11-01_0430.tar.gz
 0 5 * * 0 /pfad/zum/repo/scripts/restore-test.sh >> /var/log/spieleabend-restore-test.log 2>&1
 ```
 
-**Zurückspielen:** Container stoppen, Archiv ins Volume entpacken, Container starten:
-
-```bash
-docker compose -f docker-compose.yml -f docker-compose.prod.yml stop poker
-docker run --rm -v webseite_poker_poker-data:/data -v /var/backups/spieleabend:/backup alpine:3 \
-  sh -c "rm -rf /data/* && tar xzf /backup/spieleabend-2026-10-25_0430.tar.gz -C /data"
-docker compose -f docker-compose.yml -f docker-compose.prod.yml start poker
-```
+**Daten-Rollback:** Das Archiv in ein separates Volume wiederherstellen und den geplanten Image-Digest mit dieser Kopie prüfen. Das bisherige Volume für den Rückweg bewahren. Die [Betriebsanleitung](docs/betrieb.md#7-sichern-und-wiederherstellen) beschreibt die Abnahme vor einer Umschaltung.
 
 ## Betrieb & Wartung
 
@@ -599,6 +592,10 @@ Die App prüft erforderliche Guild-Mitgliedschaften bei der Anmeldung und bei an
 | Kaputte Eingaben | Alle Werte werden auf dem Server geprüft. Namen ohne Steuerzeichen, Fehler in einem Handler reißen den Server nicht mit. |
 
 Getestet wird das in `test/security.test.js`.
+
+## Technische Schnittstellen
+
+[HTTP- und Socket.IO-Übersicht](docs/schnittstellen.md) mit Zugangsvoraussetzungen, Identität, Zuschaueransichten und Idle-Speicherpfaden. Die aktuellen Spielregeln stehen in [Spielhalle](docs/spielhalle.md), [Studio](docs/studio.md), [Factory](docs/factory.md) und [Doppelkopf-Wertung](docs/doppelkopf-wertung.md).
 
 ## Aufbau
 
@@ -747,6 +744,6 @@ Mögliche nächste Spiele stehen im Backlog (`games/planned.js`).
 - **`node:test` statt Vitest:** Eingebaut in Node, keine zusätzliche Abhängigkeit.
 - **Schrift lokal:** Bricolage Grotesque liegt unter `public/fonts`, damit keine Verbindung zu Google Fonts nötig ist (DSGVO).
 
-## Als Nächstes (V1.1)
+## Historischer Ausblick aus V1.0
 
-Time Bank, Straddle, Bomb Pot, Run It Twice, 7-2-Bonus, Hand-Replay.
+Damals vorgesehen: Time Bank, Straddle, Bomb Pot, Run It Twice, 7-2-Bonus und Hand-Replay. Für den heutigen Planungsstand gilt die [Entwicklungsroadmap](docs/roadmap/INDEX.md).

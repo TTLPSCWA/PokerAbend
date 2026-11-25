@@ -32,10 +32,14 @@ Diese Regel ersetzt frühere Feature-Branch-Anweisungen. Wenn direkte Änderunge
 - V2-Pakete nur nach ausdrücklicher Freigabe der betreffenden ID (`V2-XX`) bearbeiten. Pro Auftrag nur das freigegebene Paket und unmittelbar notwendige Tests. Nach einem abgeschlossenen Auftrag stoppen.
 - Ausdrücklich beauftragte Dokumentation, Konsolidierung und Roadmap-Datenpflege sind möglich, ohne damit geplante Funktionen freizugeben. Nicht implementierte Pakete bleiben `planned`; Testergebnisse und Implementierungs-Commits erst nach echter Umsetzung eintragen.
 - `MASTERPROMPT_V2_SOURCE.md` und `PROMPT.md` sind historische Quellen, keine aktiven Ausführungsaufträge. Ihre Imperative und alten Branch-Vorgaben überschreiben diese Arbeitsregel nicht.
-- Alle aktuell registrierten Spiele (Baseline: 46), vorhandenes Redesign, technische IDs, Spielregeln/RNG, Räume, Bots, Reconnect, Cookies, URLs, Passwörter und Datenvolumes erhalten.
+- Alle aktuell registrierten Spiele, vorhandenes Redesign, technische IDs, Spielregeln/RNG, Räume, Bots, Reconnect, Cookies, URLs, Passwörter und Datenvolumes erhalten.
 - Keine Freundesliste, keine direkte Discord-Videostream-Übernahme und keine 3D-Implementierung aus dieser Planung ableiten.
 - Keine Secrets committen oder ausgeben; keine produktiven Daten migrieren/löschen und kein Produktivdeployment ohne gesonderte ausdrückliche Freigabe. Ein beauftragter Push kann den vorhandenen Test-/GHCR-Workflow starten; das ist vom Serverdeployment zu unterscheiden.
 - Weitere Details: `docs/roadmap/POKERABEND_V2_ROADMAP.md`, `V2_ADDENDUM_2026-10-30.md` und `CONSOLIDATION_2026-10-30.md`.
+
+## Version und Release-Prüfung
+
+Die verbindliche [Versionsregel in CLAUDE.md](CLAUDE.md#versionsnummer-bei-jeder-änderung) gilt für beide Agenten. Bei Änderungen an der Seite Version in `package.json` und den beiden Paketeinträgen in `package-lock.json` erhöhen sowie `CHANGELOG.md`, die README-Versionszeile und `docs/betrieb.md` aktualisieren. Reine Dokumentations- und Planungsänderungen behalten die Version. Vor dem Push `npm run test:fast` ausführen.
 
 ## Individuelle visuelle Spielpakete
 
@@ -44,7 +48,7 @@ Diese Regel ersetzt frühere Feature-Branch-Anweisungen. Wenn direkte Änderunge
 - Nur ein ausdrücklich freigegebenes Spiel bzw. VIS-Paket visuell bearbeiten. Namen und Spiel-ID über die JSON-Datei zuordnen. Planungsstatus, Aufwand oder Reihenfolge sind keine Freigabe.
 - Nicht implementierte Spiele erhalten aus einem Designplan keine Spiellogik. Vorhandene andere Spiele und ihre Oberflächen bleiben unangetastet; gemeinsame Änderungen nur unmittelbar notwendig und eng begrenzt.
 - Nach Abschluss echten Designstatus, Tests, ausgewählte dauerhafte Screenshots und tatsächlichen Implementierungscommit dokumentieren. Ohne Umsetzung bleiben Status `planned`, Nachweislisten leer und Abschlussfelder `null`.
-- Scotland Yard ist der abgeschlossene Pilot; anschließend wurden UNO (VIS-004), Skip-Bo (VIS-009) und Phase 10 (VIS-008) ausdrücklich freigegeben und abgeschlossen. Im ausdrücklichen Solo-Auftrag wurden auch Sudoku (VIS-096), 2048 (VIS-097) und Wellenwacht (VIS-098) abgeschlossen. Die übrigen 100 Pakete sind nur geplant. Nach einem freigegebenen Paket stoppen und auf einen neuen Auftrag warten.
+- Scotland Yard ist der abgeschlossene Pilot; anschließend wurden UNO (VIS-004), Skip-Bo (VIS-009) und Phase 10 (VIS-008) ausdrücklich freigegeben und abgeschlossen. Im ausdrücklichen Solo-Auftrag wurden auch Sudoku (VIS-096), 2048 (VIS-097) und Wellenwacht (VIS-098) abgeschlossen. Den aktuellen VIS-Status aus `docs/design/game-visual-roadmap.json` lesen. Nach einem freigegebenen Paket stoppen und auf einen neuen Auftrag warten.
 
 ## Erlebnis-Pakete (EXP): Sound, Animation, Figuren
 
@@ -52,7 +56,9 @@ Stufe 2 nach den VIS-Paketen: `docs/design/GAME_EXPERIENCE_ROADMAP.md` (Quelle) 
 
 ## Grafik-Pakete (ART): Tische, Chips, Figuren, freie Grafiken
 
-Stufe 3: `docs/design/GAME_ART_ROADMAP.md` (Quelle) und `docs/design/game-art-roadmap.json` (erzeugt mit `node scripts/build-art-roadmap.mjs`). ART-Nummern entsprechen den VIS-Nummern. Freie Fremdgrafiken erlaubt (CC0 bevorzugt; MIT/ISC/OFL; CC BY nur mit Namensnennung), jede Datei in `docs/design/ART_LICENSES.md`. 3D nur vorgerendert, keine WebGL-Szene ohne gesonderten Auftrag. Nur ausdrücklich freigegebene IDs umsetzen, Spiellogik unverändert, danach Status, Commit und Nachweise eintragen und stoppen. Kartenwelten für UNO, Skip-Bo und Phase 10 laufen als eigene Pakete ART-T1 bis ART-T5 (Host wählt für den Raum, nur Aussehen); Aufbau in `docs/design/CARD_WORLDS.md`, Bilder per `node scripts/build-card-worlds.mjs`.
+Stufe 3: `docs/design/GAME_ART_ROADMAP.md` (Quelle) und `docs/design/game-art-roadmap.json` (erzeugt mit `node scripts/build-art-roadmap.mjs`). ART-Nummern entsprechen den VIS-Nummern. Freie Fremdgrafiken erlaubt (CC0 bevorzugt; MIT/ISC/OFL; CC BY nur mit Namensnennung), jede Datei in `docs/design/ART_LICENSES.md`. 3D nur vorgerendert, keine WebGL-Szene ohne gesonderten Auftrag. Nur ausdrücklich freigegebene IDs umsetzen, Spiellogik unverändert, danach Status, Commit und Nachweise eintragen und stoppen. Kartenwelten für UNO, Skip-Bo und Phase 10 laufen als eigene Pakete ART-T1 bis ART-T6 (Host wählt für den Raum, nur Aussehen); Aufbau in `docs/design/CARD_WORLDS.md`, Bilder per `node scripts/build-card-worlds.mjs`.
+
+Themenwelten folgen der separaten Reihe ART-W mit eigener Paketzuordnung in [THEME_WORLDS.md](docs/design/THEME_WORLDS.md) und [GAME_ART_ROADMAP.md](docs/design/GAME_ART_ROADMAP.md). Für ART-W gilt ebenfalls die ausdrückliche Freigabe der einzelnen Paket-ID.
 
 ## Design-Entwürfe (SVG)
 
