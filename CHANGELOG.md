@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.26.3 – 25. November 2026
+
+- Der Server kennt die öffentliche Herkunft über den Host und übernimmt Anschluss-IP und HTTPS nur von zulässigen direkten Proxys. Neue Backups werden mit privaten Zugriffsrechten veröffentlicht. Das Skript meldet alte Sicherungen zur Prüfung und lässt sie erhalten.
+
 ## 3.26.2 – 24. November 2026
 
 - In den drei Idle-Spielen führt der Tastaturfokus nach dem Öffnen zu den Speicheraktionen. Der Dateiimport behält den Fokus bei Fehlern und nach dem Schließen. Bestätigungsdialoge benennen Aktion und Folgen für assistive Technik.

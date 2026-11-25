@@ -1,6 +1,6 @@
 # Betrieb: Spieleabend aufsetzen, aktualisieren, sichern, reparieren
 
-Stand: Version **3.26.2** (24. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
+Stand: Version **3.26.3** (25. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
 
 Für einen autorisierten, isolierten Testserver können Betreiber [Die Spielhalle](spielhalle.md), [Game Studio Tycoon](studio.md) und [Factory Empire](factory.md) über ihre getrennten Spielschalter und einen gültigen serverseitigen [Idle-Schlüsselring](idle-engine.md#schlüsselring-und-rotation) verfügbar machen. Die drei Einstellungen sind standardmäßig aus. Der einzelne schreibende Prozess braucht ein eigenes, beschreibbares Datenverzeichnis.
 
@@ -151,7 +151,7 @@ Siehe [Abschnitt 4](#4-funktionen-und-spiele-ein--und-ausschalten).
 | `UPDATE_ANNOUNCE_MIN` | `5` | 5 | Vorlauf bei einer Update-Ankündigung per Signal (`SIGUSR2`). |
 | `UPDATE_DRAIN_MAX_MIN` | `15` | 15 | So lange dürfen laufende Runden nach Ablauf der Frist noch fertig werden. |
 
-Die Anschluss-Grenzen zählen pro IP-Adresse. Hinter Traefik stimmt die Adresse nur, weil `docker-compose.prod.yml` `TRUST_PROXY=1` setzt (siehe [Abschnitt 9](#9-was-sebi-für-traefik-wissen-muss)).
+Die Anschluss-Grenzen zählen pro IP-Adresse. In der Produktionsvariante aktiviert `docker-compose.prod.yml` die Weitergabe vom direkten Traefik-Proxy. Mit `TRUST_PROXY_PEERS` lässt sich dessen Vertrauensgrenze auf konkrete Adressen begrenzen. [Abschnitt 9](#9-was-sebi-für-traefik-wissen-muss)
 
 ### Fest eingestellt (nicht in die `.env`)
 
@@ -159,7 +159,8 @@ Die Anschluss-Grenzen zählen pro IP-Adresse. Hinter Traefik stimmt die Adresse 
 | --- | --- | --- |
 | `PORT` | `3000` | Dockerfile. Muss zum Traefik-Label `loadbalancer.server.port` passen. |
 | `DATA_DIR` | `/app/data` | Dockerfile. Das Volume hängt hier. |
-| `TRUST_PROXY` | `1` | `docker-compose.prod.yml` (echte IPs und HTTPS hinter Traefik). |
+| `TRUST_PROXY` | `1` | `docker-compose.prod.yml` (Besucher-IP und HTTPS vom unmittelbaren Proxy). |
+| `TRUST_PROXY_PEERS` | leer | Optional bei aktivem Proxy-Vertrauen. Kommagetrennte Liste der konkreten Traefik-Adressen (IPv4 oder IPv6). |
 | `NODE_ENV` | `production` | Dockerfile. |
 | `APP_COMMIT` | Commit-Hash | Build-Argument `GIT_COMMIT`; steht unter „Ich“ und auf `/health`. |
 
@@ -300,14 +301,16 @@ Sobald Idle-Bestandsdaten unter `/app/data/idle` vorliegen, Server für eine kon
 
 ```bash
 chmod +x scripts/backup.sh scripts/restore-test.sh scripts/release-check.sh
-sudo mkdir -p /var/backups/spieleabend
+sudo install -d -m 0700 -o "$(id -un)" /var/backups/spieleabend
 scripts/backup.sh                                              # einmal von Hand testen
 crontab -e                                                      # täglich um 4:30 Uhr:
 30 4 * * * /srv/spieleabend/scripts/backup.sh >> /var/log/spieleabend-backup.log 2>&1
 0 5 * * 0  /srv/spieleabend/scripts/restore-test.sh >> /var/log/spieleabend-restore-test.log 2>&1   # sonntags: beweist, dass sich die Sicherung einspielen lässt
 ```
 
-`backup.sh` findet das Volume selbst (Compose nennt es z. B. `spieleabend_poker-data`), schreibt `spieleabend-JJJJ-MM-TT_HHMM.tar.gz` und löscht eigene Sicherungen nach 14 Tagen. Einstellbar: `BACKUP_DIR`, `KEEP_DAYS`, `VOLUME`. Optional zweites Ziel außer Haus: `BACKUP_RSYNC_TARGET=user@host:/pfad/` oder `BACKUP_RCLONE_TARGET=remote:spieleabend`.
+`backup.sh` verwendet unter Debian Bash und GNU-Werkzeuge. Es akzeptiert ein vorhandenes, eindeutig bestimmtes Daten-Volume. Bei mehreren Treffern `VOLUME` setzen. Der Sicherungscontainer liest das Volume ohne eigenes Netzwerk. Das Hostskript schreibt und prüft das Archiv zuerst temporär und veröffentlicht es dann exklusiv als `spieleabend-JJJJ-MM-TT_HHMM.tar.gz` mit Dateimodus `0600`. Dazu benötigt das Ziel ein lokales Dateisystem mit Hardlinks. Das Verzeichnis muss dem Sicherungskonto gehören und darf für andere Konten nicht beschreibbar sein. Ein Verzeichnis mit Modus `0700` schützt zusätzlich die Dateinamen. Bestehende Dateien und ihre Berechtigungen werden nicht geändert.
+
+`KEEP_DAYS` (standardmäßig 14) steuert die Meldung zur manuellen Aufbewahrungsprüfung. Es findet keine automatische Löschung statt. Ein fehlgeschlagener Offsite-Transfer lässt das lokale Archiv bestehen. Optionale Ziele werden wie bisher über `BACKUP_RSYNC_TARGET` beziehungsweise `BACKUP_RCLONE_TARGET` angegeben. Die Skriptmeldungen geben das Ziel nicht aus. Da das Archiv auch Schlüsselmaterial enthalten kann, muss der Betreiber Zugriffsschutz und Verschlüsselung am Ziel gesondert sicherstellen.
 
 Der Restore-Test läuft mit Node.js aus dem Projektverzeichnis. Ohne Pfad verwendet er die neueste reguläre Sicherungsdatei aus `BACKUP_DIR`. Unter Windows lässt sich `scripts/restore-test.sh` mit Git Bash starten. Mit Node.js ist auch `node scripts/restore-test.mjs <Archivpfad>` möglich.
 
@@ -367,7 +370,7 @@ Kurz: Die App braucht nichts Besonderes, nur ein normales Docker-Routing. Alles 
 * **Port:** Dienst-Port **3000** (`loadbalancer.server.port`). Die App veröffentlicht **keinen** Port auf dem Host (`ports: !reset []`, nur `expose`). Wer Port 3000 nach außen öffnet, umgeht HTTPS, Anmeldung auf IP-Basis und die Header-Prüfung: nicht tun.
 * **Genau eine Instanz.** Keine Replikas, keine zwei Container hinter einem Router. Tische liegen im Arbeitsspeicher. „Sticky Sessions“ ändern daran nichts.
 * **WebSocket (Socket.IO):** funktioniert mit Traefik ohne Zusatzkonfiguration. Der Upgrade läuft über denselben Router. Bitte keine Timeouts einstellen, die ruhige Verbindungen nach wenigen Sekunden kappen (der Browser verbindet sich selbst neu, aber es fällt unangenehm auf). Standardwerte von Traefik sind in Ordnung.
-* **Weitergereichte Header:** `TRUST_PROXY=1` heißt: Die App vertraut `X-Forwarded-For` (echte Besucher-IP für die Grenzen) und `X-Forwarded-Proto` (erkennt HTTPS, setzt `Secure`-Cookies und den HSTS-Header). Traefik setzt beides standardmäßig. Steht noch ein Proxy/CDN **vor** Traefik, muss Traefik diesem vertrauen (`forwardedHeaders.trustedIPs` am Entrypoint), sonst sieht die App nur die Adresse des vorgelagerten Proxys und alle teilen sich die Grenzen.
+* **Weitergereichte Header:** Die App prüft die unmittelbare TCP-Gegenstelle. Ohne explizite Adressliste bleiben Loopback, private IPv4-Netze und IPv6-ULA im Kompatibilitätsmodus zulässig. Im geteilten Docker-Netz kann dabei auch ein anderer privater Peer zulässig sein. Setze deshalb `TRUST_PROXY_PEERS` auf die tatsächlich eingesetzten Traefik-Adressen und berücksichtige Adresswechsel beim Neustart. Die App verwendet nur den letzten gültigen Eintrag am Ende von `X-Forwarded-For` und den einzelnen Wert `https` aus `X-Forwarded-Proto`. Für API- und Socket-Herkunft zählt der originale HTTP-Host. Traefik reicht ihn mit seinem Standard `passHostHeader: true` durch. Eine vorgeschaltete CDN-Vertrauenskette erfordert eine eigene Konfiguration und Abnahme. [Traefik-Entrypoints](https://doc.traefik.io/traefik/reference/install-configuration/entrypoints/) · [Traefik-Dienste](https://doc.traefik.io/traefik/reference/routing-configuration/http/load-balancing/service/)
 * **Header nicht doppelt setzen:** Die App setzt selbst CSP, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, Cross-Origin-Header und (nur über HTTPS) HSTS. Bitte in Traefik keine abweichenden Sicherheits-Header-Middleware davorhängen, sonst widersprechen sich die Werte.
 * **Kompression:** Die Middleware `poker-gzip` (`compress=true`) hängt am Router. Die App komprimiert nicht selbst.
 * **Healthcheck:** `/health` ist ohne Anmeldung erreichbar und liefert `{"ok":true,"version":"…","commit":"…","uptime":…}`. Das Image hat einen eigenen `HEALTHCHECK` (intern auf `localhost:3000`). Ein externer Wächter (Uptime Kuma o. Ä.) sollte `https://DOMAIN/health` auf das Stichwort `"ok":true` prüfen.

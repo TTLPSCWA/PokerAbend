@@ -15,6 +15,7 @@ services:
       # Ohne diese Durchreichung käme z. B. DISCORD_CLIENT_SECRET aus der .env nie im Container an.
       SESSION_SECRET: ${SESSION_SECRET:-}
       PUBLIC_URL: ${PUBLIC_URL:-}
+      TRUST_PROXY_PEERS: ${TRUST_PROXY_PEERS:-}
       DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:-}
       DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:-}
       DISCORD_GUILD_ID: ${DISCORD_GUILD_ID:-}

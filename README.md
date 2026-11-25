@@ -436,13 +436,13 @@ Dafür gibt es `public/manifest.webmanifest`, Icons in `public/icons/` und einen
 
 ## Backup & Wiederherstellen
 
-`scripts/backup.sh` sichert das Daten-Volume (Tische, Verläufe, Bestenliste, Tickets, Schlüssel) als `spieleabend-JJJJ-MM-TT_HHMM.tar.gz` und löscht eigene Sicherungen, die älter als 14 Tage sind. Das Volume wird automatisch gefunden (Docker Compose nennt es z. B. `webseite_poker_poker-data`).
+`scripts/backup.sh` sichert das Daten-Volume (Tische, Verläufe, Bestenliste, Tickets, Schlüssel) als `spieleabend-JJJJ-MM-TT_HHMM.tar.gz`. Bei eindeutigem Namen findet es das Docker-Volume automatisch. Es meldet ältere Archive für die manuelle Aufbewahrungsprüfung.
 
 Auf dem Server einmal einrichten:
 
 ```bash
 chmod +x scripts/backup.sh scripts/restore-test.sh
-sudo mkdir -p /var/backups/spieleabend
+sudo install -d -m 0700 -o "$(id -un)" /var/backups/spieleabend
 scripts/backup.sh            # einmal von Hand testen
 crontab -e                   # und diese Zeile eintragen – täglich um 4:30 Uhr:
 30 4 * * * /pfad/zum/repo/scripts/backup.sh >> /var/log/spieleabend-backup.log 2>&1
@@ -487,7 +487,7 @@ Bei **SIGTERM** (`docker stop`) und **SIGINT** wird ebenfalls sofort alles gespe
 
 ### Version und „Was ist neu“
 
-Die Version steht in `package.json` (jetzt **3.26.2**) und klein unter dem Schriftzug „Spieleabend“ (mit Build-Kürzel), der Commit-Hash kommt als Build-Argument ins Image: Der Workflow übergibt `GIT_COMMIT` automatisch, lokal `docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) .`. Beides steht unter **Ich** und auf `/health` (`{"ok":true,"version":"2.0.0","commit":"abc1234","uptime":…}`). Für lokale Images mit Roadmap-Produktivnachweis siehe [Betriebsanleitung](docs/betrieb.md#öffentliche-roadmap-und-freigabeschalter-seit-3190).
+Die Version steht in `package.json` (jetzt **3.26.3**) und klein unter dem Schriftzug „Spieleabend“ (mit Build-Kürzel), der Commit-Hash kommt als Build-Argument ins Image: Der Workflow übergibt `GIT_COMMIT` automatisch, lokal `docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) .`. Beides steht unter **Ich** und auf `/health` (`{"ok":true,"version":"2.0.0","commit":"abc1234","uptime":…}`). Für lokale Images mit Roadmap-Produktivnachweis siehe [Betriebsanleitung](docs/betrieb.md#öffentliche-roadmap-und-freigabeschalter-seit-3190).
 
 Version 3.25.0 ergänzt [Factory Empire](docs/factory.md). Factory Empire, [Game Studio Tycoon](docs/studio.md) und [Die Spielhalle](docs/spielhalle.md) haben getrennte Spielschalter. Jedes Spiel erscheint erst nach eigener Freigabe und mit gültiger Idle-Speicherkonfiguration. Die technische ART-046-Anbindung enthält keine privaten Theme-Inhalte.
 

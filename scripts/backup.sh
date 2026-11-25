@@ -1,73 +1,75 @@
 #!/usr/bin/env bash
-# Sichert das Daten-Volume des Spieleabends (Tische, Verläufe, Bestenliste, Schlüssel) als .tar.gz
-# und löscht Sicherungen, die älter als 14 Tage sind.
-#
-#   scripts/backup.sh                    # Volume wird automatisch gefunden, Ziel /var/backups/spieleabend
-#   BACKUP_DIR=/srv/backup scripts/backup.sh
-#   VOLUME=webseite_poker_poker-data KEEP_DAYS=30 scripts/backup.sh
-#
-# Optional zweites Ziel außer Haus (aus, solange keine der beiden Variablen gesetzt ist):
-#   BACKUP_RSYNC_TARGET=user@host:/pfad/spieleabend/     # rsync über SSH
-#   BACKUP_RCLONE_TARGET=meinremote:spieleabend          # rclone (S3, WebDAV, Google Drive …)
-# Scheitert die Kopie, endet das Skript mit Fehler – die lokale Sicherung bleibt trotzdem erhalten.
-#
-# Ob sich eine Sicherung wirklich wiederherstellen lässt, prüft scripts/restore-test.sh.
-#
-# Täglich per Cronjob (crontab -e), z. B. um 4:30 Uhr:
-#   30 4 * * * /pfad/zum/repo/scripts/backup.sh >> /var/log/spieleabend-backup.log 2>&1
+# Sichert das Daten-Volume des Spieleabends als .tar.gz.
+# Aufruf und optionale Offsite-Ziele: docs/betrieb.md, Abschnitt 7.
 set -euo pipefail
+umask 077
 
 BACKUP_DIR="${BACKUP_DIR:-/var/backups/spieleabend}"
 KEEP_DAYS="${KEEP_DAYS:-14}"
 VOLUME="${VOLUME:-}"
 
-# Docker Compose hängt den Projektnamen vor das Volume (z. B. „webseite_poker_poker-data“)
-if [ -z "$VOLUME" ]; then
-  VOLUME="$(docker volume ls --format '{{.Name}}' | grep -E '(^|_)poker-data$' | head -n 1 || true)"
-fi
-if [ -z "$VOLUME" ]; then
-  echo "$(date '+%F %T') FEHLER: Kein Volume „…poker-data“ gefunden. Mit VOLUME=name angeben." >&2
+fail() {
+  echo "$(date '+%F %T') FEHLER: $*" >&2
   exit 1
+}
+
+[[ "$KEEP_DAYS" =~ ^[0-9]{1,5}$ ]] || fail 'KEEP_DAYS muss eine nichtnegative Tageszahl sein.'
+if [ -z "$VOLUME" ]; then
+  names="$(docker volume ls --format '{{.Name}}')" || fail 'Docker-Volumes konnten nicht gelesen werden.'
+  mapfile -t candidates < <(printf '%s\n' "$names" | grep -E '(^|_)poker-data$' || true)
+  [ "${#candidates[@]}" -eq 1 ] || fail 'Genau ein passendes Daten-Volume erwartet. Das gewünschte Volume mit VOLUME angeben.'
+  VOLUME="${candidates[0]}"
+fi
+[[ "$VOLUME" =~ ^[a-zA-Z0-9][a-zA-Z0-9_.-]*$ ]] || fail 'Ungültiger Docker-Volume-Name.'
+docker volume inspect "$VOLUME" >/dev/null 2>&1 || fail 'Das angegebene Docker-Volume fehlt.'
+
+[ ! -L "$BACKUP_DIR" ] || fail 'Das Sicherungsverzeichnis darf kein symbolischer Link sein.'
+mkdir -p -- "$BACKUP_DIR"
+if [[ "${OSTYPE:-}" != msys* ]]; then
+  mode="$(stat -c '%a' -- "$BACKUP_DIR")"
+  if [ ! -O "$BACKUP_DIR" ] || (( (8#$mode & 0022) != 0 )); then
+    fail 'Das Sicherungsverzeichnis muss dem ausführenden Konto gehören und darf für andere nicht beschreibbar sein.'
+  fi
 fi
 
-mkdir -p "$BACKUP_DIR"
-FILE="spieleabend-$(date '+%F_%H%M').tar.gz"
+file="spieleabend-$(date '+%F_%H%M').tar.gz"
+target="$BACKUP_DIR/$file"
+partial="$(mktemp -- "$BACKUP_DIR/.spieleabend-partial.XXXXXXXX")"
+trap 'rm -f -- "$partial"' EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
-# Sichern über einen kurzlebigen Container: Volume nur lesend einhängen, Archiv ins Zielverzeichnis
-docker run --rm \
-  -v "$VOLUME":/data:ro \
-  -v "$BACKUP_DIR":/backup \
-  alpine:3 \
-  tar czf "/backup/$FILE" -C /data .
-
-# Leeres oder kaputtes Archiv? Dann lieber laut scheitern als still nichts sichern
-if ! tar tzf "$BACKUP_DIR/$FILE" > /dev/null 2>&1; then
-  echo "$(date '+%F %T') FEHLER: Archiv $FILE ist nicht lesbar." >&2
-  exit 1
+if ! docker run --rm --network none --mount "type=volume,src=$VOLUME,dst=/data,readonly" \
+    alpine:3 tar czf - -C /data . > "$partial" 2>/dev/null; then
+  fail 'Der Sicherungscontainer konnte das Datenarchiv nicht erstellen.'
+fi
+if ! tar tzf "$partial" 2>/dev/null | awk '$0 != "." && $0 != "./" { found = 1 } END { if (!found) exit 1 }'; then
+  fail 'Das erzeugte Datenarchiv ist leer oder beschädigt.'
 fi
 
-echo "$(date '+%F %T') Gesichert: $BACKUP_DIR/$FILE ($(du -h "$BACKUP_DIR/$FILE" | cut -f1)) aus Volume $VOLUME"
+# Publish only the complete archive and never replace an existing backup.
+ln -T -- "$partial" "$target" 2>/dev/null || fail 'Die fertige Sicherung konnte nicht exklusiv veröffentlicht werden.'
+rm -f -- "$partial"
+echo "$(date '+%F %T') Gesichert: $file ($(du -h "$target" | cut -f1))"
 
-# Alte Sicherungen löschen (nur unsere Dateien)
-find "$BACKUP_DIR" -maxdepth 1 -name 'spieleabend-*.tar.gz' -type f -mtime +"$KEEP_DAYS" -print -delete \
-  | sed "s/^/$(date '+%F %T') Gelöscht (älter als $KEEP_DAYS Tage): /"
+expired="$(find "$BACKUP_DIR" -maxdepth 1 -type f -name 'spieleabend-????-??-??_????.tar.gz' -mtime +"$KEEP_DAYS" -printf '.' | wc -c)"
+echo "$(date '+%F %T') Aufbewahrung: $expired Sicherung(en) älter als $KEEP_DAYS Tage zur manuellen Prüfung."
 
-# Optional: Kopie auf ein zweites Ziel
-COPY_FAILED=0
+copy_failed=0
 if [ -n "${BACKUP_RSYNC_TARGET:-}" ]; then
-  if command -v rsync > /dev/null 2>&1 && rsync -a "$BACKUP_DIR/$FILE" "$BACKUP_RSYNC_TARGET"; then
-    echo "$(date '+%F %T') Kopiert (rsync): $BACKUP_RSYNC_TARGET"
+  if rsync -a -- "$target" "$BACKUP_RSYNC_TARGET" >/dev/null 2>&1; then
+    echo "$(date '+%F %T') Kopiert (rsync)."
   else
-    echo "$(date '+%F %T') FEHLER: rsync nach $BACKUP_RSYNC_TARGET ist fehlgeschlagen." >&2
-    COPY_FAILED=1
+    echo "$(date '+%F %T') FEHLER: rsync-Kopie fehlgeschlagen. Die lokale Sicherung bleibt erhalten." >&2
+    copy_failed=1
   fi
 fi
 if [ -n "${BACKUP_RCLONE_TARGET:-}" ]; then
-  if command -v rclone > /dev/null 2>&1 && rclone copy "$BACKUP_DIR/$FILE" "$BACKUP_RCLONE_TARGET"; then
-    echo "$(date '+%F %T') Kopiert (rclone): $BACKUP_RCLONE_TARGET"
+  if rclone copy -- "$target" "$BACKUP_RCLONE_TARGET" >/dev/null 2>&1; then
+    echo "$(date '+%F %T') Kopiert (rclone)."
   else
-    echo "$(date '+%F %T') FEHLER: rclone nach $BACKUP_RCLONE_TARGET ist fehlgeschlagen." >&2
-    COPY_FAILED=1
+    echo "$(date '+%F %T') FEHLER: rclone-Kopie fehlgeschlagen. Die lokale Sicherung bleibt erhalten." >&2
+    copy_failed=1
   fi
 fi
-exit "$COPY_FAILED"
+exit "$copy_failed"

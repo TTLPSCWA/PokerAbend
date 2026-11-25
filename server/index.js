@@ -24,7 +24,7 @@ import { boardItem } from '../games/party-brett/index.js';
 import { survivors, attachSurvival } from '../games/survival-abend/index.js';
 import {
   COOKIE, loadSecret, createAuth, parseCookies, cookieHeader, limiter, bucket,
-  securityHeaders, sameOrigin, clientIp, safeNext,
+  securityHeaders, sameOrigin, clientIp, createProxyTrust, requestSecure, safeNext,
 } from './security.js';
 import { createCodes, normalize } from './codes.js';
 import { createLeaderboard, RANK_PERIODS } from './leaderboard.js';
@@ -97,7 +97,10 @@ const VERSION = versionInfo();
 const ROADMAP_BUILD_PROOF = loadRoadmapBuildProof();
 const UPDATE_DEFAULT_MIN = Number(process.env.UPDATE_ANNOUNCE_MIN || 5); // Vorlauf bei Ankündigung per Signal (SIGUSR2)
 const UPDATE_DRAIN_MAX_MIN = Number(process.env.UPDATE_DRAIN_MAX_MIN || 15); // so lange darf eine laufende Runde nach Fristende noch fertig werden
-const TRUST_PROXY = ['1', 'true', 'yes'].includes(String(process.env.TRUST_PROXY || '').toLowerCase());
+const TRUST_PROXY = createProxyTrust(
+  ['1', 'true', 'yes'].includes(String(process.env.TRUST_PROXY || '').toLowerCase()),
+  process.env.TRUST_PROXY_PEERS,
+);
 const MAX_CONN_PER_IP = Number(process.env.MAX_CONN_PER_IP || 30);
 
 // Anmeldung: Seitenpasswort (SITE_PASSWORD), ohne Passwort offen (nur lokal zum Testen)
@@ -137,11 +140,13 @@ const connections = new Map(); // IP → offene Verbindungen
 const app = express();
 if(privateMonopoly)app.use(privateMonopoly.guard);
 app.disable('x-powered-by');
-app.set('trust proxy', TRUST_PROXY);
-app.use(securityHeaders);
+const isSecure = (req) => requestSecure(req, TRUST_PROXY);
+app.use((req, res, next) => {
+  securityHeaders(res, isSecure(req));
+  next();
+});
 app.get('/health', (_req, res) => res.json({ ok: true, version: VERSION.version, commit: VERSION.short, uptime: Math.round(process.uptime()) }));
 
-const isSecure = (req) => req.secure || (TRUST_PROXY && req.headers['x-forwarded-proto'] === 'https');
 const passwordOk = (req) => auth.valid(parseCookies(req.headers.cookie)[COOKIE]);
 // Zugang: Gruppenpasswort-Cookie oder eine gültige Discord-Sitzung (nur mit DISCORD_GUILD_ID und Mitgliedschaft; nie Admin)
 const hasAccess = (cookieHeader) => auth.valid(parseCookies(cookieHeader)[COOKIE]) || (discordOn() && !!discord.hasAccess(cookieHeader));

@@ -4,6 +4,7 @@
 // - Rate-Limits gegen Passwort-Raten, Code-Raten, Tisch-Spam und Event-Fluten.
 import { createHmac, createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { BlockList, isIP } from 'node:net';
 import { join } from 'node:path';
 
 export const COOKIE = 'pa_auth';
@@ -106,15 +107,15 @@ export function bucket({ capacity, perSecond }) {
   };
 }
 
-export function securityHeaders(req, res, next) {
+export function securityHeaders(res, secure) {
   res.setHeader('Content-Security-Policy', [
     "default-src 'self'", "script-src 'self'", "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data:", "font-src 'self'", "connect-src 'self'",
     "frame-ancestors 'none'", "frame-src 'none'", "base-uri 'none'", "form-action 'self'", "object-src 'none'", "manifest-src 'self'", "worker-src 'self'",
-    ...(req?.secure ? ['upgrade-insecure-requests'] : []),
+    ...(secure ? ['upgrade-insecure-requests'] : []),
   ].join('; '));
   // Nur über HTTPS (hinter dem Proxy): Browser merken sich, die Seite künftig nur verschlüsselt aufzurufen
-  if (req?.secure) res.setHeader('Strict-Transport-Security', 'max-age=31536000');
+  if (secure) res.setHeader('Strict-Transport-Security', 'max-age=31536000');
   res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
   res.setHeader('X-Permitted-Cross-Domain-Policies', 'none');
   res.setHeader('X-Frame-Options', 'DENY');
@@ -122,23 +123,53 @@ export function securityHeaders(req, res, next) {
   res.setHeader('Referrer-Policy', 'same-origin');
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-  next();
 }
 
 // Nur Verbindungen von der eigenen Seite (gegen fremde Webseiten, die Sockets aufmachen)
 export function sameOrigin(req) {
   const origin = req.headers.origin;
   if (!origin) return true; // Nicht-Browser-Clients senden oft keinen Origin – die brauchen trotzdem das Cookie
-  const host = req.headers['x-forwarded-host'] || req.headers.host;
-  try { return new URL(origin).host === host; } catch { return false; }
+  try { return new URL(origin).host === req.headers.host; } catch { return false; }
+}
+
+const peerAddress = (req) => req.socket?.remoteAddress || req.connection?.remoteAddress || '';
+const addressFamily = (address) => isIP(address) === 6 ? 'ipv6' : 'ipv4';
+
+export function createProxyTrust(enabled, peers = '') {
+  if (!enabled) return () => false;
+  const networks = new BlockList();
+  if (peers.trim()) {
+    for (const address of peers.split(',').map((part) => part.trim())) {
+      if (!isIP(address) || address.includes('%')) throw new Error('TRUST_PROXY_PEERS benötigt einzelne IPv4- oder IPv6-Adressen.');
+      networks.addAddress(address, addressFamily(address));
+    }
+  } else {
+    // Compatibility with the existing private Docker network and loopback proxies.
+    for (const [network, prefix] of [['127.0.0.0', 8], ['10.0.0.0', 8], ['172.16.0.0', 12], ['192.168.0.0', 16]]) {
+      networks.addSubnet(network, prefix, 'ipv4');
+    }
+    networks.addAddress('::1', 'ipv6');
+    networks.addSubnet('fc00::', 7, 'ipv6');
+  }
+  return (address) => Boolean(isIP(address) && networks.check(address, addressFamily(address)));
 }
 
 export function clientIp(req, trustProxy) {
-  if (trustProxy) {
-    const xff = req.headers['x-forwarded-for'];
-    if (xff) return String(xff).split(',')[0].trim();
+  const peer = peerAddress(req);
+  const header = req.headers['x-forwarded-for'];
+  if (typeof trustProxy === 'function' && trustProxy(peer) && typeof header === 'string') {
+    // Trust only the address appended by the immediate proxy.
+    const nearest = header.slice(header.lastIndexOf(',') + 1).trim();
+    if (isIP(nearest) && !nearest.includes('%')) {
+      return isIP(nearest) === 6 ? new URL('http://[' + nearest + ']').hostname.slice(1, -1) : nearest;
+    }
   }
-  return req.socket?.remoteAddress || req.connection?.remoteAddress || 'unknown';
+  return peer || 'unknown';
+}
+
+export function requestSecure(req, trustProxy) {
+  return Boolean(req.socket?.encrypted ||
+    (trustProxy(peerAddress(req)) && req.headers['x-forwarded-proto'] === 'https'));
 }
 
 // Nur interne Weiterleitungen nach dem Login (kein Open Redirect)
