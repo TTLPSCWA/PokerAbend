@@ -2,6 +2,11 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.27.0 – 25. November 2026
+
+- Factory Empire: Züge fahren als fortlaufender Umlauf. Nach einer Anlauffahrt kommt alle 120 Sekunden eine Wagenladung an. Später bereitgestellte Ware steigt ohne neuen Anlauf zu. Ein Auftrag über 60 Motoren mit einem Wagen ist damit nach 360 statt 480 Sekunden erfüllt. Mehrere Strecken für denselben Auftrag liefern zusammen nicht mehr als die offene Menge. Gespeicherte Factory-Stände der alten Zugregel werden nicht geladen und bleiben unverändert erhalten.
+- Alle drei Idle-Spiele lehnen Spielstände mit unbekannten oder alten Zusatzfeldern ab, statt sie still zu übernehmen. Ein neues Wörterbuch beschreibt Kennungen, Versionen und Ressourcen.
+
 ## 3.26.3 – 25. November 2026
 
 - Der Server kennt die öffentliche Herkunft über den Host und übernimmt Anschluss-IP und HTTPS nur von zulässigen direkten Proxys. Neue Backups werden mit privaten Zugriffsrechten veröffentlicht. Das Skript meldet alte Sicherungen zur Prüfung und lässt sie erhalten.

@@ -1,4 +1,4 @@
-import { createIdleEngine, quantity, requireIdle } from '../../public/idle/engine.js';
+import { createIdleEngine, quantity, requireIdle, sameFields } from '../../public/idle/engine.js';
 import { phasesFor } from '../../public/idle/progression.js';
 import {
   beltTypes, cap, dockRate, fields, fundingTargets, gateScope, goods, machines, orders, prices, regions, research, scopes,
@@ -6,7 +6,7 @@ import {
 } from './factory-config.js';
 import { fieldAt, footprint, materialGraph, occupancy, powerGrid, rate } from './factory-graph.js';
 import {
-  accelerateRemainders, add, apply, counter, delivered, deposit, duration, effective, hasPower, isStore, maximum, min, money,
+  accelerateRemainders, add, apply, counter, delivered, deposit, duration, effective, hasPower, isStore, max, maximum, min, money,
   orderReceipt, planTick, read, stored,
 } from './factory-flow.js';
 
@@ -39,6 +39,7 @@ function create(preserved = { prestige: { points: 0, claimed: [] }, blueprints: 
 }
 
 function validate(data) {
+  if (!sameFields(data, create())) return false;
   if (!data || !data.amounts || !Object.entries(data.amounts).every(([id, value]) =>
     /^[a-z0-9:-]+$/i.test(id) && quantity(value) >= 0n)) return false;
   const arrays = ['buildings', 'tracks', 'regions', 'closed', 'activeOrders', 'completeOrders', 'blueprints', 'manual'];
@@ -59,7 +60,7 @@ function validate(data) {
       integer(t.wagons, 1, 3) && typeof t.auto === 'boolean' &&
       (!t.manifest || goods.includes(t.manifest.good) && scopes.includes(t.manifest.scope) &&
         integer(t.manifest.elapsed, 0, 100000) && quantity(t.manifest.amount) <= cap &&
-        quantity(t.manifest.unloaded) <= quantity(t.manifest.amount))) &&
+        quantity(t.manifest.unloaded) <= quantity(t.manifest.amount) && quantity(t.manifest.skipped) >= 0n)) &&
     data.activeOrders.length <= 3 && unique(data.activeOrders) && unique(data.completeOrders) &&
     unique(data.manual, (item) => item.region) && data.manual.every((item) => data.regions.includes(item.region) &&
       goods.includes(item.good) && quantity(item.amount) > 0n && quantity(item.amount) <= dockRate &&
@@ -300,7 +301,12 @@ function routeGood(data, track, power) {
   return src.mode === 'out' && dest.mode === 'in' && src.good && src.good === dest.good &&
     effective(data, src.scope) === effective(data, dest.scope) ? connected : null;
 }
+// Rail circulation (rulesVersion 2): a dispatch starts one circulation. After a single
+// start-up trip, one car load arrives every tripSeconds. Cargo loaded later joins the
+// running circulation at a departure without a new start-up. `skipped` is the capacity
+// of departed car loads that left without cargo, so late cargo never uses a past departure.
 const carLoad = (track) => units(track.wagons * 50);
+const queued = (m) => quantity(m.amount) - quantity(m.unloaded);
 function sendTrack(data, track, power, maximum = cap) {
   const route = track && !track.manifest && routeGood(data, track, power);
   requireIdle(route, 'factory-rail');
@@ -308,7 +314,7 @@ function sendTrack(data, track, power, maximum = cap) {
   const amount = min(maximum, min(read(data, stored(src.id)), cap - read(data, stored(dest.id))));
   requireIdle(amount > 0n, 'factory-stock');
   add(data, stored(src.id), -amount);
-  track.manifest = { good: src.good, scope: effective(data, src.scope), amount: String(amount), unloaded: '0', elapsed: 0 };
+  track.manifest = { good: src.good, scope: effective(data, src.scope), amount: String(amount), unloaded: '0', elapsed: 0, skipped: '0' };
 }
 function routeOrders(data, route) {
   return data.activeOrders.filter((id) => {
@@ -317,27 +323,67 @@ function routeOrders(data, route) {
       spec.scope === effective(data, route.src.scope);
   });
 }
+// Open order quantity that is neither received nor already travelling on any track.
+function unassigned(data, id) {
+  const spec = orders[id];
+  const travelling = data.tracks.reduce((sum, track) => {
+    const m = track.manifest;
+    return m && m.good === spec.good && m.scope === spec.scope && load(data, track.destination)?.region === spec.region ?
+      sum + queued(m) : sum;
+  }, 0n);
+  return max(0n, units(spec.amount) - read(data, delivered(id)) - travelling);
+}
+// Automatic loading for one track: the open quantity, limited by source stock, destination
+// room for all cargo on board and the manifest limit. A load starts at one car or the full rest.
+function autoLoad(data, track, power) {
+  if (!track.auto) return null;
+  const route = routeGood(data, track, power);
+  const m = track.manifest;
+  if (!route || m && (m.good !== route.src.good || m.scope !== effective(data, route.src.scope))) return null;
+  const id = routeOrders(data, route)[0];
+  if (!id) return null;
+  const open = unassigned(data, id);
+  const first = min(carLoad(track), open);
+  const room = cap - read(data, stored(route.dest.id)) - (m ? queued(m) : 0n);
+  const limit = min(min(open, room), m ? cap - quantity(m.amount) : cap);
+  if (first <= 0n || limit < first) return null;
+  return { route, first, limit };
+}
 function autoTracks(data, power, threshold = false) {
   const limits = [];
-  for (const track of data.tracks) {
-    if (!track.auto || track.manifest) continue;
-    const route = routeGood(data, track, power);
-    if (!route) continue;
-    const id = routeOrders(data, route)[0];
-    if (!id) continue;
-    const waiting = units(orders[id].amount) - read(data, delivered(id));
-    const qty = min(carLoad(track), waiting);
-    if (qty <= 0n || cap - read(data, stored(route.dest.id)) < qty) continue;
-    if (threshold) limits.push([stored(route.src.id), qty]);
-    else if (read(data, stored(route.src.id)) >= qty) sendTrack(data, track, power, qty);
+  // A dispatch changes the open quantity for other tracks. Repeat until no track starts.
+  for (let started = true; started;) {
+    started = false;
+    for (const track of data.tracks) {
+      if (track.manifest) continue;
+      const plan = autoLoad(data, track, power);
+      if (!plan) continue;
+      const stock = stored(plan.route.src.id);
+      if (threshold) limits.push([stock, plan.first]);
+      else if (read(data, stock) >= plan.first) {
+        sendTrack(data, track, power, min(plan.limit, read(data, stock)));
+        started = true;
+      }
+    }
   }
   return limits;
+}
+// At a departure, a running automatic circulation takes on further cargo without a new start-up.
+function reload(data, track, power) {
+  const m = track.manifest, plan = autoLoad(data, track, power);
+  const stock = plan && read(data, stored(plan.route.src.id));
+  if (!plan || stock < plan.first) return false;
+  const qty = min(plan.limit, stock), departed = BigInt(m.elapsed / tripSeconds - 1) * carLoad(track);
+  m.skipped = String(max(quantity(m.skipped), departed - quantity(m.amount)));
+  m.amount = String(quantity(m.amount) + qty);
+  add(data, stored(plan.route.src.id), -qty);
+  return true;
 }
 
 function arrival(track, seconds) {
   const m = track.manifest;
   const loads = Math.max(0, Math.floor((m.elapsed + seconds) / tripSeconds) - 1);
-  return min(quantity(m.amount), BigInt(loads) * carLoad(track));
+  return min(quantity(m.amount), max(0n, BigInt(loads) * carLoad(track) - quantity(m.skipped)));
 }
 function nextTrain(track) {
   const m = track.manifest;
@@ -360,7 +406,14 @@ function travel(data, powers, ticks, phase) {
     }
     add(data, stored(dest.id), remaining);
     m.elapsed += ticks; m.unloaded = String(until);
-    if (m.unloaded === m.amount) track.manifest = null;
+  }
+  // Departures coincide with arrival marks. Reload after all arrivals of this instant,
+  // otherwise end the circulation once it carries nothing.
+  for (const track of data.tracks) {
+    const m = track.manifest;
+    if (!m || !activeRoute(data, track, powers)) continue;
+    const departure = m.elapsed >= 2 * tripSeconds && m.elapsed % tripSeconds === 0;
+    if (!(departure && reload(data, track, powers)) && m.unloaded === m.amount) track.manifest = null;
   }
   ordersAndCredit(data, phase);
 }
@@ -698,7 +751,7 @@ function deriveView(data, id, at) {
 }
 
 export const factoryEngine = createIdleEngine({
-  id: 'factory', stateVersion: 1, rulesVersion: 1, create, validate, facts, command, advance, deriveView,
+  id: 'factory', stateVersion: 2, rulesVersion: 2, create, validate, facts, command, advance, deriveView,
   reset(data, phase, _at, requested) {
     const eligible = claims(data, phaseNo(phase));
     requireIdle(eligible.length > 0 && Array.isArray(requested) && eligible.length === requested.length &&

@@ -1,4 +1,4 @@
-import { createIdleEngine, quantity, requireIdle, timestamp } from '../../public/idle/engine.js';
+import { createIdleEngine, quantity, requireIdle, sameFields, timestamp } from '../../public/idle/engine.js';
 import { phasesFor } from '../../public/idle/progression.js';
 import {
   audiences, depth, fit, genres, licensees, platforms, publishers, research, roles, sizes, starters, studioCosts, topics, trophies,
@@ -46,6 +46,7 @@ const validPlan = (plan) => plan && plainTitle(plan.name) && known(sizes, plan.s
   typeof plan.contract === 'string' && (plan.contract === '' || publishers.some(({ id }) => id === plan.contract));
 
 function validate(data) {
+  if (!sameFields(data, create())) return false;
   if (!data || !moneyKeys.every((key) => quantity(data[key]) >= 0n)) return false;
   const lists = [data.studios, data.teams, data.staff, data.projects, data.queue, data.releases, data.licenses,
     data.franchises, data.contracts, data.studiosWithReleases, data.recentGenres, data.prestige?.claimed];

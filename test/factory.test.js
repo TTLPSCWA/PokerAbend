@@ -169,22 +169,21 @@ test('Factory: Spielweg, geschützte Pflichtmengen, Lieferzeit, Endgame, Export 
           const track = active.data.tracks[0];
           assert.equal(track.wagons, 1);
           assert.equal(track.manifest, null);
+          // IDLE-FREEZE-01 E (rulesVersion 2): one circulation, one start-up trip, then one
+          // car load per 120 s. 50 motors at 240 s, the remaining 10 at 360 s.
           const firstLeg = at(239_999);
           const firstUnload = at(240_000);
-          const modelDeadline = at(360_000);
-          const secondLeg = at(479_999);
-          const completed = at(480_000);
+          const secondLeg = at(359_999);
+          const completed = at(360_000);
           assert.deepEqual(firstLeg.data.tracks[0].manifest,
-            { good: 'motor', scope: 'rail', amount: '50000', unloaded: '0', elapsed: 239 });
+            { good: 'motor', scope: 'rail', amount: '60000', unloaded: '0', elapsed: 239, skipped: '0' });
           const stock = (state) => BigInt(state.data.amounts['stock:' + track.source] ?? '0');
-          assert.equal(stock(active) - stock(firstLeg), 50000n);
+          assert.equal(stock(active) - stock(firstLeg), 60000n);
           assert.equal(ordered(firstLeg, 'F4-03').received, '0');
           assert.equal(ordered(firstUnload, 'F4-03').received, '50000');
-          assert.equal(firstUnload.data.tracks[0].manifest, null);
-          assert.deepEqual(modelDeadline.data.tracks[0].manifest,
-            { good: 'motor', scope: 'rail', amount: '10000', unloaded: '0', elapsed: 120 });
-          assert.equal(stock(firstUnload) - stock(modelDeadline), 10000n);
-          assert.equal(ordered(modelDeadline, 'F4-03').received, '50000');
+          assert.deepEqual(firstUnload.data.tracks[0].manifest,
+            { good: 'motor', scope: 'rail', amount: '60000', unloaded: '50000', elapsed: 240, skipped: '0' });
+          assert.equal(stock(firstUnload), stock(firstLeg));
           assert.equal(ordered(secondLeg, 'F4-03').complete, false);
           assert.equal(ordered(secondLeg, 'F4-03').received, '50000');
           assert.equal(ordered(completed, 'F4-03').received, '60000');
@@ -192,19 +191,20 @@ test('Factory: Spielweg, geschützte Pflichtmengen, Lieferzeit, Endgame, Export 
           assert.equal(completed.data.completeOrders.filter((name) => name === 'F4-03').length, 1);
           assert.equal(cash(completed) - cash(secondLeg), 2200000n);
           let split = firstLeg;
-          for (const offset of [240_000, 360_000, 479_999, 480_000]) {
+          for (const offset of [240_000, 300_000, 359_999, 360_000]) {
             split = engine.advance(split, active.at + offset).snapshot;
           }
           assert.deepEqual(split, completed);
-          assert.equal(cash(at(481_000)), cash(completed));
+          assert.equal(cash(at(480_000)), cash(completed));
+          assert.equal(ordered(at(480_000), 'F4-03').received, '60000');
           checkedTrain = true;
         }
         if (active.data.activeOrders.includes('F4-01')) {
-          // The third interregional order is two 50-unit manifests with no idle gap.
+          // The third interregional order is one circulation with two 50-unit car loads.
           assert.equal(active.data.completeOrders.filter((name) => name.startsWith('F4-')).length, 2);
           assert.equal(active.data.research.industry3, true);
-          const before = at(479_999);
-          const after = at(480_000);
+          const before = at(359_999);
+          const after = at(360_000);
           assert.equal(before.phase, 'FE-P4');
           assert.equal(ordered(before, 'F4-01').received, '50000');
           assert.equal(after.phase, 'FE-P5');

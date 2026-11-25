@@ -1,4 +1,4 @@
-import { createIdleEngine, quantity, requireIdle } from '../../public/idle/engine.js';
+import { createIdleEngine, quantity, requireIdle, sameFields } from '../../public/idle/engine.js';
 import { phasesFor } from '../../public/idle/progression.js';
 import {
   COMFORT_COST, EVENTS, LOCATION_COST, MARKETING_RATE, PROFILES, REPUTATION, RESEARCH, RESEARCH_COST,
@@ -57,6 +57,7 @@ const protectedCount = (loc, id) => Number(loc.profile === 'altstadt' && id === 
 const unlockPhase = (id, data) => id === 'dice' && data.stars >= 5 ? 1 : STATIONS[id].phase;
 
 function validate(data) {
+  good(sameFields(data, newWorld()), 'invalid-game-state');
   good(data && data.locations?.length >= 1 && data.locations.length <= 5, 'invalid-game-state');
   for (const field of counters) quantity(data[field]);
   good(typeof data.auto === 'boolean' && typeof data.foundBottleneck === 'boolean' && limited(data.manualAt, 0, Number.MAX_SAFE_INTEGER) &&

@@ -47,6 +47,13 @@ export function plainData(value, depth = 0, budget = { nodes: 0 }) {
   }
 }
 
+// CORE-015: a game state has exactly the fields of its current version. A legacy alias
+// next to the current field (for example `credits` beside `coins`) is a conflict, not a value.
+export function sameFields(value, reference) {
+  const keys = Object.keys(value ?? {}), expected = Object.keys(reference);
+  return keys.length === expected.length && expected.every((key) => Object.hasOwn(value, key));
+}
+
 function resourceEntries(resources) {
   requireIdle(resources && Object.getPrototypeOf(resources) === Object.prototype, 'invalid-resources');
   return Object.entries(resources).map(([key, value]) => {

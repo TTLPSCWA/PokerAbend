@@ -26,6 +26,11 @@ Für die Ansicht liefern `view` und optionale Modulmethoden Fortschritt je Ziel,
 - Ein Simulationssegment umfasst das Zeitintervall bis zur nächsten fachlichen Grenze oder bis zum Zielzeitpunkt. Bei einem Kommando gilt die bis zu diesem Zeitpunkt fällige Produktion zuerst. Ein Modul muss eigene gleichzeitige Ereignisse in stabiler Reihenfolge verarbeiten und an seinen Regelgrenzen segmentieren.
 - `produceBatches` aggregiert unabhängige Zyklen ohne Schleife pro Takt. Es behält den begonnenen Takt in Millisekunden und begrenzt die Zahl fertiger Zyklen anhand von Eingaben, Lager und verfügbarer Absatzmenge. Ausgefallene Zyklen werden später nicht nachgezahlt. Mehrstufige Netze, konkurrierende Eingänge und andere dynamische Regeln liegen beim jeweiligen Spielmodul.
 - Es gibt kein pauschales Offline-Zeitlimit. Das Ergebnis enthält Anker, Zielzeit und Segmentzahl. Standardmäßig begrenzt die Engine einen Aufruf auf 10.000 Segmente. Ungültige Segmente, Rückwärtszeit oder eine Überschreitung liefern einen Fehler ohne Teilergebnis. Vor der öffentlichen Nutzung müssen die echten Spielmodule lange Intervalle durch Aggregation nachweislich innerhalb des Rechenbudgets verarbeiten.
+- **Messung IDLE-FREEZE-01 (2026-11-25):** [idle-freeze.test.js](../test/idle-freeze.test.js) rechnet alle Meilenstein- und Fahrtstände der drei regulären Spielwege über 1 Stunde, 24 Stunden, 7, 14, 30 und 90 Tage, 1 Jahr und 10 Jahre. Höchstwerte: Factory 6 Segmente, Spielhalle 6, Studio 5, jeweils mit geteilter Gegenrechnung. Zusätzlich gemessen wurden zwei Varianten ohne Testlauf im Repository:
+  - 300 Varianten der echten Factory-Netze mit Prestige-Raten, umgeschalteten Verteilern, Bandstufen und abgeschalteten Maschinen oder Generatoren: höchstens 4 Segmente pro Jahr.
+  - Ein unerschöpfliches Netz aus erneuerbaren Bohrern, Zusammenführung, Verteiler, Durchlauflager, Ofen und Dock: 1–2 Segmente in 10 Jahren.
+
+  Ein dauerhaft fahrender Zug ist nicht erreichbar, weil der Autoversand nur offene, endliche Zugaufträge bedient. Das Segmentbudget von 10.000 bleibt unverändert.
 
 ## Phasen und Spielmodule
 
@@ -44,6 +49,7 @@ Die Engine wertet die Übergänge der Reihe nach aus und zeigt am Ende die jewei
 - Beide Save-Pfade prüfen die Exportierbarkeit vor dem Schreibvorgang. Der kanonische Nutzinhalt ist auf 256 KiB begrenzt. `saveAndExport` gibt den signierten Spielstand direkt zurück, `exportConfirmed` exportiert die aktuell bestätigte Revision. Der Export enthält Spiel-ID, Run-ID, Revision, Zeitanker, Zustands- und Regelversion und eine HMAC-Kontobindung. Er enthält weder den Schreib-Token noch die rohe Konto-ID. Die Signatur schützt die Integrität. Das Format ist lesbar und enthält Spielstandsdaten. Die HMAC-Schlüssel gehören in eine spätere serverseitige Konfiguration mit definierter Rotation.
 - `previewImport` prüft Signatur, Schlüssel, Konto, Spiel, Version, Zeit und den bestätigten Datensatz. Eine kurzlebige Bestätigung bindet die Vorschau an den Inhalt des Datensatzes und die flüchtige Sitzungsrevision. Der bekannte aktuelle Stand kann die Sitzung neu aufbauen. Die Bestätigung ist idempotent und verbucht nichts dauerhaft. Ältere Revisionen oder eine Datei ohne bestätigten Datensatz werden abgelehnt. Neuaufsetzen und Wiederherstellung ohne vorhandenen Datensatz brauchen eine gesonderte Regel.
 - Historische Schemen brauchen eine registrierte Prüfung und eine explizite Migration. Die Migration arbeitet auf einer Kopie und behält den Zeitanker. Erst ein manueller Save schreibt den migrierten Zustand. Unbekannte oder beschädigte Formate bleiben unangetastet.
+- Ein Spielzustand hat genau die Felder seiner aktuellen Version (`sameFields`). Ein altes Aliasfeld neben oder statt des aktuellen Feldes, zum Beispiel `credits` neben `coins`, führt zu `invalid-game-state`. Der Wert wird nicht geraten (CORE-015). Namensräume und Ressourcen stehen im [Idle-Wörterbuch](idle-woerterbuch.md).
 
 Vor der Umsetzung der Speicheroberfläche ist zu klären, wann sie für die bereits aktive Revision einen Hinweis zeigt und wann sie das erneute Laden zur Rücknahme ungespeicherter Aktionen anbietet. Der Service unterstützt das in der technischen Planung vorgesehene erneute Laden eines bekannten aktuellen Stands.
 
@@ -71,7 +77,7 @@ Der personenbezogene Kontoexport enthält die bestätigten Idle-Spielstände des
 
 ## Vertragsstand für Snapshots, HTTP und Dateien
 
-Die Beispiele gelten für die drei registrierbaren Spielmodule mit `stateVersion: 1` und `rulesVersion: 1`. Die beiden Versionsnummern werden unabhängig vom persistenten Dateiformat und der Transporthülle geprüft. Änderungen am Spielzustand oder an fachlichen Regeln benötigen eine ausdrückliche Entscheidung über Versionswechsel und Kompatibilität. Die Anwendungsversion aus `package.json` ersetzt diese Prüfungen nicht.
+Die Beispiele gelten für die registrierbaren Spielmodule. Die Spielhalle und Game Studio Tycoon haben `stateVersion: 1` und `rulesVersion: 1`, Factory Empire hat seit dem fortlaufenden Zugumlauf (IDLE-FREEZE-01) `stateVersion: 2` und `rulesVersion: 2`. Die beiden Versionsnummern werden unabhängig vom persistenten Dateiformat und der Transporthülle geprüft. Änderungen am Spielzustand oder an fachlichen Regeln benötigen eine ausdrückliche Entscheidung über Versionswechsel und Kompatibilität. Die Anwendungsversion aus `package.json` ersetzt diese Prüfungen nicht.
 
 | Ebene | Form und Version |
 | --- | --- |
