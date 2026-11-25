@@ -204,7 +204,7 @@ jobs:
         run: npx playwright install --with-deps ${{ matrix.browser }}
 
       - name: Gezielte Browser-Prüfungen
-        run: npx playwright test -c playwright.crossbrowser.config.js --project="${{ matrix.browser }}*" --reporter=list,json
+        run: npx playwright test -c playwright.crossbrowser.config.js --project="${{ matrix.browser }}*" --reporter=list,json,github
         env:
           CI: 'true'
           PLAYWRIGHT_JSON_OUTPUT_NAME: reports/crossbrowser-${{ matrix.browser }}/crossbrowser.json
