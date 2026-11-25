@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.28.2 – 25. November 2026
+
+- Vier gewinnt: Auf schmalen Bildschirmen mit wenig freier Höhe ragten die rechten Spalten über das Brett hinaus (gefunden mit der neuen WebKit-Prüfung). Das Brett ist jetzt mindestens so breit wie seine sieben Spalten.
+
 ## 3.28.1 – 25. November 2026
 
 - Skip-Bo: Eine Kartenaktion aus einem veralteten Spielstand wird abgelehnt, statt eine andere Karte zu spielen. Das betrifft etwa ein zweites Fenster oder eine verspätete Antwort; danach siehst du sofort den aktuellen Stand.

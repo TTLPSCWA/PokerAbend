@@ -50,3 +50,10 @@ body.marks .vg-dot .cm { display: block; }
   .vg-stage button.vg-col { min-width: 0; }
   .vg-stage { padding: 8px; }
 }
+
+/* QA-CROSSBROWSER-01: Die Brettbreite folgt der freien Höhe (--board-space). Fällt sie sehr klein aus (in Linux-WebKit
+   bei 390×844 nur 142 px), ragten die 44 px breiten Spalten über das Brett hinaus. Ab 375 px ist das Brett deshalb nie
+   schmaler als seine sieben Spalten; wo es ohnehin breiter ist, ändert sich nichts. */
+@media (min-width: 375px) and (min-height: 561px) {
+  #kg .vg-stage .vg-board { min-width: min(100%, calc(7 * 44px + 6 * 3px + 12px)); }
+}

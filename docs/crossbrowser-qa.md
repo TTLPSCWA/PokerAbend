@@ -29,6 +29,15 @@ Stand 25.11.2026. Die volle Browsermatrix läuft weiter nur in Chromium: `playwr
 
 **Korrektur:** Der Test wartet nach dem Größenwechsel zwei Frames, bis der Layoutwechsel verarbeitet ist, und prüft, dass der Atlas vorhanden ist. Die Kontrastschwelle 4,5:1 und die gemessenen Elemente sind unverändert. Nachweis: 8 von 8 Läufen unter derselben Last.
 
+## Erste CI-Läufe und Befund Vier gewinnt
+
+- **#276 (`2fddff3`):** Firefox grün, WebKit rot. Protokoll und Artefakte sind ohne Anmeldung nicht lesbar. Deshalb meldet der Job Fehlschläge seit `0922156` zusätzlich als öffentliche Annotation (Reporter `github`).
+- **#277 (`0922156`):** Firefox 57 bestanden, 18 übersprungen. WebKit 58 bestanden, 33 übersprungen, 1 rot: „B24 Pilot viergewinnt“ bei 390×844 in Linux-WebKit.
+  - Das Brett war dort nur 142 px breit, weil `--board-space` aus der freien Höhe auf fast das Minimum fiel.
+  - Die Spaltenknöpfe behalten ihre Mindestbreite von 44 px; Spalte 6 und 7 ragten über das Brett hinaus.
+  - Unter Windows-WebKit, Firefox und Chromium tritt das nicht auf.
+- **Korrektur (3.28.2):** Ab 375 px Breite und 561 px Höhe ist das Brett nie schmaler als seine sieben Spalten (`viergewinnt.css`). Wo das Brett ohnehin breiter ist, ändert sich nichts. Der Nachweis in Linux-WebKit folgt im nächsten Volllauf.
+
 ## Ergebnisse lokal
 
 Die gesamte Auswahl umfasst 167 Fälle (163 beim ersten Lauf, vor dem Fall aus CARD-ACTION-01), viele überspringen sich bewusst je Gerät.
