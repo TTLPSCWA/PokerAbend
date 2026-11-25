@@ -11,6 +11,7 @@ export const RULES = [
   'Gespielt wird mit dem doppelten Skatblatt (48 Karten, wahlweise ohne Neunen: 40), jeder bekommt zwölf bzw. zehn Karten.',
   'Trumpf sind Herz-Zehn (Dulle), alle Damen und Buben und Karo; die beiden Kreuz-Damen bestimmen die Partei Re, alle anderen sind Kontra.',
   'Wer beide Kreuz-Damen hat, kann eine Hochzeit ansagen: Der erste Mitspieler, der in den ersten drei Stichen sticht, wird sein Partner.',
+  'Meldet der Spieler mit beiden Kreuz-Damen gesund, spielt er still allein gegen drei (stille Hochzeit) und erhält wie beim Solo den dreifachen Wert; jeder Gegner den einfachen.',
   'Vor dem Spiel kann jeder ein Solo anmelden: Damen-, Buben-, Fleischlos- oder Farbsolo. Der Solist spielt allein gegen drei.',
   'Farbzwang bei Fehl-Karten und Trumpf, die höchste Karte gewinnt den Stich. Re braucht 121 von 240 Augen, Kontra 120.',
   'Ansagen: Re/Kontra, keine 90, keine 60, keine 30, schwarz – jede steigert den Spielwert. Zusatzpunkte gibt es für Fuchs (gefangenes Karo-Ass), Doppelkopf (40 Augen im Stich) und Karlchen (Kreuz-Bube im letzten Stich).',

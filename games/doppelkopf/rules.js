@@ -105,10 +105,15 @@ export function scoreDeal(input) {
   }
   const sign = winner === 're' ? 1 : winner === 'kontra' ? -1 : 0;
   const value = winner ? sign * gp + specials.re - specials.kontra : 0;
+  // Nullsumme: Wer allein gegen drei spielt (Solo, Hochzeit ohne Partner und die stille Hochzeit
+  // mit beiden Kreuz-Damen bei „gesund“), erhält den dreifachen Wert, jeder Gegner den einfachen.
+  // Die Zusammensetzung des Spielwerts (gegen die Alten, Sonderpunkte) bleibt dabei unverändert.
+  const lone = re.length === 1 && kontra.length === 3;
+  if (lone && !solo && value) detail.push('allein gegen drei (dreifach)');
   const per = {};
-  for (const id of re) per[id] = value * (solo ? 3 : 1);
+  for (const id of re) per[id] = value * (lone ? 3 : 1);
   for (const id of kontra) per[id] = -value || 0;
-  return { winner, gamePoints: gp, value, per, detail, solo, reMet, kMet };
+  return { winner, gamePoints: gp, value, per, detail, solo, lone, reMet, kMet };
 }
 
 // Sonderpunkte aus den gespielten Stichen: tricks = [{ plays:[{id,card}], winner, points }]

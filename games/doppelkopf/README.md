@@ -5,6 +5,7 @@ Spielbares Kartenspiel für genau vier Personen (Server ist Geber und Schiedsric
 - Karten, Trumpfreihenfolgen, Ansagen, Abrechnung und Sonderpunkte: `rules.js`.
 - Raum und Ablauf: `room.js` (Vorbehalt → Stichspiel mit Hochzeit-Partnersuche → Abrechnung; Serie mit 4–24 Spielen).
 - Spielarten: Normalspiel, Hochzeit, Solos (Damen, Buben, Fleischlos, Kreuz/Pik/Herz/Karo). Ansagen Re/Kontra, keine 90/60/30, schwarz mit Fristen nach Kartenzahl. Sonderpunkte Fuchs, Doppelkopf, Karlchen.
+- Abrechnung als Nullsumme: Wer allein gegen drei spielt (Solo, Hochzeit ohne Partner, stille Hochzeit mit beiden Kreuz-Damen bei „gesund“), erhält den dreifachen Wert. Wertungsmatrix und offene Regelentscheidungen: [docs/doppelkopf-wertung.md](../../docs/doppelkopf-wertung.md), Tests in `test/doppelkopf-wertung.test.js`.
 - Varianten (Host-Menü): mit/ohne Neunen, Schweinchen (an/aus).
 - Bots in drei Stufen: `bot.js`; sie kennen nur die eigene Hand, die gespielten Karten und öffentlich bekannte Parteien.
 - Tests: `rules.test.js` (Node), `ui.spec.js` (Playwright, Desktop und Mobil). Oberfläche: `public/games/doppelkopf/`.

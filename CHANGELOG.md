@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.27.2 – 25. November 2026
+
+- Doppelkopf: Wer beide Kreuz-Damen hat und „gesund“ meldet, spielt allein gegen drei. Die Abrechnung gibt dieser Person jetzt wie beim Solo den dreifachen Wert, sodass die Punkte aller vier Spieler wieder zusammen null ergeben. Die Ergebnisanzeige nennt „allein gegen drei (dreifach)“.
+
 ## 3.27.1 – 25. November 2026
 
 ### Behoben
