@@ -80,7 +80,7 @@
     },
     {
       "path": "server/index.js",
-      "sha256": "00bd61dccaa08cfef33ade0c24e49d09150c7baf145c5fa8fbca6c561e943022"
+      "sha256": "734670fcad0945bf445c4b9211ea12aaed2282ba6e3f8c66aef87cf4f9d57e0e"
     },
     {
       "path": "server/party-program.js",

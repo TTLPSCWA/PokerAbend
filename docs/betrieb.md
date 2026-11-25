@@ -309,6 +309,10 @@ crontab -e                                                      # täglich um 4:
 
 `backup.sh` findet das Volume selbst (Compose nennt es z. B. `spieleabend_poker-data`), schreibt `spieleabend-JJJJ-MM-TT_HHMM.tar.gz` und löscht eigene Sicherungen nach 14 Tagen. Einstellbar: `BACKUP_DIR`, `KEEP_DAYS`, `VOLUME`. Optional zweites Ziel außer Haus: `BACKUP_RSYNC_TARGET=user@host:/pfad/` oder `BACKUP_RCLONE_TARGET=remote:spieleabend`.
 
+Der Restore-Test läuft mit Node.js aus dem Projektverzeichnis. Ohne Pfad verwendet er die neueste reguläre Sicherungsdatei aus `BACKUP_DIR`. Unter Windows lässt sich `scripts/restore-test.sh` mit Git Bash starten. Mit Node.js ist auch `node scripts/restore-test.mjs <Archivpfad>` möglich.
+
+Das Skript entpackt reguläre Dateien und Verzeichnisse in einen privaten temporären Datenordner. Archive mit Links, Sonderdateien, erweiterten Tar-Einträgen oder ungültigen Pfaden werden abgewiesen. Der Prüfserver bindet ausschließlich an `127.0.0.1` und erhält seinen freien Port vom Betriebssystem. Für den API-Test wird eine eigene temporäre Anmeldung erzeugt. Das Skript setzt die interne Markierung `POKER_RESTORE_CHECK` ausschließlich für seinen Prüfprozess. Produktionskonfiguration und Originalarchiv bleiben getrennt. Nach dem Test oder einem abfangbaren Abbruch werden Server und Datenordner bereinigt. Nach einem erzwungenen Prozessabbruch oder Systemausfall den eventuell verbliebenen Ordner `pokerabend-restore-*` im temporären Verzeichnis des ausführenden Kontos prüfen und bei Bedarf separat bereinigen.
+
 **Zurückspielen:**
 
 ```bash

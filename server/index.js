@@ -53,6 +53,12 @@ themeRegistry().assertGames(Object.keys(GAMES));
 const worldOf = (game, id) => themeRegistry().worldForGame(game, id); // ART-W3: inklusive Facetten (z. B. TW-09 für Würfel- und Brettspiele)
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const restoreCheck = process.env.POKER_RESTORE_CHECK;
+if (restoreCheck !== undefined && (restoreCheck !== '1' || !process.connected ||
+    process.env.POKER_NO_DOTENV !== '1' || process.env.PORT !== '0' ||
+    !process.env.DATA_DIR || !process.env.SITE_PASSWORD || !process.env.SESSION_SECRET)) {
+  throw new Error('Ungültige Konfiguration für den lokalen Restore-Test');
+}
 const PORT = Number(process.env.PORT || 3000);
 // Fail closed before opening/migrating any data when local preview was requested.
 const privateMonopoly = configurePrivateMonopoly();
@@ -1152,7 +1158,9 @@ for (const g of Object.values(GAMES)) {
 }
 
 if (load()) removeOrphanHistory(); // nach einem Lesefehler bleiben alle Verlaufsdateien liegen
-http.listen(PORT, privateMonopoly?.host, () => console.log(`Spieleabend läuft auf http://localhost:${PORT}${privateMonopoly ? ' (private lokale Theme-Vorschau)' : ''}`));
+http.listen(PORT, restoreCheck ? '127.0.0.1' : privateMonopoly?.host, () => {
+  console.log(`Spieleabend läuft auf http://localhost:${http.address().port}${privateMonopoly ? ' (private lokale Theme-Vorschau)' : ''}`);
+});
 
 // ---------- Admin-Hilfen ----------
 function adminRooms() {
