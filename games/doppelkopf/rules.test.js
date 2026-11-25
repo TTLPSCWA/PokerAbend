@@ -79,11 +79,11 @@ const deal = (over = {}) => ({
   contract: normal, re: ['a', 'b'], kontra: ['c', 'd'], points: { re: 130, kontra: 110 }, tricks: { re: 7, kontra: 5 }, levels: { re: 0, kontra: 0 }, specials: { re: 0, kontra: 0 }, ...over,
 });
 
-test('Doppelkopf: Normalspiel – Re mit 121 gewinnt, Kontra mit 120 gegen die Alten', () => {
+test('Doppelkopf: Normalspiel – Re mit 121 gewinnt, Kontra mit 120 und Sonderpunkt gegen die Kreuz-Damen (DDV 7.1, 7.2.3)', () => {
   let r = scoreDeal(deal({ points: { re: 121, kontra: 119 } }));
   assert.equal(r.winner, 're'); assert.equal(r.gamePoints, 1); assert.deepEqual(r.per, { a: 1, b: 1, c: -1, d: -1 });
   r = scoreDeal(deal({ points: { re: 120, kontra: 120 } }));
-  assert.equal(r.winner, 'kontra'); assert.equal(r.gamePoints, 2); assert.deepEqual(r.per, { a: -2, b: -2, c: 2, d: 2 });
+  assert.equal(r.winner, 'kontra'); assert.equal(r.gamePoints, 1); assert.equal(r.value, -2); assert.deepEqual(r.per, { a: -2, b: -2, c: 2, d: 2 });
 });
 
 test('Doppelkopf: keine 90 / 60 / 30 / schwarz gespielt zählen je einen Punkt', () => {
@@ -99,12 +99,12 @@ test('Doppelkopf: Ansagen Re/Kontra bringen je zwei Punkte, Absagen je einen; ve
   r = scoreDeal(deal({ levels: { re: 1, kontra: 1 }, points: { re: 130, kontra: 110 } }));
   assert.equal(r.gamePoints, 5);
   r = scoreDeal(deal({ levels: { re: 1, kontra: 0 }, points: { re: 110, kontra: 130 } }));
-  assert.equal(r.winner, 'kontra'); assert.equal(r.gamePoints, 1 + 1 + 2);
+  assert.equal(r.winner, 'kontra'); assert.equal(r.gamePoints, 1 + 2); assert.equal(r.value, -(1 + 2 + 1)); // Sonderpunkt gegen die Kreuz-Damen
   // Re sagt „keine 90“ an und holt nur 140 (Kontra 100): verfehlt – Kontra gewinnt
   r = scoreDeal(deal({ levels: { re: 2, kontra: 0 }, points: { re: 140, kontra: 100 } }));
   assert.equal(r.winner, 'kontra');
   r = scoreDeal(deal({ levels: { re: 2, kontra: 0 }, points: { re: 160, kontra: 80 } }));
-  assert.equal(r.winner, 're'); assert.equal(r.gamePoints, 1 + 2 + 1 + 1); // Sieg, Re, keine 90 angesagt, keine 90 gespielt
+  assert.equal(r.winner, 're'); assert.equal(r.gamePoints, 1 + 2 + 1 + 1); // Sieg, Re, keine 90 abgesagt, unter 90 gespielt
   // beide verfehlen ihre Absage: unentschieden
   r = scoreDeal(deal({ levels: { re: 2, kontra: 2 }, points: { re: 120, kontra: 120 } }));
   assert.equal(r.winner, null); assert.equal(r.value, 0);
@@ -233,23 +233,24 @@ test('Doppelkopf: Raum – Hochzeit ohne Partner nach drei Stichen wird zum Solo
   assert.equal(scoreDeal(deal({ contract: r.contract, re: [ids[0]], kontra: ids.slice(1), points: { re: 130, kontra: 110 } })).per[ids[0]], 3);
 });
 
-test('Doppelkopf: Raum – Ansagen nur im eigenen Zug, nur für die eigene Partei und innerhalb der Frist', () => {
+test('Doppelkopf: Raum – Ansagen auch außerhalb des eigenen Zugs, nur für die eigene Partei und innerhalb der Frist (DDV 6.4)', () => {
   const { r, ids } = room();
   r.deckFactory = () => deckWith(HAND_WEDDING.map((c) => c)); // ids[0] hat beide Kreuz-Damen
   r.start(ids[0]);
   for (const id of ids) r.reserve(id, { ...d(r), choice: 'healthy' });
   assert.equal(r.partyMap[ids[0]], 're');
   assert.equal(r.gameView(ids[0]).canAnnounce, 1);
-  assert.equal(r.gameView(ids[1]).canAnnounce, 0); // nicht dran
-  assert.throws(() => r.announce(ids[1], { ...d(r), level: 1 }), /nicht dran/);
-  assert.throws(() => r.announce(ids[0], { ...d(r), level: 2 }), /nicht möglich/); // erst Re
+  assert.deepEqual(r.gameView(ids[1]).announceLevels, [1, 2, 3, 4, 5]); // nicht dran, darf aber ansagen (6.4.1)
+  r.announce(ids[1], { ...d(r), level: 1 });
+  assert.equal(r.levels.kontra, 1); assert.equal(r.currentId, ids[0]); // der Kartenzug bleibt bei ids[0]
+  assert.throws(() => r.announce(ids[2], { ...d(r), level: 1 }), /nicht möglich/); // dieselbe Ansage der Partei nicht wiederholen (6.4.7)
   r.announce(ids[0], { ...d(r), level: 1 });
   assert.equal(r.levels.re, 1); assert.deepEqual(r.knownParties()[ids[0]], 're');
   assert.equal(r.gameView(ids[0]).canAnnounce, 2);
-  r.announce(ids[0], { ...d(r), level: 2 });
-  assert.equal(r.levels.re, 2);
+  r.announce(ids[0], { ...d(r), level: 3 }); // keine 90 darf übersprungen werden (6.4.3)
+  assert.equal(r.levels.re, 3);
   assert.throws(() => r.announce(ids[0], { ...d(r), level: 2 }), /nicht möglich/);
-  // Frist: nach vier gespielten Karten sind keine Absagen mehr möglich
+  // Frist: nach sechs gespielten Karten sind keine Absagen mehr möglich
   r.hands[ids[0]].length = 6;
   assert.equal(r.nextAnnounce(ids[0]), 0);
 });

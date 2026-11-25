@@ -1,4 +1,4 @@
-// Doppelkopf (nach den üblichen Turnierregeln): reine Regelfunktionen.
+// Doppelkopf nach den Turnierspielregeln des Deutschen Doppelkopf-Verbands (Stand 21.02.2026): reine Regelfunktionen.
 // Karten sind "Rang+Farbe+Kopie", z. B. "Qc0" (erste Kreuz-Dame) – jede Karte gibt es doppelt. Farben: c Kreuz, s Pik, h Herz, d Karo.
 export const SUITS = 'cshd';
 export const POINTS = { A: 11, T: 10, K: 4, Q: 3, J: 2, 9: 0 };
@@ -62,58 +62,100 @@ export function trickWinner(trick, k) {
   return best.id;
 }
 
-// ---------- Ansagen ----------
+// ---------- Ansagen (DDV-Turnierspielregeln, Stand 21.02.2026, Abschnitte 6.2–6.4) ----------
 export const LEVELS = ['', 'Re/Kontra', 'keine 90', 'keine 60', 'keine 30', 'schwarz'];
 export const levelName = (party, level) => (level === 1 ? (party === 're' ? 'Re' : 'Kontra') : LEVELS[level]);
-// Wie viele Karten müssen mindestens noch auf der Hand sein, wenn die Ansage fällt (N = Startkarten)
-export const announceDeadline = (N, level) => N - level;
-const THRESHOLD = { 2: 90, 3: 60, 4: 30 };
-function targetMet(level, ownPoints, otherPoints, otherTricks) {
-  if (level < 2) return true;
-  if (level === 5) return otherTricks === 0;
-  return otherPoints < THRESHOLD[level];
+// Wie viele Karten müssen mindestens noch auf der Hand sein, wenn die Ansage fällt (N = Startkarten).
+// shift: angemeldete Hochzeit mit Klärungsstich 2 bzw. 3 verringert die Kartenzahl um 1 bzw. 2 (6.4.2).
+export const announceDeadline = (N, level, shift = 0) => N - level - shift;
+// Erlaubte Zielstufen einer Partei zum jetzigen Zeitpunkt.
+//   own/opp: bisherige Stufe der eigenen bzw. gegnerischen Partei (0 = nichts, 1 = Re/Kontra … 5 = schwarz)
+//   late: die eigene Erstansage kam nur noch als Erwiderung – danach keine Absagen mehr (6.4.4)
+export function announceOptions({ N, cards, own, opp, shift = 0, late = false }) {
+  if (own >= 5 || (own >= 1 && late)) return [];
+  const range = (from) => [1, 2, 3, 4, 5].filter((l) => l >= from);
+  // Rechtzeitig: alle übersprungenen Stufen müssen jetzt noch zulässig sein (6.4.3) – maßgeblich ist die nächste Stufe.
+  if (cards >= announceDeadline(N, own + 1, shift)) return range(own + 1);
+  // Erwiderung: nur „Re“ bzw. „Kontra“, eine Karte weniger als für die gegnerische An- bzw. Absage nötig war (6.4.4).
+  if (own === 0 && opp >= 1 && cards >= announceDeadline(N, opp, shift) - 1) return [1];
+  return [];
+}
+// Wurde die Erstansage nur noch als Erwiderung zugelassen?
+export const isLateReply = ({ N, cards, own, shift = 0 }) => own === 0 && cards < announceDeadline(N, 1, shift);
+
+// ---------- Auswertung (DDV 7.1 Gewinnkriterien, 7.2 Spielwerte) ----------
+const NEED = { 2: 151, 3: 181, 4: 211 };   // eigene Absage „keine 90/60/30“
+const AGAINST = { 2: 90, 3: 60, 4: 30 };   // Siegschwelle gegen eine gegnerische Absage, wenn man selbst nichts abgesagt hat
+const other = (party) => (party === 're' ? 'kontra' : 're');
+const PNAME = { re: 'Re', kontra: 'Kontra' };
+// Hat die Partei ihr Gewinnkriterium nach 7.1.1 bzw. 7.1.2 erreicht?
+export function reachesGoal(party, { points, tricks, levels }) {
+  const own = levels[party], opp = levels[other(party)], pts = points[party];
+  if (own >= 2) return own === 5 ? tricks[other(party)] === 0 : pts >= NEED[own];
+  if (opp >= 2) return opp === 5 ? tricks[party] > 0 : pts >= AGAINST[opp];
+  if (party === 're') return pts >= (own === 0 && opp === 1 ? 120 : 121);
+  return pts >= (own === 1 && opp === 0 ? 121 : 120);
+}
+// 7.2.2 (a): unter 90/60/30 bzw. schwarz gespielt – Punkte für party, weil der Gegner darunter blieb
+function lowPoints(party, points, tricks) {
+  const o = other(party), out = [];
+  for (const [t, name] of [[90, 'unter 90'], [60, 'unter 60'], [30, 'unter 30']]) if (points[o] < t) out.push(`${PNAME[o]} ${name} gespielt`);
+  if (tricks[o] === 0) out.push(`${PNAME[o]} schwarz gespielt`);
+  return out;
+}
+// 7.2.2 (e)/(f): Augen gegen eine gegnerische Absage erreicht
+function againstPoints(party, points, levels) {
+  const opp = levels[other(party)], out = [];
+  for (const [l, need, name] of [[2, 120, 'keine 90'], [3, 90, 'keine 60'], [4, 60, 'keine 30'], [5, 30, 'schwarz']]) {
+    if (opp >= l && points[party] >= need) out.push(`${PNAME[party]}: ${need} Augen gegen „${name}“`);
+  }
+  return out;
+}
+// Spielart der Abrechnung: Solo-Wertung für Solo, stille Hochzeit und angemeldete Hochzeit ohne Partner (4.4.3 b, 4.4.5, 7.2.4)
+export function scoringKind(k, re) {
+  if (k.kind === 'solo') return 'solo';
+  if (re.length === 1) return k.kind === 'hochzeit' ? 'hochzeit-allein' : 'stille-hochzeit';
+  return 'normal';
 }
 
-// ---------- Auswertung ----------
-// input: { contract, re: [ids], kontra: [ids], points: {re, kontra}, tricks: {re, kontra}, levels: {re, kontra},
-//          specials: { re: n, kontra: n }, partnerFound }
+// input: { contract, re: [ids], kontra: [ids], points: {re, kontra}, tricks: {re, kontra}, levels: {re, kontra}, specials: { re: n, kontra: n } }
+// Ergebnis: value = Spielwert aus Sicht von Re (positiv: Re erhält ihn); breakdown listet jede Position mit Partei und Punkt.
 export function scoreDeal(input) {
-  const { contract: k, re, kontra, points, tricks, levels, specials } = input;
-  const solo = k.kind === 'solo' || (k.kind === 'hochzeit' && re.length === 1);
-  const reNormal = points.re >= 121, kNormal = !reNormal;
-  const reMet = reNormal && targetMet(levels.re, points.re, points.kontra, tricks.kontra);
-  const kMet = kNormal && targetMet(levels.kontra, points.kontra, points.re, tricks.re);
-  const reFail = levels.re >= 1 && !reMet, kFail = levels.kontra >= 1 && !kMet;
-  let winner;
-  if (reFail && kFail) winner = null;
-  else if (reFail) winner = 'kontra';
-  else if (kFail) winner = 're';
-  else winner = reNormal ? 're' : 'kontra';
-
-  const detail = [];
-  let gp = 0;
+  const { contract: k, re, kontra, points, tricks, levels } = input;
+  const kind = scoringKind(k, re), soloLike = kind !== 'normal';
+  const reMet = reachesGoal('re', input), kMet = reachesGoal('kontra', input);
+  const winner = reMet ? 're' : kMet ? 'kontra' : null;
+  const breakdown = [];
+  const add = (party, text, n = 1, special = false) => breakdown.push({ party, text, points: n, special });
   if (winner) {
-    const loser = winner === 're' ? 'kontra' : 're', lp = points[loser];
-    gp = 1; detail.push('Sieg');
-    if (winner === 'kontra' && !solo) { gp++; detail.push('gegen die Alten'); }
+    add(winner, 'Gewonnen');
+    for (const t of lowPoints(winner, points, tricks)) add(winner, t);
     for (const party of ['re', 'kontra']) {
-      if (levels[party] >= 1) { gp += 2; detail.push(levelName(party, 1)); }
-      for (let l = 2; l <= levels[party]; l++) { gp++; detail.push(`${party === 're' ? 'Re' : 'Kontra'}: ${levelName(party, l)}`); }
+      if (levels[party] >= 1) add(winner, `„${levelName(party, 1)}“ angesagt`, 2);
+      for (let l = 2; l <= levels[party]; l++) add(winner, `${PNAME[party]}: „${levelName(party, l)}“ abgesagt`);
     }
-    for (const [t, name] of [[90, 'keine 90'], [60, 'keine 60'], [30, 'keine 30']]) if (lp < t) { gp++; detail.push(name + ' gespielt'); }
-    if (tricks[loser] === 0) { gp++; detail.push('schwarz gespielt'); }
+    for (const t of againstPoints(winner, points, levels)) add(winner, t);
+  } else {
+    // 7.1.3: Beide verfehlen ihr abgesagtes Ziel – nur (a) ohne Grundwert, (e), (f) und Sonderpunkte.
+    for (const party of ['re', 'kontra']) {
+      for (const t of lowPoints(party, points, tricks)) add(party, t);
+      for (const t of againstPoints(party, points, levels)) add(party, t);
+    }
   }
-  const sign = winner === 're' ? 1 : winner === 'kontra' ? -1 : 0;
-  const value = winner ? sign * gp + specials.re - specials.kontra : 0;
-  // Nullsumme: Wer allein gegen drei spielt (Solo, Hochzeit ohne Partner und die stille Hochzeit
-  // mit beiden Kreuz-Damen bei „gesund“), erhält den dreifachen Wert, jeder Gegner den einfachen.
-  // Die Zusammensetzung des Spielwerts (gegen die Alten, Sonderpunkte) bleibt dabei unverändert.
-  const lone = re.length === 1 && kontra.length === 3;
-  if (lone && !solo && value) detail.push('allein gegen drei (dreifach)');
+  const gameOf = (party) => breakdown.filter((b) => b.party === party && !b.special).reduce((n, b) => n + b.points, 0);
+  const gamePoints = winner ? gameOf(winner) : 0;
+  // 7.2.3: Sonderpunkte nur im Normalspiel (auch Hochzeit mit Partner); „gegen die Kreuz-Damen gewonnen“ ist einer davon.
+  let specialNet = soloLike ? 0 : (input.specials?.re || 0) - (input.specials?.kontra || 0);
+  if (!soloLike && winner === 'kontra') { specialNet--; add('kontra', 'gegen die Kreuz-Damen gewonnen (Sonderpunkt)', 1, true); }
+  const value = gameOf('re') - gameOf('kontra') + specialNet;
+  const detail = breakdown.map((b) => `${b.text}${b.points > 1 ? ` (${b.points})` : ''}`);
+  if (kind === 'stille-hochzeit') detail.push('stille Hochzeit: Abrechnung wie ein Solo, dreifach für den Alleinspieler');
+  else if (kind === 'hochzeit-allein') detail.push('Hochzeit ohne Partner: Abrechnung wie ein Karo-Solo, dreifach für den Alleinspieler');
+  else if (kind === 'solo') detail.push('Solo: dreifach für den Solisten');
   const per = {};
-  for (const id of re) per[id] = value * (lone ? 3 : 1);
+  for (const id of re) per[id] = (value * (soloLike ? 3 : 1)) || 0;
   for (const id of kontra) per[id] = -value || 0;
-  return { winner, gamePoints: gp, value, per, detail, solo, lone, reMet, kMet };
+  return { winner, gamePoints, value, per, detail, breakdown, kind, solo: soloLike, specialsCounted: !soloLike, reMet, kMet };
 }
 
 // Sonderpunkte aus den gespielten Stichen: tricks = [{ plays:[{id,card}], winner, points }]

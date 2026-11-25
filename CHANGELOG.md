@@ -2,6 +2,20 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.28.0 – 25. November 2026
+
+- Doppelkopf: Wertung, Ansagen und Hochzeit folgen jetzt den Turnierregeln des Deutschen Doppelkopf-Verbands (Stand 21.02.2026).
+  - Stille Hochzeit und Hochzeit ohne Partner werden wie ein Solo abgerechnet.
+  - Sonderpunkte gibt es nur im Normalspiel.
+  - Gegen eine Absage gewinnt die Gegenseite schon mit 90, 60 oder 30 Augen.
+  - Verfehlen beide ihre Absage, gewinnt niemand; es zählen nur die erspielten Punkte.
+- Doppelkopf: Ansagen gehen jetzt auch, wenn du nicht am Zug bist.
+  - Stufen lassen sich überspringen.
+  - Auf eine Ansage kannst du noch eine Karte später erwidern.
+  - Bei der angemeldeten Hochzeit wird erst nach dem Klärungsstich angesagt.
+  - Die Abrechnung zeigt jede Position einzeln.
+- Doppelkopf: Findet der Hochzeiter in den ersten drei Stichen keinen Partner, bleibt er allein. Bisher wurde ein späterer Stichgewinner noch Partner.
+
 ## 3.27.4 – 25. November 2026
 
 - Game Studio Tycoon: Speichern bleibt bedienbar, während das Studio im Hintergrund neue Daten abfragt. Eine verspätete Antwort ersetzt keinen bereits bestätigten Spielstand.

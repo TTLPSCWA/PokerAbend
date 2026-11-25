@@ -1,56 +1,80 @@
-# Doppelkopf: Wertung, stille Hochzeit und offene Regelentscheidungen
+# Doppelkopf: Wertung, Ansagen und Hochzeit nach den DDV-Turnierspielregeln
 
-Stand DOKO-WERTUNG-02, Version 3.27.2. Die Regeln stehen in [games/doppelkopf/rules.js](../games/doppelkopf/rules.js), der Ablauf in [room.js](../games/doppelkopf/room.js). Geprüft wird beides durch [test/doppelkopf-wertung.test.js](../test/doppelkopf-wertung.test.js).
+Stand DOKO-WERTUNG-02, Version 3.28.0. Grundlage sind die Turnierspielregeln (TSR) des Deutschen Doppelkopf-Verbands, Stand 21.02.2026, Abschnitte 4.4, 6.2–6.4 und 7.1–7.3. Quelle: das PDF auf doko-verband.de (`shared-files/11534`, SHA-256 `72bf270cd8134adb6d7787f2409a027c576066d9a2e0faba3f26af26260d3252`, 28 Seiten). Der Projektinhaber hat am 25.11.2026 entschieden, diese Regeln in den vier offenen Punkten verbindlich umzusetzen. Hausregeln für diese Bereiche gibt es nicht mehr; Neunen und Schweinchen bleiben als Raumoptionen erhalten.
 
-## Korrigierter Fehler: stille Hochzeit war nicht nullsummig
+Code: [games/doppelkopf/rules.js](../games/doppelkopf/rules.js) (`announceOptions`, `reachesGoal`, `scoreDeal`), Ablauf in [room.js](../games/doppelkopf/room.js). Tests: [test/doppelkopf-wertung.test.js](../test/doppelkopf-wertung.test.js), die Erwartungen sind von Hand aus dem Regelwerk abgeleitet und nennen den Abschnitt.
 
-Wer beide Kreuz-Damen hat und „gesund“ meldet, ist allein Re gegen drei Kontra. Bis 3.27.1 erhielt diese Person nur den einfachen Wert, jeder der drei Gegner aber den negativen Wert. Die Summe war deshalb nicht null (QA-DOKO-01: −14 und +16). Seit 3.27.2 gilt dieselbe Verteilung wie beim Solo und bei der Hochzeit ohne Partner: Die Einzelperson erhält den dreifachen Wert, jeder Gegner den einfachen. Die Ergebniszeile nennt „allein gegen drei (dreifach)“. Die Zusammensetzung des Spielwerts bleibt unverändert, also „gegen die Alten“ und Sonderpunkte wie im Normalspiel. Diese beiden Punkte sind offene Fachentscheidungen, siehe unten.
+## Umgesetzte Entscheidungen
 
-## Wertungsmatrix (Projektregel, 3.27.2)
+| Nr. | Thema | Bis 3.27.4 | Ab 3.28.0 (DDV) |
+| --- | --- | --- | --- |
+| 1 | Stille Hochzeit (4.4.5, 7.2.4) | Normalspiel 1 gegen 3 mit Sonderpunkten und „gegen die Alten“, dreifach verteilt | Abrechnung wie ein Solo: nur Punkte nach 7.2.2, dreifach für den Alleinspieler. Ansagefristen wie im Normalspiel. |
+| 2 | Sonderpunkte (7.2.3) | in allen Spielen | nur im Normalspiel einschließlich Hochzeit mit Partner. „Gegen die Kreuz-Damen gewonnen“ ist ein Sonderpunkt und entfällt damit im Solo, in der stillen Hochzeit und in der Hochzeit ohne Partner. |
+| 3a | Gewinnschwellen (7.1) | Re 121, sonst Ziel der eigenen Absage | Re gewinnt mit 120, wenn nur Kontra angesagt hat, Kontra braucht dann 121. Gegen eine gegnerische Absage keine 90/60/30 reichen 90/60/30 Augen, gegen „schwarz“ der erste Stich, solange man sich nicht selbst zu mehr verpflichtet hat. |
+| 3b | Beide verfehlen ihre Absage (7.1.3) | kein Sieger, Wert 0 | kein Sieger. Es zählen nur unter 90/60/30/schwarz gespielt, die Punkte für Augen gegen Absagen (7.2.2 e, f) und Sonderpunkte, jeweils für die Partei, die sie erspielt hat. Ansagen und Absagen selbst zählen nicht (6.3.3). |
+| 3c | Schwarz | „schwarz gespielt“ nach Stichen | unverändert Stichbedingung: Ein Stich ohne Augen verhindert schwarz. |
+| 3d | Punkte für Augen gegen Absagen (7.2.2 e, f) | fehlten | je 1 Punkt für 120 Augen gegen keine 90, 90 gegen keine 60, 60 gegen keine 30, 30 gegen schwarz |
+| 4a | Hochzeit (4.4.4, 6.2.1) | Hochzeiter durfte vor dem Klärungsstich ansagen | Erstansage für alle erst nach vollendetem Klärungsstich |
+| 4b | Fristen bei der Hochzeit (6.4.2) | unverändert | Klärungsstich 2 bzw. 3 verringert alle Kartenzahlen um 1 bzw. 2 |
+| 4c | Erwiderung (6.4.4) | fehlte | Auf eine gegnerische An- oder Absage darf mit einer Karte weniger „Re“ bzw. „Kontra“ erwidert werden. Danach sind Absagen dieser Partei nur erlaubt, wenn die Erwiderung auch als Erstansage rechtzeitig war. |
+| 4d | Überspringen (6.4.3) | nur die nächste Stufe | beliebig viele Stufen, wenn die übersprungenen jetzt noch zulässig wären; alle Stufen werden gewertet |
+| 4e | Zeitpunkt (6.4.1) | nur im eigenen Kartenzug | auch außerhalb des eigenen Zugs |
+| 4f | Wiederholung (6.4.7) | abgelehnt | unverändert abgelehnt, ohne Zustandsänderung |
 
-Spielwert = Spielpunkte des Siegers (Vorzeichen: Re positiv) plus Sonderpunkte Re minus Sonderpunkte Kontra.
+**Hochzeit ohne Partner (4.4.3 b):** Macht der Hochzeiter die ersten drei Stiche selbst, wird das Spiel als Karo-Solo fortgesetzt und so abgerechnet. Die Trumpffolge ist identisch, die Partei steht nach Stich 3 fest. Dabei wurde ein Fehler behoben, der schon vor 3.28.0 bestand: Gewann ein anderer Spieler ab Stich 4 einen Stich, wurde er nachträglich zum Partner. Jetzt endet die Partnersuche nach Stich 3.
 
-| Szenario | Parteien | Augen | Ansagen und Sonderpunkte | Sieger | Wert | Einzelwerte | Summe |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Normalspiel | 2 gegen 2 | 130:110 | keine | Re | +1 | +1 +1 −1 −1 | 0 |
-| Grenzwert 121 | 2 gegen 2 | 121:119 | keine | Re | +1 | +1 +1 −1 −1 | 0 |
-| Grenzwert 120 | 2 gegen 2 | 120:120 | keine | Kontra (gegen die Alten) | −2 | −2 −2 +2 +2 | 0 |
-| Kontra-Ansage, 120:120 | 2 gegen 2 | 120:120 | Kontra | Kontra | −4 | −4 −4 +4 +4 | 0 |
-| Stille Hochzeit, Re-Sieg | 1 gegen 3 | 180:60 | Re, Sonderpunkte 3:0 | Re | +7 | **+21** −7 −7 −7 | 0 |
-| Stille Hochzeit, Kontra-Sieg | 1 gegen 3 | 0:240, schwarz | Re | Kontra | −8 | **−24** +8 +8 +8 | 0 |
-| Angesagte Hochzeit mit Partner | 2 gegen 2 | 130:110 | keine | Re | +1 | +1 +1 −1 −1 | 0 |
-| Hochzeit ohne Partner | 1 gegen 3 | 100:140 | keine | Kontra (ohne „gegen die Alten“) | −1 | −3 +1 +1 +1 | 0 |
-| Solo gewonnen | 1 gegen 3 | 190:50 | Re | Re | +5 | +15 −5 −5 −5 | 0 |
-| Solo verloren | 1 gegen 3 | 110:130 | Kontra | Kontra | −3 | −9 +3 +3 +3 | 0 |
-| Re-Absage verfehlt | 2 gegen 2 | 140:100 | Re: keine 90 | Kontra | −5 | −5 −5 +5 +5 | 0 |
-| Beide verfehlen | 2 gegen 2 | 120:120 | beide keine 90 | keiner | 0 | 0 0 0 0 | 0 |
-| Sonderpunkte gegen den Sieger | 2 gegen 2 | 130:110 | Sonderpunkte 0:3 | Re | −2 | −2 −2 +2 +2 | 0 |
+**Fristen (12 Karten; ohne Neunen jeweils 2 weniger):**
 
-Zusätzlich prüft ein Test mehr als 20.000 Kombinationen aus Augen (0–240), Ansagestufen beider Parteien, Sonderpunkten und Parteiaufteilungen auf Nullsumme. Zwei vollständige Partien im Raum spielen die stille Hochzeit mit und ohne Re-Ansage. Geprüft werden Abrechnung, Gesamtstand und die Abschlussansicht der Mitspieler.
+| An- bzw. Absage | Mindestens Karten auf der Hand | Erwiderung darauf bis |
+| --- | --- | --- |
+| Re/Kontra | 11 | 10 |
+| keine 90 | 10 | 9 |
+| keine 60 | 9 | 8 |
+| keine 30 | 8 | 7 |
+| schwarz | 7 | 6 |
 
-## Regelquellen und Abweichungen
+**Ansage außerhalb des Zugs:** Eine Ansage nennt ihre Zielstufe absolut und wird gegen den aktuellen Stand geprüft. Eine veraltete Clientrevision derselben Partie lehnt der Server deshalb nicht ab, eine künftige Revision oder eine fremde Partie schon. Doppelte, zu späte oder fremde Ansagen werden abgelehnt und ändern keine Nutzlast. Die Partei eines Spielers wird erst durch seine Ansage öffentlich; die stille Hochzeit bleibt bis zur Abrechnung unerkannt.
 
-Quellen: Wikipedia „Doppelkopf“, Abschnitt 7 (Zusammenfassung der DDV-Turnierspielregeln, Sekundärquelle), und pagat.com „Doppelkopf“. Das DDV-Original war nicht abrufbar. Vor einer verbindlichen Umstellung sollte es geprüft werden.
+## Wertungsmatrix (DDV, ab 3.28.0)
 
-| Nr. | Thema | Projekt (Code und Katalogtext) | DDV-Turnierregel | Art |
-| --- | --- | --- | --- | --- |
-| 1 | Stille Hochzeit | „gesund“ erlaubt, Normalspiel 1 gegen 3, dreifach verteilt (seit 3.27.2) | gilt als Solo (stilles Solo), dreifach | Nullsumme gleich, Einordnung offen |
-| 2 | Sonderpunkte im Solo | zählen in allen Spielen, auch im Solo und in der stillen Hochzeit | nur im Normalspiel einschließlich Hochzeit, nicht im Solo und nicht in der stillen Hochzeit | Abweichung |
-| 3 | „Gegen die Alten“ | im Normalspiel bei Kontra-Sieg, auch in der stillen Hochzeit, nicht im Solo | Zusatzpunkt bei Kontra-Sieg. Ob er im Solo zählt, nennen die Quellen nicht ausdrücklich | offen |
-| 4 | Hochzeit ohne Partner | Partner ist, wer einen der ersten drei Stiche macht, sonst allein und dreifach | automatisch Karo-Solo (gleiche Trumpffolge), also Solowertung ohne Sonderpunkte | Wertung abweichend (Sonderpunkte) |
-| 5 | 120 Augen bei alleiniger Kontra-Ansage | Re braucht immer 121 | Re gewinnt mit 120, wenn nur Kontra angesagt hat | Abweichung von der Katalogregel „Re braucht 121, Kontra 120“ |
-| 6 | Schwellen bei gegnerischer Absage | Re braucht stets 121 bzw. das eigene Ziel | Gegen „keine 90“ der Gegner reichen 90 Augen usw. | Abweichung |
-| 7 | Beide verfehlen | kein Sieger, Wert 0 | kein Sieger, aber Punkte für „keine 90/60/30/schwarz gespielt“ an die erfolgreiche Partei | Abweichung |
-| 8 | Ansagen in der Hochzeit | Der Hochzeiter darf vor dem Klärungsstich ansagen, die übrigen nicht | Ansagen erst nach dem Klärungsstich, Fristen verschieben sich um die Stiche bis zur Klärung | Abweichung |
-| 9 | Erwiderung | keine verlängerte Frist | Auf eine gegnerische Ansage darf mit einer Karte weniger erwidert werden | Abweichung |
-| 10 | Ansagefristen | Re/Kontra bei mindestens 11 Karten, keine 90/60/30/schwarz bei 10/9/8/7 (12er-Blatt) | gleich | übereinstimmend |
-| 11 | Solo-Multiplikator und Nullsumme | dreifach für die Einzelperson | gleich | übereinstimmend |
+Wert = Punkte von Re minus Punkte von Kontra; im Normalspiel einschließlich Sonderpunkten. Im Solo und in den Solo-Fällen der Hochzeit erhält der Alleinspieler den dreifachen Wert, jeder Gegner den einfachen mit umgekehrtem Vorzeichen.
 
-## Benötigte Entscheidung des Projektinhabers
+| Szenario | Parteien | Augen (Stiche) | An-/Absagen, Sonderpunkte | Sieger | Herleitung | Einzelwerte |
+| --- | --- | --- | --- | --- | --- | --- |
+| Normalspiel | 2:2 | 130:110 | – | Re | 1 | +1 +1 −1 −1 |
+| 120:120 | 2:2 | 120:120 | – | Kontra | 1 + Sonderpunkt | −2 −2 +2 +2 |
+| 120:120, nur Kontra | 2:2 | 120:120 | Kontra | Re (7.1.1 Nr. 4) | 1 + 2 | +3 +3 −3 −3 |
+| 120:120, nur Re | 2:2 | 120:120 | Re | Kontra | 1 + 2 + Sonderpunkt | −4 −4 +4 +4 |
+| 120:120, beide | 2:2 | 120:120 | Re, Kontra | Kontra | 1 + 2 + 2 + Sonderpunkt | −6 −6 +6 +6 |
+| keine 90 erfüllt | 2:2 | 151:89 | Re: keine 90 | Re | 1 + unter 90 + 2 + 1 | +5 +5 −5 −5 |
+| keine 90 verfehlt | 2:2 | 150:90 | Re: keine 90 | Kontra mit 90 (7.1.2 Nr. 7) | 1 + 2 + 1 + Sonderpunkt | −5 −5 +5 +5 |
+| Gegen Kontra-Absage | 2:2 | 90:150 | Kontra: keine 90 | Re mit 90 | 1 + 2 + 1 | +4 +4 −4 −4 |
+| keine 30 verfehlt | 2:2 | 210:30 | Re: keine 30 | Kontra mit 30 | 1 + 2 + 3 + Sonderpunkt | −7 −7 +7 +7 |
+| schwarz erfüllt | 2:2 | 240:0 (12:0) | Re: schwarz | Re | 1 + 4 + 2 + 4 | +11 +11 −11 −11 |
+| schwarz verfehlt durch Stich ohne Augen | 2:2 | 240:0 (11:1) | Re: schwarz | Kontra mit dem ersten Stich | 1 + 2 + 4 + Sonderpunkt | −8 −8 +8 +8 |
+| Beide verfehlen | 2:2 | 170:70 | Re: keine 60, Kontra: keine 90 | keiner (7.1.3) | Re: unter 90 + 120 gegen keine 90 | +2 +2 −2 −2 |
+| Beide verfehlen, gleichauf | 2:2 | 120:120 | beide keine 90 | keiner | je 1 für 120 gegen keine 90 | 0 0 0 0 |
+| Stille Hochzeit, Re-Sieg | 1:3 | 180:60 | Re, Sonderpunkte 3:0 (entfallen) | Re | 1 + unter 90 + 2 | +12 −4 −4 −4 |
+| Stille Hochzeit, Kontra schwarz | 1:3 | 0:240 (0:12) | Re | Kontra | 1 + 4 + 2 | −21 +7 +7 +7 |
+| Hochzeit mit Partner | 2:2 | 120:120 | – | Kontra | 1 + Sonderpunkt | −2 −2 +2 +2 |
+| Hochzeit ohne Partner | 1:3 | 100:140 | Sonderpunkte entfallen | Kontra | 1 | −3 +1 +1 +1 |
+| Solo gewonnen (jede Soloart) | 1:3 | 190:50 | Re | Re | 1 + unter 90 + unter 60 + 2 | +15 −5 −5 −5 |
+| Solo verloren | 1:3 | 110:130 | Kontra | Kontra | 1 + 2 | −9 +3 +3 +3 |
+| Solo, beide verfehlen | 1:3 | 140:100 | beide keine 90 | keiner | Solist: 120 gegen keine 90 | +3 −1 −1 −1 |
 
-1. **Stille Hochzeit:** Empfehlung: „gesund“ bleibt erlaubt (QA-DOKO-01). Zu entscheiden ist, ob sie wie im DDV als Solo gewertet wird (ohne Sonderpunkte, ohne „gegen die Alten“) oder wie heute als Normalspiel mit dreifacher Verteilung. Der Wert ändert sich nur bei Sonderpunkten oder einem Kontra-Sieg. Beispiel Kontra-Sieg 0:240 mit Re-Ansage: heute −24/+8/+8/+8, als Solo −21/+7/+7/+7.
-2. **Sonderpunkte im Solo** (Punkt 2 und 4): DDV-konform streichen oder als Hausregel beibehalten.
-3. **Gewinnschwellen** (Punkte 5–7): DDV übernehmen oder die einfachere Katalogregel bestätigen.
-4. **Ansagen in der Hochzeit und Erwiderung** (Punkte 8 und 9): Das wäre eine Änderung der erlaubten Aktionen mit Oberflächenfolgen.
+Alle Einzelwerte summieren sich zu null und sind je Spiel alle gerade oder alle ungerade (7.3.3). Ein Test prüft beides über mehr als 20.000 Kombinationen aus Augen, Stichen (auch Stich ohne Augen), Ansagestufen, Sonderpunkten, Spielarten und Parteiaufteilungen. Raumtests spielen die Hochzeit mit Klärungsstich 1, 2 und 3 und ohne Partner, die stille Hochzeit und alle sieben Soloarten vollständig durch.
 
-Bis zur Entscheidung bleiben die Punkte 2–9 wie bisher. Für jede Option sind die betroffenen Erwartungen in `test/doppelkopf-wertung.test.js` und `games/doppelkopf/rules.test.js` markiert.
+## Verlauf
+
+- **3.27.2:** Die stille Hochzeit war nicht nullsummig (QA-DOKO-01: −14 bzw. +16). Die Einzelperson erhielt seitdem den dreifachen Wert.
+- **3.27.2:** Vier Punkte blieben offen: Einordnung der stillen Hochzeit, Sonderpunkte im Solo, Gewinnschwellen und Ansagen in der Hochzeit. Grundlage waren Wikipedia und pagat.com, das DDV-Original war unter der alten Adresse nicht abrufbar.
+- **3.28.0:** DDV-Turnierspielregeln umgesetzt (diese Seite).
+
+## Nicht Teil der Umsetzung
+
+- Strafpunkte und Regelverstöße (TSR 9).
+- Spielabkürzung durch den Solisten (5.4).
+- Pflicht- und Lustsolo-Buchführung (4.2, 4.3).
+- Vorbehaltsreihenfolge mit Taufe.
+
+Das Spiel kennt weiter frei wählbare Soli in der Vorbehaltsrunde. Nach dem Auftrag gibt es keine zusätzlich konfigurierbaren Hausregeln.

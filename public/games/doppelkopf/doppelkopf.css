@@ -23,3 +23,5 @@
 .dk-chips { justify-content: center; }
 .dk-world .dk-ledger li { border: 1px solid #e8b9c844; border-radius: 10px; }
 .dk-world button, .dk-hand button { min-height: 44px; }
+.dk-breakdown{list-style:none;margin:8px auto;padding:0;display:grid;gap:3px;max-width:520px;text-align:left;font-size:13px}.dk-breakdown li{display:grid;grid-template-columns:4.5em 1fr auto;gap:8px;align-items:baseline;padding:2px 6px;border-radius:4px;background:rgba(0,0,0,.18)}.dk-breakdown li.re span:first-child{color:#f2c88f}.dk-breakdown li.kontra span:first-child{color:#bcd6f0}.dk-breakdown strong{font-size:14px;color:#e8b27c}
+.dk-actions .dk-skip{min-width:auto;padding-inline:10px}

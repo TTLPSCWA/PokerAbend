@@ -10,11 +10,12 @@ const CARD = { fill: '#F7F3E8' };
 export const RULES = [
   'Gespielt wird mit dem doppelten Skatblatt (48 Karten, wahlweise ohne Neunen: 40), jeder bekommt zwölf bzw. zehn Karten.',
   'Trumpf sind Herz-Zehn (Dulle), alle Damen und Buben und Karo; die beiden Kreuz-Damen bestimmen die Partei Re, alle anderen sind Kontra.',
-  'Wer beide Kreuz-Damen hat, kann eine Hochzeit ansagen: Der erste Mitspieler, der in den ersten drei Stichen sticht, wird sein Partner.',
-  'Meldet der Spieler mit beiden Kreuz-Damen gesund, spielt er still allein gegen drei (stille Hochzeit) und erhält wie beim Solo den dreifachen Wert; jeder Gegner den einfachen.',
+  'Wer beide Kreuz-Damen hat, kann eine Hochzeit ansagen: Der erste Mitspieler, der in den ersten drei Stichen sticht (Klärungsstich), wird sein Partner. Sonst spielt der Hochzeiter allein wie ein Karo-Solo.',
+  'Meldet der Spieler mit beiden Kreuz-Damen gesund, spielt er eine stille Hochzeit: allein gegen drei, abgerechnet wie ein Solo (dreifach, ohne Sonderpunkte).',
   'Vor dem Spiel kann jeder ein Solo anmelden: Damen-, Buben-, Fleischlos- oder Farbsolo. Der Solist spielt allein gegen drei.',
-  'Farbzwang bei Fehl-Karten und Trumpf, die höchste Karte gewinnt den Stich. Re braucht 121 von 240 Augen, Kontra 120.',
-  'Ansagen: Re/Kontra, keine 90, keine 60, keine 30, schwarz – jede steigert den Spielwert. Zusatzpunkte gibt es für Fuchs (gefangenes Karo-Ass), Doppelkopf (40 Augen im Stich) und Karlchen (Kreuz-Bube im letzten Stich).',
+  'Farbzwang bei Fehl-Karten und Trumpf, die höchste Karte gewinnt den Stich. Re braucht 121 von 240 Augen, Kontra 120; nach alleiniger Kontra-Ansage reichen Re 120. Gegen eine Absage gewinnt die Gegenseite schon mit 90, 60, 30 Augen bzw. dem ersten Stich.',
+  'Ansagen nach den DDV-Turnierregeln, auch außerhalb des eigenen Zugs: Re/Kontra (mindestens 11 Karten), keine 90, keine 60, keine 30, schwarz – Stufen dürfen übersprungen werden, Erwiderung mit einer Karte weniger. Bei der Hochzeit erst nach dem Klärungsstich. Verfehlen beide ihre Absage, gewinnt niemand.',
+  'Sonderpunkte nur im Normalspiel: gegen die Kreuz-Damen gewonnen, Fuchs (gefangenes Karo-Ass), Doppelkopf (40 Augen im Stich) und Karlchen (Kreuz-Bube im letzten Stich).',
   'Varianten: mit oder ohne Neunen sowie Schweinchen (zwei Karo-Asse sind der höchste Trumpf).',
 ];
 export default turnGame(Room, {

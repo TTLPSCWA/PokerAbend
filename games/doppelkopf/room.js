@@ -3,7 +3,7 @@ import { TurnRoom } from '../../server/turn-room.js';
 import { shuffle } from '../poker/engine/cards.js';
 import { decide } from './bot.js';
 import {
-  dkDeck, handSize, sumPoints, legalCards, trickWinner, normalizeContract, scoreDeal, specialPoints, levelName, announceDeadline, base, effSuit, strength, cardName,
+  dkDeck, handSize, sumPoints, legalCards, trickWinner, normalizeContract, scoreDeal, specialPoints, levelName, announceOptions, isLateReply, base, effSuit, strength, cardName,
 } from './rules.js';
 
 const SERIES = [4, 8, 12, 16, 24].map((n) => ({ value: n, label: `${n} Spiele` }));
@@ -25,7 +25,7 @@ export class Room extends TurnRoom {
   reset() {
     Object.assign(this, {
       base: [], pos: [], hands: {}, stage: null, res: null, contract: null, partyMap: {}, hochzeit: null, partner: null, schweineHolder: null,
-      taken: {}, trickCount: {}, trick: [], lastTrick: null, soloist: null, tricksLog: [], played: [], turnId: null, levels: { re: 0, kontra: 0 }, annBy: { re: [], kontra: [] },
+      taken: {}, trickCount: {}, trick: [], lastTrick: null, soloist: null, tricksLog: [], played: [], turnId: null, levels: { re: 0, kontra: 0 }, annBy: { re: [], kontra: [] }, annLate: { re: false, kontra: false },
       totals: {}, dealNo: 0, lastDeal: null, revision: 0, dealKey: null,
     });
   }
@@ -53,7 +53,7 @@ export class Room extends TurnRoom {
     this.hands = Object.fromEntries(this.pos.map((id, i) => [id, deck.slice(i * size, (i + 1) * size)]));
     this.taken = Object.fromEntries(this.pos.map((id) => [id, []])); this.trickCount = Object.fromEntries(this.pos.map((id) => [id, 0]));
     this.trick = []; this.lastTrick = null; this.tricksLog = []; this.played = []; this.contract = null; this.partyMap = {}; this.hochzeit = null; this.partner = null;
-    this.schweineHolder = null; this.levels = { re: 0, kontra: 0 }; this.annBy = { re: [], kontra: [] };
+    this.schweineHolder = null; this.levels = { re: 0, kontra: 0 }; this.annBy = { re: [], kontra: [] }; this.annLate = { re: false, kontra: false };
     this.stage = 'reserve'; this.res = { i: 0, calls: {} };
     this.acts = {}; this.moves = [];
     this.say(`Spiel ${this.dealNo} von ${this.settings.deals}`, 'hand');
@@ -109,22 +109,41 @@ export class Room extends TurnRoom {
     this.bump(null, null);
   }
 
-  // ---------- Ansagen ----------
-  nextAnnounce(id) {
-    if (this.stage !== 'play' || this.currentId !== id) return 0;
-    const party = this.partyMap[id];
-    if (!party) return 0;
-    const level = this.levels[party] + 1;
-    return level <= 5 && this.hands[id].length >= announceDeadline(this.N, level) ? level : 0;
+  // ---------- Ansagen (DDV 4.4.4, 6.2–6.4) ----------
+  // Angemeldete Hochzeit: Nummer des Klärungsstichs (1–3), solange er noch aussteht null; sonst 0.
+  get clarifyTrick() {
+    if (this.contract?.kind !== 'hochzeit') return 0;
+    const i = this.tricksLog.slice(0, 3).findIndex((t) => t.winner !== this.hochzeit);
+    return i >= 0 ? i + 1 : this.tricksLog.length >= 3 ? 3 : null;
   }
-  announce(id, d) {
-    this.check(id, d, 'play');
-    const level = this.nextAnnounce(id);
-    if (!level || d.level !== level) throw new Error('Diese Ansage ist jetzt nicht möglich');
+  announceShift() { return Math.max(0, (this.clarifyTrick || 1) - 1); }
+  // Erlaubte Zielstufen – auch außerhalb des eigenen Kartenzugs (6.4.1). Bei der Hochzeit erst nach dem Klärungsstich.
+  announceLevels(id) {
+    if (this.stage !== 'play' || !this.contract || !this.hands[id] || this.clarifyTrick === null) return [];
     const party = this.partyMap[id];
+    if (!party) return [];
+    const other = party === 're' ? 'kontra' : 're';
+    return announceOptions({ N: this.N, cards: this.hands[id].length, own: this.levels[party], opp: this.levels[other], shift: this.announceShift(), late: !!this.annLate?.[party] });
+  }
+  nextAnnounce(id) { return this.announceLevels(id)[0] || 0; }
+  announce(id, d) {
+    if (this.gamePaused) throw new Error('Das Spiel ist angehalten');
+    if (this.phase !== 'playing' || !this.order.includes(id)) throw new Error('Du spielst nicht in dieser Partie');
+    if (!d || d.key !== this.dealKey) throw new Error('Dieses Spiel ist nicht mehr aktuell');
+    if (this.stage !== 'play') throw new Error('Das geht gerade nicht');
+    // Eine Ansage nennt ihre Zielstufe absolut und wird gegen den aktuellen Stand geprüft; ein zwischenzeitlich
+    // gelegter Kartenzug eines anderen Spielers macht sie daher nicht ungültig. Zukünftige Stände gibt es nicht.
+    if (!Number.isInteger(d.revision) || d.revision > this.revision) throw new Error('Dieser Spielstand ist nicht mehr aktuell');
+    const level = d.level;
+    if (!this.announceLevels(id).includes(level)) throw new Error('Diese Ansage ist jetzt nicht möglich');
+    const party = this.partyMap[id], from = this.levels[party];
+    this.annLate ||= { re: false, kontra: false };
+    if (isLateReply({ N: this.N, cards: this.hands[id].length, own: from, shift: this.announceShift() })) this.annLate[party] = true;
     this.levels[party] = level; this.annBy[party].push(id);
-    this.bump(id, `sagt ${levelName(party, level)}`);
-    this.say(`${this.name(id)}: ${levelName(party, level)}!`, 'hand');
+    const said = [];
+    for (let l = from + 1; l <= level; l++) said.push(levelName(party, l));
+    this.bump(id, `sagt ${said.join(', ')}`);
+    this.say(`${this.name(id)}: ${said.join(', ')}!`, 'hand');
   }
 
   // ---------- Stichspiel ----------
@@ -147,14 +166,15 @@ export class Room extends TurnRoom {
   }
   get partnerResolved() { return this.contract.kind !== 'hochzeit' || !!this.partner || this.tricksLog.length >= 3; }
   resolveHochzeit(winner) {
-    if (this.contract.kind !== 'hochzeit' || this.partner) return;
+    // Der Partner kann nur in den ersten drei Stichen gefunden werden (DDV 4.4.3); danach bleibt der Hochzeiter allein.
+    if (this.contract.kind !== 'hochzeit' || this.partner || this.tricksLog.length > 3) return;
     if (winner !== this.hochzeit) {
       this.partner = winner; this.partyMap[winner] = 're';
       for (const id of this.pos) this.partyMap[id] ||= 'kontra';
       this.say(`${this.name(winner)} wird Partner von ${this.name(this.hochzeit)} (Re)`, 'hand');
     } else if (this.tricksLog.length >= 3) {
       for (const id of this.pos) this.partyMap[id] ||= 'kontra';
-      this.say(`${this.name(this.hochzeit)} findet keinen Partner und spielt allein`, 'hand');
+      this.say(`${this.name(this.hochzeit)} findet keinen Partner und spielt allein (Abrechnung wie ein Karo-Solo)`, 'hand');
     }
   }
 
@@ -165,10 +185,13 @@ export class Room extends TurnRoom {
     const specials = specialPoints(this.tricksLog, (id) => this.partyMap[id], k);
     const result = scoreDeal({ contract: k, re, kontra, points, tricks, levels: { ...this.levels }, specials });
     for (const id of this.pos) this.totals[id] += result.per[id] || 0;
-    this.say(result.winner ? `${result.winner === 're' ? 'Re' : 'Kontra'} gewinnt (${points.re} : ${points.kontra} Augen)` : 'Unentschieden – beide Ansagen verfehlt', 'win');
+    this.say(result.winner ? `${result.winner === 're' ? 'Re' : 'Kontra'} gewinnt (${points.re} : ${points.kontra} Augen)` : 'Keine Partei gewinnt – beide Absagen verfehlt', 'win');
+    const counted = result.specialsCounted;
     this.lastDeal = {
-      no: this.dealNo, contract: structuredClone(k), re, kontra, points, tricks, levels: { ...this.levels }, specials: specials.list, specialsRe: specials.re, specialsKontra: specials.kontra,
-      winner: result.winner, gamePoints: result.gamePoints, value: result.value, detail: result.detail, solo: result.solo, per: result.per,
+      no: this.dealNo, contract: structuredClone(k), re, kontra, points, tricks, levels: { ...this.levels },
+      specials: counted ? specials.list : [], specialsRe: counted ? specials.re : 0, specialsKontra: counted ? specials.kontra : 0,
+      winner: result.winner, gamePoints: result.gamePoints, value: result.value, detail: result.detail, breakdown: result.breakdown, kind: result.kind,
+      solo: result.solo, per: result.per,
     };
     this.afterDeal();
   }
@@ -236,7 +259,7 @@ export class Room extends TurnRoom {
       contract: this.contract ? { ...this.contract } : null, soloist: this.contract?.kind === 'solo' ? this.soloist : null, hochzeit: this.contract?.kind === 'hochzeit' ? this.hochzeit : null,
       partner: this.partner, schweine: this.schweineHolder,
       myParty: this.partyMap[id] ?? (this.stage === 'reserve' && this.hands[id] ? (this.hands[id].some((c) => base(c) === 'Qc') ? 're' : 'kontra') : null),
-      known: this.knownParties(), levels: { ...this.levels }, annBy: { re: [...this.annBy.re], kontra: [...this.annBy.kontra] }, canAnnounce: this.nextAnnounce(id),
+      known: this.knownParties(), levels: { ...this.levels }, annBy: { re: [...this.annBy.re], kontra: [...this.annBy.kontra] }, canAnnounce: this.nextAnnounce(id), announceLevels: this.announceLevels(id),
       hasBothQueens: !!this.hands[id] && this.hands[id].filter((c) => base(c) === 'Qc').length === 2,
       trick: this.trick.map((p) => ({ ...p })), lastTrick: this.lastTrick ? structuredClone(this.lastTrick) : null, played: this.played.map((p) => ({ ...p })),
       tricks: { ...this.trickCount }, trickNo: this.tricksLog.length, totals: { ...this.totals },
