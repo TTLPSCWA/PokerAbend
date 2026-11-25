@@ -3,6 +3,7 @@ name: Docker-Image
 # Bei Push: schnelle Tests + kleine Browser-Rauchprobe, erst bei Grün wird das Image gebaut.
 # Nachts (oder von Hand: Actions → Docker-Image → Run workflow → „Volllauf“ anhaken): alle Tests und Browser-Prüfungen (ohne Image), in Teilen parallel; ein Bericht-Job fasst zusammen.
 # Ein Push mit [pokerabend:full-ci] in der Commit-Nachricht startet zusätzlich alle Shards für exakt denselben Commit.
+# Zum Volllauf gehören gezielte Firefox- und WebKit-Prüfungen (playwright.crossbrowser.config.js, docs/crossbrowser-qa.md).
 on:
   push:
     branches: [main]
@@ -175,10 +176,54 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
+  # QA-CROSSBROWSER-01: gezielte Firefox- und WebKit-Prüfungen (B24-Responsive, Kartenbedienung, Tastatur, Touch,
+  # vergrößerte Schrift, Navigation und Dialoge, UNO-Flip-Kontrast). Keine Verdreifachung der Gesamtmatrix.
+  nightly-crossbrowser:
+    name: Nacht · Firefox und WebKit (${{ matrix.browser }})
+    if: github.event_name == 'schedule' || inputs.volllauf || (github.event_name == 'push' && contains(github.event.head_commit.message, '[pokerabend:full-ci]'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [firefox, webkit]
+    steps:
+      - name: Repository herunterladen
+        uses: actions/checkout@v7
+
+      - name: Node.js einrichten
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Abhängigkeiten installieren
+        run: npm ci
+
+      - name: Browser installieren
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Gezielte Browser-Prüfungen
+        run: npx playwright test -c playwright.crossbrowser.config.js --project="${{ matrix.browser }}*" --reporter=list,json
+        env:
+          CI: 'true'
+          PLAYWRIGHT_JSON_OUTPUT_NAME: reports/crossbrowser-${{ matrix.browser }}/crossbrowser.json
+
+      - name: Bericht und Fehlerbilder sichern
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: nacht-browser-${{ matrix.browser }}
+          path: |
+            reports/crossbrowser-${{ matrix.browser }}
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
   nightly-report:
     name: Nacht · Zusammenfassung
     if: always() && (github.event_name == 'schedule' || inputs.volllauf || (github.event_name == 'push' && contains(github.event.head_commit.message, '[pokerabend:full-ci]')))
-    needs: [nightly-node, nightly-ui]
+    needs: [nightly-node, nightly-ui, nightly-crossbrowser]
     runs-on: ubuntu-latest
     steps:
       - name: Repository herunterladen
@@ -223,7 +268,7 @@ jobs:
         run: node scripts/nightly-summary.mjs berichte 4 12 >> "$GITHUB_STEP_SUMMARY"
 
       - name: Ergebnis prüfen
-        if: needs.nightly-node.result != 'success' || needs.nightly-ui.result != 'success'
+        if: needs.nightly-node.result != 'success' || needs.nightly-ui.result != 'success' || needs.nightly-crossbrowser.result != 'success'
         run: |
-          echo "Node-Tests: ${{ needs.nightly-node.result }}, Browser-Prüfungen: ${{ needs.nightly-ui.result }}"
+          echo "Node-Tests: ${{ needs.nightly-node.result }}, Browser-Prüfungen: ${{ needs.nightly-ui.result }}, Firefox/WebKit: ${{ needs.nightly-crossbrowser.result }}"
           exit 1

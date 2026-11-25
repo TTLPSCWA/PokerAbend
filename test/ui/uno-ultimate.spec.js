@@ -66,6 +66,10 @@ for (const variant of modes) test(`UNO Ultimate ${variant}: real room, material,
     // Gallery contains only known deck prototypes, never real hidden card data.
     for (const side of variant === 'flip' ? [0,1] : [0]) {
       await page.setViewportSize({ width: 1440, height: 1000 });
+      // QA-CROSSBROWSER-01: Der Wechsel von 900×450 auf 1440×1000 kippt die Media-Query „breit“ im Kit, der den Tisch
+      // daraufhin neu zeichnet. WebKit meldet das unter Last erst nach dem Einsetzen des Atlas und löschte ihn vor der
+      // Kontrastmessung. Erst nach zwei Frames ist der Layoutwechsel verarbeitet.
+      await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
       await page.evaluate(({ cards, side }) => {
         const S = structuredClone(lastState); S.g.side = side;
         if (S.variant === 'flip') S.g.drawBack = side ? '7r' : '7p';
@@ -75,6 +79,7 @@ for (const variant of modes) test(`UNO Ultimate ${variant}: real room, material,
         main.querySelectorAll('.kc').forEach((el) => el.style.setProperty('--w', '90px'));
         document.querySelector('#kg').dataset.unoSide = side ? 'dark' : 'light';
       }, { cards: material(variant, side), side });
+      await expect(page.locator('.fc-material-atlas')).toHaveCount(1);
       if (variant === 'flip' && side === 0) {
         const contrast = await page.locator('.fc-material-atlas .fc-w .v').evaluateAll((els) => {
           const linear = (v) => (v /= 255) <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4;

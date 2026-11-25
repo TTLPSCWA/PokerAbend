@@ -39,3 +39,22 @@ console.log(`### Wackelige Browser-Prüfungen (erst im Wiederholungsversuch grü
 const badNode = node.filter((s) => s.parts.node.failed > 0 || s.parts.node.exitCode !== 0).map((s) => `Node-Teil ${s.shard}`);
 if (badNode.length) console.log(`\n### Rote Node-Teile\n${list(badNode)}`);
 if (node.length < expectNode || ui.length < expectUi) console.log(`\n**Achtung:** Es fehlen Teilberichte (Node ${node.length}/${expectNode}, Browser ${ui.length}/${expectUi}) – ein Teil ist abgestürzt oder wurde abgebrochen.`);
+
+// QA-CROSSBROWSER-01: gezielte Firefox- und WebKit-Prüfungen (Playwright-JSON-Bericht je Browser)
+const cross = find(dir, 'crossbrowser.json').map((file) => { try { return JSON.parse(readFileSync(file, 'utf8')); } catch { return null; } }).filter(Boolean);
+const crossTitles = (suites, out = [], path = []) => {
+  for (const s of suites || []) {
+    for (const spec of s.specs || []) for (const tc of spec.tests || []) if (tc.status === 'unexpected' || tc.status === 'flaky') out.push({ status: tc.status, title: `[${tc.projectName}] ${[...path, s.title, spec.title].filter(Boolean).join(' › ')}` });
+    crossTitles(s.suites, out, [...path, s.title]);
+  }
+  return out;
+};
+const crossNames = (r) => [...new Set((r.config?.projects || []).map((p) => p.name))].join(', ');
+console.log('\n### Firefox und WebKit (gezielt)\n');
+if (!cross.length) console.log('- kein Bericht gefunden');
+else {
+  console.log('| Projekte | bestanden | fehlgeschlagen | wackelig | übersprungen |\n| --- | ---: | ---: | ---: | ---: |');
+  for (const r of cross) console.log(`| ${crossNames(r)} | ${r.stats?.expected ?? 0} | ${r.stats?.unexpected ?? 0} | ${r.stats?.flaky ?? 0} | ${r.stats?.skipped ?? 0} |`);
+  const bad = cross.flatMap((r) => crossTitles(r.suites));
+  console.log(`\n${list(bad.map((b) => `${b.status === 'flaky' ? 'wackelig' : 'fehlgeschlagen'}: ${b.title}`))}`);
+}
