@@ -517,6 +517,57 @@ test('Bestandsdaten ohne lesbares Konto-Verzeichnis sperren den Start bis zur ko
   } finally { await app.stop(); }
 });
 
+test('B08: Kontolöschung entwertet eine offene Importvorschau und die vorherige Geräteanmeldung', { timeout: 45_000 }, async (t) => {
+  const dir = temp(t);
+  let app = await start(dir);
+  try {
+    const owner = await browser(app).login();
+    const anotherDevice = browser(app, owner.cookies);
+    const oldCookies = { ...owner.cookies };
+    const identity = await expectJSON(await owner.get('/api/identity'));
+    const session = await open(owner);
+    const saved = await expectJSON(await owner.post(game + '/export', operation(session, 'b08-saved')));
+    const preview = await expectJSON(await owner.post(game + '/import/preview', { token: session.token, file: saved.file }));
+
+    await expectJSON(await anotherDevice.post('/api/me/delete', { confirm: identity.gameId }));
+    const detached = browser(app, oldCookies);
+    assert.equal((await detached.get('/api/me/settings')).status, 409);
+    await expectJSON(await detached.post(game + '/import/confirm', {
+      token: session.token, previewId: preview.previewId, confirm: true,
+    }), 401, 'invalid-account');
+    assert.deepEqual(readdirSync(inventory(dir)), []);
+
+    await app.stop();
+    app = await start(dir);
+    const afterRestart = browser(app, oldCookies);
+    assert.equal((await afterRestart.get('/api/me/settings')).status, 409);
+    const replacement = await expectJSON(await afterRestart.get('/api/identity'));
+    assert.notEqual(replacement.gameId, identity.gameId);
+    assert.equal((await expectJSON(await afterRestart.get(game))).revision, 0);
+    assert.deepEqual(readdirSync(inventory(dir)), []);
+  } finally { await app.stop(); }
+});
+
+test('B08: Neustart verwirft eine noch unbestätigte Importvorschau und erhält den Savepoint', { timeout: 45_000 }, async (t) => {
+  const dir = temp(t);
+  let app = await start(dir);
+  try {
+    const owner = await browser(app).login();
+    const session = await open(owner);
+    const saved = await expectJSON(await owner.post(game + '/export', operation(session, 'b08-before-restart')));
+    const preview = await expectJSON(await owner.post(game + '/import/preview', { token: session.token, file: saved.file }));
+    await app.stop();
+    app = await start(dir);
+    const returned = browser(app, owner.cookies);
+    const newSession = await open(returned);
+    assert.equal(newSession.revision, saved.revision);
+    await expectJSON(await returned.post(game + '/import/confirm', {
+      token: newSession.token, previewId: preview.previewId, confirm: true,
+    }), 409, 'preview-conflict');
+    assert.deepEqual(await expectJSON(await returned.get(game + '/export')), saved);
+  } finally { await app.stop(); }
+});
+
 test('Registriertes Konto per Test-Discord nutzt denselben Stand weiterhin als Gast mit gültigem Seitenzugang', { timeout: 45_000 }, async (t) => {
   const dir = temp(t), discord = await fakeDiscord();
   const user = '100000000000000099';

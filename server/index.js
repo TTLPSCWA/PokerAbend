@@ -231,7 +231,10 @@ app.use((req, res, next) => {
 });
 // Gast-Identität: signiertes Cookie mit der internen Konto-ID. Es entsteht beim Seitenaufruf (nicht bei Bildern oder Skripten,
 // die parallel kommen) und wird bei jedem Besuch erneuert. Ohne gültiges Cookie gibt es keine Konto-ID – der Client kann keine behaupten.
-const accountOf = (cookieHeader) => { const id = identity.verify(parseCookies(cookieHeader)[GUEST_COOKIE]); return id ? accounts.ensure(id) : null; };
+const accountOf = (cookieHeader) => {
+  const account = accounts.get(identity.verify(parseCookies(cookieHeader)[GUEST_COOKIE]));
+  return account ? accounts.ensure(account.id) : null; // keep lastSeen without creating a missing account
+};
 app.use((req, res, next) => {
   // An Idle API request can use an existing account, never create one from an old cookie.
   const existingOnly = idleEngines.length && isIdleRequest(req.path);

@@ -2,6 +2,12 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.27.1 – 25. November 2026
+
+### Behoben
+
+- Nach dem Löschen eines Kontos bleiben frühere Geräteanmeldungen ungültig. Eine neue Gastanmeldung erhält ein eigenes Konto.
+
 ## 3.27.0 – 25. November 2026
 
 - Factory Empire: Züge fahren als fortlaufender Umlauf. Nach einer Anlauffahrt kommt alle 120 Sekunden eine Wagenladung an. Später bereitgestellte Ware steigt ohne neuen Anlauf zu. Ein Auftrag über 60 Motoren mit einem Wagen ist damit nach 360 statt 480 Sekunden erfüllt. Mehrere Strecken für denselben Auftrag liefern zusammen nicht mehr als die offene Menge. Gespeicherte Factory-Stände der alten Zugregel werden nicht geladen und bleiben unverändert erhalten.
