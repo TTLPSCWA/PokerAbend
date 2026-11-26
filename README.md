@@ -1,9 +1,3 @@
-<!--
-  README-Redesign für TTLPSCWA/PokerAbend
-  Entwurf, nicht im Repository veröffentlicht.
-  Alle eingebundenen Screenshot-Pfade existierten beim Prüfen des Repos am 26.11.2026.
--->
-
 <h1 align="center">SPIELEABEND</h1>
 
 <p align="center"><strong>Ein Browser. Ein Raum. Ein ganzer Spieleabend.</strong></p>
@@ -140,6 +134,19 @@ npm run test:fast
 | Responsive Layouts | [Responsive-Konzept](docs/design/RESPONSIVE.md) |
 | Idle-Engine und Savepoints | [Idle-Engine](docs/idle-engine.md) |
 | Verbindliche Regeln für Agenten und Commits | [AGENTS.md](AGENTS.md) · [CLAUDE.md](CLAUDE.md) |
+
+## Projektstand und Arbeitsweise
+
+Spielesammlung mit 107 Spielen: 95 Online-/Partyspiele für die Freundesgruppe und 12 lokale Solo-Spiele. Die Version steht in `package.json` (jetzt **3.29.0**) und klein unter dem Schriftzug „Spieleabend“.
+
+**Verbindlicher Entwicklungsworkflow** (ausführlich in [AGENTS.md](AGENTS.md) und [CLAUDE.md](CLAUDE.md)):
+
+- Dieses Projekt verwendet ausschließlich den Branch `main` als aktiven Entwicklungsbranch.
+- Erstelle nicht eigenständig neue Git-Branches oder Pull Requests.
+- Vor jedem Schreibvorgang ist der aktuelle Remote-Stand zu prüfen.
+- Verwende niemals Force-Push, um Konflikte zu umgehen.
+- Ohne ausdrückliche Freigabe darf kein neues Entwicklungsarbeitspaket begonnen werden.
+- Dokumentation und Planungsdateien sind keine automatische Implementierungsfreigabe.
 
 ---
 
