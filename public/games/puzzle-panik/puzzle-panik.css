@@ -1,2 +1,5 @@
 @import url('/games/challenge.css');
 .kg-puzzle-panik{--ch-wash:#21364e}
+
+/* Preserve the scroll origin when the zoomed board is taller than the game area. */
+.kg-puzzle-panik .rt-wrap { align-self: safe center; }

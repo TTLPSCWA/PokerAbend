@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.28.3 – 26. November 2026
+
+- Puzzle-Panik: Auch beim vergrößerten 3×3- und 4×4-Brett bleiben alle Felder erreichbar. Die obere Reihe gerät beim Zoomen nicht mehr hinter die Spielerleiste.
+
 ## 3.28.2 – 25. November 2026
 
 - Vier gewinnt: Auf schmalen Bildschirmen mit wenig freier Höhe ragten die rechten Spalten über das Brett hinaus (gefunden mit der neuen WebKit-Prüfung). Das Brett ist jetzt mindestens so breit wie seine sieben Spalten.

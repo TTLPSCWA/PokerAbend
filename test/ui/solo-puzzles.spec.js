@@ -129,8 +129,21 @@ test('Mahjong-Solitär: Motive, Tipp, Paare entfernen, Rückgängig, Sieg mit Be
 
 test('Match-3: Level, Tausch per Tippen und Wischen, ungültiger Tausch kostet nichts, Tipp, Sieg, Neuladen und Englisch',async({page,app},info)=>{
   test.setTimeout(90000);await login(page,app);await route(page,'match-3');
+  // Use the normal start UI and provide its next board seed. This board
+  // stays below the winning score through both exchanges in the pause scenario.
+  const seed = 1;
+  await page.evaluate((seed) => {
+    const original = crypto.getRandomValues;
+    crypto.getRandomValues = function (values) {
+      if (!(values instanceof Uint32Array) || values.length !== 1) return original.call(this, values);
+      crypto.getRandomValues = original;
+      values[0] = seed;
+      return values;
+    };
+  }, seed);
   await start(page,'easy','e1');await expect(page.locator('.m3-cell')).toHaveCount(64);await expect(page.locator('.m3-cell svg').first()).toBeVisible();
   const s0=await saved(page,'match-3');expect(s0.movesLeft).toBe(22);
+  expect(s0.grid).toEqual(m3.create({ difficulty: 'easy', level: 'e1', seed }).grid);
   // ungültiger Tausch
   const valid=m3.validSwaps(s0.grid),bad=[...Array(63).keys()].find(i=>i%8<7&&!valid.some(([a,b])=>a===i&&b===i+1));
   await page.locator(`.m3-cell[data-cell="${bad}"]`).click();await page.locator(`.m3-cell[data-cell="${bad+1}"]`).click();
@@ -147,7 +160,9 @@ test('Match-3: Level, Tausch per Tippen und Wischen, ungültiger Tausch kostet n
   await page.locator(`.m3-cell[data-cell="${a}"]`).dispatchEvent('pointerdown',{pointerId:7,pointerType:'touch',clientX:box.x+box.width/2,clientY:box.y+box.height/2,bubbles:true});
   await page.locator(`.m3-cell[data-cell="${a}"]`).dispatchEvent('pointerup',{pointerId:7,pointerType:'touch',clientX:box.x+box.width/2+dx*1.2,clientY:box.y+box.height/2+dy*1.2,bubbles:true});
   await expect.poll(async()=>(await saved(page,'match-3')).movesLeft).toBe(20);
+  expect(await saved(page, 'match-3')).toMatchObject({ status: 'playing', score: 150 });
   await pauseReload(page,'match-3',info);
+  expect(await saved(page, 'match-3')).toMatchObject({ status: 'playing', movesLeft: 20, score: 150 });
   // Sieg: ein Zug fehlt bis zum Ziel
   const win=m3.create({difficulty:'easy',level:'e1',seed:4});win.score=m3.levelOf(win).target-10;win.paused=true;await inject(page,'match-3',win);await page.reload();await resume(page);
   const [x,y]=m3.validSwaps(win.grid)[0];await page.locator(`.m3-cell[data-cell="${x}"]`).click();await page.locator(`.m3-cell[data-cell="${y}"]`).click();

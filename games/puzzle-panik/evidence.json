@@ -192,6 +192,8 @@
     },
     {
       "path": "public/games/puzzle-panik/puzzle-panik.css",
+      "archive": "test/fixtures/puzzle-panik-baseline.css",
+      "current_sha256": "e5d1decbbb962397b6d817b8fdcac17dc232d9385a0e3672643780ac9fe97a2a",
       "sha256": "0d2c31d8f8fe0abdbd10ef12e6420956d46a6fc1b38751f7bf7cadc74289cae0"
     },
     {
