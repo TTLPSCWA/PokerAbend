@@ -121,6 +121,13 @@
 .p-name .crown { color: var(--gold-text); width: 14px; height: 14px; }
 .p-stack { display: flex; align-items: center; gap: 5px; font-size: var(--fs-text); color: var(--gold-text); font-weight: 600; }
 .p-stack .chip { width: 12px; height: 12px; }
+.p-stack-line { display: flex; align-items: center; flex-wrap: wrap; gap: 3px 5px; }
+#game .p-blind {
+  flex: none; display: inline-grid; place-items: center; border: 1px solid #6d9bb0; border-radius: 5px;
+  padding: 1px 3px; color: #e8f3ff; background: #263e55; font: 800 10px/1.2 system-ui, sans-serif;
+  text-decoration: none;
+}
+#game .p-blind[data-blind="BB"] { background: #4b2f63; border-color: #b498cb; }
 .p-hand { font-size: 12px; color: var(--gold-text); font-weight: 600; line-height: 1.25; }
 .p-win { position: absolute; right: 10px; top: -30px; font-weight: 800; font-size: 22px; color: var(--gold-text); text-shadow: 0 1px 3px rgba(0,0,0,.7); pointer-events: none; }
 .p-win.pop { animation: rise-win .4s ease-out both; }
@@ -170,12 +177,6 @@
   display: grid; place-items: center; box-shadow: 0 2px 4px rgba(0,0,0,.45), inset 0 -2px 0 rgba(0,0,0,.12);
   transition: left .35s ease, top .35s ease;
 }
-.badge {
-  position: absolute; z-index: 3; width: 24px; height: 24px; border-radius: 50%; transform: translate(-50%, -50%);
-  display: grid; place-items: center; font-size: 10px; font-weight: 800; color: #E3ECFF;
-  background: #2B3F63; border: 2px dashed rgba(255,255,255,.45); box-shadow: 0 1px 3px rgba(0,0,0,.4);
-}
-.badge.bb { background: #4B2F63; }
 
 .empty-seat { position: absolute; transform: translate(-50%, -50%); z-index: 2; }
 .sit-btn {
@@ -252,6 +253,25 @@ input[type='range']::-moz-range-thumb { width: 18px; height: 18px; border-radius
 .hands-btn { align-self: stretch; min-width: 44px; writing-mode: vertical-rl; transform: rotate(180deg); background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-m); padding: 8px 4px; font-weight: 700; font-size: var(--fs-label); letter-spacing: .06em; color: var(--text-2); }
 .hands-btn:hover, .hands-btn[aria-expanded='true'] { color: var(--gold-text); border-color: var(--gold); }
 /* Reiter „Hände“: Tabelle der Handwertungen */
+/* The hands reference occupies its own column on wide tables. Other drawers stay shared. */
+@media (min-width: 1100px) and (min-height: 700px) {
+  #game[data-poker-panel="hands"] { grid-template-columns: minmax(0, clamp(320px, 28vw, 420px)) minmax(0, 1fr); }
+  #game[data-poker-panel="hands"] > :is(.topbar, #poker-program, .dock) { grid-column: 1 / -1; }
+  #game[data-poker-panel="hands"] > .dock { grid-row: -2 / -1; }
+  #game[data-poker-panel="hands"] > .table-wrap { grid-area: -3 / 2 / -2 / 3; }
+  #game[data-poker-panel="hands"] > #panel {
+    position: relative; grid-area: -3 / 1 / -2 / 2; inset: auto; width: auto; min-height: 0;
+    grid-template-rows: auto minmax(0, 1fr);
+    border-left: 0; border-right: 1px solid var(--line); box-shadow: none;
+  }
+}
+@media (max-width: 1099px), (max-height: 699px) {
+  #game[data-poker-panel="hands"] > #panel {
+    inset: auto 0 0; width: 100%; max-height: 78dvh; border-left: 0;
+    border-radius: var(--r-l) var(--r-l) 0 0; box-shadow: 0 -18px 36px rgba(0,0,0,.45);
+  }
+}
+
 .hands-table { width: 100%; border-collapse: collapse; }
 .hands-table th { text-align: left; font-size: var(--fs-label); color: var(--text-2); font-weight: 600; padding: 4px; }
 .hands-table td { padding: 8px 4px; border-bottom: 1px solid var(--line); vertical-align: middle; }
@@ -373,6 +393,7 @@ input[type='range']::-moz-range-thumb { width: 18px; height: 18px; border-radius
   /* Mitspieler kompakt: Avatar, Name, Chips */
   .plate { flex-direction: column; gap: 2px; padding: 5px 6px 7px; min-height: 0; border-radius: 12px; text-align: center; }
   .p-info { justify-items: center; }
+  .p-stack-line { justify-content: center; }
   .p-name { font-size: 12px; max-width: 84px; }
   .p-stack { font-size: 12px; }
   .p-stack .chip { display: none; }

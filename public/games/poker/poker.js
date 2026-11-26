@@ -247,7 +247,7 @@ function placeExtras(h) {
     take(c, w, hh); a.bet = c;
     el.style.left = (c.x / T.width) * 100 + '%'; el.style.top = (c.y / T.height) * 100 + '%'; el.style.visibility = '';
   }
-  // 2. Blind-Chips und Dealer neben dem Einsatz (oder wo er wäre)
+  // 2. Dealer neben dem Einsatz (oder wo er wäre)
   const nearBet = (a, s) => {
     const b = a.bet || inward(a, 60, 24, 0);
     const px = -a.uy, py = a.ux; // senkrecht zur Richtung zur Tischmitte
@@ -256,13 +256,6 @@ function placeExtras(h) {
     out.push(inward(a, s, s, 0), inward(a, s, s, 30), ...sideOf(a, s, s));
     return out;
   };
-  for (const el of $$('#seats .badge')) {
-    const a = anchors[el.dataset.for]; if (!a) continue;
-    const s = el.offsetWidth;
-    const c = pick(nearBet(a, s), s, s);
-    take(c, s, s);
-    el.style.left = (c.x / T.width) * 100 + '%'; el.style.top = (c.y / T.height) * 100 + '%'; el.style.visibility = '';
-  }
   const dealer = $('#dealer');
   const a = h ? anchors[h.button] : null;
   if (a) {
@@ -272,6 +265,13 @@ function placeExtras(h) {
     take(c, s, s);
     dealer.style.left = (c.x / T.width) * 100 + '%'; dealer.style.top = (c.y / T.height) * 100 + '%';
   } else dealer.hidden = true;
+}
+function blindMarker(hand, seat) {
+  if (!hand || hand.done) return '';
+  const role = seat === hand.bb ? 'BB' : seat === hand.sb ? 'SB' : null;
+  if (!role) return '';
+  const label = role === 'BB' ? 'Big Blind' : 'Small Blind';
+  return `<abbr class="p-blind" data-blind="${role}" title="${label}">${role}</abbr>`;
 }
 const RING = 138.2; // Umfang des Timer-Rings (r = 22)
 const ringSVG = '<svg class="ring" viewBox="0 0 48 48" aria-hidden="true"><circle class="ring-bg" cx="24" cy="24" r="22"/><circle class="ring-fg" cx="24" cy="24" r="22" stroke-dasharray="138.2" stroke-dashoffset="0"/></svg>';
@@ -437,7 +437,7 @@ function renderTable() {
         <div class="av-wrap">${ringSVG}<div class="avatar">${avatarHTML(s)}</div></div>
         <div class="p-info">
           <div class="p-name"><span>${esc(s.name)}</span>${typeof botBadgeHTML==='function'?botBadgeHTML(S,s.id):''}${s.isHost ? I18n.html`${ICON.crown}<span class="sr-only">(Host)</span>` : ''}</div>
-          <div class="p-stack"><span class="chip c5" aria-hidden="true"></span>${amt(s.stack)}</div>
+          <div class="p-stack-line"><div class="p-stack"><span class="chip c5" aria-hidden="true"></span>${amt(s.stack)}</div>${blindMarker(h, i)}</div>
           ${compact && s.bet > 0 ? I18n.html`<div class="p-bet" aria-label="Einsatz ${amt(s.bet)}">↳ ${amt(s.bet)}</div>` : ''}
           ${handName}
         </div>
@@ -447,10 +447,6 @@ function renderTable() {
     </div>`;
     // Am Handy steht der Einsatz im Namensschild – auf dem kleinen Tisch ist kein Platz für eigene Chips
     if (s.bet > 0 && !compact) seatsHTML += `<div class="bet" style="visibility:hidden" data-bet="${i}">${chipStack(s.bet, 3)}${amt(s.bet)}</div>`;
-    if (h && !h.done) {
-      const blind = h.bb === i ? 'bb' : h.sb === i && h.sb !== h.button ? 'sb' : null;
-      if (blind) seatsHTML += `<b class="badge ${blind}" style="visibility:hidden" data-for="${i}" title="${blind === 'sb' ? 'Small Blind' : 'Big Blind'}">${blind.toUpperCase()}</b>`;
-    }
   }
   $('#seats').innerHTML = seatsHTML;
 }
@@ -490,7 +486,7 @@ function renderDock() {
   }
   const showName = prefs.strength && S.strength;
   const strength = myCards && !foldedMine && (showName || chances) ? I18n.html`<button class="strength" data-panel-open="hands" title="Alle Pokerhände und deine Chancen"><span>${showName ? esc(I18n.language === 'en' ? pokerHandEnglish(S.strength) : S.strength) : 'Deine Chancen'}</span><small>${I18n.language === 'en' && h.street === 'done' ? 'Hand complete' : STREET[h.street]}</small>${chances}</button>` : '';
-  const myChips = `<span class="me-chips"><span class="chip c5" aria-hidden="true"></span>${amt(me.stack)}</span>`;
+  const myChips = `<span class="me-chips"><span class="chip c5" aria-hidden="true"></span>${amt(me.stack)}${blindMarker(h, mySeat)}</span>`;
   const left = `<div class="mine">${handsBtn()}<div class="cards ${foldedMine ? 'is-folded' : ''}">${cardsHTML}</div><div class="mine-info">${strength}${myChips}</div></div>`;
 
   let right = '';
@@ -856,6 +852,9 @@ const PANEL_TITLES = { log: 'Verlauf', stand: 'Stand des Abends', hands: 'Pokerh
 function openPanel(name) {
   panel = panel === name ? null : name;
   $('#panel').hidden = !panel;
+  $('#game').dataset.pokerPanel = panel || '';
+  $$('#dock [data-panel-open="hands"]').forEach((button) => button.setAttribute('aria-expanded', String(panel === 'hands')));
+  requestAnimationFrame(() => { if (S && !$('#game').hidden) placeExtras(S.hand); });
   $$('.nav-btn').forEach((b) => b.setAttribute('aria-current', String(b.dataset.panel === panel)));
   if (panel) { $('#panel-title').textContent = I18n.t(PANEL_TITLES[panel]); renderPanel(true); }
 }

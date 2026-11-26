@@ -9,7 +9,7 @@ body[data-theme-kind="deck"] #kg .kg-main { background: var(--twk-table); }
 body[data-theme-kind="deck"] #kg :is(.sk-felt, .dk-felt, .hr-felt, .pw-table, .sm-trick, .bj-dealer) { background: var(--twk-felt); border-color: var(--twk-rail); }
 /* Kartenfront: Papier, Tinte und Rot der Welt, Rahmen mit Eckzier; Bildkarten zusätzlich mit dem Emblem der Welt hinter der Farbe */
 body[data-theme-kind="deck"] #kg .kc:not(.kc-back):not(.kc-empty) { --paper: var(--twk-face); --ink: var(--twk-ink); --suit-red: var(--twk-red); background: var(--twk-frame) center / 100% 100% no-repeat, var(--twk-face); }
-body[data-theme-kind="deck"] #kg .kc[data-face]:not(.kc-back) { background: var(--twk-frame) center / 100% 100% no-repeat, var(--twk-emblem) 50% 55% / 84% auto no-repeat, var(--twk-face); }
+body[data-theme-kind="deck"] #kg .kc[data-face]:not(.kc-back) { background: var(--twk-frame) center / 100% 100% no-repeat, var(--twk-emblem) var(--twk-emblem-position, 50% 55%) / var(--twk-emblem-width, 84%) auto no-repeat, var(--twk-face); }
 /* Rückseiten: Stapel, verdeckte Karten, Fächer der Mitspieler und Mau-Mau-Flugkarte */
 body[data-theme-kind="deck"] #kg .kc-back { background: var(--twk-back); border-color: var(--twk-back-edge); color: var(--twk-back-ink); text-shadow: 0 1px 2px #000c; }
 body[data-theme-kind="deck"] #kg .fan i { background: var(--twk-back); border-color: var(--twk-back-edge); }
@@ -24,6 +24,6 @@ body[data-theme-kind="deck"] #game .rail::after { background: var(--twk-rail-inn
 body[data-theme-kind="deck"] #game[data-art-poker] .rail::before { background: var(--twk-felt); }
 body[data-theme-kind="deck"] #game:not([data-art-poker]) .felt { background: var(--twk-felt); }
 body[data-theme-kind="deck"] #game .card:not(.back) { --paper: var(--twk-face); --ink: var(--twk-ink); --suit-red: var(--twk-red); background: var(--twk-frame) center / 100% 100% no-repeat, var(--twk-face); }
-body[data-theme-kind="deck"] #game .card[data-face]:not(.back) { background: var(--twk-frame) center / 100% 100% no-repeat, var(--twk-emblem) 50% 55% / 84% auto no-repeat, var(--twk-face); }
+body[data-theme-kind="deck"] #game .card[data-face]:not(.back) { background: var(--twk-frame) center / 100% 100% no-repeat, var(--twk-emblem) var(--twk-emblem-position, 50% 55%) / var(--twk-emblem-width, 84%) auto no-repeat, var(--twk-face); }
 body[data-theme-kind="deck"] #game .card.back { --paper: var(--twk-back-edge); background: var(--twk-back); }
 body[data-theme-kind="deck"] #game .seat.turn { --gold: var(--twk-turn); }

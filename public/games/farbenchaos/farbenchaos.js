@@ -48,7 +48,11 @@
   };
   const deckBack = (count, S) => {
     const variant = themeOf(S), theme = themeName(variant);
-    if (variant === 'flip' && S.g?.drawBack) return `<div class="fc-flip-deck" data-uno-back="flip">${card(S.g.drawBack, { cls: 'big', attrs: 'disabled', inactive: true }, S)}<span class="fc-deck-count">${count}<small>${tx('Karten', 'cards')}</small></span></div>`;
+    if (variant === 'flip') {
+      const face = S.g?.drawBack ? card(S.g.drawBack, { cls: 'big', attrs: 'disabled', inactive: true }, S)
+        : '<span class="kc kc-empty big" aria-hidden="true"></span>';
+      return `<div class="fc-flip-deck" data-uno-back="flip">${face}<span class="fc-deck-count">${count}<small>${tx('Karten', 'cards')}</small></span></div>`;
+    }
     return `<div class="kc kc-back fc-back" data-uno-back="${theme}" role="img" aria-label="${esc(tx(`Nachziehstapel: ${count} Karten`, `Draw pile: ${count} cards`))}"><span class="fc-back-grid" aria-hidden="true"></span><span class="fc-back-emblem" aria-hidden="true">${variant === 'halloween-ghosthunt' ? GHOST : variant === 'all-wild' ? SIGIL : variant === 'no-mercy' ? icon('<path d="m22 4-12 19h11l-3 13 13-20H20Z"/>') : WHEEL}</span><span class="fc-back-title">${variant === 'halloween-ghosthunt' ? tx('SPUKAKTE', 'CASE FILE') : variant === 'no-mercy' ? 'NO MERCY' : variant === 'all-wild' ? 'ALL WILD' : 'UNO'}</span><span class="fc-deck-count">${count}<small>${tx('Karten', 'cards')}</small></span></div>`;
   };
   let pendingEffect = null, activeEffect = null;
@@ -170,7 +174,15 @@
       "Wer zuerst keine Karten mehr hat, gewinnt die Runde.",
       "Punkte: Der Gewinner kassiert die Restkarten der anderen (Zahl = Wert, Aktion 20, Farbwahl 50).",
     ],
-    house: () => ['Kein Ende bei 500 Punkten – gezählt wird über den Abend'],
+    hostExtra(S) {
+      if (!['flip', 'no-mercy', 'all-wild'].includes(S.variant)) return '';
+      return `<section class="notice fc-fixed-rules"><h3>${tx('Feste Variantenregeln', 'Fixed variant rules')}</h3>
+        <p>${tx('Diese Variante teilt sieben Karten aus und hat keine Classic-Hausregelschalter. Für anpassbare Hausregeln wähle Classic oder Spuknacht.',
+          'This variant deals seven cards and has no Classic house-rule switches. For custom house rules, choose Classic or Ghost Night.')}</p></section>`;
+    },
+    house: (S) => ['flip', 'no-mercy', 'all-wild'].includes(S.variant)
+      ? [tx('Sieben Startkarten. Die Variantenregeln sind fest.', 'Seven starting cards. The variant rules are fixed.')]
+      : ['Kein Ende bei 500 Punkten – gezählt wird über den Abend'],
     rules: I18n.html`<p>Leg eine Karte mit <b>gleicher Farbe oder gleichem Wert/Symbol</b>. Wer zuerst keine Karten mehr hat, gewinnt die Runde.</p>
       <ul>
         <li><b>⊘ Aussetzen</b>: Der Nächste setzt aus.</li>

@@ -6,4 +6,5 @@ body[data-theme-world="TW-14"] {
   --twk-frame: url('/games/theme-worlds/deck/frame-tw-14.svg'); --twk-emblem: url('/games/theme-worlds/deck/emblem-tw-14.svg');
   --twk-back: url('/games/theme-worlds/deck/back-tw-14.svg') center / 100% 100% no-repeat, #5a1f1c; --twk-back-edge: #f3e6c8; --twk-back-ink: #f3e6c8;
   --twk-turn: #e0b45a;
+  --twk-emblem-position: right 7% bottom 7%; --twk-emblem-width: 22%;
 }

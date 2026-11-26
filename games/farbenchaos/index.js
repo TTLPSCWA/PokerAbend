@@ -16,7 +16,7 @@ export default turnGame(Room, {
   minPlayers: 2, maxPlayers: 8, duration: 15, // Spielerzahl und ungefähre Dauer in Minuten – für Filter und Anzeige auf der Startseite
   art: fan([{ fill: '#D33B35' }, { fill: '#F2C230' }, { fill: '#1F57C3' }, { fill: '#1C7A43' }]), // Spielbild für die Startseite (siehe games/art-kit.js)
   players: '2–8 Spieler',
-  createFields: [{ key: 'handSize', label: 'Karten pro Spieler', type: 'number', min: 3, value: 7 }],
+  createFields: [{ key: 'handSize', label: 'Karten pro Spieler', type: 'number', min: 3, value: 7, variants: ['classic', 'halloween-ghosthunt'] }],
   events: {
     play: (room, p, { card, wish, call, target }) => room.play(p.id, str(card), str(wish) || null, !!call, str(target) || null),
     chooseColor: (room, p, { color }) => { if (!room.chooseColor) throw new Error('Keine Farbwahl offen'); return room.chooseColor(p.id, str(color)); },

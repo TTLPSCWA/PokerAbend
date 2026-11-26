@@ -9,6 +9,22 @@ function setup(variant, count = 3, settings = {}) {
   const ids = Array.from({ length: count }, (_, i) => { const p = r.addPlayer(`P${i}`, null); r.sit(p.id); return p.id; }); r.start(ids[0]);
   r.turn = 0; r.dir = 1; r.side = 0; r.wish = null; r.colorChoice = null; r.challenge = null; return { r, ids };
 }
+test('UNO exposes Classic options only where the server honours them', () => {
+  const house = { handSize: 5, stacking: true, sevenZero: true, drawUntil: true, unoCall: true,
+    strictPlus4: true, startAction: true, catchCall: true };
+  for (const meta of GAMES.farbenchaos.variants) {
+    const editable = ['classic', 'halloween-ghosthunt'].includes(meta.id);
+    assert.deepEqual(meta.options.map(({ key }) => key).sort(), editable ? Object.keys(house).sort() : []);
+    assert.equal(GAMES.farbenchaos.createFields[0].variants.includes(meta.id), editable);
+    const room = GAMES.farbenchaos.create('OPTS', { variant: meta.id }, () => {});
+    try {
+      const host = room.addPlayer('Host', null);
+      room.updateSettings(host.id, house);
+      assert.deepEqual(room.settings, editable ? house : {});
+    } finally { room.dispose(); }
+  }
+});
+
 let serial = 1000;
 const card = (a, b = '1p') => ({ id: serial++, faces: [a, b] });
 function setHand(r, id, ...codes) { r.hands[id] = codes.map((c) => card(c)); }

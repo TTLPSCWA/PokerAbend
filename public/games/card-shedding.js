@@ -13,7 +13,7 @@ function kitSafeShedding(opts){
     if(result?.ok&&selectedKey===key)clear();kit.render();
   }
   const kit=kitGame({
-    id:opts.id,name:opts.name,cardUX:true,ring:opts.ring,lobby:opts.lobby,house:opts.house,sort:opts.sort,prefs:opts.prefs,translate:opts.translate,intro:opts.intro,resultExtra:opts.resultExtra,afterRender:opts.afterRender,
+    id:opts.id,name:opts.name,cardUX:true,ring:opts.ring,lobby:opts.lobby,house:opts.house,sort:opts.sort,prefs:opts.prefs,translate:opts.translate,intro:opts.intro,resultExtra:opts.resultExtra,afterRender:opts.afterRender,hostExtra:opts.hostExtra,
     get rules(){return opts.rules;},get short(){return opts.short;},
     look:(S)=>[{title:I18n.t('Zuletzt gelegt'),html:lookMoves(S.moves,{filter:(m)=>/^legt /.test(m.t),n:10})}],moveDetail:()=>'',
     playerInfo:(p)=>I18n.html`${p.cards} Karten`,seat:(p,S)=>opts.seat?.(p,S),onClear:clear,

@@ -2,6 +2,12 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.28.5 – 26. November 2026
+
+- Poker: Small und Big Blind stehen an der Spieleranzeige. Die Handübersicht bekommt auf großen Bildschirmen links Platz; der Saloon-Stern lässt die Kartenmitte frei.
+- UNO: Die Spielanlage zeigt die Wahl der Handgröße bei Classic und Spuknacht. Flip, No Mercy und All Wild erklären ihre festen Regeln im Host-Menü. In Flip bleibt der Stapelzähler unter beiden Kartenseiten lesbar.
+- UNO, Skip-Bo und Phase 10: Die Spielrichtung braucht in der Spielerleiste nur noch so viel Platz wie ihre Beschriftung.
+
 ## 3.28.4 – 26. November 2026
 
 - Seitenleiste: Der Schriftzug „Spieleabend“ passt sich der Breite der Leiste an und wird bei schmalen Fenstern oder Browser-Zoom nicht mehr abgeschnitten.

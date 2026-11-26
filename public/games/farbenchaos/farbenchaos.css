@@ -121,9 +121,13 @@
 .kg-farbenchaos .fc-back[data-uno-back=all-wild]{background:radial-gradient(ellipse at 10% 0,#63477a80,transparent 65%),linear-gradient(140deg,#1f3445,#112c34);color:#d3c1f1;border-color:#92c8be}
 .kg-farbenchaos .fc-back[data-uno-back=ghosthunt]{background:radial-gradient(ellipse at 60% 20%,#87977929,transparent 65%),linear-gradient(150deg,#273b31,#142628);color:#c8d1b0;border-color:#aabd95;border-radius:5px}
 .fc-back[data-uno-back=ghosthunt] .fc-back-grid{background:none;border-style:dashed;border-radius:50% 50% 4px 4px;inset:7% 12%}
-.fc-flip-deck{--w:112px;width:var(--w);position:relative}.fc-flip-deck>.kc{--w:112px;box-shadow:0 4px 0 -1px #879e92,0 7px 0 -2px #52675c,0 12px 17px #0004}
-.fc-flip-deck>.fc-deck-count{--w:112px;position:absolute;bottom:-5px;right:-12px;min-width:42px;padding:6px 8px;border-radius:6px;background:#172b29;border:1px solid #92b4a2;color:#f6efd7;font-size:16px}
-.fc-flip-deck .fc-deck-count>small{font-size:8px}
+.fc-flip-deck{--w:112px;width:var(--w);display:grid;justify-items:center;gap:10px}
+.fc-flip-deck>.kc{--w:112px;box-shadow:0 4px 0 -1px #879e92,0 7px 0 -2px #52675c,0 12px 17px #0004}
+.fc-flip-deck>.fc-deck-count{
+  display:inline-flex;align-items:baseline;gap:4px;min-width:0;padding:3px 7px;border-radius:6px;
+  background:#172b29;border:1px solid #92b4a2;color:#f6efd7;font-size:14px
+}
+.fc-flip-deck .fc-deck-count>small{font-size:10px}
 
 /* Input remains in the existing dock, with readable, full-size scrollable hands. */
 .kg-farbenchaos .kg-hand{gap:9px;padding:18px 10px 10px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;justify-content:safe center;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:#93a28a #142821}

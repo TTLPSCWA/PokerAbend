@@ -278,7 +278,7 @@ function openHost(id) {
       ${(g.variants || []).length > 1 ? I18n.html`<label class="field"><span>Spielvariante</span><select class="input" id="host-variant">${g.variants.map((v) => I18n.html`<option value="${v.id}">${esc(v.name)} · ${v.minPlayers}–${v.maxPlayers} Spieler</option>`).join('')}</select></label>` : ''}
       ${unoVariantPreviewsHTML(g.id, g.variants || [])}${createChoicesHTML(g)}
       ${(g.createFields || []).length ? `<div class="host-fields">${g.createFields.map((f) => `<label class="field"><span>${uiText(f.label)}</span>
-        <input data-cf="${esc(f.key)}" type="${f.type === 'number' ? 'number' : 'text'}" ${f.min !== undefined ? `min="${f.min}"` : ''} ${f.step ? `step="${f.step}"` : ''} value="${esc(f.value)}"></label>`).join('')}</div>` : ''}
+        <input data-cf="${esc(f.key)}" ${f.variants ? `data-cf-variants="${esc(f.variants.join(' '))}"` : ''} type="${f.type === 'number' ? 'number' : 'text'}" ${f.min !== undefined ? `min="${f.min}"` : ''} ${f.step ? `step="${f.step}"` : ''} value="${esc(f.value)}"></label>`).join('')}</div>` : ''}
       <p class="hint">Alles Weitere stellst du am Tisch unter „Host“ ein.</p>
       <p id="host-error" class="error" role="alert"></p>
       <button class="btn btn-brass btn-big" type="submit">Tisch erstellen</button>
@@ -288,6 +288,12 @@ function openHost(id) {
     const v = g.variants.find((v) => v.id === e.target.value);
     d.querySelector('.host-meta').textContent = I18n.html`${catTitle(g.category)} · ${v.minPlayers === v.maxPlayers ? v.minPlayers : `${v.minPlayers}–${v.maxPlayers}`} Spieler · ca. ${v.duration || g.duration} Min.`;
     d.querySelectorAll('[data-cf]').forEach((input) => {
+      const supported = input.dataset.cfVariants?.split(' ');
+      if (supported) {
+        input.disabled = !supported.includes(v.id);
+        input.closest('label').hidden = input.disabled;
+        if (input.disabled) return;
+      }
       const option = v.options?.find((o) => o.key === input.dataset.cf);
       if (v.defaults?.[input.dataset.cf] !== undefined) input.value = v.defaults[input.dataset.cf];
       if (option?.min !== undefined) input.min = option.min;
@@ -301,7 +307,7 @@ $('#host-dlg').addEventListener('click', (e) => { if (e.target === $('#host-dlg'
 $('#host-dlg').addEventListener('submit', (e) => {
   e.preventDefault();
   const d = $('#host-dlg');
-  const settings = { ...Object.fromEntries($$('[data-cf]', d).map((el) => [el.dataset.cf, el.value])), ...createChoiceSettings(d) };
+  const settings = { ...Object.fromEntries($$('[data-cf]:not(:disabled)', d).map((el) => [el.dataset.cf, el.value])), ...createChoiceSettings(d) };
   socket.emit('create', { game: d.dataset.game, name: profile.name, avatar: profile.avatar, settings, variant: $('#host-variant')?.value }, (r) => {
     if (!r?.ok) { $('#host-error').textContent = r?.error || I18n.t('Verbindung fehlgeschlagen'); return; }
     d.close();
