@@ -6,8 +6,9 @@ import { createServer } from 'node:http';
 import { Server } from 'socket.io';
 import { readFileSync, writeFileSync, renameSync, mkdirSync, existsSync, unlinkSync, copyFileSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
-import { randomBytes } from 'node:crypto';
+import { randomBytes, createHash } from 'node:crypto';
 import { createRanked } from './ranked.js';
+import { createSocketAccess } from './socket-access.js';
 import { fileURLToPath } from 'node:url';
 import { GAMES, DEFAULT_GAME, gameList, singleplayerGameList, SINGLEPLAYER_GAMES, gameEvents, PLANNED, plannedGames } from '../games/index.js';
 import { createFeatures, parseSwitch } from './features.js';
@@ -149,13 +150,30 @@ app.use((req, res, next) => {
 });
 app.get('/health', (_req, res) => res.json({ ok: true, version: VERSION.version, commit: VERSION.short, uptime: Math.round(process.uptime()) }));
 
-const passwordOk = (req) => auth.valid(parseCookies(req.headers.cookie)[COOKIE]);
+// SEC-SOCKET-01: Gruppen-Cookies, die per Logout abgemeldet wurden, gelten weder für HTTP noch für Sockets.
+// Nur im Speicher bis zum nächsten Neustart: ein dauerhafter Widerruf braucht das Sitzungsregister aus SEC-SESSION-01.
+const revokedGroupCookies = new Map(); // sha256(Cookie-Wert) → Ablauf des Cookies (ms)
+const groupCookieRef = (raw) => createHash('sha256').update(raw).digest('hex');
+function revokeGroupCookie(cookieHeaderValue) {
+  const raw = parseCookies(cookieHeaderValue)[COOKIE];
+  if (MODE !== 'password' || typeof raw !== 'string' || !auth.valid(raw)) return;
+  const now = Date.now();
+  for (const [ref, exp] of revokedGroupCookies) if (exp <= now) revokedGroupCookies.delete(ref);
+  revokedGroupCookies.set(groupCookieRef(raw), Number(raw.split('.')[0]) || now);
+}
+const groupAccess = (cookieHeaderValue) => {
+  const raw = parseCookies(cookieHeaderValue)[COOKIE];
+  return auth.valid(raw) && !(typeof raw === 'string' && revokedGroupCookies.has(groupCookieRef(raw)));
+};
+const passwordOk = (req) => groupAccess(req.headers.cookie);
 // Zugang: Gruppenpasswort-Cookie oder eine gültige Discord-Sitzung (nur mit DISCORD_GUILD_ID und Mitgliedschaft; nie Admin)
-const hasAccess = (cookieHeader) => auth.valid(parseCookies(cookieHeader)[COOKIE]) || (discordOn() && !!discord.hasAccess(cookieHeader));
+const hasAccess = (cookieHeader) => groupAccess(cookieHeader) || (discordOn() && !!discord.hasAccess(cookieHeader));
 const loggedIn = (req) => hasAccess(req.headers.cookie);
+let socketAccess = null; // SEC-SOCKET-01, wird nach dem Socket.IO-Server angelegt
 const discord = createDiscordAuth({
   config: discordConfig(), secret: SECRET, dataDir: DATA_DIR, accounts, identity, accountOf: (cookieHeader) => accountOf(cookieHeader),
-  siteAccess: (req) => MODE === 'open' || loggedIn(req), secure: (req) => isSecure(req), trustProxy: TRUST_PROXY, onChange: () => save(),
+  // Jeder Widerruf einer Discord-Sitzung (Logout, überall abmelden, Austritt) prüft offene Sockets sofort neu
+  siteAccess: (req) => MODE === 'open' || loggedIn(req), secure: (req) => isSecure(req), trustProxy: TRUST_PROXY, onChange: () => { save(); socketAccess?.sweepSoon(); },
   merge: (from, to) => {
     if (!accounts.merge(from, to)) return false;
     leaderboard.merge(from, to, accounts.get(to)?.name || ''); mergeAccounts(from, to); save();
@@ -204,8 +222,16 @@ app.post('/login', express.urlencoded({ extended: false, limit: '2kb' }), (req, 
 
 app.post('/logout', (req, res) => {
   res.setHeader('Set-Cookie', cookieHeader('', { secure: isSecure(req), maxAgeDays: 0 }));
+  revokeGroupCookie(req.headers.cookie);
   if (discord) { discord.revokeCurrent(req.headers.cookie); discord.clearCookie(req, res); }
   ticketAPI.clearAdmin(req, res);
+  // SEC-SOCKET-01: offene Verbindungen sofort sperren – alle mit ungültig gewordener Anmeldung und alle desselben Browsers
+  // (Gastidentität). Andere Tabs können ältere, noch nicht widerrufene Cookie-Werte tragen, weil jeder Seitenaufruf das
+  // Gruppen-Cookie neu ausstellt; nach dem Logout fehlt ihnen im Browser das Cookie für eine neue Verbindung.
+  // Verknüpfte Geräte mit eigener gültiger Anmeldung verbinden sich über „auth-expired“ von selbst neu.
+  const guest = accountOf(req.headers.cookie)?.id;
+  if (guest) socketAccess?.revoke((socket) => socket.data.accountId === guest);
+  socketAccess?.sweep();
   res.redirect(303, '/login');
 });
 
@@ -428,6 +454,13 @@ const io = new Server(http, {
     cb(null, true);
   },
 });
+// SEC-SOCKET-01: Der Handshake verleiht keine dauerhafte Berechtigung. Geprüft wird mit den Cookies der Verbindung
+// bei jedem Paket und alle SOCKET_ACCESS_SWEEP_MS (Standard 60 s) auch für ruhige Verbindungen.
+socketAccess = createSocketAccess({
+  valid: (socket) => MODE === 'open' || hasAccess(socket.request.headers.cookie),
+  sweepMs: Math.max(200, Number(process.env.SOCKET_ACCESS_SWEEP_MS) || 60_000),
+});
+socketAccess.start();
 
 /** @type {Map<string, import('./base-room.js').BaseRoom>} */
 const rooms = new Map();
@@ -865,6 +898,8 @@ function attach(socket, room, player) {
 
 // ---------- Socket-Ereignisse ----------
 io.on('connection', (socket) => {
+  // Zuerst: Zugang je Paket prüfen (gilt auch für history, clientError, react und alle Spielereignisse)
+  socketAccess.attach(socket);
   const ip = clientIp(socket.request, TRUST_PROXY);
   // Version und laufende Update-Ankündigung gleich beim Verbinden (auch nach einem Neustart)
   socket.emit('version', { version: VERSION.version, commit: VERSION.short });

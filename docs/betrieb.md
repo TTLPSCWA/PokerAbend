@@ -1,6 +1,6 @@
 # Betrieb: Spieleabend aufsetzen, aktualisieren, sichern, reparieren
 
-Stand: Version **3.28.5** (26. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
+Stand: Version **3.29.0** (26. November 2026). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
 
 Für einen autorisierten, isolierten Testserver können Betreiber [Die Spielhalle](spielhalle.md), [Game Studio Tycoon](studio.md) und [Factory Empire](factory.md) über ihre getrennten Spielschalter und einen gültigen serverseitigen [Idle-Schlüsselring](idle-engine.md#schlüsselring-und-rotation) verfügbar machen. Die drei Einstellungen sind standardmäßig aus. Der einzelne schreibende Prozess braucht ein eigenes, beschreibbares Datenverzeichnis.
 
@@ -27,6 +27,7 @@ Lokale, unveröffentlichte Monopoly-Grafikvorschau: `MONOPOLY_PRIVATE_THEME_DIR`
 * **Ein Daten-Volume** `poker-data` → `/app/data`. Dort liegt alles, was bleiben muss (Liste in [Abschnitt 5](#5-update-vom-alten-stand-auf-version-300)). Der Rest ist austauschbar.
 * **Traefik** (zentraler Proxy auf dem Server) macht HTTPS und leitet auf Port 3000 weiter. Die App ist nicht direkt von außen erreichbar.
 * **Nur eine Instanz.** Tische liegen im Arbeitsspeicher und werden beim Beenden gespeichert. Zwei Container nebeneinander (Skalierung) würden sich gegenseitig die Tische wegnehmen.
+* **Abmelden wirkt auch auf offene Verbindungen (seit 3.29.0).** Der Server prüft den Seitenzugang jeder Socket-Verbindung bei jeder Nachricht und für ruhige Verbindungen jede Minute neu. Nach Logout, Ablauf des Cookies oder Entzug des Discord-Zugangs wird die Verbindung getrennt; der Platz bleibt nach den normalen Offline-Regeln (`PLAYER_TIMEOUT_MIN`) frei. Grenze bis zur festen Sitzungsdauer (SEC-SESSION-01): Ein abgemeldetes Gruppen-Cookie wird nur bis zum nächsten Neustart gesperrt.
 * **Nichts passiert automatisch auf dem Server.** Der GitHub-Workflow baut das Image und schiebt es nach `ghcr.io`. Aufspielen (`pull`, `up -d`) macht ein Mensch.
 
 ## 2. Server von null einrichten
@@ -166,7 +167,7 @@ Die Anschluss-Grenzen zählen pro IP-Adresse. In der Produktionsvariante aktivie
 
 ### Nur für Tests und Skripte
 
-`POKER_NO_DOTENV=1` (ignoriert die `.env`), `DISCORD_API_BASE`, `DISCORD_AUTHORIZE_URL`, `DISCORD_RECHECK_MIN`, `DISCORD_RATE_MAX` (nachgebautes Discord in den Tests), `PLAYWRIGHT_CHANNEL`, `TEST_ALL_NODE_GLOB` (Testläufe). Für `scripts/backup.sh`: `BACKUP_DIR`, `KEEP_DAYS`, `VOLUME`, `BACKUP_RSYNC_TARGET`, `BACKUP_RCLONE_TARGET`. Für `scripts/release-check.sh`: siehe dessen Kopf. Im Betrieb der App nicht nötig.
+`POKER_NO_DOTENV=1` (ignoriert die `.env`), `SOCKET_ACCESS_SWEEP_MS` (Prüfabstand für ruhige Socket-Verbindungen, Standard 60000), `DISCORD_API_BASE`, `DISCORD_AUTHORIZE_URL`, `DISCORD_RECHECK_MIN`, `DISCORD_RATE_MAX` (nachgebautes Discord in den Tests), `PLAYWRIGHT_CHANNEL`, `TEST_ALL_NODE_GLOB` (Testläufe). Für `scripts/backup.sh`: `BACKUP_DIR`, `KEEP_DAYS`, `VOLUME`, `BACKUP_RSYNC_TARGET`, `BACKUP_RCLONE_TARGET`. Für `scripts/release-check.sh`: siehe dessen Kopf. Im Betrieb der App nicht nötig.
 
 ## 4. Funktionen und Spiele ein- und ausschalten
 

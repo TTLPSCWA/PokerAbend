@@ -132,10 +132,16 @@ test('Login-Seite hat ein Passwortfeld, /me meldet Modus und Spiele', async () =
 });
 
 test('Abmelden löscht das Cookie und führt zur Passwort-Seite', async () => {
-  const r = await fetch(URL + '/logout', { method: 'POST', redirect: 'manual', headers: { cookie } });
+  // Eigene Anmeldung abmelden: das gemeinsame Cookie der folgenden Tests bleibt gültig (SEC-SOCKET-01 sperrt abgemeldete Cookies)
+  const mine = (await login('Flush2026')).headers.get('set-cookie').split(';')[0];
+  const r = await fetch(URL + '/logout', { method: 'POST', redirect: 'manual', headers: { cookie: mine } });
   assert.equal(r.status, 303);
   assert.equal(r.headers.get('location'), '/login');
   assert.match(r.headers.get('set-cookie'), /pa_auth=;.*Max-Age=0/);
+  assert.equal((await get('/', mine)).status, 302, 'das abgemeldete Cookie öffnet die Seite nicht mehr');
+  const again = await connect({ extraHeaders: { cookie: mine } });
+  again.s.close();
+  assert.equal(again.ok, false, 'und keine neue Socket-Verbindung');
 });
 
 test('Tisch-Codes raten wird gebremst', async () => {

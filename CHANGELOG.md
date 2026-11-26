@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.29.0 – 26. November 2026
+
+- Sicherheit (SEC-SOCKET-01): Wer sich abmeldet, spielt in keinem offenen Tab desselben Browsers weiter. Auch eine abgelaufene Anmeldung oder ein entzogener Discord-Zugang sperrt bestehende Verbindungen; der Tab führt dann zur Anmeldung. Der Platz am Tisch bleibt wie bei einem Verbindungsabbruch einige Minuten frei und lässt sich nach der Neuanmeldung mit „Weiterspielen“ wieder übernehmen.
+
 ## 3.28.5 – 26. November 2026
 
 - Poker: Small und Big Blind stehen an der Spieleranzeige. Die Handübersicht bekommt auf großen Bildschirmen links Platz; der Saloon-Stern lässt die Kartenmitte frei.

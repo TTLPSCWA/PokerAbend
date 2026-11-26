@@ -265,6 +265,32 @@ test('Sitzungen: nur als Hash gespeichert, Refresh-Token verschlüsselt, Sockets
   assert.equal(await connect(''), false); assert.equal(await connect(b.header()), true);
 });
 
+test('K04 (SEC-SOCKET-01): Discord-Logout und „überall abmelden“ trennen offene Sockets ohne Gruppenpasswort sofort', async () => {
+  const { io } = await import('socket.io-client');
+  const open = (b) => new Promise((resolve, reject) => {
+    const s = io(app.url, { transports: ['websocket'], reconnection: false, forceNew: true, extraHeaders: { cookie: b.header() } });
+    s.expired = false; s.on('auth-expired', () => { s.expired = true; });
+    s.on('connect', () => resolve(s)); s.on('connect_error', (e) => reject(e));
+  });
+  const ask = (s, event) => s.timeout(3000).emitWithAck(event, {});
+  const one = browser(app), two = browser(app), three = browser(app), withPassword = await browser(app).password();
+  await one.discord(fake, { user: '100000000000000002' });
+  await two.discord(fake, { user: '100000000000000004' });
+  await three.discord(fake, { user: '100000000000000004' });
+  await withPassword.discord(fake, { user: '100000000000000002' });
+  const s1 = await open(one), s2 = await open(two), s3 = await open(three), sp = await open(withPassword);
+  try {
+    assert.equal((await ask(s1, 'lobby')).ok, true);
+    await one.post('/auth/discord/logout');
+    await until(() => s1.expired && !s1.connected, 3000);
+    assert.equal((await ask(sp, 'lobby')).ok, true, 'mit Gruppenpasswort bleibt der Zugang trotz Discord-Logout desselben Nutzers');
+    assert.equal((await ask(s2, 'lobby')).ok, true, 'andere Discord-Nutzer unberührt');
+    assert.equal((await two.post('/auth/discord/logout-all')).status, 200);
+    await until(() => s2.expired && s3.expired && !s2.connected && !s3.connected, 3000);
+    assert.equal(sp.connected, true);
+  } finally { [s1, s2, s3, sp].forEach((s) => s.close()); }
+});
+
 test('Rate-Limit auf den /auth-Routen', async () => {
   const strict = await startApp({ DISCORD_CLIENT_ID: CLIENT, DISCORD_CLIENT_SECRET: SECRET, DISCORD_GUILD_ID: GUILD, DISCORD_API_BASE: fake.base + '/api', DISCORD_AUTHORIZE_URL: fake.base + '/oauth2/authorize' });
   try {

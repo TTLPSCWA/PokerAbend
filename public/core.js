@@ -508,6 +508,10 @@ socket.on('connect_error', async () => {
     if (r.status === 401) location.href = '/login?next=' + encodeURIComponent(location.pathname + location.search);
   } catch { /* Server nicht erreichbar – Socket.IO versucht es weiter */ }
 });
+// SEC-SOCKET-01: Anmeldung abgelaufen oder abgemeldet – der Server hat die Verbindung getrennt. Zur Anmeldung; ist der
+// Zugang doch noch gültig (z. B. anderes Gerät), schickt /login sofort zurück. Der Platz-Token bleibt gespeichert, damit
+// „Weiterspielen“ nach der Neuanmeldung den Platz wiederfindet (innerhalb der Offline-Frist).
+socket.on('auth-expired', () => { location.href = '/login?next=' + encodeURIComponent(location.pathname + location.search); });
 socket.on('replaced', () => { session = null; if (typeof CardWorlds !== 'undefined') CardWorlds.clear(); roomViewAudit?.invalidate(); document.body.innerHTML = I18n.html('<main class="lobby"><div class="lobby-felt"><h1 class="wordmark">Spieleabend</h1><p class="lobby-sub">Du spielst gerade in einem anderen Tab weiter. Diesen Tab kannst du schließen.</p></div></main>'); });
 socket.on('kicked', () => { if (session) store.set('poker:session:' + session.code, null); leaveGame(); toast(I18n.t('Der Host hat dich vom Tisch genommen'), true); showLobby(); });
 socket.on('state', (st) => {
