@@ -31,6 +31,30 @@ async function hold(page, direction, touch) {
     await cdp.detach();
   };
 }
+async function verifyShoveArenaControls(page, touch, saved) {
+  await expect.poll(() => page.evaluate(({ runId, round, tick }) =>
+    !lastState.gamePaused && arenaFrame?.runId === runId && arenaFrame?.round === round
+      && arenaFrame.tick > tick && arenaFrame.elapsed >= 0, saved.g)).toBe(true);
+
+  // Move across the bot's approach before firing a shove, which changes the collision path.
+  const start = await frame(page);
+  const player = start.bodies.find(p => p.id === saved.id);
+  expect(player.alive).toBe(true);
+  const release = await hold(page, 'up', touch);
+  try {
+    await page.waitForFunction(({ runId, round, tick, id, y }) => packets.some(g =>
+      g.runId === runId && g.round === round && g.tick > tick && g.bodies.some(p =>
+        p.id === id && p.alive && p.facing?.x === 0 && p.facing.y === -1 && p.y < y - 20)),
+    { runId: start.runId, round: start.round, tick: start.tick, id: player.id, y: player.y },
+    { polling: 25, timeout: 2500 });
+  } finally {
+    await release();
+  }
+
+  if (touch) await page.locator('[data-g=ex-push]').tap();
+  else await page.keyboard.press('Space');
+  await expect.poll(async () => (await own(page)).readyAt).toBeGreaterThan(player.readyAt);
+}
 async function tapCell(page,cell,touch){const g=await frame(page),c=page.locator('#rt-canvas'),box=await c.boundingBox(),position={x:(cell%g.cols+.5)*box.width/g.cols,y:(Math.floor(cell/g.cols)+.5)*box.height/g.rows};if(touch)await c.tap({position});else await c.click({position});}
 async function solveVisible(page,id){let seq=await page.evaluate(()=>lastState.g.commandSeq||0),maxStage=1;const you=await page.evaluate(()=>lastState.you.id);while(await page.evaluate(()=>lastState.phase==='playing')){const g=await frame(page),me=g.bodies.find(p=>p.id===you);maxStage=Math.max(maxStage,g.stage);let next,after=g.tick;
  if(!me.finished&&g.advanceAt===null){if(id==='labyrinth-chaos'){const r=route(g,g.passages,me.cell,g.cols*g.rows-1);next=r?.[1];}else MineRoom.prototype.botStep.call({bodies:g.bodies,gameView:()=>g,elapsed:g.elapsed,visit:(_p,to)=>{next=to;}},me.id);if(next!==undefined){const ack=await page.evaluate(d=>send('expeditionAction',d),{runId:g.runId,round:g.round,seq:++seq,action:'cell',cell:next});if(!ack.ok&&await page.evaluate(()=>lastState.phase!=='playing'))break;expect(ack.ok,ack.error).toBe(true);after=ack.tick;}}
@@ -43,13 +67,35 @@ for(const [id,cfg]of Object.entries(games))test(`BACKLOG-09 ${id}: own scene, DE
   const guest=await guestContext.newPage(),watch=await watchContext.newPage();await login(guest,app,'Ben');await guest.evaluate(({code,sit})=>joinAndEnter(code,sit?'sit':'watch'),{code,sit:id==='minenlauf'});await login(watch,app,'Watcher');await watch.evaluate(code=>joinAndEnter(code,'watch'),code);
   for(const p of [page,guest,watch])await p.evaluate(()=>{window.arenaFrame=null;window.packets=[];socket.on('arena',g=>{arenaFrame=g;packets.push(g);if(packets.length>160)packets.shift();});});
   await page.locator('#kg [data-kit=help]').click();await page.locator('[data-help-more]').click();await expect(page.locator('.kg-rules')).toContainText('Server');await page.locator('#kg-panel .icon-btn[data-kit=close]').click();await page.evaluate(()=>I18n.select('en'));await page.locator('#kg [data-kit=help]').click();await page.locator('[data-help-more]').click();await expect(page.locator('.kg-rules')).toContainText(cfg.rules);await capture(page,info,id,'english-rules');await page.locator('#kg-panel .icon-btn[data-kit=close]').click();
-  await page.bringToFront();await emit(page,'start');await expect.poll(()=>page.evaluate(()=>arenaFrame?.elapsed??-3000),{timeout:14000}).toBeGreaterThanOrEqual(0);await expect(page.locator('#kg-meta')).toContainText('Everyone plays simultaneously');
+  await page.bringToFront();
+  await emit(page,'start');
+  // Freeze the countdown for reconnect so setup cannot give the bot a head start.
+  if (id === 'schubsarena') await emit(page,'gamePause',{paused:true});
+  else await expect.poll(()=>page.evaluate(()=>arenaFrame?.elapsed??-3000),{timeout:14000}).toBeGreaterThanOrEqual(0);
+  await expect(page.locator('#kg-meta')).toContainText('Everyone plays simultaneously');
   if(grid){await page.locator('[data-g=ex-zoom]').click();expect(await page.evaluate(()=>{const e=document.querySelector('.rt-wrap');return e.scrollWidth>e.clientWidth;})).toBe(true);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);await capture(page,info,id,'zoom');await page.locator('[data-g=ex-zoom]').click();const g=await frame(page),me=await own(page),to=id==='minenlauf'?me.cell+g.cols:route(g,g.passages,me.cell,g.cols*g.rows-1)[1];await tapCell(page,to,touch);await expect.poll(async()=>(await own(page)).cell).toBe(to);
    if(id==='minenlauf'){await page.locator('[data-g=ex-flag]').click();await tapCell(page,1,touch);await expect.poll(()=>page.evaluate(()=>arenaFrame.flags.includes(1))).toBe(true);await page.locator('[data-g=ex-flag]').click();const other=await guest.evaluate(()=>arenaFrame||lastState.g),observer=await watch.evaluate(()=>arenaFrame||lastState.g);expect(other.flags).toEqual([]);expect(observer.flags).toEqual([]);expect(observer.board.every(n=>n===null)).toBe(true);expect(other.board.filter(n=>n!==null)).toHaveLength(1);}
   }
-  await emit(page,'gamePause',{paused:true});const saved=await page.evaluate(()=>({id:lastState.you.id,g:lastState.g}));await capture(watch,info,id,'spectator');await capture(page,info,id,'paused');await page.reload();await expect.poll(()=>page.evaluate(()=>lastState?.gamePaused)).toBe(true);expect(await page.evaluate(()=>lastState.you.id)).toBe(saved.id);expect(await page.evaluate(()=>lastState.g.bodies)).toEqual(saved.g.bodies);if(id==='minenlauf'){expect(await page.evaluate(()=>lastState.g.board)).toEqual(saved.g.board);expect(await page.evaluate(()=>lastState.g.flags)).toEqual(saved.g.flags);}await capture(page,info,id,'reconnect');
+  if (id !== 'schubsarena') await emit(page,'gamePause',{paused:true});
+  const saved=await page.evaluate(()=>({id:lastState.you.id,g:lastState.g}));
+  if (id === 'schubsarena') expect(saved.g.elapsed).toBeLessThan(0);
+  await capture(watch,info,id,'spectator');await capture(page,info,id,'paused');await page.reload();await expect.poll(()=>page.evaluate(()=>lastState?.gamePaused)).toBe(true);expect(await page.evaluate(()=>lastState.you.id)).toBe(saved.id);expect(await page.evaluate(()=>lastState.g.bodies)).toEqual(saved.g.bodies);if(id==='minenlauf'){expect(await page.evaluate(()=>lastState.g.board)).toEqual(saved.g.board);expect(await page.evaluate(()=>lastState.g.flags)).toEqual(saved.g.flags);}await capture(page,info,id,'reconnect');
   if(info.project.name==='desktop')for(const [width,height]of [[1920,1080],[1440,900],[768,1024],[390,844],[360,800],[900,450]]){await page.setViewportSize({width,height});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),id+' '+width).toBe(true);await capture(page,info,id,`${width}x${height}`);}await page.setViewportSize(touch?{width:390,height:844}:{width:1440,height:900});
-  await page.evaluate(()=>{window.arenaFrame=lastState.g;window.packets=[];socket.on('arena',g=>{arenaFrame=g;packets.push(g);if(packets.length>160)packets.shift();});});await emit(page,'gamePause',{paused:false});await page.bringToFront();await expect(page.locator('#kg-players .bot-difficulty-badge')).toHaveText('Bot · Medium');if(!grid){if(id==='schubsarena'){await expect.poll(()=>page.evaluate((pausedTick)=>!lastState.gamePaused&&arenaFrame?.tick>pausedTick,saved.g.tick)).toBe(true);if(touch)await page.locator('[data-g=ex-push]').tap();else await page.keyboard.press('Space');await expect.poll(async()=>(await own(page)).readyAt).toBeGreaterThan(0);}const before=await own(page),release=await hold(page,'left',touch);try{await page.waitForFunction(({you,x})=>arenaFrame.bodies.find(p=>p.id===you).x<x-20,{you:before.id,x:before.x},{polling:25,timeout:2500});}finally{await release();}}await capture(page,info,id,'playing');
+  await page.evaluate(()=>{window.arenaFrame=lastState.g;window.packets=[];socket.on('arena',g=>{arenaFrame=g;packets.push(g);if(packets.length>160)packets.shift();});});
+  await page.bringToFront();
+  await emit(page,'gamePause',{paused:false});
+  await expect(page.locator('#kg-players .bot-difficulty-badge')).toHaveText('Bot · Medium');
+  if (id === 'schubsarena') {
+    await verifyShoveArenaControls(page, touch, saved);
+  } else if (!grid) {
+    const before = await own(page), release = await hold(page, 'left', touch);
+    try {
+      await page.waitForFunction(({you,x})=>arenaFrame.bodies.find(p=>p.id===you).x<x-20,{you:before.id,x:before.x},{polling:25,timeout:2500});
+    } finally {
+      await release();
+    }
+  }
+  await capture(page,info,id,'playing');
   if(grid){const maxStage=await solveVisible(page,id);if(id==='labyrinth-chaos')expect(maxStage).toBe(2);}else await expect.poll(()=>page.evaluate(()=>lastState.phase),{timeout:24000}).toBe('over');
   await expect(page.locator('.kg-over')).toBeVisible();expect(await page.evaluate(()=>Object.values(lastState.result.points).every(Number.isFinite))).toBe(true);await capture(page,info,id,'result');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
   if(id==='minenlauf')for(const p of [page,guest,watch])expect(await p.evaluate(()=>packets.every(g=>!('mines'in g)&&!('seed'in g)&&!('numbers'in g)))).toBe(true);
