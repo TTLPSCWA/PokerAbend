@@ -1,0 +1,167 @@
+# Auftrag ARCHIV-SESSIONS-1126
+
+- Beginn (UTC): 2026-11-26T17:20:19.510Z
+- Ende (UTC): 2026-11-26T17:26:55.710Z
+- Beteiligte: claude
+
+## Vollständiger Verlauf
+
+- 2026-11-26T17:20:19.510Z · claude · ARCHIV-SESSIONS-1126 · START · NACHRICHT · Nutzerauftrag: offene Archivprotokolle versionieren, 7 unverändert, 19 als bereinigte öffentliche Zusammenfassung (Vorbild c7c32e6). Originale privat gesichert.
+- 2026-11-26T17:21:33.351Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: @git
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/b01.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/b08.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/b09.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/b10.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/b11.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/card-action-01.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/card-action-02.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/card-ux-01.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/doko-wertung-02-ddv.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/doko-wertung-02.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/idle-d02-review-01.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/idle-d03.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/idle-freeze-01-go.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/idle-freeze-01-rest.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/idle-pilot-access-01.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/idle-playtest-02-master.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/qa-card-flow-01.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/qa-crossbrowser-01.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/qa-flake-02.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/release-3282.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/sec-01-import.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/sec-final-0102.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/sec-plan-0102.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/ui-qf-github-01.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/ui-qf-whatsnew-01.md
+- 2026-11-26T17:21:33.523Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: docs/agents/sessions/vault-sync-bb31ca4.md
+- 2026-11-26T17:22:14.626Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: fetch
+- 2026-11-26T17:22:15.373Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: fetch (0)
+- 2026-11-26T17:22:15.778Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:15.831Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:16.002Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:16.059Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:16.237Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:16.294Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:16.564Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:16.622Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:16.829Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:16.883Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:17.069Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:17.153Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:17.370Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:17.438Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:17.626Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:17.682Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:17.898Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:17.999Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:18.199Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:18.262Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:18.462Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:18.544Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:18.728Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:18.783Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:18.955Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:19.015Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:19.204Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:19.257Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:19.449Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:19.528Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:19.724Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:19.790Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:19.998Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:20.075Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:20.278Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:20.341Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:20.532Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:20.593Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:20.747Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:20.800Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:20.993Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:21.055Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:21.253Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:21.312Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:21.796Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:21.858Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:22.116Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:22.182Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:22.371Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:22.443Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:22:22.664Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:22:22.746Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:23:12.337Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: pull
+- 2026-11-26T17:23:13.015Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: pull (0)
+- 2026-11-26T17:24:25.817Z · claude · ARCHIV-SESSIONS-1126 · CLAIM · NACHRICHT · Reserviert · Bezug: readme.md
+- 2026-11-26T17:26:11.582Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: fetch
+- 2026-11-26T17:26:12.112Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: fetch (0)
+- 2026-11-26T17:26:12.447Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:12.500Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:12.691Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:12.754Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:12.904Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:12.957Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:13.150Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:13.202Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:13.375Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:13.431Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:13.635Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:13.687Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:13.918Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:13.974Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:14.168Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:14.223Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:14.454Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:14.504Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:14.696Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:14.746Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:14.930Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:14.989Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:15.205Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:15.257Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:15.435Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:15.492Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:15.685Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:15.736Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:15.928Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:15.980Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:16.155Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:16.232Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:16.499Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:16.552Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:16.758Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:16.814Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:17.010Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:17.062Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:17.384Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:17.438Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:17.635Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:17.687Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:17.860Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:17.912Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:18.098Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:18.153Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:18.342Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:18.398Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:18.605Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:18.659Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:18.826Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:18.880Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:19.290Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: commit
+- 2026-11-26T17:26:19.592Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: commit (0)
+- 2026-11-26T17:26:19.624Z · claude · ARCHIV-SESSIONS-1126 · INFO · COMMIT · Git hat Commits erzeugt (commit). · Bezug: e4cb9c128f8cbeec36d5a12cd04547628d2db633
+- 2026-11-26T17:26:19.779Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: add
+- 2026-11-26T17:26:19.868Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: add (0)
+- 2026-11-26T17:26:20.149Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: commit
+- 2026-11-26T17:26:20.377Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: commit (0)
+- 2026-11-26T17:26:20.409Z · claude · ARCHIV-SESSIONS-1126 · INFO · COMMIT · Git hat Commits erzeugt (commit). · Bezug: 13568cf304fba33188402594fd7c49ef234f9062
+- 2026-11-26T17:26:26.883Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: fetch
+- 2026-11-26T17:26:27.370Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: fetch (0)
+- 2026-11-26T17:26:27.697Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion begonnen: push
+- 2026-11-26T17:26:30.271Z · claude · ARCHIV-SESSIONS-1126 · INFO · NACHRICHT · Git-Aktion beendet: push (0)
+- 2026-11-26T17:26:43.671Z · claude · ARCHIV-SESSIONS-1126 · RELEASE · NACHRICHT · Freigegeben · Bezug: @git, docs/agents/sessions/b01.md, docs/agents/sessions/b08.md, docs/agents/sessions/b09.md, docs/agents/sessions/b10.md, docs/agents/sessions/b11.md, docs/agents/sessions/card-action-01.md, docs/agents/sessions/card-action-02.md, docs/agents/sessions/card-ux-01.md, docs/agents/sessions/doko-wertung-02-ddv.md, docs/agents/sessions/doko-wertung-02.md, docs/agents/sessions/idle-d02-review-01.md, docs/agents/sessions/idle-d03.md, docs/agents/sessions/idle-freeze-01-go.md, docs/agents/sessions/idle-freeze-01-rest.md, docs/agents/sessions/idle-pilot-access-01.md, docs/agents/sessions/idle-playtest-02-master.md, docs/agents/sessions/qa-card-flow-01.md, docs/agents/sessions/qa-crossbrowser-01.md, docs/agents/sessions/qa-flake-02.md, docs/agents/sessions/release-3282.md, docs/agents/sessions/sec-01-import.md, docs/agents/sessions/sec-final-0102.md, docs/agents/sessions/sec-plan-0102.md, docs/agents/sessions/ui-qf-github-01.md, docs/agents/sessions/ui-qf-whatsnew-01.md, docs/agents/sessions/vault-sync-bb31ca4.md, readme.md
+- 2026-11-26T17:26:55.710Z · claude · ARCHIV-SESSIONS-1126 · DONE · COMMIT · 26 Archivprotokolle versioniert (7 unverändert, 19 bereinigte öffentliche Zusammenfassungen, Originale privat gesichert); README-Pflichtangaben nach Redesign e2dd4d3 ergänzt. test:fast 2288/0/3. Kein Versionswechsel. · Bezug: e4cb9c128f8cbeec36d5a12cd04547628d2db633, 13568cf304fba33188402594fd7c49ef234f9062
+
+## Entscheidungen, Tests, Commits und offene Punkte
+
+- 2026-11-26T17:26:19.624Z · claude · ARCHIV-SESSIONS-1126 · INFO · COMMIT · Git hat Commits erzeugt (commit). · Bezug: e4cb9c128f8cbeec36d5a12cd04547628d2db633
+- 2026-11-26T17:26:20.409Z · claude · ARCHIV-SESSIONS-1126 · INFO · COMMIT · Git hat Commits erzeugt (commit). · Bezug: 13568cf304fba33188402594fd7c49ef234f9062
+- 2026-11-26T17:26:55.710Z · claude · ARCHIV-SESSIONS-1126 · DONE · COMMIT · 26 Archivprotokolle versioniert (7 unverändert, 19 bereinigte öffentliche Zusammenfassungen, Originale privat gesichert); README-Pflichtangaben nach Redesign e2dd4d3 ergänzt. test:fast 2288/0/3. Kein Versionswechsel. · Bezug: e4cb9c128f8cbeec36d5a12cd04547628d2db633, 13568cf304fba33188402594fd7c49ef234f9062
