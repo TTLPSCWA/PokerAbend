@@ -183,7 +183,8 @@ test('/admin ist ohne ADMIN_PASSWORD aus; /health nennt Version und Commit', asy
     assert.equal(me.version, VERSION);
     const news = await (await fetch(server.url + '/api/whats-new', { headers: { cookie: server.cookie } })).json();
     assert.equal(news.version, VERSION);
-    assert.ok(news.entries.length > 0);
+    assert.equal(news.releases[0].version, VERSION, '„Was ist neu“ beginnt mit der laufenden Version aus CHANGELOG.md');
+    assert.ok(news.releases[0].items.length > 0);
     const s = client(server);
     await until(() => seen(s, 'version').length);
     assert.equal(seen(s, 'version')[0].data.version, VERSION);

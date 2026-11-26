@@ -12,10 +12,10 @@ import { fileURLToPath } from 'node:url';
 import { GAMES, DEFAULT_GAME, gameList, singleplayerGameList, SINGLEPLAYER_GAMES, gameEvents, PLANNED, plannedGames } from '../games/index.js';
 import { createFeatures, parseSwitch } from './features.js';
 import { maintenance, assertNewRoundAllowed } from './maintenance.js';
-import { versionInfo, createAdminLog, createClientErrors, createSystemSampler, cleanClientError } from './ops.js';
+import { versionInfo, createAdminLog, createClientErrors, createSystemSampler, cleanClientError, changelogReleases } from './ops.js';
 import { createAdmin } from './admin.js';
 import { createAdminTools } from './admin-tools.js';
-import { resolvedRoadmap, whatsNew } from '../games/roadmap.js';
+import { resolvedRoadmap } from '../games/roadmap.js';
 import { loadPublicRoadmap, loadRoadmapBuildProof, publicRoadmap } from '../games/public-roadmap.js';
 import { createPresence } from './presence.js';
 import { createTicketAPI } from './ticket-api.js';
@@ -94,6 +94,8 @@ const PUBLIC_DIR = join(__dirname, '..', 'public');
 const SITE_PASSWORD = process.env.SITE_PASSWORD || '';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || ''; // eigener Zugang für /admin; leer = Admin-Seite aus
 const VERSION = versionInfo();
+// „Was ist neu“: Abschnitte aus CHANGELOG.md bis zur laufenden Version, einmal beim Start gelesen
+const RELEASES = changelogReleases(VERSION.version);
 const ROADMAP_BUILD_PROOF = loadRoadmapBuildProof();
 const UPDATE_DEFAULT_MIN = Number(process.env.UPDATE_ANNOUNCE_MIN || 5); // Vorlauf bei Ankündigung per Signal (SIGUSR2)
 const UPDATE_DRAIN_MAX_MIN = Number(process.env.UPDATE_DRAIN_MAX_MIN || 15); // so lange darf eine laufende Runde nach Fristende noch fertig werden
@@ -305,7 +307,7 @@ app.get('/me', (req, res) => {
 });
 app.get('/api/whats-new', (_req, res) => {
   res.setHeader('Cache-Control', 'no-store');
-  res.json({ version: VERSION.version, commit: VERSION.short, entries: whatsNew() });
+  res.json({ version: VERSION.version, commit: VERSION.short, releases: RELEASES });
 });
 // Admin-Seite: nur mit ADMIN_PASSWORD, eigener Cookie – das Gruppenpasswort gibt hier keinen Zugang
 const adminLog = createAdminLog(DATA_DIR);

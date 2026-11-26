@@ -10,3 +10,5 @@
 .ops-about-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .whatsnew-list { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 10px; max-height: 55vh; overflow-y: auto; }
 .whatsnew-list small { opacity: .7; }
+.whatsnew-list ul { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 3px; }
+.whatsnew-list .whatsnew-sub { margin-left: 16px; list-style: circle; }

@@ -2,6 +2,12 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.28.4 – 26. November 2026
+
+- Seitenleiste: Der Schriftzug „Spieleabend“ passt sich der Breite der Leiste an und wird bei schmalen Fenstern oder Browser-Zoom nicht mehr abgeschnitten.
+- Unter der Versionsnummer steht ein Link zum Projekt auf GitHub. Er öffnet sich in einem neuen Tab und ist auch im Profil zu finden.
+- „Was ist neu?“ zeigt jetzt die Einträge aus diesem Änderungsprotokoll, und zwar nur Versionen, die schon veröffentlicht sind.
+
 ## 3.28.3 – 26. November 2026
 
 - Puzzle-Panik: Auch beim vergrößerten 3×3- und 4×4-Brett bleiben alle Felder erreichbar. Die obere Reihe gerät beim Zoomen nicht mehr hinter die Spielerleiste.

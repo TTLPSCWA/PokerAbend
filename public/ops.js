@@ -51,14 +51,15 @@ Object.assign(window.EN || {}, { 'Was ist neu?': 'What’s new?', 'Fehler melden
     // Unter dem Schriftzug „Spieleabend“: Version und Build-Commit, damit man nach dem Deploy sieht, was läuft
     if (current) document.querySelectorAll('[data-app-version]').forEach((b) => { b.textContent = `v${current.version}${current.commit ? ` · ${current.commit}` : ''}`; b.title = `${T('Version', 'Version')} ${current.version}${current.commit ? ` · Build ${current.commit}` : ''}`; });
   }
-  const ART = { spiel: ['Spiel', 'Game'], funktion: ['Funktion', 'Feature'], design: ['Design', 'Design'], betrieb: ['Betrieb', 'Operations'], discord: ['Discord', 'Discord'], fehler: ['Fehler', 'Fix'] };
   async function whatsNew(auto) {
     let data;
     try { data = await (await fetch('/api/whats-new', { credentials: 'same-origin', cache: 'no-store' })).json(); }
     catch { if (!auto) toast(T('„Was ist neu“ lässt sich gerade nicht laden', 'Could not load “What’s new”'), true); return; }
     let dialog = document.getElementById('whatsnew-dlg');
     if (!dialog) { dialog = document.createElement('dialog'); dialog.id = 'whatsnew-dlg'; dialog.className = 'dlg'; dialog.setAttribute('aria-labelledby', 'whatsnew-title'); document.body.append(dialog); }
-    const rows = (data.entries || []).map((e) => `<li><b>${esc(e.titel)}</b> <small>${esc((ART[e.art] || [e.art, e.art])[window.I18n?.language === 'en' ? 1 : 0])} · ${esc(e.datum)}</small><br><span>${esc(e.text)}</span></li>`).join('');
+    // Abschnitte aus CHANGELOG.md der laufenden Version (vom Server, nie aus dem Browser-Cache)
+    const rows = (data.releases || []).map((r) => `<li><b>${esc(T(`Version ${r.version}`, `Version ${r.version}`))}</b> <small>${esc(r.date)}</small><ul>${r.items.map((i) => `<li${i.sub ? ' class="whatsnew-sub"' : ''}>${esc(i.text)}</li>`).join('')}</ul></li>`).join('')
+      || `<li>${esc(T('Für diese Version sind keine Hinweise hinterlegt.', 'No notes for this version.'))}</li>`;
     dialog.innerHTML = `<form method="dialog"><h2 id="whatsnew-title">${esc(T(`Neu in Version ${data.version}`, `New in version ${data.version}`))}</h2><ul class="whatsnew-list">${rows}</ul><div class="dlg-actions"><button class="btn btn-brass" value="ok">${esc(T('Verstanden', 'Got it'))}</button></div></form>`;
     if (auto) store.set('poker:seenVersion', data.version);
     if (!dialog.open) dialog.showModal();

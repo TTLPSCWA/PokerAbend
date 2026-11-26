@@ -236,7 +236,7 @@ test('PUB-T07: /api/roadmap liefert ohne Freigabe nichts, /roadmap und /api/what
     assert.doesNotMatch(raw, /\b(docs|server|scripts|test)\//, 'keine Pfade in der bisherigen Roadmap');
     assert.doesNotMatch(raw, /AGENTS|CLAUDE|Codex|Vault/);
     const news = await (await fetch(server.url + '/api/whats-new')).json();
-    assert.ok(Array.isArray(news.entries) && news.entries.length > 0);
+    assert.ok(Array.isArray(news.releases) && news.releases.length > 0 && news.releases.every((r) => r.version && r.items.length));
     assert.ok(news.version && news.commit !== undefined);
   } finally { server.stop(); }
 });

@@ -15,6 +15,30 @@ export function versionInfo(env = process.env) {
   return { version, commit, short: commit.slice(0, 7) };
 }
 
+// ---------- „Was ist neu“ aus CHANGELOG.md ----------
+// Quelle ist das ohnehin gepflegte Änderungsprotokoll im Image. Gezeigt werden nur Versionen bis zur laufenden,
+// damit ein CHANGELOG mit schon eingetragenen, aber nicht ausgelieferten Versionen nichts vorwegnimmt.
+const semver = (v) => String(v || '').split('.').map((n) => Number(n) || 0);
+const notNewer = (a, b) => { const x = semver(a), y = semver(b); for (let i = 0; i < 3; i++) if (x[i] !== y[i]) return x[i] < y[i]; return true; };
+export function changelogReleases(version, { limit = 5, file = join(root, 'CHANGELOG.md') } = {}) {
+  let text;
+  try { text = readFileSync(file, 'utf8').replace(/\r\n?/g, '\n'); } catch { return []; }
+  const releases = [];
+  for (const block of text.split(/^## /m).slice(1)) {
+    const head = /^([0-9]+\.[0-9]+\.[0-9]+)\s*[–-]\s*(.+)$/m.exec(block.split('\n')[0]);
+    if (!head || !notNewer(head[1], version)) continue;
+    const items = [];
+    for (const line of block.split('\n').slice(1)) {
+      const m = /^(\s*)[-*] (.+)$/.exec(line);
+      if (m) items.push({ text: m[2].replace(/\*\*|`/g, '').trim(), sub: m[1].length > 0 });
+      else if (line.trim() && items.length && /^\s{2,}\S/.test(line)) items[items.length - 1].text += ' ' + line.trim();
+    }
+    if (items.length) releases.push({ version: head[1], date: head[2].trim(), items });
+    if (releases.length >= limit) break;
+  }
+  return releases;
+}
+
 // ---------- Admin-Protokoll ----------
 // Wer hat wann was getan. Eine defekte Datei bleibt unangetastet; das Protokoll läuft dann nur im Speicher.
 const LOG_MAX = 500;

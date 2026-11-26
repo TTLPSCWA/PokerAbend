@@ -4,4 +4,5 @@ test
 .git
 .github
 *.md
+!CHANGELOG.md
 .env
