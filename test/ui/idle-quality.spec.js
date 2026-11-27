@@ -29,7 +29,9 @@ test('QA Idle: drei Spiele im selben Hub, Sprachwechsel, Schreibaktionen und Bed
   const name = 'Idle QA';
   await login(page, app, name);
   const my = await (await page.request.get(app.url + '/me')).json();
-  expect(my.idleGames.map(({ id }) => id)).toEqual(games.map(({ id }) => id));
+  // ADMIN-GAMES-01: /me liefert Spiele innerhalb der Kategorie A–Z (deutsche Sortierung), nicht mehr in Registrierungsreihenfolge
+  const az = [...games].sort((x, y) => new Intl.Collator('de', { sensitivity: 'base', numeric: true }).compare(x.de, y.de));
+  expect(my.idleGames.map(({ id }) => id)).toEqual(az.map(({ id }) => id));
   for (const game of games) {
     await openGame(page, game);
     if (game.id === 'spielhalle') {

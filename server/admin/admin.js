@@ -212,7 +212,9 @@ async function deletePlayers(ids) {
     const go = await dangerDialog({ title: pre.count + (pre.count === 1 ? ' Spieler' : ' Spieler') + ' endgültig löschen?', lines: [names + (pre.count > 8 ? ' …' : ''), ...pre.effects, ...(pre.active ? ['ACHTUNG: ' + pre.active + ' sitzen gerade an einem Tisch – die Löschung wird abgelehnt.'] : []), 'Vorher entsteht eine geprüfte Sicherung.'], ok: 'Endgültig löschen' });
     if (!go) return;
     const r = await call('/players/delete', 'POST', { ids, token: pre.token });
-    ids.forEach((id) => picked.delete(id)); say(r.deleted + ' Spieler gelöscht (Sicherung ' + r.backup + ')'); await loadPlayers(); loadTools();
+    ids.forEach((id) => picked.delete(id));
+    if (r.failed?.length) say(r.deleted + ' gelöscht, ABER ' + r.failed.length + ' fehlgeschlagen (' + r.failed.slice(0, 5).map((f) => f.gameId).join(', ') + '). Sicherung: ' + r.backup, true); else say(r.deleted + ' Spieler gelöscht (Sicherung ' + r.backup + ')');
+    await loadPlayers(); loadTools();
   } catch (err) { bad(err); }
 }
 $('#player-delete').addEventListener('click', () => deletePlayers([...picked]));
@@ -222,7 +224,9 @@ $('#player-delete-all').addEventListener('click', async () => {
     const go = await dangerDialog({ title: 'ALLE ' + pre.count + ' Spieler löschen?', lines: [pre.count + ' Konten (' + pre.discord + ' mit Discord), ' + pre.rounds + ' gespeicherte Runden.', ...pre.effects, ...(pre.active ? ['ACHTUNG: ' + pre.active + ' Spieler sitzen an Tischen – die Aktion wird abgelehnt.'] : [])], phrase: pre.phrase, password: true, ok: 'Alle Spieler löschen' });
     if (!go) return;
     const r = await call('/players/delete-all', 'POST', { confirm: go.phrase, password: go.password, token: pre.token });
-    picked.clear(); say(r.deleted + ' Spieler gelöscht (Sicherung ' + r.backup + ')'); await loadPlayers(); loadTools();
+    picked.clear();
+    if (r.failed?.length) say(r.deleted + ' gelöscht, ABER ' + r.failed.length + ' fehlgeschlagen. Sicherung: ' + r.backup, true); else say(r.deleted + ' Spieler gelöscht (Sicherung ' + r.backup + ')');
+    await loadPlayers(); loadTools();
   } catch (err) { bad(err); }
 });
 

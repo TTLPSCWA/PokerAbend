@@ -17,15 +17,24 @@ export function createAdminTools({ reviews, leaderboard, accounts, mergeAccounts
     if (fromGameId === toGameId) throw fail(400, 'Das ist dieselbe Person');
     const from = accounts.byGameId(fromGameId), to = accounts.byGameId(toGameId);
     if (!from || !to) throw fail(404, 'Eine der beiden Game-IDs gibt es nicht');
+    if (from.mergedInto || to.mergedInto) throw fail(409, 'Eines der Konten wurde schon zusammengeführt und ist kein eigener Spieler mehr');
     return [from, to];
   };
   const resolveMany = (ids) => {
     if (!Array.isArray(ids) || !ids.length || ids.length > 1000 || !ids.every((id) => typeof id === 'string' && GAME_ID.test(id))) throw fail(400, 'Bitte gültige Game-IDs auswählen');
     const list = [...new Set(ids)].map((id) => accounts.byGameId(id));
     if (list.some((a) => !a)) throw fail(404, 'Mindestens ein Spieler existiert nicht (mehr)');
+    // Ein schon zusammengeführtes Konto würde über sein Ziel das gesamte Konto mitlöschen – deshalb nie über die alte Game-ID ansprechbar
+    if (list.some((a) => a.mergedInto)) throw fail(409, 'Mindestens ein Konto wurde schon zusammengeführt. Bitte die Liste neu laden.');
     return list;
   };
-  const tokenOf = (list) => createHash('sha256').update(list.map((a) => a.gameId).sort().join(',')).digest('hex').slice(0, 24);
+  const tokenOf = (list) => createHash('sha256').update(list.map((a) => a.gameId + ':' + accounts.members(a.id).length).sort().join(',')).digest('hex').slice(0, 24);
+  // Löscht Konto für Konto und meldet genau, was gelungen ist: ein Fehler bei einem Konto stoppt die übrigen nicht und verschweigt nichts.
+  const eraseAll = (list) => {
+    const deleted = [], failed = [];
+    for (const a of list) { try { erase(a.id); deleted.push(a.gameId); } catch (error) { failed.push({ gameId: a.gameId, error: String(error?.message || 'Fehler').slice(0, 120) }); } }
+    return { deleted: deleted.length, failed };
+  };
   const statsFilter = (scope = {}) => {
     const game = typeof scope.game === 'string' && scope.game ? scope.game : 'all';
     if (game !== 'all' && (!/^[a-z0-9-]{1,40}(~[a-z0-9-]{1,40})?$/.test(game) || (gameIds && !gameIds().has(game.split('~')[0])))) throw fail(400, 'Unbekanntes Spiel');
@@ -120,9 +129,9 @@ export function createAdminTools({ reviews, leaderboard, accounts, mergeAccounts
           if (blocked.length) throw fail(409, blocked.length + ' Spieler sitzen gerade an einem Tisch (' + blocked.slice(0, 5).map((a) => a.gameId).join(', ') + '). Bitte zuerst den Tisch schließen.');
           if (!erase) throw fail(503, 'Löschen ist nicht verfügbar');
           const copy = backup ? backup('spieler-loeschen') : null;
-          for (const a of list) erase(a.id);
+          const done = eraseAll(list);
           changed();
-          return { deleted: list.length, backup: copy?.dir || null };
+          return { ...done, backup: copy?.dir || null };
         });
       },
       removeAllPreview() {
@@ -141,9 +150,9 @@ export function createAdminTools({ reviews, leaderboard, accounts, mergeAccounts
           if (!erase || !backup) throw fail(503, 'Löschen oder Sicherung ist nicht verfügbar');
           const copy = backup('alle-spieler-loeschen'); // wirft bei fehlgeschlagener Prüfung, bevor etwas gelöscht wird
           if (!copy?.verified && !copy?.empty) throw fail(503, 'Die Sicherung ist nicht bestätigt – nichts wurde gelöscht');
-          for (const a of list) erase(a.id);
+          const done = eraseAll(list);
           changed();
-          return { deleted: list.length, backup: copy.dir };
+          return { ...done, backup: copy.dir };
         });
       },
       // Wie beim Geräte-Verbinden: alles von „from“ gehört danach „to“. Das Konto „from“ zeigt auf „to“ (Eintrag bleibt im Konto-Protokoll).

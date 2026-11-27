@@ -4,6 +4,7 @@ import {create as sudoku} from '../../public/singleplayer/sudoku-logic.js';
 import {create as number} from '../../public/singleplayer/2048-logic.js';
 import {create as defense} from '../../public/singleplayer/wellenwacht-logic.js';
 import {GAMES,SINGLEPLAYER_GAMES} from '../../games/index.js';
+import {sortGames} from '../../games/game-sort.js';
 const SOLO_COUNT=Object.keys(SINGLEPLAYER_GAMES).length;
 
 const path=process.env.SOLO_CAPTURE_EVIDENCE==='1'?'docs/solo-games/screenshots':'artifacts/solo-screenshots';
@@ -15,7 +16,7 @@ async function saved(page,id){return page.evaluate((id)=>JSON.parse(localStorage
 async function seed(page,id,state){await page.evaluate(()=>{location.hash='#spiele/einzelspieler';});await expect(page.locator('[data-solo-start]')).toHaveCount(SOLO_COUNT);await page.evaluate(({id,state})=>{localStorage.setItem('poker:singleplayer:'+id,JSON.stringify({version:1,id,updatedAt:Date.now(),state}));},{id,state});await page.reload();await route(page,id);}
 
 test('single-player library separates local games from all registered room games',async({page,app},info)=>{
-  await login(page,app);const catalog=await page.request.get(app.url+'/me').then((r)=>r.json());expect(catalog.games.map((g)=>g.id)).toEqual(Object.keys(GAMES));expect(catalog.singleplayerGames).toHaveLength(SOLO_COUNT);
+  await login(page,app);const catalog=await page.request.get(app.url+'/me').then((r)=>r.json());expect(catalog.games.map((g)=>g.id)).toEqual(sortGames(Object.values(GAMES)).map((g)=>g.id));expect(catalog.singleplayerGames).toHaveLength(SOLO_COUNT);
   await page.locator('.category-tabs a[href="#spiele/einzelspieler"]').click();await expect(page.locator('[data-solo-start]')).toHaveCount(SOLO_COUNT);await expect(page.locator('#games-body [data-host]')).toHaveCount(0);
   await expect(page.locator('.library-count')).toContainText(String(SOLO_COUNT));await expect(page.locator('.library-head [data-create-table]')).toHaveCount(0);await expect(page.locator('[data-id=sudoku] .gr-desc')).toBeVisible();
   for(const id of ['sudoku','2048','wellenwacht']){const reply=await page.evaluate((game)=>new Promise((resolve)=>socket.emit('create',{game,name:'Anna'},resolve)),id);expect(reply.ok).toBe(false);}

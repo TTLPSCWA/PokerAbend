@@ -29,7 +29,7 @@
   button:hover:not(:disabled) { background:var(--accent-hover); }
   button.ghost { background:transparent; color:var(--text); border:1px solid var(--edge); } button.ghost:hover:not(:disabled) { background:#FFFFFF0F; }
   button.danger { background:transparent; color:var(--bad); border:1px solid var(--bad); } button.danger:hover:not(:disabled) { background:#B8433F33; }
-  button:disabled { opacity:.5; cursor:default; }
+  button:disabled { opacity:1; background:transparent; color:var(--muted); border:1px dashed var(--edge); cursor:default; } /* gesperrt, aber weiterhin gut lesbar (WCAG AA) */
   #meme-refresh:disabled { opacity:1; background:transparent; color:var(--muted); border-color:var(--edge); }
   :is(button, input, select, textarea, a, summary):focus-visible { outline:2px solid var(--brass); outline-offset:2px; }
   .row { display:flex; flex-wrap:wrap; gap:var(--s-2); align-items:center; }

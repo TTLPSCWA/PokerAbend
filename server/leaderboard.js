@@ -69,18 +69,18 @@ export function createLeaderboard(dataDir, { now = () => new Date() } = {}) {
 
   const gameMatches = (id, game) => game === 'all' || id === game || id.startsWith(game + '~');
   const monthOfAt = (at) => monthOf(new Date(at));
-  function statsRun({ owners = null, game = 'all', month = null } = {}, apply) {
+  function statsRun({ owners = null, game = 'all', month = null } = {}, apply, target = data) {
     const out = { rounds: 0, entries: 0, counters: 0, players: new Set() };
-    for (const r of Object.values(data.rounds)) {
+    for (const r of Object.values(target.rounds)) {
       if (!gameMatches(r.game, game) || (month && monthOfAt(r.at) !== month)) continue;
       const hit = owners ? r.players.filter((p) => p.a && owners.has(rankedOwner(p.a))) : r.players;
       if (!hit.length) continue;
       hit.forEach((p) => p.a && out.players.add(rankedOwner(p.a)));
-      if (!owners) { out.rounds++; if (apply) delete data.rounds[r.id]; continue; }
+      if (!owners) { out.rounds++; if (apply) delete target.rounds[r.id]; continue; }
       out.entries += hit.length;
       if (apply) for (const p of hit) { p.a = null; p.n = 'Entfernter Eintrag'; }
     }
-    for (const [key, p] of Object.entries(data.players)) {
+    for (const [key, p] of Object.entries(target.players)) {
       if (owners && !owners.has(ownerOf(key))) continue;
       for (const g of Object.keys(p.games || {})) {
         if (!gameMatches(g, game)) continue;
@@ -248,7 +248,18 @@ export function createLeaderboard(dataDir, { now = () => new Date() } = {}) {
     // Betrifft Runden (Rangliste, Profile, Erfolgsstatistik) und die Zähler je Person; Konten, Erfolgsfreischaltungen und Namen bleiben.
     // Bei einer Teilmenge von Personen bleiben die Runden anderer unverändert (der Eintrag wird anonymisiert), sonst entfällt die ganze Runde.
     statsPreview(filter) { return statsRun(filter, false); },
-    statsDelete(filter) { const r = statsRun(filter, true); if (r.rounds || r.entries || r.counters) dirty = true; return r; },
+    // Atomar: Rechnung auf einer Kopie, Datei schreiben, erst danach den Speicher umstellen. Schlägt das Schreiben fehl, bleibt alles unverändert.
+    statsDelete(filter) {
+      const draft = { ...data, rounds: Object.assign(Object.create(null), structuredClone(data.rounds)), players: Object.assign(Object.create(null), structuredClone(data.players)) };
+      const r = statsRun(filter, true, draft);
+      if (!(r.rounds || r.entries || r.counters)) return r;
+      mkdirSync(dataDir, { recursive: true });
+      draft.schemaVersion = LEADERBOARD_SCHEMA;
+      writeFileSync(file + '.tmp', JSON.stringify(draft));
+      renameSync(file + '.tmp', file);
+      data.rounds = draft.rounds; data.players = draft.players; dirty = false;
+      return r;
+    },
     accountSummary(accountId) {
       const out = { played: 0, wins: 0 };
       for (const r of Object.values(data.rounds)) { if (!r.ranked || r.hidden) continue; for (const p of r.players) if (p.a && !p.bot && rankedOwner(p.a) === accountId) { out.played++; out.wins += p.win ? 1 : 0; } }

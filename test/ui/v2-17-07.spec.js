@@ -63,12 +63,12 @@ test.describe('Admin-Moderation', () => {
     await expect(page.locator('#msg')).toContainText('Kommentar gespeichert');
     expect((await (await page.request.get(app.url + '/api/tickets/1')).json()).ticket.comments[0].author.name).toBe('Admin');
 
-    // Spieler-Suche und Zusammenführen mit ungültiger Eingabe zeigt einen Fehler statt etwas zu tun
-    await page.locator('#merge-form [name=from]').fill('#AAAA');
-    await page.locator('#merge-form [name=to]').fill('#BBBB');
-    await page.locator('#merge-form button').click();
-    await page.locator('#confirm-ok').click();
-    await expect(page.locator('#msg')).toContainText('gibt es nicht');
+    // Spielerliste statt freier Eingabe (ADMIN-GAMES-02): Zusammenführen geht nur über die Auswahl; unbekannte Game-IDs lehnt der Server weiterhin ab
+    await expect(page.locator('#players tbody tr').first()).toBeVisible();
+    await expect(page.locator('#merge-compare')).toBeDisabled();
+    const unknown = await page.request.post(app.url + '/admin/api/players/merge', { data: { from: '#AAAA', to: '#BBBB' }, headers: { 'x-requested-with': 'spieleabend', origin: app.url } });
+    expect(unknown.status()).toBe(404);
+    expect((await unknown.json()).error).toContain('gibt es nicht');
 
     // Protokoll
     await page.getByRole('button', { name: 'Aktualisieren' }).click();

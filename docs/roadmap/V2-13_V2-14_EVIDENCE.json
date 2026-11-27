@@ -13,7 +13,7 @@
     },
     {
       "path": "server/leaderboard.js",
-      "sha256": "b5509322dd62e9f2ed8cdbe6a6b751eb791c8087ebccac6b7dd0e74a50ea4631"
+      "sha256": "36424c668b83fd022542117678ae2dccd54bbf3b33d793d09ccb4354139a3675"
     },
     {
       "path": "server/ranked.js",

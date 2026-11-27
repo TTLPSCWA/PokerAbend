@@ -2,6 +2,12 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.32.1 – 28. November 2026
+
+- Löschen mehrerer Spieler meldet Fehler einzelner Konten genau und löscht die übrigen weiter; nichts wird verschwiegen. Die Bestenlisten-Bereinigung ist atomar: schlägt das Schreiben fehl, bleibt alles unverändert.
+- Datensicherung vor Masseneingriffen mit Prüfsummen-Manifest, optional außerhalb des Datenvolumes (BACKUP_DIR), ohne vorhandene Sicherungen zu überschreiben; neues Skript zum geprüften Wiederherstellen (`scripts/restore-data-backup.mjs`).
+- Gesperrte Schaltflächen der Adminseite bleiben gut lesbar.
+
 ## 3.32.0 – 27. November 2026
 
 - Adminseite, Spieleverwaltung: alle 112 Spiele in einklappbaren Rubriken (Karten, Würfel, Brett, Party, Einzelspieler, Idle) mit Zählern, A–Z, Suche, Status- und Kategoriefilter sowie „Alle ein-/ausblenden“ je Rubrik. Die drei Idle-Games sind eigene Einträge; ein ausgeblendetes Idle-Spiel ist auch serverseitig gesperrt (Spielstände bleiben).

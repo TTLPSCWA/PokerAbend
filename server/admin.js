@@ -142,9 +142,9 @@ export function createAdmin({ password, secret, dataDir, secure = () => false, t
     api.get('/players/ids', guard((req) => tools.players.ids(listOpts(req))));
     api.get('/players/compare', guard((req) => tools.players.compare(q(req, 'from', 12), q(req, 'to', 12))));
     api.post('/players/delete-preview', guard((req) => tools.players.deletePreview(req.body.ids)));
-    api.post('/players/delete', guard((req) => { const r = tools.players.remove(req.body.ids, req.body.token); log.add('Spieler gelöscht', `${r.deleted} Konto/Konten${r.backup ? ', Sicherung ' + r.backup : ''}`); return { ok: true, ...r }; }));
+    api.post('/players/delete', guard((req) => { const r = tools.players.remove(req.body.ids, req.body.token); log.add(r.failed.length ? 'Spieler teilweise gelöscht' : 'Spieler gelöscht', `${r.deleted} gelöscht, ${r.failed.length} fehlgeschlagen${r.backup ? ', Sicherung ' + r.backup : ''}`); return { ok: !r.failed.length, ...r }; }));
     api.get('/players/delete-all-preview', guard(() => tools.players.removeAllPreview()));
-    api.post('/players/delete-all', guard((req) => { reauth(req); const r = tools.players.removeAll({ confirm: req.body.confirm, token: req.body.token }); log.add('ALLE Spieler gelöscht', `${r.deleted} Konten, Sicherung ${r.backup}`); return { ok: true, ...r }; }));
+    api.post('/players/delete-all', guard((req) => { reauth(req); const r = tools.players.removeAll({ confirm: req.body.confirm, token: req.body.token }); log.add(r.failed.length ? 'Alle Spieler: teilweise gelöscht' : 'ALLE Spieler gelöscht', `${r.deleted} gelöscht, ${r.failed.length} fehlgeschlagen, Sicherung ${r.backup}`); return { ok: !r.failed.length, ...r }; }));
     api.post('/stats/preview', guard((req) => tools.stats.preview(req.body.scope || {})));
     api.post('/stats/delete', guard((req) => {
       const scope = req.body.scope || {};
