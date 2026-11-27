@@ -92,7 +92,7 @@ export function createAdmin({ password, secret, dataDir, secure = () => false, t
     res.json({ ok: true });
   });
   // ---- V2-17: Moderation. Jede Änderung steht im Admin-Protokoll; lesende Aufrufe nicht.
-  const guard = (fn) => (req, res) => {
+  const guard = (fn) => function adminGuarded(req, res) {
     try { res.json(fn(req, res)); }
     catch (error) { res.status(error.status >= 400 && error.status < 600 ? error.status : 500).json({ error: error.status ? error.message : 'Das hat nicht geklappt' }); }
   };
@@ -129,6 +129,31 @@ export function createAdmin({ password, secret, dataDir, secure = () => false, t
     api.get('/leaderboard', guard((req) => tools.leaderboard(q(req, 'game', 40) || 'all', q(req, 'period', 10) || 'all')));
     api.get('/rounds', guard((req) => tools.rounds.list({ game: q(req, 'game', 40) || 'all', hidden: req.query.hidden === '1', limit: Number(req.query.limit) || 50 })));
     api.post('/rounds/:id/hide', guard((req) => { const info = tools.rounds.hide(req.params.id, req.body.hidden); log.add(info.hidden ? 'Partie ausgeblendet' : 'Partie eingeblendet', `${info.game} ${info.id}`); return { ok: true, ...info }; }));
+    // ADMIN-GAMES-02: Spielerverwaltung und Statistik-Bereinigung. Gefährliche Aktionen verlangen eine aktuelle Voranzeige (token);
+    // das Löschen aller Konten und das Zurücksetzen der gesamten Bestenliste zusätzlich erneut das Admin-Passwort und einen Bestätigungstext.
+    const reauth = (req) => {
+      const input = createHash('sha256').update('admin:' + (typeof req.body.password === 'string' ? req.body.password : '')).digest('hex');
+      const ip = clientIp(req, trustProxy);
+      if (loginLimit.blocked(ip)) throw Object.assign(new Error('Zu viele Versuche. Bitte später erneut versuchen'), { status: 429 });
+      if (!equal(input, pwHash)) { loginLimit.hit(ip); log.add('Passwort-Bestätigung fehlgeschlagen'); throw Object.assign(new Error('Das Admin-Passwort stimmt nicht'), { status: 401 }); }
+    };
+    const listOpts = (req) => ({ q: q(req, 'q', 40), filter: q(req, 'filter', 10) || 'all', sort: q(req, 'sort', 10) || 'recent', page: Number(req.query.page) || 1, pageSize: Number(req.query.pageSize) || 50 });
+    api.get('/players/list', guard((req) => tools.players.list(listOpts(req))));
+    api.get('/players/ids', guard((req) => tools.players.ids(listOpts(req))));
+    api.get('/players/compare', guard((req) => tools.players.compare(q(req, 'from', 12), q(req, 'to', 12))));
+    api.post('/players/delete-preview', guard((req) => tools.players.deletePreview(req.body.ids)));
+    api.post('/players/delete', guard((req) => { const r = tools.players.remove(req.body.ids, req.body.token); log.add('Spieler gelöscht', `${r.deleted} Konto/Konten${r.backup ? ', Sicherung ' + r.backup : ''}`); return { ok: true, ...r }; }));
+    api.get('/players/delete-all-preview', guard(() => tools.players.removeAllPreview()));
+    api.post('/players/delete-all', guard((req) => { reauth(req); const r = tools.players.removeAll({ confirm: req.body.confirm, token: req.body.token }); log.add('ALLE Spieler gelöscht', `${r.deleted} Konten, Sicherung ${r.backup}`); return { ok: true, ...r }; }));
+    api.post('/stats/preview', guard((req) => tools.stats.preview(req.body.scope || {})));
+    api.post('/stats/delete', guard((req) => {
+      const scope = req.body.scope || {};
+      const whole = !Array.isArray(scope.gameIds) && (!scope.game || scope.game === 'all') && !scope.month;
+      if (whole) { reauth(req); if (req.body.confirm !== 'BESTENLISTE ZURÜCKSETZEN') throw Object.assign(new Error('Bitte „BESTENLISTE ZURÜCKSETZEN“ genau eintippen'), { status: 400 }); }
+      const r = tools.stats.remove(scope, req.body.token);
+      log.add(whole ? 'Gesamte Bestenliste zurückgesetzt' : 'Statistik gelöscht', `${r.rounds} Runden, ${r.entries} Einträge, ${r.counters} Zähler${r.backup ? ', Sicherung ' + r.backup : ''}`);
+      return { ok: true, ...r };
+    }));
     api.get('/players', guard((req) => tools.players.search(q(req, 'q', 40))));
     api.post('/players/merge', guard((req) => { const info = tools.players.merge(req.body.from, req.body.to); log.add('Spieler zusammengeführt', `${info.from} → ${info.to}`); return { ok: true, ...info }; }));
   }
@@ -158,7 +183,7 @@ export function createAdmin({ password, secret, dataDir, secure = () => false, t
       log.add(req.body.value ? 'Spiele eingeblendet' : 'Spiele ausgeblendet', `${r.changed.length} von ${r.ids.length}${r.ids.length <= 8 ? ': ' + r.ids.join(', ') : ''}`);
       return { ok: true, ...r, ...features.describe() };
     }));
-    api.get('/catalog', guard(() => catalog()));
+    api.get('/catalog', guard(() => { try { return catalog(); } catch (e) { console.error('catalog:', e); throw e; } }));
     api.post('/features/:name', guard((req) => {
       const value = req.body.value === null ? null : req.body.value;
       const r = features.set(req.params.name, value);

@@ -1,6 +1,6 @@
 # Betrieb: Spieleabend aufsetzen, aktualisieren, sichern, reparieren
 
-Stand: Version **3.31.0** (27. November 2026). Meme-Duell verwaltet redaktionelle Beiträge im Admin-Bereich und optionale Chart-Metadaten in `meme-packs.json`. Die Datei liegt im Datenverzeichnis, zusammen mit den vorhandenen Sicherungsdaten. [Moderation und Quellen](meme-duell.md#externe-vorlagen). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
+Stand: Version **3.32.0** (27. November 2026). Meme-Duell verwaltet redaktionelle Beiträge im Admin-Bereich und optionale Chart-Metadaten in `meme-packs.json`. Die Datei liegt im Datenverzeichnis, zusammen mit den vorhandenen Sicherungsdaten. [Moderation und Quellen](meme-duell.md#externe-vorlagen). Die technische Monopoly-Anbindung enthält keine privaten Theme-Inhalte. Diese Datei ist die vollständige Betriebsanleitung. Das README beschreibt die Spiele und die Entwicklung, hier steht alles für den Server.
 
 Für einen autorisierten, isolierten Testserver können Betreiber [Die Spielhalle](spielhalle.md), [Game Studio Tycoon](studio.md) und [Factory Empire](factory.md) über ihre getrennten Spielschalter und einen gültigen serverseitigen [Idle-Schlüsselring](idle-engine.md#schlüsselring-und-rotation) verfügbar machen. Die drei Einstellungen sind standardmäßig aus. Der einzelne schreibende Prozess braucht ein eigenes, beschreibbares Datenverzeichnis.
 
@@ -396,3 +396,10 @@ Was geprüft wird:
 * **Healthcheck:** `/health` von `HEALTH_URL` (Standard `https://$DOMAIN/health`) antwortet `"ok":true`, Version (und optional Commit) stimmt, Container meldet `healthy`.
 
 Ende 0 = keine Fehler (Warnungen sind erlaubt), Ende 1 = mindestens ein Fehler: **nicht aufspielen**. Alle Einstellungen stehen im Kopf des Skripts (`ENV_FILE`, `BACKUP_DIR`, `HEALTH_URL`, `EXPECTED_VERSION`, `EXPECTED_COMMIT`, `HEALTH_WAIT_S`, `COMPOSE_FILES`, `RELEASE_CHECK_SKIP_DOCKER`, `RELEASE_CHECK_NO_RUN`).
+
+## Spieler und Bestenliste bereinigen (Adminseite)
+
+- **Spieler löschen** nutzt die Konto-Löschung der App (Konto, Geräte, Discord-Verknüpfung, Einstellungen, Erfolge, Idle-Spielstände). Ergebnisse anderer bleiben, der Name wird anonymisiert; Tickets und Planungen verlieren nur die Kontozuordnung. Spieler an einem Tisch werden nicht gelöscht.
+- **Alle Spieler löschen** verlangt aktuelle Voranzeige, Admin-Passwort, den Text „ALLE SPIELER LÖSCHEN“ und eine erfolgreich geprüfte Sicherung (`data/backups/…`).
+- **Statistik endgültig löschen / Bestenliste zurücksetzen** entfernt Runden und Zähler (`leaderboard.json`), nicht die Konten und nicht bereits freigeschaltete Erfolge. „Gesamte Bestenliste“ verlangt zusätzlich Passwort und Text „BESTENLISTE ZURÜCKSETZEN“. Ausblenden einzelner Partien bleibt umkehrbar im Bereich „Partien“.
+- Vor jeder dieser Aktionen entsteht ein geprüfter Ordner `data/backups/<aktion>-<Zeitstempel>/` mit allen Datendateien (SHA-256 verglichen). Wiederherstellen: Server stoppen, Dateien aus dem Ordner zurück nach `data/` kopieren, Server starten.

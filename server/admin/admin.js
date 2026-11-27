@@ -66,10 +66,6 @@ async function loadBoard() {
     <td>${x.players.map((p) => `${p.place}. ${esc(p.name)}${p.bot ? ' (Bot)' : ''}${tag(p.gameId)}`).join('<br>')}</td><td>${x.hidden ? '<span class="bad">ausgeblendet</span>' : x.ranked ? 'gewertet' : '<span class="muted">nicht gewertet</span>'}</td>
     <td><button class="${x.hidden ? 'ghost' : 'danger'}" type="button" data-hide-round="${esc(x.id)}" data-hidden="${x.hidden ? 0 : 1}" data-label="${esc(x.game)}">${x.hidden ? 'Einblenden' : 'Ausblenden'}</button></td></tr>`).join('')}</tbody></table>` : '<p class="muted">Keine Partien.</p>';
 }
-async function loadPlayers() {
-  const { items } = await call('/players?q=' + encodeURIComponent(String(new FormData($('#player-search')).get('q') || '')));
-  $('#players').innerHTML = items.length ? `<table><thead><tr><th>Game-ID</th><th>Name</th><th>Zuletzt gesehen</th><th>Discord</th></tr></thead><tbody>${items.map((p) => `<tr><td><b>${esc(p.gameId)}</b></td><td>${esc(p.avatar)} ${esc(p.name || '–')}</td><td class="muted">${esc(fmtDay(p.lastSeen))}</td><td>${p.registered ? 'ja' : 'nein'}</td></tr>`).join('')}</tbody></table>` : '<p class="muted">Keine Konten gefunden.</p>';
-}
 async function loadTickets() {
   const f = new FormData($('#ticket-filter')), data = await call(`/tickets?q=${encodeURIComponent(String(f.get('q') || ''))}&status=${encodeURIComponent(String(f.get('status') || ''))}`);
   const sel = $('#ticket-filter [name=status]'); if (sel.options.length === 1) for (const [k, v] of Object.entries(data.statuses)) sel.add(new Option(v, k));
@@ -84,36 +80,172 @@ function renderFeatures() {
   $('#feature-flags').innerHTML = `<table><thead><tr><th>Funktion</th><th>Zustand</th><th>Quelle</th><th></th></tr></thead><tbody>${featureState.flags.map((f) => `<tr><td><b>${esc(f.label)}</b><br><span class="muted">${esc(f.hint)}</span></td>
     <td><b class="${f.value ? 'good' : 'bad'}">${f.value ? 'an' : 'aus'}</b></td><td>${esc(SOURCE[f.source])}${f.source === 'admin' ? `<br><span class="muted">sonst: ${f.baseline ? 'an' : 'aus'}</span>` : ''}</td>
     <td class="row"><button class="${f.value ? 'danger' : ''}" type="button" data-flag="${esc(f.name)}" data-value="${f.value ? 0 : 1}" data-label="${esc(f.label)}">${f.value ? 'Ausschalten' : 'Einschalten'}</button>${f.source === 'admin' ? `<button class="ghost" type="button" data-flag="${esc(f.name)}" data-value="reset" data-label="${esc(f.label)}">Zurücksetzen</button>` : ''}</td></tr>`).join('')}</tbody></table>`;
-  const q = $('#feature-filter').value.trim().toLowerCase(), view = $('#feature-view').value;
-  const games = featureState.games.filter((g) => (!q || g.id.includes(q) || (g.name || '').toLowerCase().includes(q)) && (view === 'all' || (view === 'on') === g.enabled));
-  const CAT = { karten: 'Karten', wuerfel: 'Würfel', brett: 'Brett', party: 'Party', einzelspieler: 'Einzelspieler', idle: 'Idle' };
-  const cats = Object.keys(CAT).map((c) => [c, games.filter((g) => g.category === c)]).filter(([, list]) => list.length);
-  $('#feature-games').innerHTML = cats.length ? cats.map(([c, list]) => `<h3>${CAT[c]} <span class="muted">(${list.filter((g) => g.enabled).length}/${list.length} aktiv)</span> <button type="button" class="danger" data-bulk="off" data-cat="${c}">Kategorie ausblenden</button> <button type="button" data-bulk="on" data-cat="${c}">Kategorie einblenden</button></h3><div class="scroll"><table><thead><tr><th>Spiel</th><th>Zustand</th><th>Quelle</th><th></th></tr></thead><tbody>${list.map((g) => `<tr><td><b>${esc(g.name)}</b> <code>${esc(g.id)}</code>${g.variants > 1 ? ` <span class="muted">${g.variants} Varianten</span>` : ''}</td><td><b class="${g.enabled ? 'good' : 'bad'}">${g.enabled ? 'aktiv' : 'ausgeblendet'}</b></td><td>${esc(SOURCE[g.source])}</td><td class="row"><button class="${g.enabled ? 'danger' : ''}" type="button" data-game="${esc(g.id)}" data-value="${g.enabled ? 0 : 1}">${g.enabled ? 'Ausblenden' : 'Einblenden'}</button>${g.source === 'admin' ? `<button class="ghost" type="button" data-game="${esc(g.id)}" data-value="reset">Zurücksetzen</button>` : ''}</td></tr>`).join('')}</tbody></table></div>`).join('') : '<p class="muted">Keine Spiele gefunden.</p>';
+  const q = $('#feature-filter').value.trim().toLowerCase(), view = $('#feature-view').value, only = $('#feature-cat')?.value || '';
+  const CAT = { karten: 'Kartenspiele', wuerfel: 'Würfelspiele', brett: 'Brettspiele', party: 'Partyspiele', einzelspieler: 'Einzelspieler', idle: 'Idle-Games' };
+  const KIND = { multiplayer: 'Mehrspieler', solo: 'Einzelspieler', idle: 'Idle' };
+  const open = new Set([...document.querySelectorAll('#feature-games details[open]')].map((d) => d.dataset.cat));
+  const searching = !!q || view !== 'all' || !!only;
+  const cats = Object.keys(CAT).map((c) => {
+    const all = featureState.games.filter((g) => g.category === c);
+    const shown = all.filter((g) => (!q || g.id.includes(q) || (g.name || '').toLowerCase().includes(q)) && (view === 'all' || (view === 'on') === g.enabled) && (!only || only === c));
+    return [c, all, shown];
+  }).filter(([, , shown]) => shown.length);
+  $('#feature-games').innerHTML = cats.length ? cats.map(([c, all, shown]) => {
+    const on = all.filter((g) => g.enabled).length;
+    return '<details class="cat" data-cat="' + c + '" ' + (searching || open.has(c) || !open.size && c === 'karten' ? 'open' : '') + '><summary><span>' + CAT[c] + '</span><span class="pill">' + all.length + ' Spiele</span><span class="pill good">' + on + ' aktiv</span><span class="pill ' + (all.length - on ? 'bad' : '') + '">' + (all.length - on) + ' ausgeblendet</span>' +
+      '<span class="cat-actions"><button type="button" class="ghost" data-bulk="on" data-cat="' + c + '">Alle einblenden</button><button type="button" class="danger" data-bulk="off" data-cat="' + c + '">Alle ausblenden</button></span></summary><div class="cat-body"><div class="game-grid">' +
+      shown.map((g) => '<div class="game-card ' + (g.enabled ? '' : 'off') + '"><span><b>' + esc(g.name) + '</b><br><span class="muted"><code>' + esc(g.id) + '</code> · ' + esc(KIND[g.kind] || '') + (g.variants > 1 ? ' · ' + g.variants + ' Varianten (folgen diesem Spiel)' : '') + (g.source !== 'standard' ? ' · ' + esc(SOURCE[g.source]) : '') + '</span></span>' +
+        '<span class="row"><button class="' + (g.enabled ? 'danger' : '') + '" type="button" role="switch" aria-checked="' + g.enabled + '" aria-label="' + esc(g.name) + (g.enabled ? ' ausblenden' : ' einblenden') + '" data-game="' + esc(g.id) + '" data-value="' + (g.enabled ? 0 : 1) + '">' + (g.enabled ? 'Ausblenden' : 'Einblenden') + '</button>' +
+        (g.source === 'admin' ? '<button class="ghost" type="button" data-game="' + esc(g.id) + '" data-value="reset" title="Admin-Einstellung zurücknehmen">↺</button>' : '') + '</span></div>').join('') + '</div></div></details>';
+  }).join('') : '<p class="muted">Keine Spiele gefunden.</p>';
+  $('#feature-total').textContent = featureState.games.filter((g) => g.enabled).length + ' von ' + featureState.games.length + ' Spielen aktiv';
 }
 async function loadFeatures() { featureState = await call('/features'); renderFeatures(); }
-$('#feature-filter').addEventListener('input', renderFeatures);
-$('#feature-view').addEventListener('change', renderFeatures);
+for (const id of ['#feature-filter', '#feature-view', '#feature-cat']) $(id).addEventListener('input', renderFeatures);
 $('#mod-features').addEventListener('click', async (e) => {
-  const b = e.target.closest('button[data-bulk]'); if (!b || !featureState) return;
-  const on = b.dataset.bulk === 'on', cat = b.dataset.cat;
-  const ids = featureState.games.filter((g) => !cat || g.category === cat).map((g) => g.id);
-  const label = cat ? `Kategorie „${cat}“` : 'Alle Spiele';
-  if (!await confirmDialog(`${label} ${on ? 'einblenden' : 'ausblenden'}?`, `${ids.length} Spiele werden ${on ? 'wieder sichtbar' : 'aus den Listen genommen. Laufende Tische spielen weiter, neue lassen sich nicht anlegen'}. Daten bleiben erhalten.`, on ? 'Einblenden' : 'Ausblenden')) return;
-  try { featureState = await call('/features/games', 'POST', { ids, value: on }); renderFeatures(); say(`${label}: ${on ? 'eingeblendet' : 'ausgeblendet'}`); load(); } catch (err) { bad(err); }
-});
-async function loadEndpoints() {
-  const data = await call('/catalog');
-  const rows = (items, withMethod) => items.map((e) => `<tr><td>${withMethod ? `<code>${esc(e.method)}</code>` : ''}</td><td>${e.link ? `<a href="${esc(e.path)}" target="_blank" rel="noopener">${esc(e.title)}</a> <code>${esc(e.path)}</code>` : `<code>${esc(e.path)}</code>`}</td><td>${esc(e.protection)}${e.changes ? ' · ändert Daten' : ''}</td></tr>`).join('');
-  const groups = [...new Set([...data.pages, ...data.endpoints].map((e) => e.group))];
-  $('#endpoint-list').innerHTML = groups.map((g) => { const p = data.pages.filter((e) => e.group === g), a = data.endpoints.filter((e) => e.group === g); return `<h3>${esc(g)}</h3><table><thead><tr><th>Methode</th><th>Seite / Pfad</th><th>Zugriffsschutz</th></tr></thead><tbody>${rows(p, false)}${rows(a, true)}</tbody></table>`; }).join('');
-}
-$('#mod-features').addEventListener('click', async (e) => {
+  const bulk = e.target.closest('button[data-bulk]');
+  if (bulk && featureState) {
+    e.preventDefault();
+    const on = bulk.dataset.bulk === 'on', cat = bulk.dataset.cat;
+    const ids = featureState.games.filter((g) => !cat || g.category === cat).map((g) => g.id);
+    const label = cat ? 'Kategorie „' + ({ karten: 'Kartenspiele', wuerfel: 'Würfelspiele', brett: 'Brettspiele', party: 'Partyspiele', einzelspieler: 'Einzelspieler', idle: 'Idle-Games' })[cat] + '“' : 'Alle Spiele';
+    if (!await confirmDialog(label + (on ? ' einblenden?' : ' ausblenden?'), ids.length + ' Spiele werden ' + (on ? 'wieder sichtbar' : 'aus den Listen genommen. Laufende Tische spielen weiter, neue lassen sich nicht anlegen') + '. Spielstände und Daten bleiben erhalten.', on ? 'Einblenden' : 'Ausblenden')) return;
+    try { featureState = await call('/features/games', 'POST', { ids, value: on }); renderFeatures(); say(label + ': ' + (on ? 'eingeblendet' : 'ausgeblendet')); } catch (err) { bad(err); }
+    return;
+  }
   const b = e.target.closest('button[data-flag],button[data-game]'); if (!b) return;
   const value = b.dataset.value === 'reset' ? null : b.dataset.value === '1';
-  const what = b.dataset.flag ? `${b.dataset.label}` : `Spiel ${b.dataset.game}`;
-  if (value === false && b.dataset.flag && !await confirmDialog(`${what} ausschalten?`, 'Die Funktion ist danach für alle sofort weg. Daten bleiben erhalten.', 'Ausschalten')) return;
-  try { featureState = await call(b.dataset.flag ? `/features/${encodeURIComponent(b.dataset.flag)}` : `/features/games/${encodeURIComponent(b.dataset.game)}`, 'POST', { value }); renderFeatures(); say(`${what}: ${value === null ? 'zurückgesetzt' : value ? 'eingeschaltet' : 'ausgeschaltet'}`); load(); } catch (err) { bad(err); }
+  const what = b.dataset.flag ? b.dataset.label : 'Spiel ' + b.dataset.game;
+  if (value === false && b.dataset.flag && !await confirmDialog(what + ' ausschalten?', 'Die Funktion ist danach für alle sofort weg. Daten bleiben erhalten.', 'Ausschalten')) return;
+  try { featureState = await call(b.dataset.flag ? '/features/' + encodeURIComponent(b.dataset.flag) : '/features/games/' + encodeURIComponent(b.dataset.game), 'POST', { value }); renderFeatures(); say(what + ': ' + (value === null ? 'zurückgesetzt' : value ? 'eingeblendet' : 'ausgeblendet')); } catch (err) { bad(err); }
 });
+
+// ---- Seiten & Endpunkte
+let catalog = null;
+async function loadEndpoints() { catalog = await call('/catalog'); renderEndpoints(); }
+function renderEndpoints() {
+  if (!catalog) return;
+  const q = $('#ep-search').value.trim().toLowerCase(), m = $('#ep-method').value, lv = $('#ep-level').value;
+  const rows = [...catalog.pages.map((x) => ({ ...x, method: 'GET', level: '', page: true })), ...catalog.endpoints]
+    .filter((e) => (!q || (e.path + ' ' + e.title + ' ' + e.protection).toLowerCase().includes(q)) && (!m || e.method === m) && (!lv || e.level === lv));
+  $('#ep-count').textContent = rows.length + ' Einträge';
+  const groups = [...new Set(rows.map((e) => e.group))];
+  $('#endpoint-list').innerHTML = groups.map((g) => {
+    const list = rows.filter((e) => e.group === g);
+    return '<details class="cat" ' + (q || m || lv ? 'open' : '') + '><summary><span>' + esc(g) + '</span><span class="pill">' + list.length + '</span></summary><div class="cat-body scroll"><table><thead><tr><th>Name</th><th>Methode</th><th>Pfad</th><th>Zugriffsschutz</th><th></th></tr></thead><tbody>' + list.map((e) =>
+      '<tr><td>' + (e.link ? '<a href="' + esc(e.path) + '" target="_blank" rel="noopener">' + esc(e.title) + '</a>' : esc(e.title)) + '</td><td><span class="method ' + (e.changes ? 'write' : '') + '">' + esc(e.method) + '</span></td><td class="ep-path">' + esc(e.path) + '</td><td><span class="pill ' + (e.level === 'checked' ? 'good' : e.level === 'unknown' ? 'warn' : e.level === 'open' ? '' : '') + '">' + esc(e.protection) + '</span></td><td><button type="button" class="ghost mini" data-copy="' + esc(e.path) + '">Pfad kopieren</button></td></tr>').join('') + '</tbody></table></div></details>';
+  }).join('') || '<p class="muted">Nichts gefunden.</p>';
+}
+for (const id of ['#ep-search', '#ep-method', '#ep-level']) $(id).addEventListener('input', renderEndpoints);
+$('#endpoint-list').addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-copy]'); if (!b) return;
+  try { await navigator.clipboard.writeText(b.dataset.copy); say('Kopiert: ' + b.dataset.copy); } catch { say('Kopieren nicht möglich – Pfad: ' + b.dataset.copy, true); }
+});
+
+// ---- Gefahrendialog: Auswirkungen, optional Bestätigungstext und Passwort
+function dangerDialog({ title, lines = [], phrase = '', password = false, ok = 'Bestätigen' }) {
+  return new Promise((resolve) => {
+    const d = $('#danger'), phraseInput = $('#danger-phrase'), pass = $('#danger-pass'), err = $('#danger-error');
+    $('#danger-title').textContent = title;
+    $('#danger-body').innerHTML = '<ul class="effects">' + lines.map((l) => '<li>' + esc(l) + '</li>').join('') + '</ul>';
+    $('#danger-phrase-field').hidden = !phrase; $('#danger-phrase-label').textContent = 'Zur Bestätigung eintippen: ' + phrase; phraseInput.value = '';
+    $('#danger-pass-field').hidden = !password; pass.value = ''; err.textContent = ''; $('#danger-ok').textContent = ok;
+    const finish = (value) => { d.close(); resolve(value); };
+    $('#danger-cancel').onclick = () => finish(null);
+    d.oncancel = (e) => { e.preventDefault(); finish(null); };
+    $('#danger-form').onsubmit = (e) => {
+      e.preventDefault();
+      if (phrase && phraseInput.value !== phrase) { err.textContent = 'Der Bestätigungstext stimmt nicht genau.'; return; }
+      if (password && !pass.value) { err.textContent = 'Bitte das Admin-Passwort eingeben.'; return; }
+      finish({ phrase: phraseInput.value, password: pass.value });
+    };
+    d.showModal();
+  });
+}
+const fmtDate = (t) => (t ? new Date(t).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' }) : '–');
+
+// ---- Spielerverwaltung
+const picked = new Set();
+let playerPage = 1, playerRows = [], mergeFrom = null, mergeTo = null;
+const playerOpts = (page = playerPage) => { const f = new FormData($('#player-search')); return '?' + new URLSearchParams({ q: String(f.get('q') || ''), filter: String(f.get('filter')), sort: String(f.get('sort')), pageSize: String(f.get('pageSize')), page: String(page) }); };
+function updatePicked() { $('#player-selected').textContent = picked.size + ' ausgewählt'; $('#player-delete').disabled = !picked.size; }
+async function loadPlayers(page = playerPage) {
+  const data = await call('/players/list' + playerOpts(page));
+  playerPage = data.page; playerRows = data.items;
+  $('#player-count').textContent = data.total + ' von ' + data.all + ' Konten';
+  $('#players').innerHTML = data.items.length ? '<table><thead><tr><th></th><th>Spieler</th><th>Game-ID</th><th>Typ</th><th>Status</th><th>Erstellt</th><th>Zuletzt aktiv</th><th>Gewertet</th><th>Siege</th><th></th></tr></thead><tbody>' + data.items.map((p) =>
+    '<tr><td class="sel"><input type="checkbox" data-pick="' + esc(p.gameId) + '" aria-label="' + esc(p.name || p.gameId) + ' auswählen" ' + (picked.has(p.gameId) ? 'checked' : '') + '></td><td>' + esc(p.avatar) + ' <b>' + esc(p.name || '–') + '</b></td><td><code>' + esc(p.gameId) + '</code></td><td>' + (p.discord ? '<span class="pill good">Discord</span>' : '<span class="pill">Gast</span>') + '</td><td><span class="pill ' + (p.status === 'in-spiel' ? 'warn' : p.status === 'aktiv' ? 'good' : '') + '">' + esc(p.status) + '</span></td><td class="muted">' + esc(fmtDate(p.createdAt)) + '</td><td class="muted">' + esc(fmtDate(p.lastSeen)) + '</td><td>' + p.played + '</td><td>' + p.wins + '</td>' +
+    '<td class="row"><button type="button" class="ghost mini" data-merge-from="' + esc(p.gameId) + '">Quelle</button><button type="button" class="ghost mini" data-merge-to="' + esc(p.gameId) + '">Ziel</button><button type="button" class="danger mini" data-delete-one="' + esc(p.gameId) + '">Löschen</button></td></tr>').join('') + '</tbody></table>' : '<p class="muted">Keine Konten gefunden.</p>';
+  $('#player-pager').innerHTML = data.pages > 1 ? '<button type="button" class="ghost mini" data-page="' + (data.page - 1) + '" ' + (data.page <= 1 ? 'disabled' : '') + '>← Zurück</button><span>Seite ' + data.page + ' von ' + data.pages + '</span><button type="button" class="ghost mini" data-page="' + (data.page + 1) + '" ' + (data.page >= data.pages ? 'disabled' : '') + '>Weiter →</button>' : '';
+  updatePicked();
+}
+$('#player-search').addEventListener('submit', (e) => { e.preventDefault(); playerPage = 1; loadPlayers(1).catch(bad); });
+$('#player-pager').addEventListener('click', (e) => { const b = e.target.closest('[data-page]'); if (b && !b.disabled) loadPlayers(Number(b.dataset.page)).catch(bad); });
+$('#player-select-page').addEventListener('click', () => { playerRows.forEach((p) => picked.add(p.gameId)); loadPlayers().catch(bad); });
+$('#player-select-none').addEventListener('click', () => { picked.clear(); loadPlayers().catch(bad); });
+$('#player-select-all').addEventListener('click', async () => { try { const r = await call('/players/ids' + playerOpts(1)); r.ids.forEach((id) => picked.add(id)); say(r.ids.length + ' Treffer ausgewählt'); await loadPlayers(); } catch (err) { bad(err); } });
+$('#players').addEventListener('change', (e) => { const c = e.target.closest('[data-pick]'); if (!c) return; if (c.checked) picked.add(c.dataset.pick); else picked.delete(c.dataset.pick); updatePicked(); });
+function showMerge() { $('#merge-from').textContent = 'Quelle: ' + (mergeFrom || '–'); $('#merge-to').textContent = 'Ziel: ' + (mergeTo || '–'); $('#merge-compare').disabled = !(mergeFrom && mergeTo && mergeFrom !== mergeTo); }
+$('#players').addEventListener('click', async (e) => {
+  const f = e.target.closest('[data-merge-from]'), t = e.target.closest('[data-merge-to]'), d = e.target.closest('[data-delete-one]');
+  if (f) { mergeFrom = f.dataset.mergeFrom; showMerge(); } else if (t) { mergeTo = t.dataset.mergeTo; showMerge(); } else if (d) await deletePlayers([d.dataset.deleteOne]);
+});
+$('#merge-clear').addEventListener('click', () => { mergeFrom = mergeTo = null; showMerge(); });
+const sideHTML = (s) => '<div><b>' + esc(s.avatar) + ' ' + esc(s.name || '–') + '</b> <code>' + esc(s.gameId) + '</code><br>' + (s.discord ? 'Discord verknüpft' : 'Gast') + '<br>Erstellt ' + esc(fmtDate(s.createdAt)) + '<br>Zuletzt aktiv ' + esc(fmtDate(s.lastSeen)) + '<br>' + s.played + ' gewertete Spiele, ' + s.wins + ' Siege<br>' + s.achievements + ' Erfolge · ' + s.idleSaves + ' Idle-Spielstände</div>';
+$('#merge-compare').addEventListener('click', async () => {
+  try {
+    const c = await call('/players/compare?from=' + encodeURIComponent(mergeFrom) + '&to=' + encodeURIComponent(mergeTo));
+    const d = $('#danger');
+    $('#danger-title').textContent = 'Spieler zusammenführen?';
+    $('#danger-body').innerHTML = '<div class="cmp"><div><small class="muted">Quelle (wird aufgelöst)</small></div><div><small class="muted">Ziel (bleibt bestehen)</small></div>' + sideHTML(c.from) + sideHTML(c.to) + '</div><ul class="effects">' + c.effects.map((x) => '<li>' + esc(x) + '</li>').join('') + '</ul>';
+    $('#danger-phrase-field').hidden = true; $('#danger-pass-field').hidden = true; $('#danger-error').textContent = ''; $('#danger-ok').textContent = 'Zusammenführen';
+    const go = await new Promise((resolve) => { $('#danger-cancel').onclick = () => { d.close(); resolve(false); }; d.oncancel = (ev) => { ev.preventDefault(); d.close(); resolve(false); }; $('#danger-form').onsubmit = (ev) => { ev.preventDefault(); d.close(); resolve(true); }; d.showModal(); });
+    if (!go) return;
+    await call('/players/merge', 'POST', { from: mergeFrom, to: mergeTo });
+    say(mergeFrom + ' wurde mit ' + mergeTo + ' zusammengeführt'); picked.delete(mergeFrom); mergeFrom = mergeTo = null; showMerge(); await loadPlayers(); loadTools();
+  } catch (err) { bad(err); }
+});
+async function deletePlayers(ids) {
+  try {
+    const pre = await call('/players/delete-preview', 'POST', { ids });
+    const names = pre.items.slice(0, 8).map((i) => (i.name || '–') + ' ' + i.gameId + ' (' + i.played + ' Spiele, ' + i.achievements + ' Erfolge, ' + i.idleSaves + ' Idle)').join('; ');
+    const go = await dangerDialog({ title: pre.count + (pre.count === 1 ? ' Spieler' : ' Spieler') + ' endgültig löschen?', lines: [names + (pre.count > 8 ? ' …' : ''), ...pre.effects, ...(pre.active ? ['ACHTUNG: ' + pre.active + ' sitzen gerade an einem Tisch – die Löschung wird abgelehnt.'] : []), 'Vorher entsteht eine geprüfte Sicherung.'], ok: 'Endgültig löschen' });
+    if (!go) return;
+    const r = await call('/players/delete', 'POST', { ids, token: pre.token });
+    ids.forEach((id) => picked.delete(id)); say(r.deleted + ' Spieler gelöscht (Sicherung ' + r.backup + ')'); await loadPlayers(); loadTools();
+  } catch (err) { bad(err); }
+}
+$('#player-delete').addEventListener('click', () => deletePlayers([...picked]));
+$('#player-delete-all').addEventListener('click', async () => {
+  try {
+    const pre = await call('/players/delete-all-preview');
+    const go = await dangerDialog({ title: 'ALLE ' + pre.count + ' Spieler löschen?', lines: [pre.count + ' Konten (' + pre.discord + ' mit Discord), ' + pre.rounds + ' gespeicherte Runden.', ...pre.effects, ...(pre.active ? ['ACHTUNG: ' + pre.active + ' Spieler sitzen an Tischen – die Aktion wird abgelehnt.'] : [])], phrase: pre.phrase, password: true, ok: 'Alle Spieler löschen' });
+    if (!go) return;
+    const r = await call('/players/delete-all', 'POST', { confirm: go.phrase, password: go.password, token: pre.token });
+    picked.clear(); say(r.deleted + ' Spieler gelöscht (Sicherung ' + r.backup + ')'); await loadPlayers(); loadTools();
+  } catch (err) { bad(err); }
+});
+
+// ---- Statistik bereinigen (Bestenliste getrennt von den Konten)
+function statsScope() {
+  const f = new FormData($('#stats-form')), ids = String(f.get('ids') || '').split(/[\s,;]+/).map((x) => x.trim().toUpperCase()).filter(Boolean);
+  return { game: String(f.get('game') || '').trim() || 'all', month: String(f.get('month') || '').trim() || null, ...(ids.length ? { gameIds: ids } : {}) };
+}
+async function runStats(whole) {
+  try {
+    const scope = statsScope();
+    if (whole && scope.gameIds) { say('Für „Gesamte Bestenliste“ keine Spieler eintragen. Dafür „Statistik endgültig löschen“ verwenden.', true); return; }
+    if (!whole && !scope.gameIds) { say('Bitte mindestens einen Spieler (#GAMEID) eintragen – oder „Gesamte Bestenliste zurücksetzen“ wählen.', true); return; }
+    const pre = await call('/stats/preview', 'POST', { scope });
+    const where = (scope.game === 'all' ? 'alle Spiele' : 'Spiel ' + scope.game) + ', ' + (scope.month ? 'Monat ' + scope.month : 'gesamter Zeitraum');
+    const go = await dangerDialog({ title: whole ? 'Gesamte Bestenliste zurücksetzen?' : 'Statistik endgültig löschen?', lines: [where, pre.rounds + ' Runden und ' + pre.entries + ' Spielereinträge sowie ' + pre.counters + ' Zähler sind betroffen (' + pre.players + ' Spieler).', 'Konten, Namen und bereits freigeschaltete Erfolge bleiben. Die Aktion lässt sich nur über die Sicherung rückgängig machen.', whole ? 'Dabei werden die Runden aller Spieler entfernt.' : 'Runden anderer Spieler bleiben erhalten.'], phrase: whole && !scope.month && scope.game === 'all' ? 'BESTENLISTE ZURÜCKSETZEN' : '', password: whole && !scope.month && scope.game === 'all', ok: whole ? 'Zurücksetzen' : 'Endgültig löschen' });
+    if (!go) return;
+    const r = await call('/stats/delete', 'POST', { scope, token: pre.token, confirm: go.phrase, password: go.password });
+    say('Statistik gelöscht: ' + r.rounds + ' Runden, ' + r.entries + ' Einträge, ' + r.counters + ' Zähler (Sicherung ' + r.backup + ')'); loadBoard().catch(bad);
+  } catch (err) { bad(err); }
+}
+$('#stats-delete').addEventListener('click', () => runStats(false));
+$('#stats-reset').addEventListener('click', () => runStats(true));
 async function loadMemePacks() {
   const res = await call('/meme-packs').catch(error => {
     if (/JSON|404|hat nicht geklappt/.test(error.message)) return null;
@@ -171,14 +303,7 @@ $('#login-form').addEventListener('submit', async (e) => {
 });
 $('#logout').addEventListener('click', async () => { await call('/logout', 'POST', {}).catch(() => {}); showLogin(); });
 $('#refresh').addEventListener('click', () => { load(); loadTools(); loadMemePacks().catch(bad); });
-for (const [id, fn] of [['#board-form', loadBoard], ['#player-search', loadPlayers], ['#ticket-filter', loadTickets]]) $(id).addEventListener('submit', (e) => { e.preventDefault(); fn().catch(bad); });
-$('#merge-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const f = new FormData(e.target), from = String(f.get('from') || '').trim().toUpperCase(), to = String(f.get('to') || '').trim().toUpperCase();
-  if (!await confirmDialog('Spieler zusammenführen?', `Alles von ${from} gehört danach ${to}. Das Konto ${from} wird nicht mehr als eigene Person geführt.`, 'Zusammenführen')) return;
-  try { await call('/players/merge', 'POST', { from, to }); say(`${from} wurde mit ${to} zusammengeführt`); e.target.reset(); } catch (err) { bad(err); }
-  load(); loadTools();
-});
+for (const [id, fn] of [['#board-form', loadBoard], ['#ticket-filter', loadTickets]]) $(id).addEventListener('submit', (e) => { e.preventDefault(); fn().catch(bad); });
 document.addEventListener('submit', async (e) => {
   if (e.target.id !== 'update-form') return;
   e.preventDefault();

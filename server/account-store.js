@@ -211,6 +211,8 @@ export function createAccountStore(dir, { now = Date.now, onChange = () => {}, b
         .sort((a, b) => (b.lastSeen || 0) - (a.lastSeen || 0)).slice(0, Math.max(1, Math.min(100, Number(limit) | 0 || 30)))
         .map((a) => ({ gameId: a.gameId, name: a.name, avatar: a.avatar, createdAt: a.createdAt, lastSeen: a.lastSeen, registered: this.isRegistered(a.id) }));
     },
+    // ADMIN-GAMES-02: alle Konten (ohne zusammengeführte) für die Verwaltung; nur für den Server, nie ungefiltert an den Browser
+    all: () => Object.values(state.accounts).filter((a) => !a.mergedInto),
     audit,
     auditLog: (n = 50) => state.audit.slice(-n).reverse(),
     count: () => Object.values(state.accounts).filter((a) => !a.mergedInto).length,

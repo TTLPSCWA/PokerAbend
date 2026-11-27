@@ -2,6 +2,14 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.32.0 – 27. November 2026
+
+- Adminseite, Spieleverwaltung: alle 112 Spiele in einklappbaren Rubriken (Karten, Würfel, Brett, Party, Einzelspieler, Idle) mit Zählern, A–Z, Suche, Status- und Kategoriefilter sowie „Alle ein-/ausblenden“ je Rubrik. Die drei Idle-Games sind eigene Einträge; ein ausgeblendetes Idle-Spiel ist auch serverseitig gesperrt (Spielstände bleiben).
+- Host-Menü „Spiel wechseln“ ist nach Kategorie gruppiert und innerhalb A–Z sortiert; die Bestenlisten-Auswahl ebenfalls.
+- „Seiten & Endpunkte“ liest jetzt alle Router (auch eingehängte) und zeigt den tatsächlich nachweisbaren Zugriffsschutz, Suche, Filter und Pfad-Kopieren; ohne Nachweis steht „Schutzprüfung erforderlich“.
+- Spielerverwaltung: vollständige, seitenweise Liste mit Suche, Filtern und Mehrfachauswahl; Zusammenführen per Auswahl mit Vergleich; Einzel-, Mehrfach- und Komplett-Löschung (Voranzeige, geprüfte Sicherung, bei „Alle“ zusätzlich Passwort und Bestätigungstext).
+- Bestenliste bereinigen getrennt von den Konten: Statistik einzelner Spieler, Spiele oder Monate endgültig löschen oder die gesamte Bestenliste zurücksetzen – jeweils mit Voranzeige und Sicherung.
+
 ## 3.31.0 – 27. November 2026
 
 - Die Adminseite verwaltet alle Spiele zentral: nach Kategorie gruppiert, innerhalb A–Z, mit Suche, Filter „Alle / Aktiv / Ausgeblendet“ und Sammelaktionen (alle oder je Kategorie, mit Bestätigung). Einzelspieler- und Idle-Spiele lassen sich jetzt ebenfalls ausblenden. Laufende Tische bleiben unberührt.

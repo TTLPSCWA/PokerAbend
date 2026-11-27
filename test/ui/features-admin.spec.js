@@ -40,9 +40,9 @@ test.describe('Funktionen & Spiele (Admin)', () => {
       // Spiel ausschalten (ohne Rückfrage, nichts geht verloren)
       await section.locator('#feature-filter').fill('blackjack');
       await section.locator('button[data-game="blackjack"][data-value="0"]').click();
-      await expect(section.locator('#feature-games tr', { hasText: 'blackjack' })).toContainText('aus');
-      await expect(section.locator('#feature-games tr', { hasText: 'blackjack' })).toContainText('Admin-Einstellung');
-      await expect(admin.locator('#msg')).toContainText('blackjack: ausgeschaltet');
+      await expect(section.locator('#feature-games .game-card', { hasText: 'blackjack' })).toContainText('Einblenden');
+      await expect(section.locator('#feature-games .game-card', { hasText: 'blackjack' })).toContainText('Admin-Einstellung');
+      await expect(admin.locator('#msg')).toContainText('Spiel blackjack: ausgeblendet');
       await expect(admin.locator('#log')).toContainText('Spiel ausgeschaltet');
 
       // Die Bibliothek eines anderen Besuchers verliert die Kachel nach dem Neuladen, Hosten wird abgelehnt
@@ -56,16 +56,16 @@ test.describe('Funktionen & Spiele (Admin)', () => {
 
       // Zurücksetzen → wieder da
       await section.locator('button[data-game="blackjack"][data-value="reset"]').click();
-      await expect(section.locator('#feature-games tr', { hasText: 'blackjack' })).toContainText('Standard');
+      await expect(section.locator('#feature-games .game-card', { hasText: 'blackjack' })).not.toContainText('Admin-Einstellung');
       await page.reload();
       await page.evaluate(() => { location.hash = '#spiele'; });
       await expect(page.locator('[data-host="blackjack"]').first()).toBeVisible();
 
       // „nur ausgeschaltete“ filtert; Funktion ausschalten verlangt eine Bestätigung
       await section.locator('#feature-filter').fill('');
-      await section.locator('#feature-off-only').check();
-      await expect(section.locator('#feature-games')).toContainText('Keine Treffer');
-      await section.locator('#feature-off-only').uncheck();
+      await section.locator('#feature-view').selectOption('off');
+      await expect(section.locator('#feature-games')).toContainText('Keine Spiele gefunden');
+      await section.locator('#feature-view').selectOption('all');
       await row('Ranked-Wertung').locator('button[data-flag="ranked"]').click();
       await expect(admin.locator('#confirm')).toBeVisible();
       await admin.getByRole('button', { name: 'Abbrechen' }).click();

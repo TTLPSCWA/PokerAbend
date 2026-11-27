@@ -18,6 +18,7 @@ import { maintenance, assertNewRoundAllowed } from './maintenance.js';
 import { versionInfo, createAdminLog, createClientErrors, createSystemSampler, cleanClientError, changelogReleases } from './ops.js';
 import { createAdmin } from './admin.js';
 import { buildCatalog } from './admin-catalog.js';
+import { createDataBackup } from './backup.js';
 import { sortGames, CATEGORY_LABELS } from '../games/game-sort.js';
 import { createAdminTools } from './admin-tools.js';
 import { resolvedRoadmap } from '../games/roadmap.js';
@@ -250,7 +251,7 @@ app.use('/auth/discord', (req, res, next) => (discordOn() ? discord.router(req, 
 // Manifest und Icons auch ohne Login – sonst kann das Handy die Seite nicht als App ablegen (sie verraten nichts)
 const OPEN = new Set(['/style.css', '/login.js', '/i18n.js', '/i18n-en.js', '/discord-en.js', '/fonts/bricolage.woff2', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png']);
 const isPage = (req) => req.method === 'GET' && (req.path === '/' || req.path === '/index.html');
-app.use((req, res, next) => {
+app.use(function siteAccessGate(req, res, next) {
   if (MODE === 'open' || OPEN.has(req.path)) return next();
   if (loggedIn(req)) {
     // Bei jedem Seitenaufruf verlängern – wer regelmäßig spielt, muss nie neu eingeben
@@ -297,7 +298,12 @@ app.use('/api', (req, res, next) => {
   res.status(429).json({ error: 'Zu viele Anfragen – bitte kurz warten' });
 });
 const idleRouter = idle.router(accounts, TRUST_PROXY);
-if (idleRouter) app.use('/api/idle', idleRouter);
+// ADMIN-GAMES-02: ein ausgeblendetes Idle-Spiel ist auch serverseitig nicht erreichbar; gespeicherte Spielstände bleiben unberührt
+if (idleRouter) app.use('/api/idle', function idleGameSwitch(req, res, next) {
+  const id = req.path.split('/')[1];
+  if (id && Object.hasOwn(IDLE_META, id) && !features.gameEnabled(id)) return res.status(404).json({ code: 'game-disabled', error: `${IDLE_META[id]} ist gerade ausgeschaltet.` });
+  next();
+}, idleRouter);
 function discordAccess(req) {
   const configured = discordOn() && discord.config.policyValid;
   const active = !!(configured && discord.sessionReference(req.headers.cookie, req.accountId));
@@ -364,8 +370,9 @@ if (ADMIN_PASSWORD) {
     password: ADMIN_PASSWORD, secret: SECRET, dataDir: DATA_DIR, secure: isSecure, trustProxy: TRUST_PROXY, log: adminLog, errors: clientErrors,
     system: sampler, version: VERSION, rooms: () => adminRooms(), closeRoom: (code) => adminCloseRoom(code), online: () => adminOnline(),
     announce: (minutes, by) => announceUpdate(minutes, by), cancelUpdate: () => cancelUpdate(), features, memePacks,
-    catalog: () => buildCatalog({ app, publicDir: PUBLIC_DIR, categories: Object.entries(CATEGORY_LABELS) }),
-    tickets: ticketAPI.admin, tools: createAdminTools({ reviews, leaderboard, accounts, mergeAccounts, changed: () => { leaderboard.save(); save(); } }),
+    catalog: () => buildCatalog({ app, publicDir: PUBLIC_DIR, categories: Object.entries(CATEGORY_LABELS), mounts: [['/api/me', meRouter], ['/api/profile', profileRouter], ['/auth/discord', discord?.router]], openPaths: [...OPEN, '/login', '/logout', '/health'] }),
+    tickets: ticketAPI.admin, tools: createAdminTools({ reviews, leaderboard, accounts, mergeAccounts, changed: () => { leaderboard.save(); save(); }, erase: eraseAccount, backup: (label) => { saveNow(); accounts.save({ flush: true }); return createDataBackup(DATA_DIR, label); }, idleSaves: (id) => idle.accountStates(id)?.length || 0, gameIds: () => new Set([...Object.keys(GAMES), ...Object.keys(SINGLEPLAYER_GAMES)]),
+      activeAccounts: () => { const out = new Set(); for (const room of rooms.values()) for (const p of room.players.values()) { const a = p.accountId && accounts.get(p.accountId); if (a) out.add(a.id); } return out; } }),
     claims: () => leaderboard.claims().map((c) => ({ key: c.key, name: c.name, by: c.by, gameId: accounts.get(c.claimedBy)?.gameId || '', claimedAt: c.claimedAt })),
     undoClaim: (key) => { const info = leaderboard.unclaim(key); if (!info) return null; save(); return { name: info.name, gameId: accounts.get(info.claimedBy)?.gameId || '' }; },
   }).router);

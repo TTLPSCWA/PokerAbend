@@ -724,12 +724,20 @@ document.addEventListener('change', (e) => {
   if (t) send('unlisted', { value: t.checked }).then((r) => { if (r?.ok) toast(t.checked ? I18n.t('Tisch ist jetzt privat – nur per Code oder Link') : I18n.t('Tisch steht wieder in der Liste')); else t.checked = !t.checked; });
 });
 
+// ADMIN-GAMES-02: Spiele-Auswahlfelder gruppiert nach Kategorie (feste Reihenfolge wie die Bibliothek), darin A–Z
+const GAME_CATEGORY_TITLES = [['karten', 'Kartenspiele'], ['wuerfel', 'Würfelspiele'], ['brett', 'Brettspiele'], ['party', 'Partyspiele'], ['einzelspieler', 'Einzelspieler'], ['idle', 'Idle-Games']];
+function gameOptionsByCategory(list, selected = '') {
+  const known = new Set(GAME_CATEGORY_TITLES.map(([id]) => id));
+  return GAME_CATEGORY_TITLES.map(([id, title]) => [id, title, list.filter((g) => (known.has(g.category) ? g.category : 'karten') === id).sort((x, y) => GAME_COLLATOR.compare(I18n.t(x.name), I18n.t(y.name)) || GAME_COLLATOR.compare(x.id, y.id))])
+    .filter(([, , games]) => games.length)
+    .map(([id, title, games]) => `<optgroup label="${esc(I18n.t(title))}" data-category="${id}">${games.map((g) => `<option value="${esc(g.id)}" ${g.id === selected ? 'selected' : ''}>${esc(I18n.t(g.name))}</option>`).join('')}</optgroup>`).join('');
+}
 // Host-Menü: in ein anderes Spiel wechseln (gleicher Raum, alle bleiben drin)
 function switchGameHTML(currentId, busy) {
   busy ||= ['running', 'between'].includes(lastState?.partyProgram?.status);
   const others = account.games.filter((g) => g.id !== currentId);
   return I18n.html`<h3>Spiel wechseln</h3>
-    <div class="switch-game"><select class="input" id="switch-game" aria-label="Neues Spiel">${others.map((g) => `<option value="${esc(g.id)}">${esc(g.name)}</option>`).join('')}</select>
+    <div class="switch-game"><select class="input" id="switch-game" aria-label="Neues Spiel">${gameOptionsByCategory(others)}</select>
       <button class="btn" data-switch-game ${busy ? 'disabled title="Geht erst, wenn die Runde vorbei ist"' : ''}>Wechseln</button></div>
     <p class="hint" style="margin:0">Gleicher Raum und Code, alle bleiben drin. Wer gerade mitspielt, sitzt im neuen Spiel wieder. Der bisherige Stand kommt in den Verlauf.</p>`;
 }

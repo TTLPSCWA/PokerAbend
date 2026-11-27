@@ -67,6 +67,34 @@ export function createLeaderboard(dataDir, { now = () => new Date() } = {}) {
     return [...rows.values()];
   };
 
+  const gameMatches = (id, game) => game === 'all' || id === game || id.startsWith(game + '~');
+  const monthOfAt = (at) => monthOf(new Date(at));
+  function statsRun({ owners = null, game = 'all', month = null } = {}, apply) {
+    const out = { rounds: 0, entries: 0, counters: 0, players: new Set() };
+    for (const r of Object.values(data.rounds)) {
+      if (!gameMatches(r.game, game) || (month && monthOfAt(r.at) !== month)) continue;
+      const hit = owners ? r.players.filter((p) => p.a && owners.has(rankedOwner(p.a))) : r.players;
+      if (!hit.length) continue;
+      hit.forEach((p) => p.a && out.players.add(rankedOwner(p.a)));
+      if (!owners) { out.rounds++; if (apply) delete data.rounds[r.id]; continue; }
+      out.entries += hit.length;
+      if (apply) for (const p of hit) { p.a = null; p.n = 'Entfernter Eintrag'; }
+    }
+    for (const [key, p] of Object.entries(data.players)) {
+      if (owners && !owners.has(ownerOf(key))) continue;
+      for (const g of Object.keys(p.games || {})) {
+        if (!gameMatches(g, game)) continue;
+        const slot = p.games[g], m = month ? slot.months?.[month] : null;
+        if (month && !m?.played) continue;
+        out.counters++; if (p.accountId) out.players.add(p.accountId);
+        if (!apply) continue;
+        if (month) { slot.played -= m.played; slot.wins -= m.wins; slot.points -= m.points; delete slot.months[month]; if (slot.played <= 0) delete p.games[g]; }
+        else delete p.games[g];
+      }
+    }
+    return { rounds: out.rounds, entries: out.entries, counters: out.counters, players: out.players.size };
+  }
+
   return {
     // Nur Statistik-Kopien: Erfolge benutzen dieselbe Identität und keine zweite Ergebnisdatei.
     // ref: ein Name (alle gleichnamigen Personen zusammen) oder { accountId, name } (genau dieses Konto)
@@ -216,6 +244,11 @@ export function createLeaderboard(dataDir, { now = () => new Date() } = {}) {
       if (removedPlayers || anonymized) dirty = true;
       return { removedPlayers, anonymized };
     },
+    // ADMIN-GAMES-02: Statistik-Bereinigung. filter: { owners: Set<Konto-ID>|null (null = alle), game: 'all'|Spiel-ID (mit Varianten), month: null|'JJJJ-MM' }.
+    // Betrifft Runden (Rangliste, Profile, Erfolgsstatistik) und die Zähler je Person; Konten, Erfolgsfreischaltungen und Namen bleiben.
+    // Bei einer Teilmenge von Personen bleiben die Runden anderer unverändert (der Eintrag wird anonymisiert), sonst entfällt die ganze Runde.
+    statsPreview(filter) { return statsRun(filter, false); },
+    statsDelete(filter) { const r = statsRun(filter, true); if (r.rounds || r.entries || r.counters) dirty = true; return r; },
     accountSummary(accountId) {
       const out = { played: 0, wins: 0 };
       for (const r of Object.values(data.rounds)) { if (!r.ranked || r.hidden) continue; for (const p of r.players) if (p.a && !p.bot && rankedOwner(p.a) === accountId) { out.played++; out.wins += p.win ? 1 : 0; } }
