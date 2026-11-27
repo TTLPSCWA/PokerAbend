@@ -28,7 +28,9 @@ test('VIS-108: independent feature package, 107 game packages unchanged, origina
   const e = json('games/party-brett/evidence.json'), v = json('docs/design/game-visual-roadmap.json');
   const p = v.feature_packages.find((p) => p.id === 'VIS-108');
   assert.equal(p.visual_status, 'done'); assert.equal(p.implementation_commit, e.implementation_commit);
-  assert.equal(v.packages.length, 107); assert.equal(v.inventory.playable_count, 107);
+  const originalGames = v.packages.filter(row => Number(row.id.slice(4)) <= 107);
+  assert.equal(originalGames.length, 107);
+  assert.ok(originalGames.every(row => row.implementation_status === 'playable' && row.visual_status === 'done'));
   assert.equal(new Set([...v.packages, ...v.feature_packages].map((p) => p.id)).size, v.packages.length + v.feature_packages.length);
   assert.deepEqual(p.feature_ids, ids); assert.deepEqual(p.screenshots, e.screenshots.map((s) => s.path));
   assert.equal(e.screenshots.length, 48);

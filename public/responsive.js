@@ -17,7 +17,8 @@
   // Grenzen passen zu den CSS-Stufen in responsive.css und den bestehenden 640/1100-px-Regeln.
   const SIZES = [['xs', 0], ['s', 375], ['m', 641], ['l', 1100], ['xl', 1800], ['xxl', 3000]];
   const resizeFns = new Set(), changeFns = new Set();
-  const state = { width: 0, height: 0, size: '', orient: '' };
+  const state = { width: 0, height: 0, size: '', orient: '', heightClass: '', aspect: '' };
+  let keyboardInset = 0;
   const call = (fns, arg) => { for (const fn of fns) { try { fn(arg); } catch (e) { setTimeout(() => { throw e; }); } } };
 
   function update() {
@@ -26,15 +27,31 @@
     let size = 'xs';
     for (const [name, min] of SIZES) if (width >= min) size = name;
     const orient = width >= height ? 'landscape' : 'portrait';
+    const heightClass = height <= 560 ? 'short' : height <= 740 ? 'compact' : 'normal';
+    const aspect = width >= height * 2 ? 'ultrawide' : orient;
     const visible = vv ? vv.height : height;
+    const inset = Math.max(0, Math.round(height - visible - (vv?.offsetTop || 0)));
+    const editable = document.activeElement?.matches?.('textarea, input:not([type=button]):not([type=range]):not([type=checkbox]), [contenteditable=true]');
+    const probableKeyboard = editable && (vv?.scale ?? 1) === 1 && inset >= 110;
+    const nextKeyboardInset = probableKeyboard ? inset : 0;
     root.style.setProperty('--rs-vvh', Math.round(visible) + 'px');
-    root.style.setProperty('--rs-kb', Math.max(0, Math.round(height - visible - (vv ? vv.offsetTop : 0))) + 'px');
-    const changed = size !== state.size || orient !== state.orient;
+    root.style.setProperty('--rs-kb', nextKeyboardInset + 'px');
+    root.dataset.rsKeyboard = probableKeyboard ? 'open' : 'closed';
+    if (nextKeyboardInset && Math.abs(nextKeyboardInset - keyboardInset) > 10) {
+      document.activeElement.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    }
+    keyboardInset = nextKeyboardInset;
+    const changed = size !== state.size || orient !== state.orient || heightClass !== state.heightClass || aspect !== state.aspect;
     // Nur echte Layoutänderungen melden. Eine Bildschirmtastatur (visualViewport)
     // ändert allein --rs-vvh/--rs-kb, damit Renderer nicht während der Eingabe neu zeichnen.
     const resized = width !== state.width || height !== state.height;
-    Object.assign(state, { width, height, size, orient });
-    if (changed) { root.dataset.rsSize = size; root.dataset.rsOrient = orient; }
+    Object.assign(state, { width, height, size, orient, heightClass, aspect });
+    if (changed) {
+      root.dataset.rsSize = size;
+      root.dataset.rsOrient = orient;
+      root.dataset.rsHeight = heightClass;
+      root.dataset.rsAspect = aspect;
+    }
     if (resized) call(resizeFns, { ...state });
     if (changed) call(changeFns, { ...state });
   }
@@ -45,13 +62,9 @@
   addEventListener('orientationchange', schedule, { passive: true });
   window.visualViewport?.addEventListener('resize', schedule, { passive: true });
 
-  // Bildschirmtastatur: das fokussierte Eingabefeld bleibt im sichtbaren Bereich.
-  window.visualViewport?.addEventListener('resize', () => {
-    const el = document.activeElement;
-    if (el?.matches?.('input, textarea, select, [contenteditable="true"]')) {
-      requestAnimationFrame(() => el.scrollIntoView({ block: 'nearest', inline: 'nearest' }));
-    }
-  }, { passive: true });
+  window.visualViewport?.addEventListener('scroll', schedule, { passive: true });
+  addEventListener('focusin', schedule, { passive: true });
+  addEventListener('focusout', schedule, { passive: true });
 
   // Ein gemeinsamer Beobachter für alle Renderer, keine Beobachter pro Karte oder Feld.
   const watched = new Map();
@@ -77,6 +90,8 @@
     get orient() { return state.orient; },
     get width() { return state.width; },
     get height() { return state.height; },
+    get heightClass() { return state.heightClass; },
+    get aspect() { return state.aspect; },
     onResize(fn) { resizeFns.add(fn); return () => resizeFns.delete(fn); },
     onChange(fn) { changeFns.add(fn); return () => changeFns.delete(fn); },
     observe,

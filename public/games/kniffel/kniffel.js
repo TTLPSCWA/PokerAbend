@@ -19,10 +19,27 @@
   let keep = new Set();
   let column = 0;
   let keepKey = '';
+  let quickScores = false;
   const nameOf = (S, id) => esc(S.players.find((p) => p.id === id)?.name ?? '?');
+
+  function rollAction(g, myTurn) {
+    if (!myTurn || g.rolls >= 3) return '';
+    const all = g.rolls && keep.size === 5;
+    return `<button type="button" class="btn btn-brass kn-roll" data-g="roll" ${all ? 'disabled title="Alle Würfel liegen – trag ein Feld ein"' : ''}>${g.rolls ? I18n.html`Nochmal würfeln (${g.rolls + 1}. von 3)` : I18n.t('Würfeln')}</button>`;
+  }
+
+  function rerenderAt(selector) {
+    const old = document.querySelector('.kn-sheet-wrap');
+    const scroll = old ? [old.scrollLeft, old.scrollTop] : null;
+    kit.render();
+    if (scroll) document.querySelector('.kn-sheet-wrap')?.scrollTo(...scroll);
+    document.querySelector(`.kn-stage ${selector}`)?.focus({ preventScroll: true });
+  }
 
   const kit = kitGame({
     id: 'kniffel',
+    ring: false,
+    dock: () => '',
     look(S) {
       const g = S.g;
       if (g.columnSheets) {
@@ -78,22 +95,23 @@
         const die = canKeep ? dieHTML(v, { tag: 'button', cls: I18n.html`big ${kept ? 'kept' : ''}`, attrs: `type="button" data-g="keep" data-i="${i}" aria-pressed="${kept}"` }) : dieHTML(v, { cls: I18n.html`big ${kept ? 'kept' : ''}` });
         return `<span class="kn-slot ${kept ? 'kept' : ''}">${die}<small>${kept ? (I18n.language === 'en' ? 'kept' : 'bleibt') : ''}</small></span>`;
       }).join('');
-      const tray = `<div class="kn-tray"><small>${nameOf(S, S.turnId)}${g.rolls ? I18n.html` · ${g.rolls}. Wurf von 3` : (I18n.language === 'en' ? ' · not rolled yet' : ' · noch nicht gewürfelt')}</small><div class="kn-dice">${dice}</div></div>`;
+      const tray = `<div class="kn-tray"><small>${nameOf(S, S.turnId)}${g.rolls ? I18n.html` · ${g.rolls}. Wurf von 3` : (I18n.language === 'en' ? ' · not rolled yet' : ' · noch nicht gewürfelt')}</small><div class="kn-dice">${dice}</div>${rollAction(g, myTurn)}</div>`;
       // Punkteblatt: alle Spieler nebeneinander, eigene Spalte hervorgehoben
       // Eigene Spalte zuerst (auf dem Handy sonst rechts abgeschnitten), dann die anderen in Sitzreihenfolge
       const ids = Object.keys(g.sheets).sort((x, y) => (y === me) - (x === me));
       const opts = myTurn ? g.options || {} : {};
+      const scoreButton = (f, short = false) => `<button type="button" class="kn-pick ${opts[f] ? '' : 'zero'}" data-g="score" data-f="${f}" aria-label="${label(f)}: ${opts[f] ? I18n.html`${opts[f]} Punkte eintragen` : I18n.t('Streichen')}">${short ? `${label(f)} · ` : ''}${opts[f]}</button>`;
       const cell = (id, f) => {
         const v = g.sheets[id][f];
         const mc = id === me ? 'me' : '';
-        if (v !== null) return `<td class="num ${mc} ${v === 0 ? 'zero' : ''}">${v === 0 ? '–' : v}</td>`;
-        if (id === me && f in opts) return `<td class="num me"><button type="button" class="kn-pick ${opts[f] ? '' : 'zero'}" data-g="score" data-f="${f}" aria-label="${label(f)}: ${opts[f] ? I18n.html`${opts[f]} Punkte eintragen` : 'streichen'}">${opts[f]}</button></td>`;
+        if (v !== null) return `<td class="num ${mc} ${v === 0 ? 'zero' : ''}">${v}</td>`;
+        if (id === me && f in opts) return `<td class="num me">${scoreButton(f)}</td>`;
         return `<td class="num ${mc}"></td>`;
       };
       const row = (f) => `<tr><th scope="row"><span>${label(f)}</span><small>${hint(f)}</small></th>${ids.map((id) => cell(id, f)).join('')}</tr>`;
       const sumRow = (label, fn, cls = '') => `<tr class="kn-sum ${cls}"><th scope="row">${label}</th>${ids.map((id) => `<td class="num ${id === me ? 'me' : ''}">${fn(g.totals[id], id)}</td>`).join('')}</tr>`;
       const head = ids.map((id) => `<th class="num ${id === me ? 'me' : ''} ${id === S.turnId && S.phase === 'playing' ? 'turn' : ''}" scope="col">${nameOf(S, id)}${id === me ? I18n.html(' <small>(du)</small>') : ''}</th>`).join('');
-      const sheet = `<div class="kn-sheet-wrap"><table class="kn-sheet"><thead><tr><th></th>${head}</tr></thead><tbody>
+      const sheet = `<div class="kn-sheet-wrap" tabindex="0" role="region" aria-label="${I18n.content('Punkteblatt', 'Score sheet')}"><table class="kn-sheet"><thead><tr><th></th>${head}</tr></thead><tbody>
         ${UPPER.map(row).join('')}
         ${sumRow(I18n.language === 'en' ? 'Upper total' : 'Summe oben', (t) => t.upper)}
         ${sumRow(I18n.html('Bonus <small>ab 63: 35</small>'), (t) => (t.bonus ? '35' : `<small>${I18n.language === 'en' ? 'need' : 'noch'} ${Math.max(0, 63 - t.upper)}</small>`))}
@@ -102,20 +120,20 @@
         ${sumRow(I18n.t('Gesamt'), (t) => `<b>${t.total}</b>`, 'total')}
         </tbody></table></div>`;
       const W = WorldKit, tt = W.t, free = Object.values(g.sheets[me] || {}).filter((v) => v === null).length;
-      const chips = [W.chip('🎲', g.rolls ? `${g.rolls}. ${tt('Wurf von 3', 'roll of 3')}` : tt('Noch nicht gewürfelt', 'Not rolled yet'), g.rolls >= 3 ? 'warn' : ''), g.sheets[me] ? W.chip('✎', `${free} ${tt('Felder offen', 'boxes open')}`) : '', triple ? W.chip('×3', `${tt('Dreifachblatt', 'Triple sheet')} · ${tt('Spalte', 'column')} ×${column + 1}`, 'warn') : '', myTurn && g.options && g.rolls ? W.chip('✔', tt('Feld antippen zum Eintragen', 'Tap a box to score'), 'good') : ''].filter(Boolean);
-      return `<div class="kg-table kn-table wk-stage kn-stage">${W.head({ eyebrow: tt('Würfeltablett & Punkteblatt', 'Dice tray & score sheet'), title: myTurn ? tt('Du bist dran', 'Your turn') : `${nameOf(S, S.turnId)} ${tt('ist dran', 'is playing')}`, chips })}${triple ? `<div class="kg-acts">${[0, 1, 2].map((i) => I18n.html`<button class="btn" data-g="column" data-column="${i}" aria-pressed="${column === i}">Spalte ×${i + 1}</button>`).join('')}</div>` : ''}${tray}${sheet}</div>`;
-    },
-    dock(S, myTurn) {
-      if (!myTurn) return '';
-      const g = S.g;
-      if (g.rolls >= 3) return '';
-      const all = g.rolls && keep.size === 5;
-      return `<button class="btn btn-brass" data-g="roll" ${all ? 'disabled title="Alle Würfel liegen – trag ein Feld ein"' : ''}>${g.rolls ? I18n.html`Nochmal würfeln (${g.rolls + 1}. von 3)` : I18n.t('Würfeln')}</button>`;
+      const chips = [g.sheets[me] ? W.chip('✎', `${free} ${tt('Felder offen', 'boxes open')}`) : '', triple ? W.chip('×3', `${tt('Dreifachblatt', 'Triple sheet')} · ${tt('Spalte', 'column')} ×${column + 1}`, 'warn') : '', myTurn && g.options && g.rolls ? W.chip('✔', tt('Feld antippen zum Eintragen', 'Tap a box to score'), 'good') : ''].filter(Boolean);
+      const possible = Object.keys(opts);
+      const choices = possible.length ? `<div class="kn-quick"><button type="button" class="btn" data-g="quick" aria-expanded="${quickScores}">${tt('Freie Wertungen', 'Available scores')}</button>${quickScores ? `<div class="kn-quick-list">${possible.map(f => scoreButton(f, true)).join('')}</div>` : ''}</div>` : '';
+      return `<div class="kg-table kn-table wk-stage kn-stage">${W.head({ title: myTurn ? tt('Du bist dran', 'Your turn') : `${nameOf(S, S.turnId)} ${tt('ist dran', 'is playing')}`, chips })}${triple ? `<div class="kg-acts">${[0, 1, 2].map((i) => I18n.html`<button class="btn" data-g="column" data-column="${i}" aria-pressed="${column === i}">Spalte ×${i + 1}</button>`).join('')}</div>` : ''}<div class="kn-play">${tray}${choices}</div>${sheet}</div>`;
     },
     async onClick(t, S) {
       const g = t.dataset.g;
-      if (g === 'column') { column = Number(t.dataset.column); kit.render(); return; }
-      if (g === 'keep') { const i = Number(t.dataset.i); if (keep.has(i)) keep.delete(i); else keep.add(i); kit.render(); }
+      if (g === 'quick') {
+        quickScores = !quickScores;
+        rerenderAt('[data-g="quick"]');
+        return;
+      }
+      if (g === 'column') { column = Number(t.dataset.column); rerenderAt(`[data-column="${column}"]`); return; }
+      if (g === 'keep') { const i = Number(t.dataset.i); if (keep.has(i)) keep.delete(i); else keep.add(i); rerenderAt(`[data-g="keep"][data-i="${i}"]`); }
       else if (g === 'roll') send('roll', { keep: [...keep] });
       else if (g === 'score') {
         const f = t.dataset.f;

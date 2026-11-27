@@ -12,6 +12,8 @@ import { createSocketAccess } from './socket-access.js';
 import { fileURLToPath } from 'node:url';
 import { GAMES, DEFAULT_GAME, gameList, singleplayerGameList, SINGLEPLAYER_GAMES, gameEvents, PLANNED, plannedGames } from '../games/index.js';
 import { createFeatures, parseSwitch } from './features.js';
+import { createMemePackLibrary } from './meme-pack-library.js';
+import { configureReviewedMemeCards } from '../games/meme-duell/room.js';
 import { maintenance, assertNewRoundAllowed } from './maintenance.js';
 import { versionInfo, createAdminLog, createClientErrors, createSystemSampler, cleanClientError, changelogReleases } from './ops.js';
 import { createAdmin } from './admin.js';
@@ -339,11 +341,23 @@ app.get('/api/whats-new', (_req, res) => {
 const adminLog = createAdminLog(DATA_DIR);
 const clientErrors = createClientErrors();
 const sampler = createSystemSampler();
+let memePacks;
+try {
+  memePacks = createMemePackLibrary(DATA_DIR);
+  configureReviewedMemeCards(memePacks.approved);
+} catch {
+  console.error('Die Meme-Paketdatei konnte nicht geladen werden. Die eingebauten Motive bleiben verfügbar.');
+}
 if (ADMIN_PASSWORD) {
+  if (memePacks) {
+    const refreshMemeCharts = () => memePacks.refresh().catch(() => adminLog.add('Abruf der Meme-Charts fehlgeschlagen'));
+    void refreshMemeCharts();
+    setInterval(refreshMemeCharts, 3600000).unref();
+  }
   app.use('/admin', createAdmin({
     password: ADMIN_PASSWORD, secret: SECRET, dataDir: DATA_DIR, secure: isSecure, trustProxy: TRUST_PROXY, log: adminLog, errors: clientErrors,
     system: sampler, version: VERSION, rooms: () => adminRooms(), closeRoom: (code) => adminCloseRoom(code), online: () => adminOnline(),
-    announce: (minutes, by) => announceUpdate(minutes, by), cancelUpdate: () => cancelUpdate(), features,
+    announce: (minutes, by) => announceUpdate(minutes, by), cancelUpdate: () => cancelUpdate(), features, memePacks,
     tickets: ticketAPI.admin, tools: createAdminTools({ reviews, leaderboard, accounts, mergeAccounts, changed: () => { leaderboard.save(); save(); } }),
     claims: () => leaderboard.claims().map((c) => ({ key: c.key, name: c.name, by: c.by, gameId: accounts.get(c.claimedBy)?.gameId || '', claimedAt: c.claimedAt })),
     undoClaim: (key) => { const info = leaderboard.unclaim(key); if (!info) return null; save(); return { name: info.name, gameId: accounts.get(info.claimedBy)?.gameId || '' }; },

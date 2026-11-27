@@ -17,6 +17,11 @@
 .sw-last ol { list-style: none; margin: 6px 0; padding: 0; display: grid; gap: 4px; }
 .sw-last li { display: grid; grid-template-columns: minmax(60px, 1fr) auto 44px minmax(0, 1.2fr); gap: 8px; align-items: center; padding: 3px 6px; border-radius: 8px; }
 .sw-last li.lost { background: rgba(184,67,63,.25); }
+.kg-schwimmen .help-btn { z-index: 12; }
+.kg-schwimmen .kg-table { padding-inline-end: max(52px, var(--rs-safe-right, 0px)); }
+@media (max-width: 520px) {
+  .kg-schwimmen .kg-table { padding-inline-end: 0; padding-block-start: 48px; }
+}
 .sw-last li b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sw-last small { color: #F3C9C6; }
 .sw-mini { display: flex; gap: 3px; }

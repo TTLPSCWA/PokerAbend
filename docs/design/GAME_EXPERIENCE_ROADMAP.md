@@ -960,6 +960,18 @@ Die Priorität richtet sich danach, wie oft ein Spiel am Abend gespielt wird:
 
 ---
 
+#### EXP-112 · Meme-Duell (`meme-duell`) · P1
+- **Welt:** Eigenständige Bildmotive und fokussierte Kartenauswahl.
+- **Sound:** Kurzer Klang beim Aufdecken, mit Spiel- und Geräteeinstellung.
+- **Animation:** Anonyme Beiträge treten gemeinsam in den Vordergrund.
+- **Highlight:** Gewinner und Stimmen erscheinen beim Rundenabschluss.
+
+#### EXP-113 · Slot Arcade (`slot-arcade`) · P1
+- **Welt:** Casino-Retro, Neon-Spielhalle und Drachen-Schatzkammer.
+- **Sound:** Einstellbare synthetische Walzen- und Gewinnsignale.
+- **Animation:** Dekoratives Abrollen nach feststehender Abrechnung.
+- **Highlight:** Balken oder Symbolpfade zeigen das tatsächliche Ergebnis.
+
 ## Teil C – Umsetzungsreihenfolge (Vorschlag)
 
 | Welle | Inhalt | Warum |

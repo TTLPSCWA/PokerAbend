@@ -99,7 +99,49 @@ $('#mod-features').addEventListener('click', async (e) => {
   if (value === false && b.dataset.flag && !await confirmDialog(`${what} ausschalten?`, 'Die Funktion ist danach für alle sofort weg. Daten bleiben erhalten.', 'Ausschalten')) return;
   try { featureState = await call(b.dataset.flag ? `/features/${encodeURIComponent(b.dataset.flag)}` : `/features/games/${encodeURIComponent(b.dataset.game)}`, 'POST', { value }); renderFeatures(); say(`${what}: ${value === null ? 'zurückgesetzt' : value ? 'eingeschaltet' : 'ausgeschaltet'}`); load(); } catch (err) { bad(err); }
 });
-async function loadTools() { await Promise.all([loadReviews(), loadBoard(), loadPlayers(), loadTickets(), loadFeatures()].map((p) => p.catch(bad))); }
+async function loadMemePacks() {
+  const res = await call('/meme-packs').catch(error => {
+    if (/JSON|404|hat nicht geklappt/.test(error.message)) return null;
+    throw error;
+  });
+  if (!res) return;
+  const panel = $('#mod-memes'), form = $('#meme-create'), motif = form.elements.template;
+  panel.hidden = false;
+  if (!motif.options.length) for (const name of res.motifs) motif.add(new Option(name,name));
+  const provider = $('#meme-provider');
+  provider.textContent = res.providerEnabled ? 'Charts deaktivieren' : 'Charts aktivieren';
+  provider.dataset.enabled = String(res.providerEnabled);
+  $('#meme-refresh').disabled = !res.providerEnabled;
+  $('#meme-chart-date').textContent = res.checkedAt ? 'Letzte Prüfung: ' + time(res.checkedAt) : 'Noch kein Abruf';
+  const changes = {initial:'Erster Abruf',popular:'Beliebt','new-in-chart':'Neu in den Charts','rank-rise':'Stärker gestiegen'};
+  $('#meme-chart').innerHTML = res.listings.length ? `<table><thead><tr><th>Rang</th><th>Vorlage</th><th>Beobachtung</th></tr></thead><tbody>${res.listings.map(row=>
+    `<tr><td>${esc(row.rank)}</td><td><a href="https://imgflip.com/memetemplate/${encodeURIComponent(row.id)}" target="_blank" rel="noopener noreferrer">${esc(row.name)}</a></td><td>${esc(changes[row.observation])}</td></tr>`).join('')}</tbody></table>` : '<p class="muted">Keine Vorlagen erfasst.</p>';
+  const reviewState = {pending:'Wartet auf Prüfung',approved:'Freigegeben',disabled:'Deaktiviert'};
+  $('#meme-entries').innerHTML = res.entries.length ? `<table><thead><tr><th>Beitrag</th><th>Quelle und Rechte</th><th>Status</th><th>Aktion</th></tr></thead><tbody>${res.entries.map(row=>
+    `<tr><td>${esc(row.title[0])} (${esc(row.type)})<br>${esc(row.situation[0])}<br>${esc(row.caption[0])}<br>${esc(row.situation[1])}<br>${esc(row.caption[1])}</td><td>${esc(row.source)}<br>${esc(row.license)}<br>${esc(row.extended ? 'Erweiterter Humor' : 'Standard')}</td><td>${esc(reviewState[row.status])}</td><td><button type="button" data-meme-review="${esc(row.id)}" data-status="${row.status==='approved'?'disabled':'approved'}">${row.status==='approved'?'Deaktivieren':'Freigeben'}</button></td></tr>`).join('')}</tbody></table>` : '<p class="muted">Keine Community-Beiträge erfasst.</p>';
+}
+$('#meme-create').addEventListener('submit', async e => {
+  e.preventDefault();
+  const form=e.currentTarget, content=Object.fromEntries(new FormData(form));
+  content.extended=form.elements.extended.checked;
+  try { await call('/meme-packs','POST',content); form.reset(); await loadMemePacks(); } catch (error) { bad(error); }
+});
+$('#mod-memes').addEventListener('click', async e => {
+  const button=e.target.closest('button');
+  if (!button || (!button.id && !button.dataset.memeReview)) return;
+  if (button.id && !['meme-provider','meme-refresh'].includes(button.id)) return;
+  try {
+    if (button.id==='meme-provider') await call('/meme-packs/provider','POST',{enabled:button.dataset.enabled!=='true'});
+    else if (button.id==='meme-refresh') await call('/meme-packs/refresh','POST',{});
+    else {
+      const status=button.dataset.status;
+      if (status==='approved' && !await confirmDialog('Beitrag für das Spiel freigeben?', 'Sind die Rechte, beide Sprachfassungen und die Inhaltseignung geprüft?', 'Freigeben')) return;
+      await call('/meme-packs/'+encodeURIComponent(button.dataset.memeReview)+'/review','POST',{status,confirmed:true});
+    }
+    await loadMemePacks();
+  } catch (error) { bad(error); }
+});
+async function loadTools() { await Promise.all([loadReviews(), loadBoard(), loadPlayers(), loadTickets(), loadFeatures(), loadMemePacks()].map((p) => p.catch(bad))); }
 async function load() {
   try { const s = await call('/status'); $('#login').hidden = true; $('#app').hidden = false; render(s); }
   catch (e) { if (!$('#app').hidden) say(e.message, true); }

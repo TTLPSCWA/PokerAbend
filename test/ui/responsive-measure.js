@@ -1,10 +1,15 @@
 // B24: gemeinsame Viewport-Liste und Layoutmessung für Audit und Regression.
 export const VIEWPORTS = [
   { key: '320x568', width: 320, height: 568 },
+  { key: '360x800', width: 360, height: 800 },
   { key: '390x844', width: 390, height: 844 },
+  { key: '641x720', width: 641, height: 720 },
   { key: '768x1024', width: 768, height: 1024 },
+  { key: '900x450', width: 900, height: 450 },
   { key: '1024x768', width: 1024, height: 768 },
   { key: '1280x720', width: 1280, height: 720 },
+  { key: '1440x900', width: 1440, height: 900 },
+  { key: '1682x864', width: 1682, height: 864 },
   { key: '1920x1080', width: 1920, height: 1080 },
   { key: '2560x1440', width: 2560, height: 1440 },
   { key: '3440x1440', width: 3440, height: 1440 },

@@ -139,6 +139,16 @@ Schnelle Folgen von Größenereignissen werden zu einem Neuzeichnen pro Bild zus
 
 Keine reproduzierbaren Kompatibilitätsfehler gefunden; deshalb keine CSS-Änderung in B07. Emulationen ersetzen keine echten Geräte.
 
+## Dynamische Spieloberflächen (GLOBAL-RESPONSIVE-02)
+
+Die bestehende Responsive-Schicht beobachtet verfügbare Höhe und Seitenverhältnis zusätzlich zur Breite. Der Zustand für eine Bildschirmtastatur wird nur bei fokussierter Eingabe ohne Pinch-Zoom gesetzt. Die Werte des Visual Viewport, Safe Areas und vorhandene CSS-Breakpoints bleiben für die einzelnen Spieloberflächen verfügbar. Das Layout reserviert bei wenig Höhe weniger Platz für die HUD-Zeile.
+
+Der Chromium-Katalogaudit erfasst Lobby und laufende Partie für alle 96 Raumspiele, 13 Solo-Spiele sowie drei Idle-Ansichten und prüft Hub und Resize-Verhalten separat. Bei 114 Fällen und 3.664 Messungen gab es keine horizontale Seitenüberbreite und keine unerreichbaren Elemente. Die erste Messung fand abgeschnittene Backgammon-Felder und überlagerte Schwimmen-Elemente. Die beiden Spiele sowie Kniffel, Meme-Duell und Slot Arcade wurden nach den Korrekturen mit 160 Messungen ohne erneuten Befund geprüft. Der Audit versieht die künstlich halbierten Viewports gesondert mit dem Präfix `zoom200`.
+
+Nativer Chromium-Seitenzoom wurde für Kniffel und Slot Arcade bei 60, 100, 125, 150 und 200 Prozent mit dem Browser-Zoomregler der Test-Erweiterung geprüft. Bei 200 Prozent änderten sich die CSS-Breite von 1.666 auf 833 und die Pixeldichte von 1 auf 2. Den Zustand der Kniffel-Partie und den Zugriff auf Würfel, Punkteblatt und Slot-Start deckt diese Probe ab.
+
+Kniffel zeigt die Würfel bei jeder Fensterbreite über dem Punkteblatt. Bei wenig Höhe sparen eine einzeilige Navigation im breiten Querformat und kürzere Tabellenzeilen Platz. Im nativen Chromium-Vergleich mit fünf Mitspielenden waren bei 100 Prozent neun Zeilen einschließlich Bonus ohne Scrollen sichtbar. Bei 200 Prozent waren drei Zeilen sichtbar. Die Gesamtsumme blieb in allen fünf geprüften Zoomstufen per Scrollen erreichbar.
+
 ## Manuelle Geräteabnahme (ausstehend)
 
 Gilt erst als bestanden, wenn sie auf dem Gerät tatsächlich durchgeführt wurde. Stand 2026-11-23: **nicht durchgeführt**.

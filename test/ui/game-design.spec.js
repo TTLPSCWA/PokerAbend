@@ -74,10 +74,10 @@ test(`${id}: Brett bleibt in beiden Ausrichtungen vollständig sichtbar`, async 
 });
 }
 
-test('Kniffel: Würfel und Punkteblatt sind im Querformat nebeneinander bedienbar', async ({ page, app }, info) => {
+test('Kniffel: Würfel bleiben im Querformat über dem bedienbaren Punkteblatt', async ({ page, app }, info) => {
   await create(page, app, 'kniffel'); await start(page);
   await page.setViewportSize({ width: 900, height: 450 });
-  await expect.poll(() => page.locator('.kn-sheet-wrap').evaluate((el) => el.getBoundingClientRect().x >= document.querySelector('.kn-tray').getBoundingClientRect().right - 1)).toBe(true);
+  await expect.poll(() => page.locator('.kn-sheet-wrap').evaluate((el) => el.getBoundingClientRect().top >= document.querySelector('.kn-tray').getBoundingClientRect().bottom - 1)).toBe(true);
   await page.getByRole('button', { name: 'Würfeln', exact: true }).click();
   await expect(page.locator('.kn-pick').first()).toBeVisible();
   await page.locator('.kn-pick').last().click();

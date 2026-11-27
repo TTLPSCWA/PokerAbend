@@ -40,9 +40,14 @@ test('Login-Seite zeigt Passwort und Discord; Discord-Mitglieder kommen ohne Pas
   await expect(page.locator('#p-identity-body')).toContainText('Disco Dora');
   await expect(page.locator('#p-discord-sync')).toBeChecked();
   await expect(page.locator('#p-discord-unlink')).toBeVisible();
-  await page.locator('#p-discord-logout-all').click();
-  await page.goto(url + '/');
+  await Promise.all([
+    page.waitForURL(new URL('/login?next=%2F', url).href),
+    page.locator('#p-discord-logout-all').click(),
+  ]);
   await expect(page.getByLabel('Passwort')).toBeVisible();
+  const protectedPage = await page.request.get(url + '/', { maxRedirects: 0 });
+  expect(protectedPage.status()).toBe(302);
+  expect(new URL(protectedPage.headers().location, url).pathname).toBe('/login');
 });
 
 test('Nicht-Mitglied sieht eine klare Meldung und bleibt draußen', async ({ page }) => {

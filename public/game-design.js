@@ -16,7 +16,7 @@ const GameDesign = (() => {
     board: 'huetchen schiffe viergewinnt muehle reversi dame domino monopoly spiel-des-lebens scotland-yard hex backgammon scrabble schach labyrinth-brett schatzinsel gebietskampf staedtehandel',
     party: 'schaetzmeister schlagfertig werhatdasgesagt tickendes-paket werwolf wer-bin-ich story-chaos zahlenreihe doppelagent luegenbaron regelwahnsinn jaeger-schatten infektionsjagd letzter-schutzplatz geschenkfaenger rhythmus-rausch stillgestanden bomben-duell brueckenroulette reaktor-notfall',
     solo: 'zahlenzoo gedaechtnis-kueche pfeilfieber sortierstation puzzle-panik wortjagd gummiband-challenge turmbauer',
-    drawing: 'kritzelpost bildunterschrift malen-raten',
+    drawing: 'kritzelpost bildunterschrift malen-raten meme-duell',
     arena: 'broeckelboden kronenjagd laser-huepfer schubsarena scheinwerfer-flucht minenlauf labyrinth-chaos kistenchaos fallenbauer geschenkdiebe schatzgraeber',
   };
   const scenes = Object.fromEntries(Object.entries(groups).flatMap(([family, ids]) => ids.split(' ').map((id, i) => [id, {

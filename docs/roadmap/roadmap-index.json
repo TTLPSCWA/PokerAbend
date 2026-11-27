@@ -173,12 +173,12 @@
   ],
   "counts": {
     "game/multiplayer": {
-      "total": 95,
-      "done": 95
+      "total": 96,
+      "done": 96
     },
     "game/singleplayer": {
-      "total": 12,
-      "done": 12
+      "total": 13,
+      "done": 13
     },
     "open-item/open-item": {
       "total": 13,
@@ -214,9 +214,9 @@
       "planned": 10
     },
     "package/exp": {
-      "total": 111,
+      "total": 113,
       "done": 17,
-      "planned": 94
+      "planned": 96
     },
     "package/exp-foundation": {
       "total": 6,
@@ -233,8 +233,9 @@
       "verified": 3
     },
     "package/vis": {
-      "total": 107,
-      "done": 107
+      "total": 109,
+      "done": 107,
+      "planned": 2
     },
     "package/vis-feature": {
       "total": 1,
@@ -5749,6 +5750,68 @@
       "diagnostics": []
     },
     {
+      "key": "package:EXP-112",
+      "namespace": "package",
+      "id": "EXP-112",
+      "title": "Meme-Duell",
+      "area": "D",
+      "group": "exp",
+      "source": {
+        "file": "docs/design/game-experience-roadmap.json",
+        "ptr": "packages[111]"
+      },
+      "source_status": "planned",
+      "status": "planned",
+      "stages": {
+        "planned": true,
+        "implemented": false,
+        "ci_accepted": null,
+        "deployed": null
+      },
+      "evidence": {
+        "commit": null,
+        "completed_at": null,
+        "tests": 0,
+        "refs": 0
+      },
+      "links": {
+        "game": "meme-duell",
+        "vis": "VIS-112"
+      },
+      "diagnostics": []
+    },
+    {
+      "key": "package:EXP-113",
+      "namespace": "package",
+      "id": "EXP-113",
+      "title": "Slot Arcade",
+      "area": "D",
+      "group": "exp",
+      "source": {
+        "file": "docs/design/game-experience-roadmap.json",
+        "ptr": "packages[112]"
+      },
+      "source_status": "planned",
+      "status": "planned",
+      "stages": {
+        "planned": true,
+        "implemented": false,
+        "ci_accepted": null,
+        "deployed": null
+      },
+      "evidence": {
+        "commit": null,
+        "completed_at": null,
+        "tests": 0,
+        "refs": 0
+      },
+      "links": {
+        "game": "slot-arcade",
+        "vis": "VIS-113"
+      },
+      "diagnostics": []
+    },
+    {
       "key": "package:EXP-F1",
       "namespace": "package",
       "id": "EXP-F1",
@@ -9928,6 +9991,66 @@
       "diagnostics": []
     },
     {
+      "key": "package:VIS-112",
+      "namespace": "package",
+      "id": "VIS-112",
+      "title": "Meme-Duell",
+      "area": "D",
+      "group": "vis",
+      "source": {
+        "file": "docs/design/game-visual-roadmap.json",
+        "ptr": "packages[107]"
+      },
+      "source_status": "planned",
+      "status": "planned",
+      "stages": {
+        "planned": true,
+        "implemented": false,
+        "ci_accepted": null,
+        "deployed": null
+      },
+      "evidence": {
+        "commit": null,
+        "completed_at": null,
+        "tests": 0,
+        "refs": 0
+      },
+      "links": {
+        "game": "meme-duell"
+      },
+      "diagnostics": []
+    },
+    {
+      "key": "package:VIS-113",
+      "namespace": "package",
+      "id": "VIS-113",
+      "title": "Slot Arcade",
+      "area": "D",
+      "group": "vis",
+      "source": {
+        "file": "docs/design/game-visual-roadmap.json",
+        "ptr": "packages[108]"
+      },
+      "source_status": "planned",
+      "status": "planned",
+      "stages": {
+        "planned": true,
+        "implemented": false,
+        "ci_accepted": null,
+        "deployed": null
+      },
+      "evidence": {
+        "commit": null,
+        "completed_at": null,
+        "tests": 0,
+        "refs": 0
+      },
+      "links": {
+        "game": "slot-arcade"
+      },
+      "diagnostics": []
+    },
+    {
       "key": "game:2048",
       "namespace": "game",
       "id": "2048",
@@ -11588,6 +11711,43 @@
       "diagnostics": []
     },
     {
+      "key": "game:meme-duell",
+      "namespace": "game",
+      "id": "meme-duell",
+      "title": "meme-duell",
+      "area": "C",
+      "group": "multiplayer",
+      "category": "party",
+      "source": {
+        "file": "games/index.js",
+        "ptr": "registry.meme-duell"
+      },
+      "source_status": "registered",
+      "status": "done",
+      "stages": {
+        "planned": true,
+        "implemented": true,
+        "ci_accepted": null,
+        "deployed": null
+      },
+      "evidence": {
+        "commit": null,
+        "completed_at": null,
+        "tests": 0,
+        "refs": 2
+      },
+      "links": {
+        "vis": [
+          "VIS-112"
+        ],
+        "exp": [
+          "EXP-112"
+        ]
+      },
+      "variants": 0,
+      "diagnostics": []
+    },
+    {
       "key": "game:memory",
       "namespace": "game",
       "id": "memory",
@@ -13029,6 +13189,43 @@
         ],
         "exp": [
           "EXP-086"
+        ]
+      },
+      "variants": 0,
+      "diagnostics": []
+    },
+    {
+      "key": "game:slot-arcade",
+      "namespace": "game",
+      "id": "slot-arcade",
+      "title": "slot-arcade",
+      "area": "C",
+      "group": "singleplayer",
+      "category": "einzelspieler",
+      "source": {
+        "file": "games/singleplayer/index.js",
+        "ptr": "registry.slot-arcade"
+      },
+      "source_status": "registered",
+      "status": "done",
+      "stages": {
+        "planned": true,
+        "implemented": true,
+        "ci_accepted": null,
+        "deployed": null
+      },
+      "evidence": {
+        "commit": null,
+        "completed_at": null,
+        "tests": 0,
+        "refs": 2
+      },
+      "links": {
+        "vis": [
+          "VIS-113"
+        ],
+        "exp": [
+          "EXP-113"
         ]
       },
       "variants": 0,

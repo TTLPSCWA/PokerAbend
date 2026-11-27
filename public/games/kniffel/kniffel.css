@@ -42,14 +42,93 @@
   .kn-sheet td.num { min-width: 44px; }
 }
 
-/* Spielwelt: hochwertiges Würfeltablett neben klarem Papier-Punkteblatt – Zeilenführung, Vorschau/Streichen/belegt unterscheidbar, Blatt scrollbar */
-.kn-stage { --wk-bg: linear-gradient(165deg, #1f4a38, #0e261c); --wk-edge:#bfe3cc55; --wk-accent:#f0d28a; --wk-max:900px; justify-items: stretch; }
-.kn-stage .kn-tray { background: #133126cc; border: 3px solid #5a3b1d; border-radius: 14px; box-shadow: inset 0 0 18px #000a; }
-.kn-stage .kn-sheet-wrap { overflow-x: auto; border-radius: 10px; }
-.kn-stage .kn-sheet tbody tr:nth-child(even) th, .kn-stage .kn-sheet tbody tr:nth-child(even) td { background-image: linear-gradient(#0000000d, #0000000d); }
+/* Die Würfel stehen bei jeder Größe über dem Punkteblatt. */
+.kg-kniffel .kg-players { padding-block: 4px; }
+.kg-kniffel .kg-main:not(.ring) { align-content: start; }
+.kg-kniffel .kn-stage {
+  --wk-bg: linear-gradient(165deg, #1f4a38, #0e261c);
+  --wk-edge: #bfe3cc55;
+  --wk-accent: #f0d28a;
+  --wk-max: 1000px;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: .5rem;
+  padding: clamp(8px, 1.2vw, 16px);
+}
+.kn-stage .wk-head { align-items: center; gap: .25rem .75rem; }
+.kn-stage .wk-title { font-size: clamp(20px, 2.4vw, 30px); }
+.kn-play { display: grid; gap: .45rem; min-inline-size: 0; }
+.kn-stage .kn-tray {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: .3rem clamp(.35rem, 1.5vw, 1.25rem);
+  padding: .4rem .6rem;
+  background: #133126cc;
+  border: 3px solid #5a3b1d;
+  border-radius: 14px;
+  box-shadow: inset 0 0 18px #000a;
+}
+.kn-tray > small { text-align: center; overflow-wrap: anywhere; }
+.kn-stage .kn-dice { flex-wrap: nowrap; gap: clamp(3px, 1vw, 8px); max-inline-size: 100%; }
+.kn-stage .kn-dice .die.big { --d: clamp(44px, 5vw, 52px); }
+.kn-slot small { min-height: 1em; }
+.kn-slot.kept { transform: none; }
+.kn-roll { max-inline-size: 100%; white-space: normal; }
+.kn-stage .kn-sheet-wrap {
+  inline-size: 100%;
+  max-block-size: clamp(11rem, calc(100dvh - 16rem), 43rem);
+  overflow: auto;
+  border-radius: 10px;
+  scrollbar-gutter: stable;
+  scroll-padding-block-start: 2.6rem;
+}
+.kn-sheet th:first-child { text-align: start; }
+.kn-sheet thead th { z-index: 3; white-space: normal; overflow-wrap: anywhere; }
+.kn-sheet thead th:first-child { inset-inline-start: 0; z-index: 4; }
+.kn-sheet tbody th {
+  inset-inline-start: 0;
+  z-index: 2;
+  max-inline-size: clamp(6.5rem, 16vw, 13rem);
+  white-space: normal;
+}
+.kn-stage .kn-sheet tbody tr:nth-child(even) th,
+.kn-stage .kn-sheet tbody tr:nth-child(even) td { background-image: linear-gradient(#0000000d, #0000000d); }
+.kn-stage .kn-sheet tr.kn-sum th { background-color: #EFE5CF; }
+.kn-stage .kn-sheet tr.total th { background-color: #E2D3B0; }
 .kn-stage .kn-pick.zero::after { content: ' ✕'; }
-.kn-stage button { min-height: 44px; }
+.kn-quick { display: grid; gap: .4rem; }
+.kn-quick-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.25rem), 1fr)); gap: .3rem; }
+.kn-quick-list button { white-space: normal; }
 
-/* Querformat: die gemeinsame Zweispalten-Aufteilung (Tablett | Blatt) bleibt, der Kopf spannt über beide Spalten und wird kompakt */
-.kn-stage > .wk-head { grid-column: 1 / -1; }
-@media (max-height: 560px) { .kn-stage { padding: 8px; gap: 6px; } .kn-stage .wk-eyebrow, .kn-stage .wk-chips { display: none; } .kn-stage .wk-title { font-size: 16px; } }
+@media (max-width: 620px) {
+  .kn-tray > small { flex-basis: 100%; }
+}
+@media (max-height: 560px) {
+  .kg-kniffel .kn-stage { padding: 8px; gap: 6px; }
+  .kn-stage .wk-head { display: none; }
+  .kn-sheet tbody th small { display: none; }
+}
+@media (min-width: 520px) and (max-height: 560px) and (orientation: landscape) {
+  .kg-kniffel[data-scene-layout='table'] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+  }
+  .kg-kniffel[data-scene-layout='table'] > .topbar,
+  .kg-kniffel[data-scene-layout='table'] > .kg-players { grid-column: 1 / -1; }
+  .kg-kniffel[data-scene-layout='table'] > .kg-main { grid-area: 3 / 1 / 4 / -1; }
+  .kg-kniffel[data-scene-layout='table'] > .kg-dock {
+    grid-area: 4 / 1 / 5 / -1;
+    max-block-size: 5rem;
+    border-inline-start: 0;
+    padding: 4px 8px calc(4px + env(safe-area-inset-bottom));
+  }
+}
+@media (min-width: 740px) and (max-height: 560px) {
+  #game-root .kg-kniffel > .topbar {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: 'left meta actions';
+  }
+  #game-root .kg-kniffel .top-right { justify-content: flex-end; }
+}

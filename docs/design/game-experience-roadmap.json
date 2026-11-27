@@ -1731,6 +1731,32 @@
       "sound": "Fackel erlischt mit Zischen, Etappe geschafft als Horn.",
       "animation": "Fackeln flackern ruhig (keine schnelle Helligkeit), Ausgeschiedene werden Zuschauer am Lagerfeuer.",
       "highlight": "Letzter Überlebender: Gipfelflagge."
+    },
+    {
+      "id": "EXP-112",
+      "game_id": "meme-duell",
+      "game_name": "Meme-Duell",
+      "priority": "P1",
+      "vis_id": "VIS-112",
+      "status": "planned",
+      "implementation_commit": null,
+      "world": "Eigenständige Bildmotive und fokussierte Kartenauswahl.",
+      "sound": "Kurzer Klang beim Aufdecken, mit Spiel- und Geräteeinstellung.",
+      "animation": "Anonyme Beiträge treten gemeinsam in den Vordergrund.",
+      "highlight": "Gewinner und Stimmen erscheinen beim Rundenabschluss."
+    },
+    {
+      "id": "EXP-113",
+      "game_id": "slot-arcade",
+      "game_name": "Slot Arcade",
+      "priority": "P1",
+      "vis_id": "VIS-113",
+      "status": "planned",
+      "implementation_commit": null,
+      "world": "Casino-Retro, Neon-Spielhalle und Drachen-Schatzkammer.",
+      "sound": "Einstellbare synthetische Walzen- und Gewinnsignale.",
+      "animation": "Dekoratives Abrollen nach feststehender Abrechnung.",
+      "highlight": "Balken oder Symbolpfade zeigen das tatsächliche Ergebnis."
     }
   ]
 }

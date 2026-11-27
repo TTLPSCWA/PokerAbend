@@ -5,7 +5,7 @@ const SALON = ['poker', 'omaha', 'omaha-hi-lo', 'seven-card-stud', 'short-deck',
 const KAMIN = ['maumau', 'skat', 'doppelkopf', 'durak', 'zehnetappen', 'sechs-nimmt', 'farbenchaos', 'stapelrennen', 'five-card-draw', 'exploding-deck',
   'kniffel', 'shutthebox', 'zehntausend', 'muehle', 'dame', 'reversi', 'schach', 'hex', 'viergewinnt', 'backgammon', 'scrabble', 'monopoly',
   'spiel-des-lebens', 'huetchen', 'labyrinth-brett', 'gebietskampf', 'staedtehandel', 'werhatdasgesagt', 'story-chaos', 'zahlenreihe', 'gedaechtnis-kueche'];
-const KNEIPE = ['maexchen', 'schocken', 'luegenwuerfel', 'risiko-wuerfeln', 'wuerfeljagd', 'wuerfelduell', 'monsterwuerfel', 'schlagfertig', 'wer-bin-ich', 'bildunterschrift'];
+const KNEIPE = ['maexchen', 'schocken', 'luegenwuerfel', 'risiko-wuerfeln', 'wuerfeljagd', 'wuerfelduell', 'monsterwuerfel', 'schlagfertig', 'wer-bin-ich', 'bildunterschrift', 'meme-duell'];
 const MEER = ['schwimmen', 'schiffe', 'domino', 'schatzinsel', 'schatzgraeber', 'letzter-schutzplatz', 'kistenchaos'];
 const STADTREGEN = ['scotland-yard', 'doppelagent', 'kritzelpost', 'scheinwerfer-flucht', 'tickendes-paket', 'reaktor-notfall', 'sortierstation', 'pfeilfieber'];
 const WALD = ['werwolf', 'jaeger-schatten', 'labyrinth-chaos', 'survival-abend'];

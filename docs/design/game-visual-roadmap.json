@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08",
+  "updated_at": "2026-11-27",
   "audited_source_commit": "ef6511d76f78689fc525a63f6e3637c3f14f1252",
   "audit_hash_format": "SHA-256 of UTF-8 source with LF line endings at package.source_audit_commit, falling back to audited_source_commit",
   "authority": "Expliziter zweiphasiger Nutzerauftrag vom 31.10.2026; kein V2-Implementierungsauftrag. Ausdrücklicher Folgeauftrag für UNO, Skip-Bo und Phase 10 vom 31.10.2026. Ausdrücklicher UNO-Ultimate-/Spuknacht-Folgeauftrag vom 31.10.2026; keine Freigabe anderer Spiele. Expliziter Solo-Auftrag vom 31.10.2026: Sudoku, 2048 und Wellenwacht implementieren; neun weitere Solo-Spiele ausschließlich planen. Explicit BACKLOG-03 game, bot and visual-world authorization on 2026-11-01: Backgammon, Hearts and Five Card Draw only. Explicit BACKLOG-04 authorization: Scrabble, Omaha Hi/Lo, Short Deck Poker and Seven Card Stud with bots and individual visual worlds, 2026-11-01.",
@@ -26,12 +26,12 @@
     "docs/design/card-interaction-screenshots.json"
   ],
   "inventory": {
-    "playable_count": 107,
+    "playable_count": 109,
     "not_implemented_count": 0,
     "completed_visual_count": 107,
-    "open_playable_visual_count": 0,
-    "planned_visual_count": 0,
-    "total_visual_packages": 107,
+    "open_playable_visual_count": 2,
+    "planned_visual_count": 2,
+    "total_visual_packages": 109,
     "playable_game_ids": [
       "scotland-yard",
       "poker",
@@ -139,7 +139,9 @@
       "match-3",
       "schatzgraeber",
       "brueckenroulette",
-      "reaktor-notfall"
+      "reaktor-notfall",
+      "meme-duell",
+      "slot-arcade"
     ],
     "not_implemented_game_ids": [],
     "completed_visual_game_ids": [
@@ -394,10 +396,18 @@
     "VIS-104",
     "VIS-105",
     "VIS-106",
-    "VIS-107"
+    "VIS-107",
+    "VIS-112",
+    "VIS-113"
   ],
-  "effort_order": [],
-  "suggested_development_order": [],
+  "effort_order": [
+    "VIS-112",
+    "VIS-113"
+  ],
+  "suggested_development_order": [
+    "VIS-112",
+    "VIS-113"
+  ],
   "future_concepts_order": [],
   "public_roadmap_section_id": "neue-spielwelten",
   "verification": {
@@ -18095,6 +18105,182 @@
       ],
       "implementation_commit": "e9b9de8b38ebebb36162e5b17d953edbf9d49112",
       "completed_at": "2026-11-07"
+    },
+    {
+      "id": "VIS-112",
+      "game_id": "meme-duell",
+      "game_name": "Meme-Duell",
+      "category": "party",
+      "category_name": "Partyspiele",
+      "implementation_status": "playable",
+      "visual_status": "planned",
+      "implementation_authorized_now": false,
+      "inventory_source": "games/index.js",
+      "existing_visual_work": {
+        "level": "individual_world",
+        "evidence": [
+          "public/games/meme-duell/meme-duell.js",
+          "public/games/meme-duell/meme-duell.css"
+        ],
+        "assessment": "Eigenes Frontend vorhanden. Die formale Abnahme wartet auf den Commit und seine Nachweise."
+      },
+      "current_frontend_files": [
+        "public/games/meme-duell/meme-duell.js",
+        "public/games/meme-duell/meme-duell.css"
+      ],
+      "shared_frontend_files": [
+        "public/games/kit.js",
+        "public/responsive.css"
+      ],
+      "source_audit": [],
+      "current_design": "Grafische Signale in klaren Farbfeldern, Vorlagen als kompakte illustrative Karten.",
+      "planned_style": "Grafische Signale in klaren Farbfeldern, Vorlagen als kompakte illustrative Karten.",
+      "known_visual_weaknesses": [
+        "Ger?teabnahme und formale Aufnahme der Release-Nachweise stehen aus."
+      ],
+      "assessment_method": "Lokale Funktions- und Responsive-Pr?fung. Die vollst?ndige CI-Abnahme wird an den exakten Commit gebunden.",
+      "gameplay_summary": "Bild- und Textkarten, anonyme Stimmen und eigener Meme-Editor f?r drei bis zw?lf Personen.",
+      "background_concept": "Dunkle Partyfl?che, auf der die Farben der Bildvorlagen und Schrift sichtbar bleiben.",
+      "board_concept": "Kompakte Spielerliste ?ber Kartenwahl, Abstimmung und Rundenergebnis.",
+      "objects_concept": "Eigene Meme-Illustrationen, gestaffelte Textebenen und klar beschriftete Schieberegler.",
+      "status_and_actions": "Rundenphase und Status im Raum, Auswahl und Anonymit?t im zentralen Spielbereich.",
+      "mobile_concept": "Karten in einer oder mehreren Spalten, Creator-Bedienung unter dem Bild.",
+      "individual_complex_board": false,
+      "required_states": [
+        "setup",
+        "playing",
+        "result",
+        "reconnect"
+      ],
+      "technical_constraints": [
+        "Serverautorisierte Raumregeln und private ansichtsbezogene Daten.",
+        "Bestehende Architektur und sichtbare Tastaturbedienung ber?cksichtigen."
+      ],
+      "existing_variants": [],
+      "effort": {
+        "min_hours": 5,
+        "max_hours": 8,
+        "level": "medium",
+        "basis": "Nachweissichtung und Ger?tepr?fung."
+      },
+      "acceptance_criteria": [
+        "Drei Modi bis zum Ergebnis spielen",
+        "Private Beitr?ge und Host-Uploads getrennt pr?fen"
+      ],
+      "common_acceptance_ids": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08",
+        "G09",
+        "G10"
+      ],
+      "depends_on": [
+        "VIS-001"
+      ],
+      "gameplay_prerequisite": {
+        "game_id": "meme-duell",
+        "source": "games/index.js",
+        "status": "playable",
+        "requires_separate_authorization": true
+      },
+      "screenshots": [],
+      "test_results": [],
+      "commits": [],
+      "implementation_commit": null,
+      "completed_at": null
+    },
+    {
+      "id": "VIS-113",
+      "game_id": "slot-arcade",
+      "game_name": "Slot Arcade",
+      "category": "einzelspieler",
+      "category_name": "Einzelspieler",
+      "implementation_status": "playable",
+      "visual_status": "planned",
+      "implementation_authorized_now": false,
+      "inventory_source": "games/singleplayer/index.js",
+      "existing_visual_work": {
+        "level": "individual_world",
+        "evidence": [
+          "public/singleplayer/slots-runtime.js",
+          "public/singleplayer/slots.css"
+        ],
+        "assessment": "Eigenes Frontend vorhanden. Die formale Abnahme wartet auf den Commit und seine Nachweise."
+      },
+      "current_frontend_files": [
+        "public/singleplayer/slots-runtime.js",
+        "public/singleplayer/slots.css"
+      ],
+      "shared_frontend_files": [
+        "public/singleplayer.js",
+        "public/singleplayer/storage.js"
+      ],
+      "source_audit": [],
+      "current_design": "Klassischer Retro-Automat, Neon-Arkade und Drachen-Schatzkammer mit jeweils eigener Gestaltung.",
+      "planned_style": "Klassischer Retro-Automat, Neon-Arkade und Drachen-Schatzkammer mit jeweils eigener Gestaltung.",
+      "known_visual_weaknesses": [
+        "Ger?teabnahme und formale Aufnahme der Release-Nachweise stehen aus."
+      ],
+      "assessment_method": "Lokale Funktions- und Responsive-Pr?fung. Die vollst?ndige CI-Abnahme wird an den exakten Commit gebunden.",
+      "gameplay_summary": "Drei lokale Automaten mit verschiedenen Auszahlungsmechaniken und virtuellen Chips.",
+      "background_concept": "Gerahmte Automaten mit ausgestatteten B?hnen f?r Retro, Neon und Fantasy.",
+      "board_concept": "Walzen, Tasten und Erkl?rungen zu Gewinnlinie oder Symbolwegen unter einer klaren Maschinenwahl.",
+      "objects_concept": "Fr?chte, Sterne, Wilds und Runen als Symbole mit eindeutigem Gewinnstatus.",
+      "status_and_actions": "Einsatz, Guthaben, Freispiele und Ergebnis; barrierearme Tasten und sichtbarer Fokus.",
+      "mobile_concept": "Flexible Walzenspalten und kompakte virtuelle Einsatzwahl ohne horizontale Seiten?berbreite.",
+      "individual_complex_board": false,
+      "required_states": [
+        "setup",
+        "playing",
+        "result",
+        "reconnect"
+      ],
+      "technical_constraints": [
+        "Lokaler Einzelspielerbetrieb mit virtuellen Spielchips ohne Geldwert.",
+        "Bestehende Architektur und sichtbare Tastaturbedienung ber?cksichtigen."
+      ],
+      "existing_variants": [],
+      "effort": {
+        "min_hours": 6,
+        "max_hours": 9,
+        "level": "medium",
+        "basis": "Nachweissichtung und Ger?tepr?fung."
+      },
+      "acceptance_criteria": [
+        "Drei Automaten, Einzelbuchung pro Spin und Wiederladen",
+        "Bedienbarkeit mit Tastatur, Touch und reduzierter Bewegung"
+      ],
+      "common_acceptance_ids": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08",
+        "G09",
+        "G10"
+      ],
+      "depends_on": [
+        "VIS-001"
+      ],
+      "gameplay_prerequisite": {
+        "game_id": "slot-arcade",
+        "source": "games/singleplayer/index.js",
+        "status": "playable",
+        "requires_separate_authorization": true
+      },
+      "screenshots": [],
+      "test_results": [],
+      "commits": [],
+      "implementation_commit": null,
+      "completed_at": null
     }
   ],
   "order_history": [

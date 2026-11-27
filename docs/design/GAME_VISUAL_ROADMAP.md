@@ -10,6 +10,8 @@ BACKLOG-03 ist mit Bots, eigenen Materialien, sechs Bildschirmgrößen, echten M
 
 BACKLOG-04 ergänzt die ausdrücklich freigegebenen Spielwelten VIS-050, VIS-051, VIS-052 und VIS-066 mit 64 Originalbildern, Regeltests und echter Mehrspieler-/Bot-Abnahme. Details und echte Commits: [Backlog-Protokoll](../backlog/WEITERE_SPIELE.md). Die hier implementierten Spiele benutzen vorhandene Raum-Spieler-IDs; parallele Identitäts- und V2-Arbeiten bleiben getrennt. Keine weitere Freigabe.
 
+Die zwei V4-Spiele bringen den Katalog auf 109. VIS-112 und VIS-113 sind neue Designnachweise. Die Nummern 109 bis 111 bleiben wegen bereits belegter EXP-IDs für Party-Funktionen frei. Die 107 früheren VIS-Nachweise bleiben historisch zugeordnet.
+
 ## Verbindliche Arbeitsweise
 
 Nur ein ausdrücklich freigegebenes Spiel bzw. VIS-Paket umsetzen. Ein Designpaket ist keine Gameplay-Freigabe und kein V2-Paket. Ausschließlich main; keine Branches/PRs, kein Force-Push, kein eigenständiges Produktivdeployment. Nach Umsetzung Status, echte Tests, ausgewählte dauerhafte Screenshots und Implementierungscommit ergänzen und stoppen. Details: [Designstandard](GAME_VISUAL_GUIDELINES.md).
@@ -2938,3 +2940,26 @@ Eigenes botanisches Symbolset ohne Farbzwang.
 - Grenzen: Lokaler Einzelspieler-Pfad ohne Socket.IO-Raum oder öffentliche Ergebnisübermittlung. Bestehende 49 Multiplayer-Spiele und ihre Persistenz bleiben erhalten. Implementierung nur nach ausdrücklicher eigener Freigabe.
 - Aufwand (nur Frontend): 12–20 Stunden.
 - Abnahme: Ungültiger Tausch wird zurückgesetzt Keine Endlosschleifen bei Kaskaden Mindestens ein gültiger Zug oder geregeltes Mischen
+
+### VIS-112 – Meme-Duell
+
+Spiel-ID: `meme-duell` · spielbar · formeller Designnachweis ausstehend.
+
+Bild- und Textkarten, anonyme Stimmen und eigener Meme-Editor für drei bis zwölf Personen.
+
+- Gestaltung: Grafische Signale in klaren Farbfeldern, Vorlagen als kompakte illustrative Karten.
+- Spielfläche: Kompakte Spielerliste über Kartenwahl, Abstimmung und Rundenergebnis.
+- Mobil: Karten in einer oder mehreren Spalten, Creator-Bedienung unter dem Bild.
+- Abnahme: Drei Modi bis zum Ergebnis spielen und private Beiträge und Host-Uploads getrennt prüfen.
+
+
+### VIS-113 – Slot Arcade
+
+Spiel-ID: `slot-arcade` · spielbar · formeller Designnachweis ausstehend.
+
+Drei lokale Automaten mit verschiedenen Auszahlungsmechaniken und virtuellen Chips.
+
+- Gestaltung: Klassischer Retro-Automat, Neon-Arkade und Drachen-Schatzkammer mit jeweils eigener Gestaltung.
+- Spielfläche: Walzen, Tasten und Erklärungen zu Gewinnlinie oder Symbolwegen unter einer klaren Maschinenwahl.
+- Mobil: Flexible Walzenspalten und kompakte virtuelle Einsatzwahl ohne horizontale Seitenüberbreite.
+- Abnahme: Drei Automaten, Einzelbuchung pro Spin, Wiederladen und Bedienbarkeit mit Tastatur, Touch und reduzierter Bewegung.

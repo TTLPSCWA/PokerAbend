@@ -1,0 +1,153 @@
+.singleplayer.slot-arcade {
+  container-type: inline-size;
+  max-width: 1050px;
+  background: #151c22;
+  border-color: #3c4851;
+  --sp-ink: #f2f0e9;
+  --sp-muted: #c6c9cf;
+}
+.slot-arcade [hidden] { display: none !important; }
+.slot-header p { color: var(--sp-muted); margin: .5rem 0 1.15rem; }
+.slot-choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: .55rem;
+  margin-bottom: .9rem;
+}
+.slot-choice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: .15rem .65rem;
+  align-content: center;
+  align-items: center;
+  min-height: 52px;
+  padding: .55rem .7rem;
+  text-align: start;
+  background: #232e37;
+  color: #fbf7ec;
+  border: 1px solid #52616c;
+  border-radius: .7rem;
+}
+.slot-choice > span { grid-row: span 2; color: #ffdb96; font-size: 1.45rem; }
+.slot-choice small { color: #dde2e4; }
+.slot-console {
+  --slot-accent: #ffca75;
+  --slot-paper: #ffe9ae;
+  --slot-ink: #63282c;
+  --slot-dark: #49262c;
+  --slot-dark-deep: #2c1c25;
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+  gap: .8rem;
+  padding: clamp(.65rem, 2.2cqi, 1.45rem);
+  border: 1px solid var(--slot-accent);
+  border-radius: 1rem;
+  background: radial-gradient(ellipse at 30% 0, var(--slot-dark), var(--slot-dark-deep) 75%);
+}
+.slot-console[data-machine="neon-nights"] {
+  --slot-accent: #9af9f6;
+  --slot-paper: #21213e;
+  --slot-ink: #e8d9ff;
+  --slot-dark: #443389;
+  --slot-dark-deep: #211b38;
+  background:
+    repeating-linear-gradient(135deg, transparent 0 14px, #7766b91e 14px 15px),
+    radial-gradient(ellipse at 22% 0, var(--slot-dark), var(--slot-dark-deep) 75%);
+}
+.slot-console[data-machine="dragons-fortune"] {
+  --slot-accent: #e9de91;
+  --slot-paper: #263934;
+  --slot-ink: #ffebac;
+  --slot-dark: #314a3e;
+  --slot-dark-deep: #182622;
+  background:
+    repeating-radial-gradient(ellipse at 50% -40%, transparent 0 34px, #c8b7721a 35px 36px),
+    radial-gradient(ellipse at 18% 0, var(--slot-dark), var(--slot-dark-deep) 75%);
+}
+.slot-marquee {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  grid-column: 1 / -1;
+  gap: .25rem .85rem;
+  padding: .15rem 0 .45rem;
+}
+.slot-marquee h2 { margin: 0; font: 700 clamp(1.55rem, 4cqi, 2.6rem)/1.12 Georgia, serif; color: var(--slot-accent); }
+[data-machine="neon-nights"] .slot-marquee h2 { font-family: system-ui, sans-serif; letter-spacing: .04em; }
+[data-machine="dragons-fortune"] .slot-marquee h2 { font-variant: small-caps; }
+.slot-marquee span { color: #f2eeea; font-size: .9rem; }
+
+.slot-reels {
+  display: grid;
+  grid-template-columns: repeat(var(--slot-columns), minmax(0, 1fr));
+  gap: clamp(3px, 1.25cqi, 10px);
+  padding: clamp(4px, 1.6cqi, 12px);
+  border: 1px solid var(--slot-accent);
+  border-radius: .7rem;
+  background: #0f121a;
+  position: relative;
+  overflow: clip;
+}
+.slot-reel { display: grid; gap: 4px; min-inline-size: 0; }
+.slot-symbol {
+  display: grid;
+  min-block-size: 2.15rem;
+  block-size: clamp(2.15rem, 7cqi, 4rem);
+  place-items: center;
+  color: var(--slot-ink);
+  background: linear-gradient(170deg, #fff2 10%, transparent 24% 80%, #0004), var(--slot-paper);
+  border: 2px solid transparent;
+  border-radius: min(.55rem, 2cqi);
+  font: 800 clamp(1rem, 4cqi, 2.45rem)/1.05 system-ui, sans-serif;
+  white-space: nowrap;
+}
+.slot-symbol[data-symbol="cherry"] { color: #99263d; font-size: clamp(.8rem, 3cqi, 1.6rem); transform: none; }
+.slot-symbol[data-symbol="bar"] { font-size: clamp(.65rem, 2cqi, 1.15rem); }
+.slot-symbol[data-symbol="scatter"], .slot-symbol[data-symbol="wild"] { color: #111930; background-color: #a9ece7; }
+.slot-symbol.is-win { border-color: var(--slot-accent); box-shadow: inset 0 0 0 2px #805618, inset 0 0 1rem #ffc34da0; }
+.slot-reels.is-rolling .slot-reel { animation: slot-reel-blur .15s var(--slot-delay) linear 3; }
+@keyframes slot-reel-blur { 0% { transform: translateY(-20%); opacity: .55; } 100% { transform: translateY(12%); opacity: 1; } }
+
+.slot-actions { display: flex; align-items: end; gap: .55rem; margin-block: .75rem .25rem; }
+.slot-actions label { display: grid; gap: .25rem; font-size: .91rem; }
+.slot-actions select {
+  background: #232b33;
+  color: #fff;
+  border: 1px solid #999;
+  border-radius: .4rem;
+  padding-inline: .45rem;
+}
+.slot-spin {
+  min-block-size: 44px;
+  flex: 1;
+  background: var(--slot-accent);
+  color: #172026;
+  border: 1px solid #fff8;
+  border-radius: .5rem;
+  padding: .25rem .55rem;
+  font: inherit;
+  font-weight: 800;
+}
+.slot-spin[aria-disabled=true] { cursor: default; }
+.slot-message { margin-block: .35rem; overflow-wrap: anywhere; }
+.slot-message[data-slot-error]:not(:empty) { color: #ffd192; }
+.slot-message:empty { margin: 0; }
+.slot-aside { min-inline-size: 0; border: 1px solid #ffffff4d; border-radius: .65rem; padding: .65rem; }
+.slot-balance { display: grid; border-bottom: 1px solid #ffffff66; padding-bottom: .45rem; }
+.slot-balance strong { font: 700 clamp(1.45rem, 4cqi, 2.7rem)/1.12 system-ui; overflow-wrap: anywhere; color: var(--slot-accent); }
+.slot-metrics { display: grid; gap: .35rem; margin-block: .55rem; }
+.slot-metrics div { display: flex; justify-content: space-between; gap: .35rem; }
+.slot-metrics dd { margin: 0; font-weight: bold; }
+.slot-wins h3 { margin-block: .25rem; font-size: .94rem; }
+.slot-wins ul, .slot-history, .slot-paytable { padding-inline-start: 1.2rem; }
+.slot-detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: .65rem; }
+.slot-setting { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem; margin-block: .4rem; }
+.slot-setting input[type=range] { width: min(100%, 12rem); min-block-size: 44px; }
+.slot-sr { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@container (max-width: 575px) {
+  .slot-console { grid-template-columns: minmax(0, 1fr); }
+  .slot-aside { display: grid; gap: .45rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr)); }
+  .slot-balance { border-bottom: 0; }
+  .slot-reel { gap: 2px; }
+}

@@ -11,6 +11,7 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import { GAMES } from '../games/index.js';
 import { BOTS } from '../games/bots.js';
+import { partyFeatureSharedSource } from './party-feature-audit.js';
 
 test('BACKLOG-04: four real game commits, private game roots and 64 original images back the completed packet',()=>{
   const read=p=>readFileSync(new URL('../'+p,import.meta.url)),plan=JSON.parse(read('docs/backlog/plan.json')),packet=plan.packages.find(p=>p.id==='BACKLOG-04');
@@ -34,7 +35,7 @@ test('BACKLOG-03: three completed implementations retain real source and image e
     assert.equal(game.implementation_commit,packet.implementation_commits[id]);assert.equal(manifest.implementation_commit,game.implementation_commit);
     assert.equal(manifest.screenshots.length,id==='backgammon'?12:id==='hearts'?16:30);
     for(const s of manifest.screenshots)assert.equal(createHash('sha256').update(read(s.path)).digest('hex'),s.sha256,s.path);
-    for(const s of game.source_audit)assert.equal(createHash('sha256').update(read(s.path).toString('utf8').replaceAll('\r\n','\n')).digest('hex'),s.sha256,s.path);
+    for(const s of game.source_audit)assert.equal(createHash('sha256').update(partyFeatureSharedSource(s.path).toString('utf8').replaceAll('\r\n','\n')).digest('hex'),s.sha256,s.path);
   }
 });
 import { CITY, neighbours, distances } from '../games/scotland-yard/map.js';

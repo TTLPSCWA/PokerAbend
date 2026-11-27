@@ -59,6 +59,27 @@
       <section><h2>Update ankündigen</h2><div id="update"></div></section>
       <section class="wide" id="mod-features"><h2>Funktionen &amp; Spiele</h2><p class="muted">Schalter gelten sofort und überstehen einen Neustart (gespeichert in <code>features.json</code>). „Zurücksetzen“ nimmt die Admin-Einstellung zurück; dann gilt die <code>.env</code> bzw. der Standard. Ausschalten löscht nie Daten; laufende Tische eines abgeschalteten Spiels spielen weiter.</p>
         <div class="scroll" id="feature-flags"></div><h2 style="margin-top:14px">Einzelne Spiele</h2><div class="row"><input id="feature-filter" placeholder="Spiel suchen" maxlength="40" aria-label="Spiel suchen"><label class="muted"><input type="checkbox" id="feature-off-only"> nur ausgeschaltete</label></div><div class="scroll" id="feature-games"></div></section>
+      <section class="wide" id="mod-memes" hidden><h2>Meme-Duell</h2>
+        <p class="muted">Externe Charts liefern Anhaltspunkte für die Prüfung. Im Spiel erscheinen freigegebene Beiträge mit eingebauten Motiven.</p>
+        <p class="row"><button type="button" id="meme-provider"></button><button type="button" id="meme-refresh">Charts abrufen</button><span id="meme-chart-date"></span></p>
+        <details><summary>Imgflip-Charts und Quellen</summary><div class="scroll" id="meme-chart"></div></details>
+        <details><summary>Beitrag zur Prüfung erfassen</summary>
+        <form class="row" id="meme-create">
+          <label>Paket <select name="type"><option value="community">Community</option><option value="trending">Trending</option></select></label>
+          <label>Motiv <select name="template" required></select></label>
+          <label>Titel DE <input required name="titleDe" maxlength="70"></label>
+          <label>Titel EN <input required name="titleEn" maxlength="70"></label>
+          <label>Situation DE <input required name="situationDe" maxlength="180"></label>
+          <label>Situation EN <input required name="situationEn" maxlength="180"></label>
+          <label>Textkarte DE <input required name="captionDe" maxlength="160"></label>
+          <label>Textkarte EN <input required name="captionEn" maxlength="160"></label>
+          <label>Quellenlink <input required type="url" name="source" maxlength="500"></label>
+          <label>Lizenz oder eigene Rechte <input required name="license" maxlength="220"></label>
+          <label><input name="extended" type="checkbox"> Erweiterter Humor</label>
+          <button type="submit">Zur Prüfung erfassen</button>
+        </form></details>
+        <div class="scroll" id="meme-entries"></div>
+      </section>
       <section class="wide"><h2>Offene Räume</h2><div class="scroll" id="rooms"></div></section>
       <section><h2>Datendateien</h2><div id="files"></div></section>
       <section><h2>Übernommene alte Statistiken</h2><div class="scroll" id="claims"></div></section>

@@ -9,7 +9,7 @@ import {resolvedRoadmap} from '../games/roadmap.js';
 
 test('single player is a separate catalog; only registered multiplayer games provide room events and programs',()=>{
   assert.ok(Object.keys(GAMES).length>=58);assert.equal(Object.keys(PLAYABLE_GAMES).length,Object.keys(GAMES).length+singleplayerGameList().length);
-  assert.deepEqual(singleplayerGameList().map((g)=>g.id).sort(),['2048','block-puzzle','mahjong-solitaire','match-3','memory','minesweeper','nonogramm','snake','sokoban','solitaire','sudoku','wellenwacht']);
+  assert.deepEqual(singleplayerGameList().map((g)=>g.id).sort(),['2048','block-puzzle','mahjong-solitaire','match-3','memory','minesweeper','nonogramm','slot-arcade','snake','sokoban','solitaire','sudoku','wellenwacht']);
   for(const g of singleplayerGameList()){assert.equal(g.local,true);assert.equal(g.minPlayers,1);assert.equal(g.maxPlayers,1);assert.equal(GAMES[g.id],undefined);assert.equal(g.create,undefined);assert.ok(g.art.includes('<svg'));}
   assert.ok(!gameEvents().some((e)=>e.startsWith('singleplayer')));
   const planned=PLANNED.filter((p)=>p.paeckchen==='solo-zukunft');assert.equal(planned.length,0,'alle neun Solo-Pakete sind umgesetzt');

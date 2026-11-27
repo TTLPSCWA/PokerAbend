@@ -125,8 +125,12 @@ for (const [game, variant] of cases) test(`Card worlds ${game}/${variant}: state
       await page.reload(); await expect.poll(() => page.evaluate(() => lastState?.phase)).toBe('playing');
     }
     if (game === 'farbenchaos' && variant !== 'classic') {
+      // Keep the live room steady while exercising a presentation-only card fixture.
+      await emit(page, 'gamePause', { paused: true });
+      await expect.poll(() => page.evaluate(() => lastState?.gamePaused)).toBe(true);
+      await expect(watcher.locator('#game-pause-banner')).toBeVisible();
       await page.evaluate((variant) => {
-        const S = structuredClone(lastState); S.turnId = S.you.id;
+        const S = structuredClone(lastState); S.turnId = S.you.id; S.gamePaused = false;
         if (variant === 'flip') {
           Object.assign(S.g, { side: 1, colors: ['p','t','o','v'], top: '7p', hand: ['7p','Ww'], playable: ['7p','Ww'], drawBack: '7r', pending: 0, wish: null });
           S.g.inactiveHands = Object.fromEntries(S.players.filter((p) => p.inRound && p.id !== S.you.id).map((p) => [p.id, ['7r','Lb']]));
@@ -154,7 +158,11 @@ for (const [game, variant] of cases) test(`Card worlds ${game}/${variant}: state
         await expect(page.locator('[data-g="target"]')).toHaveCount(1);
       }
       await shot(page, 'fixture-variant-action');
-      await page.reload(); await expect.poll(() => page.evaluate(() => lastState?.phase)).toBe('playing');
+      await page.reload();
+      await expect.poll(() => page.evaluate(() => lastState?.gamePaused)).toBe(true);
+      await emit(page, 'gamePause', { paused: false });
+      await expect.poll(() => page.evaluate(() => lastState?.gamePaused)).toBe(false);
+      await expect(watcher.locator('#game-pause-banner')).toBeHidden();
     }
     await emit(page, 'gamePause', { paused: true });
     await expect(watcher.locator('#game-pause-banner')).toBeVisible(); await shot(page, 'paused');

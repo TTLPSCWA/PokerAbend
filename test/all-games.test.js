@@ -22,6 +22,7 @@ const NEEDS_HUMANS = {
   kritzelpost: 'Zeichnen und Schreiben brauchen Menschen (Bots sind dort ausgeschlossen)',
   bildunterschrift: 'Zeichnen und Schreiben brauchen Menschen (Bots sind dort ausgeschlossen)',
   'malen-raten': 'Zeichnen braucht Menschen (Bots sind dort ausgeschlossen)',
+  'meme-duell': 'Beiträge und Urteile kommen von Menschen. Die drei Modi prüft der eigene Raumtest.',
 };
 
 // Ein Ordner ist ein Spiel, wenn seine index.js eine Spieldefinition exportiert (id = Ordnername, create = Raum-Fabrik).

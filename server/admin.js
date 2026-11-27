@@ -14,7 +14,7 @@ const HOURS = 8;
 const dir = join(dirname(fileURLToPath(import.meta.url)), 'admin');
 const equal = (a, b) => { const x = Buffer.from(String(a)), y = Buffer.from(String(b)); return x.length === y.length && timingSafeEqual(x, y); };
 
-export function createAdmin({ password, secret, dataDir, secure = () => false, trustProxy = false, log, errors, system, version, rooms, closeRoom, online, announce, cancelUpdate, claims = () => [], undoClaim = () => null, tools = null, tickets = null, features = null }) {
+export function createAdmin({ password, secret, dataDir, secure = () => false, trustProxy = false, log, errors, system, version, rooms, closeRoom, online, announce, cancelUpdate, claims = () => [], undoClaim = () => null, tools = null, tickets = null, features = null, memePacks = null }) {
   const router = express.Router();
   const pwHash = createHash('sha256').update('admin:' + password).digest('hex');
   const sign = (payload) => createHmac('sha256', secret).update(`admin:${pwHash}:${payload}`).digest('base64url');
@@ -97,6 +97,31 @@ export function createAdmin({ password, secret, dataDir, secure = () => false, t
     catch (error) { res.status(error.status >= 400 && error.status < 600 ? error.status : 500).json({ error: error.status ? error.message : 'Das hat nicht geklappt' }); }
   };
   const q = (req, key, max = 80) => (typeof req.query[key] === 'string' ? req.query[key].slice(0, max) : '');
+  if (memePacks) {
+    api.get('/meme-packs', guard(() => memePacks.list()));
+    api.post('/meme-packs', guard(req => {
+      const entry = memePacks.create(req.body);
+      log.add('Meme-Beitrag zur Prüfung angelegt', entry.id);
+      return {ok:true, entry};
+    }));
+    api.post('/meme-packs/provider', guard(req => {
+      memePacks.configure(req.body.enabled);
+      log.add('Meme-Charts geändert', req.body.enabled ? 'an' : 'aus');
+      return {ok:true};
+    }));
+    api.post('/meme-packs/refresh', async (_req,res) => {
+      try {
+        const refreshed = await memePacks.refresh();
+        if (refreshed) log.add('Meme-Charts aktualisiert');
+        res.json({ok:true,refreshed});
+      } catch { res.status(502).json({error:'Abruf der Meme-Charts fehlgeschlagen'}); }
+    });
+    api.post('/meme-packs/:id/review', guard(req => {
+      const entry = memePacks.review(req.params.id, req.body.status, req.body.confirmed);
+      log.add('Meme-Beitrag geprüft', entry.id + ' ' + entry.status);
+      return {ok:true, entry};
+    }));
+  }
   if (tools) {
     api.get('/reviews', guard(() => tools.reviews.list()));
     api.get('/reviews/:id', guard((req) => tools.reviews.get(req.params.id)));

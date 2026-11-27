@@ -2,6 +2,16 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.30.0 – 27. November 2026
+
+Aus 107 Spielen sind **109** geworden.
+
+- **Meme-Duell** bietet drei Party-Modi für bis zu zwölf Personen: Textkarten zur Vorlage, Bildkarten zur Situation und einen Creator mit eigenen Texten. Der Host steuert Zeiten und Pakete. Private Bilder bleiben im Raum. Redaktionelle Beiträge erscheinen nach Prüfung im Admin-Bereich.
+- **Slot Arcade** bringt drei Solo-Automaten mit eigener Darstellung, Gewinnlinien oder 243 Gewinnwegen. Spielchips sind kostenlos und bleiben auf diesem Gerät. Die Spielstände enthalten Guthaben, Freispiele und Einstellungen.
+- **Kniffel** zeigt die Mitspielenden kompakt und hält Schnellwertung und Punkteblatt auch bei wenig Platz erreichbar. Die Würfel bleiben auch bei hoher Zoomstufe und im Querformat über dem Punkteblatt.
+- **Layout** berücksichtigt die verfügbare Fensterhöhe besser. Backgammon hält Spielfelder im Scrollbereich erreichbar. Bei Schwimmen bleibt die Regelhilfe bedienbar.
+- Die Browserprüfungen zum Discord-Logout und zu den UNO-Farbwahl-Ansichten warten auf den bestätigten Zustand.
+
 ## 3.29.0 – 26. November 2026
 
 - Sicherheit (SEC-SOCKET-01): Wer sich abmeldet, spielt in keinem offenen Tab desselben Browsers weiter. Auch eine abgelaufene Anmeldung oder ein entzogener Discord-Zugang sperrt bestehende Verbindungen; der Tab führt dann zur Anmeldung. Der Platz am Tisch bleibt wie bei einem Verbindungsabbruch einige Minuten frei und lässt sich nach der Neuanmeldung mit „Weiterspielen“ wieder übernehmen.

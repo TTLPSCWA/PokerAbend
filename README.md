@@ -24,7 +24,7 @@ Würfeln, Partyspielen und eigenen Spielwelten. Freunde einladen, Raumcode teile
   <img src="docs/design/screenshots/poker/desktop-table-1440x900.jpg" width="920" alt="Spieleabend: Pokertisch im Browser" />
 </p>
 
-<p align="center"><strong>95 Mehrspieler-Spiele · 12 lokale Solo-Spiele · 3 optionale Idle-Welten</strong></p>
+<p align="center"><strong>96 Mehrspieler-Spiele · 13 lokale Solo-Spiele · 3 optionale Idle-Welten</strong></p>
 
 <p align="center"><em>Die Idle-Welten sind auf einem Server nur mit expliziter Freigabe und korrekt eingerichtetem Schlüsselring aktiv.</em></p>
 
@@ -34,7 +34,7 @@ Würfeln, Partyspielen und eigenen Spielwelten. Freunde einladen, Raumcode teile
 
 | Zusammen spielen | Auch allein weiterspielen |
 | --- | --- |
-| **Raumcodes & Einladungslinks** – Freunde treten direkt einer gemeinsamen Partie bei. | **12 Solo-Spiele** – darunter Sudoku, 2048, Snake, Wellenwacht und Mahjong Solitaire. |
+| **Raumcodes & Einladungslinks** – Freunde treten direkt einer gemeinsamen Partie bei. | **13 Solo-Spiele** – darunter Sudoku, 2048, Snake, Wellenwacht und Mahjong Solitaire. |
 | **Server als Schiedsrichter** – Aktionen, Karten, Würfel und Ergebnisse werden zentral geprüft. | **3 eigenständige Idle-Spiele** – Die Spielhalle, Game Studio Tycoon und Factory Empire (optional aktivierbar). |
 | **Bots, Zuschauer und Reconnect** – je nach Spiel und unterstützten Funktionen. | **Browserfreundlich** – responsive Layouts für kleine Handys bis hin zu Ultrawide-Monitoren. |
 
@@ -137,7 +137,7 @@ npm run test:fast
 
 ## Projektstand und Arbeitsweise
 
-Spielesammlung mit 107 Spielen: 95 Online-/Partyspiele für die Freundesgruppe und 12 lokale Solo-Spiele. Die Version steht in `package.json` (jetzt **3.29.0**) und klein unter dem Schriftzug „Spieleabend“.
+Spielesammlung mit 109 Spielen: 96 Online-/Partyspiele für die Freundesgruppe und 13 lokale Solo-Spiele. Die Version steht in `package.json` (jetzt **3.30.0**) und klein unter dem Schriftzug „Spieleabend“.
 
 **Verbindlicher Entwicklungsworkflow** (ausführlich in [AGENTS.md](AGENTS.md) und [CLAUDE.md](CLAUDE.md)):
 

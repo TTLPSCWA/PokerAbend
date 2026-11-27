@@ -384,6 +384,7 @@ window.EN_GAMES = Object.fromEntries([
   ['wer-bin-ich', 'Who Am I?', 'Everyone can see your secret identity except you. Ask yes/no questions to find out who or what you are.'],
   ['kritzelpost', 'Doodle Relay', 'A word travels around the group as drawings and descriptions.'],
   ['bildunterschrift', 'Caption Contest', 'Write funny captions for pictures drawn by your group.'],
+  ['meme-duell', 'Meme Duel', 'Choose funny reactions, caption images or make your own memes.'],
   ['malen-raten', 'Draw & Guess', 'One person draws while everyone else guesses the secret word.'],
   ['broeckelboden', 'Crumbling Floor', 'The floor breaks under your feet. Keep moving and outlast the other players.'],
   ['kronenjagd', 'Crown Chase', 'Grab the crown, escape the others and score for every second you hold it.'],

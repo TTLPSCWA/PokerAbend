@@ -4,6 +4,10 @@ Der Index [roadmap-index.json](roadmap-index.json) führt alle Planungs- und Ent
 
 Der Index ist weder die öffentliche Roadmap im Hub (`games/roadmap.js`, ROADMAP-02) noch ein Auftrag: Ein Eintrag im Index gibt nichts frei. Umsetzungen brauchen weiterhin die ausdrückliche Freigabe der betreffenden ID.
 
+## Spieleabend V4
+
+Meme-Duell und Slot Arcade sind im Spielkatalog registriert. Die zugehörigen Designnachweise stehen unter VIS-112 und VIS-113. Das [Responsive-Audit](../design/RESPONSIVE.md) dokumentiert GLOBAL-RESPONSIVE-02 und KNIFFEL-BOARD-UX-02. Die Spielbeschreibungen und Abgrenzungen stehen unter [Meme-Duell](../meme-duell.md) und [Slot Arcade](../slot-arcade.md).
+
 ## Verwendung
 
 ```bash

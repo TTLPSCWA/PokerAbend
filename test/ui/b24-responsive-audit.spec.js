@@ -40,7 +40,7 @@ async function sweep(page, name, { shots = true, settle = 250 } = {}) {
 }
 
 const emit = async (p, event, data = {}) => p.evaluate(([e, d]) => send(e, d), [event, data]);
-const humanOnly = new Set(['wer-bin-ich', 'kritzelpost', 'bildunterschrift', 'malen-raten']);
+const humanOnly = new Set(['wer-bin-ich', 'kritzelpost', 'bildunterschrift', 'malen-raten', 'meme-duell']);
 // Layoutwechsel darf weder neu laden noch den Raum oder die eigene Identität verlieren.
 const mark = (p) => p.evaluate(() => { window.__b24Mark = Math.random(); return { mark: window.__b24Mark, code: lastState?.code, you: lastState?.you?.id, game: lastState?.game }; });
 const kept = (p, before) => p.evaluate((b) => window.__b24Mark === b.mark && lastState?.code === b.code && lastState?.you?.id === b.you && lastState?.game === b.game, before);
@@ -95,6 +95,10 @@ for (const id of Object.keys(GAMES).filter(only)) {
       entry.stateKept = await kept(page, before);
     } catch (e) { entry.failure = e.message; }
     record('game-' + id, entry);
+    expect(entry.failure, `${id}: audit reached the game`).toBeUndefined();
+    expect(entry.started, entry.startError || `${id}: actually started`).toBe(true);
+    expect(entry.stateKept, `${id}: resize kept room and player identity`).toBe(true);
+    expect(entry.errors, `${id}: browser errors`).toEqual([]);
   });
 }
 
@@ -116,6 +120,8 @@ for (const id of Object.keys(SINGLEPLAYER_GAMES).filter(only)) {
       entry.playing = await sweep(page, 'solo-' + id);
     } catch (e) { entry.failure = e.message; }
     record('solo-' + id, entry);
+    expect(entry.failure, `${id}: audit reached the game`).toBeUndefined();
+    expect(entry.errors, `${id}: browser errors`).toEqual([]);
   });
 }
 
@@ -125,7 +131,8 @@ for (const [id, flag, start] of [['spielhalle', 'idleHall', 'Spiel starten'], ['
     idleTest.use({ [flag]: true });
     idleTest(`Idle ${id} in allen Viewports`, async ({ page, app }) => {
       idleTest.setTimeout(180000);
-      const entry = { id };
+      const entry = { id, errors: [] };
+      page.on('pageerror', error => entry.errors.push(error.message));
       try {
         await page.setViewportSize({ width: 1280, height: 720 });
         await login(page, app);
@@ -136,6 +143,8 @@ for (const [id, flag, start] of [['spielhalle', 'idleHall', 'Spiel starten'], ['
         entry.playing = await sweep(page, 'idle-' + id);
       } catch (e) { entry.failure = e.message; }
       record('idle-' + id, entry);
+      expect(entry.failure, `${id}: audit reached the idle game`).toBeUndefined();
+      expect(entry.errors, `${id}: browser errors`).toEqual([]);
     });
   });
 }

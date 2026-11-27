@@ -33,6 +33,20 @@
 /* Auf sehr kleinen Flächen dürfen Ziele unter 44 px fallen, nie unter 24 px (WCAG 2.5.8). */
 @media (max-width: 374px) { :root { --rs-touch: 36px; } }
 
+/* Short game windows keep the scene above the controls without hiding nav.
+   Table/card games keep their own short-window layouts. */
+:root[data-rs-height=short] #game-root .kg:not(.cix-game):not([data-scene-layout=table]) > .topbar {
+  padding-block: 3px;
+}
+:root[data-rs-height=short] #game-root .kg:not(.cix-game):not([data-scene-layout=table]) > .kg-players {
+  padding-block: 4px;
+}
+:root[data-rs-keyboard=open] :where(dialog[open]:modal) :is(input, textarea, select) {
+  scroll-margin-block: 1rem;
+}
+:where(#game-root) .kg-main:has(.wk-stage):not(.ring) { place-items: safe start center; }
+:where(#game-root) .kg-players > * { flex-shrink: 0; }
+
 /* ---------- Grundschutz gegen Überbreite ---------- */
 /* Lange Namen, Codes und Übersetzungen umbrechen statt die Seite zu verbreitern. */
 .hub-main, #game-root, dialog { overflow-wrap: break-word; }
