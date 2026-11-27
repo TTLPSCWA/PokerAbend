@@ -2,6 +2,10 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.30.2 – 27. November 2026
+
+- „Abendprogramm planen“ im Host-Menü eines laufenden Spiels erscheint nur noch mit aktiver Discord-Anmeldung, wenn die Discord-Exklusivität eingeschaltet ist. Der Server lehnt das Planen sonst ab.
+
 ## 3.30.1 – 27. November 2026
 
 - Die Admin-Seite lädt Meme-Charts gezielt. Beim Bearbeiten von Tickets und Rückblicken bleibt das Anfragelimit für die eigentlichen Verwaltungsaktionen verfügbar.

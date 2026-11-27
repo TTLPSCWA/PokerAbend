@@ -137,7 +137,7 @@ npm run test:fast
 
 ## Projektstand und Arbeitsweise
 
-Spielesammlung mit 109 Spielen: 96 Online-/Partyspiele für die Freundesgruppe und 13 lokale Solo-Spiele. Die Version steht in `package.json` (jetzt **3.30.1**) und klein unter dem Schriftzug „Spieleabend“.
+Spielesammlung mit 109 Spielen: 96 Online-/Partyspiele für die Freundesgruppe und 13 lokale Solo-Spiele. Die Version steht in `package.json` (jetzt **3.30.2**) und klein unter dem Schriftzug „Spieleabend“.
 
 **Verbindlicher Entwicklungsworkflow** (ausführlich in [AGENTS.md](AGENTS.md) und [CLAUDE.md](CLAUDE.md)):
 

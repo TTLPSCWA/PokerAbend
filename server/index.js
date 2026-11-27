@@ -1088,7 +1088,11 @@ io.on('connection', (socket) => {
     return { room: switchRoom(room, game) };
   });
 
-  on('programSave', (data, room, p) => { configureProgram(room, p.id, data); });
+  // SEC-DISCORD-UI-01: Abendprogramm planen gehört zu den Discord-Modulen; bei aktiver Exklusivität prüft jeder Aufruf die aktuelle Sitzung neu.
+  on('programSave', (data, room, p) => {
+    if (discordExclusive && !(discordOn() && discord.config.policyValid && discord.sessionReference(socket.request.headers.cookie, socket.data.accountId))) throw new Error('Für die Abendplanung ist eine aktive Discord-Anmeldung erforderlich.');
+    configureProgram(room, p.id, data);
+  });
   on('programBoardItem', (data, room, p) => boardItem(room, p.id, data));
   on('setVariant', ({ variant }, room, p) => {
     room.requireHost(p.id);

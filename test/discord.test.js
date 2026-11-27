@@ -543,3 +543,37 @@ test('A04: abgelaufene und inaktive Sitzungen im Altbestand sperren Module trotz
     }
   } finally { await restored.stop(); }
 });
+
+test('SEC-DISCORD-UI-01: Abendprogramm planen per Socket nur mit aktiver Discord-Sitzung, solange die Exklusivität gilt', async () => {
+  const { io } = await import('socket.io-client');
+  const entries = { mode: 'playlist', entries: [{ game: 'schaetzmeister', settings: { rounds: 1 } }] };
+  for (const exclusive of [true, false]) {
+    const server = await startApp({
+      DISCORD_EXCLUSIVE_MODULES: exclusive ? 'on' : 'off', DISCORD_CLIENT_ID: CLIENT, DISCORD_CLIENT_SECRET: SECRET,
+      DISCORD_API_BASE: fake.base + '/api', DISCORD_AUTHORIZE_URL: fake.base + '/oauth2/authorize',
+    });
+    const sockets = [];
+    const open = async (b, name) => {
+      const socket = io(server.url, { transports: ['websocket'], forceNew: true, reconnection: false, extraHeaders: { cookie: b.header() } });
+      sockets.push(socket);
+      const created = await socket.timeout(4000).emitWithAck('create', { game: 'schaetzmeister', name });
+      assert.equal(created.ok, true, created.error);
+      return socket;
+    };
+    try {
+      const guest = await browser(server).password(), member = await browser(server).password();
+      await member.discord(fake, { user: '100000000000000001' });
+      const guestSocket = await open(guest, 'Gast'), memberSocket = await open(member, 'Mitglied');
+      const plain = await guestSocket.timeout(4000).emitWithAck('programSave', entries);
+      assert.equal(plain.ok, !exclusive, `Passwort-Login ohne Discord, exklusiv=${exclusive}: ${plain.error}`);
+      if (exclusive) assert.match(plain.error, /Discord/);
+      const linked = await memberSocket.timeout(4000).emitWithAck('programSave', entries);
+      assert.equal(linked.ok, true, linked.error);
+      if (exclusive) { // Sitzung endet während des Spiels: der Zugriff entfällt sofort
+        await member.post('/auth/discord/logout');
+        const after = await memberSocket.timeout(4000).emitWithAck('programSave', entries).catch(() => ({ ok: false }));
+        assert.equal(after.ok, false);
+      }
+    } finally { sockets.forEach((s) => s.close()); await server.stop(); }
+  }
+});

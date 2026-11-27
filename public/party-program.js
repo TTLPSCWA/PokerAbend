@@ -1,6 +1,8 @@
 // Päckchen 7: eigener Dialog, damit Live-Updates die Playlist-Eingaben nicht überschreiben.
 'use strict';
 const PROGRAM_LABELS = { abend: 'Abend-Modus · alle Spiele', mix: 'Party-Mix', turnier: 'Party-Turnier', playlist: 'Eigene Playlist', team: 'Team-Duell', 'party-brett': 'Party-Brett', 'survival-abend': 'Survival-Abend' };
+// SEC-DISCORD-UI-01: Abendprogramm planen gehört zu den Discord-Modulen; ohne aktive Sitzung (bei aktiver Exklusivität) weder sichtbar noch bedienbar.
+const programPlanAllowed = () => DiscordAccess.allowed();
 const programRunning = (S) => ['running', 'between'].includes(S.partyProgram?.status);
 const programBusy = (S) => S.phase === 'playing' || !!(S.hand && !S.hand.done);
 const programSeated = (S) => S.players ? S.players.filter((p) => p.seated) : S.seats.filter(Boolean);
@@ -43,6 +45,7 @@ function programEntry(game, variant = 'classic') {
   return { game, settings, ...(variant !== 'classic' ? { variant } : {}) };
 }
 function programControlsHTML(S) {
+  if (!programPlanAllowed()) return '';
   const p = S.partyProgram, active = programRunning(S);
   return I18n.html`<section class="program-controls" aria-label="Abendprogramm"><h3>Gemeinsamer Spieleabend</h3>
     <p class="hint">${p ? `${esc(p.config.name)} · ${uiText(PROGRAM_LABELS[p.config.mode])}` : 'Karten, Würfel, Brett und Partyspiele verbinden – mit gemeinsamer Abendwertung.'}</p>
@@ -143,6 +146,7 @@ document.addEventListener('change', (e) => {
 document.addEventListener('submit', async (e) => {
   if (e.target.id !== 'program-form') return;
   e.preventDefault();
+  if (!programPlanAllowed()) { $('#program-error').textContent = 'Dafür ist eine aktive Discord-Anmeldung erforderlich'; return; }
   const r = await send('programSave', programDraft);
   if (r?.ok) { programDialog().close(); $('.kg-over [data-kit="closeResult"]')?.click(); toast('Programm vorbereitet – jetzt kann der Host starten'); }
   else $('#program-error').textContent = r?.error || 'Programm konnte nicht gespeichert werden';
@@ -151,7 +155,7 @@ document.addEventListener('click', async (e) => {
   const b = e.target.closest('[data-program], [data-program-add], [data-program-remove], [data-program-up], [data-program-down], [data-program-preset-save], [data-program-preset-load]');
   if (!b || b.disabled) return;
   const action = b.dataset.program;
-  if (action === 'plan') return openProgramPlan();
+  if (action === 'plan') { if (!programPlanAllowed()) return; return openProgramPlan(); }
   if (action === 'stand') {
     const d = programDialog(); d.setAttribute('aria-label', 'Programm-Gesamtwertung'); d.removeAttribute('aria-labelledby');
     d.innerHTML = programStandHTML(lastState) + I18n.html('<button type="button" class="btn btn-brass" data-program-close>Schließen</button>'); d.showModal(); return;

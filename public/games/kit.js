@@ -470,7 +470,7 @@ function kitGame(def) {
       ${S.partyProgram?.status === 'done' && !eveningDone ? programStandHTML(S) : ''}
       <div class="kg-over-acts">
         <button class="btn btn-ghost" data-kit="closeResult">Schließen</button>
-        ${host && S.partyProgram?.status === 'done' ? I18n.html('<button type="button" class="btn btn-brass" data-program="plan">Neues Programm planen</button>') : host ? I18n.html`<button class="btn" data-kit="switchPanel">Spiel wechseln</button><button class="btn btn-brass" data-kit="start" ${seatedCount() >= S.minPlayers ? '' : 'disabled'}>${S.partyProgram?.status === 'between' ? I18n.t('Nächstes Programm-Spiel') : I18n.html`Nächste ${RW}`}</button>`
+        ${host && S.partyProgram?.status === 'done' ? (DiscordAccess.allowed() ? I18n.html('<button type="button" class="btn btn-brass" data-program="plan">Neues Programm planen</button>') : '') : host ? I18n.html`<button class="btn" data-kit="switchPanel">Spiel wechseln</button><button class="btn btn-brass" data-kit="start" ${seatedCount() >= S.minPlayers ? '' : 'disabled'}>${S.partyProgram?.status === 'between' ? I18n.t('Nächstes Programm-Spiel') : I18n.html`Nächste ${RW}`}</button>`
           : I18n.html('<span class="waiting">Der Host startet die nächste Runde.</span>')}
       </div></div></div>`;
   }
@@ -511,7 +511,7 @@ function kitGame(def) {
       const pending = p?.status === 'ready' || programRunning(S);
       const enough = pending ? seatedCount() > 0 : seatedCount() >= S.minPlayers;
       const label = p?.status === 'ready' ? I18n.t('Abendprogramm starten') : p?.status === 'between' ? I18n.t('Nächstes Programm-Spiel') : programRunning(S) ? I18n.t('Partie wiederholen') : S.phase === 'over' ? I18n.t('Nochmal') : S.roundNo ? I18n.html`Nächste ${RW}` : I18n.html`${RW} starten`;
-      parts.push(p?.status === 'done' ? I18n.html('<button type="button" class="btn btn-brass" data-program="plan">Programm planen</button>') : `<button class="btn btn-brass" data-kit="start" ${enough ? '' : `disabled title="Es müssen mindestens ${S.minPlayers} mitspielen"`}>${label}</button>`);
+      parts.push(p?.status === 'done' ? (DiscordAccess.allowed() ? I18n.html('<button type="button" class="btn btn-brass" data-program="plan">Programm planen</button>') : '') : `<button class="btn btn-brass" data-kit="start" ${enough ? '' : `disabled title="Es müssen mindestens ${S.minPlayers} mitspielen"`}>${label}</button>`);
       if (S.phase === 'over') parts.push(`<button class="btn" data-kit-panel="host">${programRunning(S) ? I18n.t('Programm verwalten') : I18n.t('Anderes Spiel …')}</button>`);
     }
     const row = `<div class="kg-dock-row">${parts.join('')}</div>`;

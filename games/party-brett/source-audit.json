@@ -76,11 +76,11 @@
     },
     {
       "path": "public/party-program.js",
-      "sha256": "4e20039499a6d694cac3a3d2289de1b4b6bcd46db3a11e1160111e3319d5ffcf"
+      "sha256": "67ae196e83ae658789afe06a63cd7523b26a6475d0077655228ebe739b8e57a6"
     },
     {
       "path": "server/index.js",
-      "sha256": "6a1792c8d15efe988af209d7fc7f5fd056e189e1db1c6540d3c045f4535eef75"
+      "sha256": "7011d18738fb7105ac68906d72571d3a9bf149a0fc62dfb3163ee54c72076517"
     },
     {
       "path": "server/party-program.js",
