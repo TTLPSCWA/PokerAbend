@@ -141,13 +141,13 @@ $('#mod-memes').addEventListener('click', async e => {
     await loadMemePacks();
   } catch (error) { bad(error); }
 });
-async function loadTools() { await Promise.all([loadReviews(), loadBoard(), loadPlayers(), loadTickets(), loadFeatures(), loadMemePacks()].map((p) => p.catch(bad))); }
+async function loadTools() { await Promise.all([loadReviews(), loadBoard(), loadPlayers(), loadTickets(), loadFeatures()].map((p) => p.catch(bad))); }
 async function load() {
   try { const s = await call('/status'); $('#login').hidden = true; $('#app').hidden = false; render(s); }
   catch (e) { if (!$('#app').hidden) say(e.message, true); }
 }
 function showLogin() { $('#app').hidden = true; $('#login').hidden = false; clearInterval(timer); timer = null; }
-function start() { clearInterval(timer); timer = setInterval(load, 5000); load(); loadTools(); }
+function start() { clearInterval(timer); timer = setInterval(load, 5000); load(); loadTools(); loadMemePacks().catch(bad); }
 
 $('#login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -155,7 +155,7 @@ $('#login-form').addEventListener('submit', async (e) => {
   catch (err) { $('#login-error').textContent = err.message; }
 });
 $('#logout').addEventListener('click', async () => { await call('/logout', 'POST', {}).catch(() => {}); showLogin(); });
-$('#refresh').addEventListener('click', () => { load(); loadTools(); });
+$('#refresh').addEventListener('click', () => { load(); loadTools(); loadMemePacks().catch(bad); });
 for (const [id, fn] of [['#board-form', loadBoard], ['#player-search', loadPlayers], ['#ticket-filter', loadTickets]]) $(id).addEventListener('submit', (e) => { e.preventDefault(); fn().catch(bad); });
 $('#merge-form').addEventListener('submit', async (e) => {
   e.preventDefault();

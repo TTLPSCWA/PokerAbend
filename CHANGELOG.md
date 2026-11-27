@@ -2,6 +2,11 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.30.1 – 27. November 2026
+
+- Die Admin-Seite lädt Meme-Charts gezielt. Beim Bearbeiten von Tickets und Rückblicken bleibt das Anfragelimit für die eigentlichen Verwaltungsaktionen verfügbar.
+- Die Schaltfläche „Charts abrufen“ bleibt auch bei deaktivierten Charts lesbar.
+
 ## 3.30.0 – 27. November 2026
 
 Aus 107 Spielen sind **109** geworden.

@@ -18,9 +18,9 @@ Private Bilder liegen innerhalb der bestehenden Raumsicherung. Der Host kann bis
 
 ## Externe Vorlagen
 
-Offizielle GIPHY-Endpunkte liefern aktuelle Trends. GIPHY verlangt Attribution, schränkt das Zwischenspeichern und Wiederhosten ein und sieht direkte Client-Aufrufe vor. Die derzeitige Plattform nutzt ausschließlich Verbindungen zu sich selbst und übernimmt keine GIPHY-Medien. [GIPHY API und Integrationsregeln](https://developers.giphy.com/docs/api/)
+Offizielle GIPHY-Endpunkte liefern aktuelle Trends. GIPHY verlangt Attribution, schränkt das Zwischenspeichern und Wiederhosten ein und sieht direkte Client-Aufrufe vor. Spieleabend bindet GIPHY weder im Browser ein noch übernimmt es Medien von GIPHY. [GIPHY API und Integrationsregeln](https://developers.giphy.com/docs/api/)
 
-Imgflip `get_memes` liefert einen Katalog populärer Vorlagen. Die Liste allein belegt weder aktuelle Trends noch die Nutzungsrechte einzelner Motive. Eine Bildübernahme erfordert eine gesonderte Prüfung. [Imgflip API](https://imgflip.com/api) · [Imgflip Nutzungsbedingungen](https://imgflip.com/terms)
+Der optionale, standardmäßig deaktivierte Imgflip-Abruf speichert Namen, Rang, Quelle und Beobachtungszeit der Vorlagen. Bei aktivierter Schnittstelle prüft der Server stündlich auf einen fälligen Abruf und lädt bei Erfolg höchstens einmal täglich. Die Redaktion sieht Neueinträge und größere Rangänderungen erst im Vergleich mit einem früheren Abruf. Die Liste allein belegt weder allgemeine aktuelle Trends noch Nutzungsrechte. Vorlagenbilder werden dabei nicht heruntergeladen oder für das Spiel übernommen. [Imgflip API](https://imgflip.com/api) · [Imgflip Nutzungsbedingungen](https://imgflip.com/terms)
 
 Unter `/admin` lassen sich deutsch- und englischsprachige Beiträge für Community und Trending erfassen. Zur Freigabe sind Quellen- und Lizenzangabe, ein eingebautes Motiv sowie die ausdrückliche Bestätigung der Rechte und der Inhaltseignung erforderlich. Beiträge werden standardmäßig als ungeprüft gespeichert. Eine Deaktivierung verhindert die Auswahl bei künftigen Partien. Die Bibliothek liegt in `meme-packs.json` im normalen Datenverzeichnis.
 
