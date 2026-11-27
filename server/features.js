@@ -9,6 +9,7 @@
 // werden nicht abgebrochen; es lassen sich nur keine neuen anlegen und das Spiel verschwindet aus den Listen.
 import { existsSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { sortGames } from '../games/game-sort.js';
 
 export const FLAGS = {
   discord: { env: 'FEATURE_DISCORD', label: 'Anmeldung mit Discord', fallback: true, hint: 'Aus: kein Discord-Knopf, die Discord-Routen antworten 404, Discord-Sitzungen geben keinen Zugang mehr. Wirkt nur, wenn Discord in der .env eingerichtet ist.' },
@@ -30,7 +31,7 @@ export function parseGameList(value) {
   return [...new Set(String(value ?? '').split(/[\s,;]+/).map((s) => s.trim().toLowerCase()).filter((s) => ID.test(s)))];
 }
 
-export function createFeatures({ dir, env = process.env, knownGames = [], warn = (text) => console.warn(text) } = {}) {
+export function createFeatures({ dir, env = process.env, knownGames = [], gameMeta = () => ({}), warn = (text) => console.warn(text) } = {}) {
   const known = new Set(knownGames);
   const envFlag = {};
   for (const [name, def] of Object.entries(FLAGS)) {
@@ -74,7 +75,7 @@ export function createFeatures({ dir, env = process.env, knownGames = [], warn =
     describe() {
       return {
         flags: FLAG_NAMES.map((name) => ({ name, label: FLAGS[name].label, hint: FLAGS[name].hint, value: flagValue(name), source: flagSource(name), envName: FLAGS[name].env, baseline: envFlag[name] !== null ? envFlag[name] : FLAGS[name].fallback })),
-        games: [...known].sort().map((id) => ({ id, enabled: gameOn(id), source: gameSource(id), baseline: !envOff.includes(id) })),
+        games: sortGames([...known].map((id) => ({ id, name: id, category: 'karten', ...gameMeta(id), enabled: gameOn(id), source: gameSource(id), baseline: !envOff.includes(id) }))),
       };
     },
     // value true/false setzt die Admin-Einstellung, null nimmt sie zurück (dann gilt .env bzw. Standard)
@@ -85,6 +86,17 @@ export function createFeatures({ dir, env = process.env, knownGames = [], warn =
       if (value === null) delete saved.flags[name]; else saved.flags[name] = value;
       persist();
       return { name, value: flagValue(name), changed: before !== flagValue(name), source: flagSource(name) };
+    },
+    // ADMIN-GAMES-01: mehrere Spiele auf einmal (erst alle prüfen, dann einmal speichern)
+    setGames(ids, value) {
+      if (!Array.isArray(ids) || !ids.length || ids.length > 500) throw Object.assign(new Error('Bitte eine Liste von Spielen angeben'), { status: 400 });
+      if (typeof value !== 'boolean') throw Object.assign(new Error('Bitte an oder aus angeben'), { status: 400 });
+      const unique = [...new Set(ids)];
+      unique.forEach(checkGame);
+      const changed = unique.filter((id) => gameOn(id) !== value);
+      for (const id of unique) saved.games[id] = value;
+      persist();
+      return { ids: unique, changed };
     },
     setGame(id, value) {
       checkGame(id);

@@ -4,6 +4,9 @@
 /* global io */
 'use strict';
 const $ = (sel, el = document) => el.querySelector(sel);
+// ADMIN-GAMES-01: eine Sortierung für alle Spielelisten (deutsch, Zahlen numerisch); Kategorien bleiben getrennt
+const GAME_COLLATOR = new Intl.Collator('de', { sensitivity: 'base', numeric: true });
+const byGameName = (a, b) => GAME_COLLATOR.compare(a.name || a.id, b.name || b.id);
 const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 // Use only for system labels. Player-supplied text must continue to use esc().
@@ -625,7 +628,7 @@ function leaderboardInner(r, pre = 'lb') {
   const periods = ranked
     ? [['week', I18n.t('Diese Woche')], ['month', I18n.t('Dieser Monat')], ['all', I18n.t('Alles')]]
     : [['all', I18n.t('Alle Abende')], ...(r.months.includes(r.current) ? r.months : [r.current, ...r.months]).map((m) => [m, monthName(m)])];
-  const games = ranked ? [{ id: 'all', name: I18n.t('Alle Spiele zusammen') }, ...r.games] : r.games;
+  const games = ranked ? [{ id: 'all', name: I18n.t('Alle Spiele zusammen') }, ...[...r.games].sort(byGameName)] : [...r.games].sort(byGameName);
   const filters = I18n.html`<div class="lb-filters">
       <label class="field lb-wide"><span>Ansicht</span><select id="${pre}-view" class="input" data-${pre}><option value="ranked" ${ranked ? 'selected' : ''}>${I18n.t('Gewertet (Ranked)')}</option><option value="stats" ${ranked ? '' : 'selected'}>${I18n.t('Statistik, unbestätigt (alle Partien)')}</option></select></label>
       <label class="field"><span>Spiel</span><select id="${pre}-game" class="input" data-${pre}>${games.map((g) => `<option value="${esc(g.id)}" ${g.id === r.game ? 'selected' : ''}>${esc(g.name)}</option>`).join('')}</select></label>

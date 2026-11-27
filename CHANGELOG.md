@@ -2,6 +2,12 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.31.0 – 27. November 2026
+
+- Die Adminseite verwaltet alle Spiele zentral: nach Kategorie gruppiert, innerhalb A–Z, mit Suche, Filter „Alle / Aktiv / Ausgeblendet“ und Sammelaktionen (alle oder je Kategorie, mit Bestätigung). Einzelspieler- und Idle-Spiele lassen sich jetzt ebenfalls ausblenden. Laufende Tische bleiben unberührt.
+- Neuer Bereich „Seiten & Endpunkte“ auf der Adminseite: alle Seiten mit Links, alle Routen mit Methode und Zugriffsschutz.
+- Spielelisten, Host-Wechsel und Auswahlfelder sind einheitlich von A–Z sortiert (deutsch, Zahlen numerisch). Favoriten und „Zuletzt gespielt“ behalten ihre Vorrang-Reihenfolge.
+
 ## 3.30.2 – 27. November 2026
 
 - „Abendprogramm planen“ im Host-Menü eines laufenden Spiels erscheint nur noch mit aktiver Discord-Anmeldung, wenn die Discord-Exklusivität eingeschaltet ist. Der Server lehnt das Planen sonst ab.

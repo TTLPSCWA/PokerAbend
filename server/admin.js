@@ -14,7 +14,7 @@ const HOURS = 8;
 const dir = join(dirname(fileURLToPath(import.meta.url)), 'admin');
 const equal = (a, b) => { const x = Buffer.from(String(a)), y = Buffer.from(String(b)); return x.length === y.length && timingSafeEqual(x, y); };
 
-export function createAdmin({ password, secret, dataDir, secure = () => false, trustProxy = false, log, errors, system, version, rooms, closeRoom, online, announce, cancelUpdate, claims = () => [], undoClaim = () => null, tools = null, tickets = null, features = null, memePacks = null }) {
+export function createAdmin({ password, secret, dataDir, secure = () => false, trustProxy = false, log, errors, system, version, rooms, closeRoom, online, announce, cancelUpdate, claims = () => [], undoClaim = () => null, tools = null, tickets = null, features = null, memePacks = null, catalog = () => ({ pages: [], endpoints: [] }) }) {
   const router = express.Router();
   const pwHash = createHash('sha256').update('admin:' + password).digest('hex');
   const sign = (payload) => createHmac('sha256', secret).update(`admin:${pwHash}:${payload}`).digest('base64url');
@@ -153,6 +153,12 @@ export function createAdmin({ password, secret, dataDir, secure = () => false, t
   // ---- V2-10: Funktionen und Spiele ein-/ausschalten (gilt sofort; „zurücksetzen“ führt auf .env bzw. Standard zurück)
   if (features) {
     api.get('/features', guard(() => features.describe()));
+    api.post('/features/games', guard((req) => {
+      const r = features.setGames(req.body.ids, req.body.value);
+      log.add(req.body.value ? 'Spiele eingeblendet' : 'Spiele ausgeblendet', `${r.changed.length} von ${r.ids.length}${r.ids.length <= 8 ? ': ' + r.ids.join(', ') : ''}`);
+      return { ok: true, ...r, ...features.describe() };
+    }));
+    api.get('/catalog', guard(() => catalog()));
     api.post('/features/:name', guard((req) => {
       const value = req.body.value === null ? null : req.body.value;
       const r = features.set(req.params.name, value);

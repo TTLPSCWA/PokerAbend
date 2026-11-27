@@ -17,6 +17,8 @@ import { configureReviewedMemeCards } from '../games/meme-duell/room.js';
 import { maintenance, assertNewRoundAllowed } from './maintenance.js';
 import { versionInfo, createAdminLog, createClientErrors, createSystemSampler, cleanClientError, changelogReleases } from './ops.js';
 import { createAdmin } from './admin.js';
+import { buildCatalog } from './admin-catalog.js';
+import { sortGames, CATEGORY_LABELS } from '../games/game-sort.js';
 import { createAdminTools } from './admin-tools.js';
 import { resolvedRoadmap } from '../games/roadmap.js';
 import { loadPublicRoadmap, loadRoadmapBuildProof, publicRoadmap } from '../games/public-roadmap.js';
@@ -117,7 +119,11 @@ const accounts = createAccountStore(DATA_DIR, {
 });
 idle.assertAccountHistory(accounts.loadedFromDisk);
 // Feature-Flags (V2-10): .env (FEATURE_*, DISABLED_GAMES) und /admin → Funktionen; Standard: nichts ändert sich, nur die Kamera ist aus
-const features = createFeatures({ dir: DATA_DIR, knownGames: [...Object.keys(GAMES), ...Object.keys(SINGLEPLAYER_GAMES)] });
+const IDLE_META = { spielhalle: 'Die Spielhalle', studio: 'Game Studio Tycoon', factory: 'Factory Empire' };
+const features = createFeatures({
+  dir: DATA_DIR, knownGames: [...Object.keys(GAMES), ...Object.keys(SINGLEPLAYER_GAMES), ...Object.keys(IDLE_META)],
+  gameMeta: (id) => IDLE_META[id] ? { name: IDLE_META[id], category: 'idle', kind: 'idle' } : GAMES[id] ? { name: GAMES[id].name, category: GAMES[id].category || 'karten', kind: 'multiplayer', variants: GAMES[id].variants?.length || 0 } : { name: SINGLEPLAYER_GAMES[id]?.name || id, category: 'einzelspieler', kind: 'solo' },
+});
 const discordOn = () => !!discord && features.enabled('discord');
 const discordExclusive = parseSwitch(process.env.DISCORD_EXCLUSIVE_MODULES) === true;
 const notEnabled = (id) => `${GAMES[id]?.name || SINGLEPLAYER_GAMES[id]?.name || id} ist gerade ausgeschaltet`;
@@ -330,8 +336,8 @@ app.get('/me', (req, res) => {
     minPlayers: 1, maxPlayers: 1, duration: 15, art: '<span class="factory-emblem" aria-hidden="true">⚙</span>',
     description: 'Baue Produktionsstraßen, versorge Maschinen mit Strom und verbinde vier Regionen.',
     descriptionEn: 'Build production lines, power your machines and connect four regions.',
-  }].filter(({ id }) => idle.availableGames().includes(id));
-  res.json({ mode: MODE, discord: { enabled: discordOn(), login: discordOn() && !!discord.config.guildId }, discordAccess: discordAccess(req), features: { ranked: features.enabled('ranked'), camera: features.enabled('camera') }, version: VERSION.version, commit: VERSION.short, games: features.filterGames(gameList()), singleplayerGames: features.filterGames(singleplayerGameList()), idleGames, planned: plannedGames(), partyTeamGames: programGames(true).map((g) => g.id), partyDefaults: programDefaults(), programOptions: Object.fromEntries(Object.values(GAMES).map((g) => [g.id, programOptions(g)])) });
+  }].filter(({ id }) => idle.availableGames().includes(id) && features.gameEnabled(id));
+  res.json({ mode: MODE, discord: { enabled: discordOn(), login: discordOn() && !!discord.config.guildId }, discordAccess: discordAccess(req), features: { ranked: features.enabled('ranked'), camera: features.enabled('camera') }, version: VERSION.version, commit: VERSION.short, games: sortGames(features.filterGames(gameList())), singleplayerGames: sortGames(features.filterGames(singleplayerGameList())), idleGames: sortGames(idleGames), planned: plannedGames(), partyTeamGames: programGames(true).map((g) => g.id), partyDefaults: programDefaults(), programOptions: Object.fromEntries(Object.values(GAMES).map((g) => [g.id, programOptions(g)])) });
 });
 app.get('/api/whats-new', (_req, res) => {
   res.setHeader('Cache-Control', 'no-store');
@@ -358,6 +364,7 @@ if (ADMIN_PASSWORD) {
     password: ADMIN_PASSWORD, secret: SECRET, dataDir: DATA_DIR, secure: isSecure, trustProxy: TRUST_PROXY, log: adminLog, errors: clientErrors,
     system: sampler, version: VERSION, rooms: () => adminRooms(), closeRoom: (code) => adminCloseRoom(code), online: () => adminOnline(),
     announce: (minutes, by) => announceUpdate(minutes, by), cancelUpdate: () => cancelUpdate(), features, memePacks,
+    catalog: () => buildCatalog({ app, publicDir: PUBLIC_DIR, categories: Object.entries(CATEGORY_LABELS) }),
     tickets: ticketAPI.admin, tools: createAdminTools({ reviews, leaderboard, accounts, mergeAccounts, changed: () => { leaderboard.save(); save(); } }),
     claims: () => leaderboard.claims().map((c) => ({ key: c.key, name: c.name, by: c.by, gameId: accounts.get(c.claimedBy)?.gameId || '', claimedAt: c.claimedAt })),
     undoClaim: (key) => { const info = leaderboard.unclaim(key); if (!info) return null; save(); return { name: info.name, gameId: accounts.get(info.claimedBy)?.gameId || '' }; },

@@ -84,14 +84,29 @@ function renderFeatures() {
   $('#feature-flags').innerHTML = `<table><thead><tr><th>Funktion</th><th>Zustand</th><th>Quelle</th><th></th></tr></thead><tbody>${featureState.flags.map((f) => `<tr><td><b>${esc(f.label)}</b><br><span class="muted">${esc(f.hint)}</span></td>
     <td><b class="${f.value ? 'good' : 'bad'}">${f.value ? 'an' : 'aus'}</b></td><td>${esc(SOURCE[f.source])}${f.source === 'admin' ? `<br><span class="muted">sonst: ${f.baseline ? 'an' : 'aus'}</span>` : ''}</td>
     <td class="row"><button class="${f.value ? 'danger' : ''}" type="button" data-flag="${esc(f.name)}" data-value="${f.value ? 0 : 1}" data-label="${esc(f.label)}">${f.value ? 'Ausschalten' : 'Einschalten'}</button>${f.source === 'admin' ? `<button class="ghost" type="button" data-flag="${esc(f.name)}" data-value="reset" data-label="${esc(f.label)}">Zurücksetzen</button>` : ''}</td></tr>`).join('')}</tbody></table>`;
-  const q = $('#feature-filter').value.trim().toLowerCase(), offOnly = $('#feature-off-only').checked;
-  const games = featureState.games.filter((g) => (!q || g.id.includes(q)) && (!offOnly || !g.enabled));
-  $('#feature-games').innerHTML = games.length ? `<table><thead><tr><th>Spiel</th><th>Zustand</th><th>Quelle</th><th></th></tr></thead><tbody>${games.map((g) => `<tr><td><code>${esc(g.id)}</code></td><td><b class="${g.enabled ? 'good' : 'bad'}">${g.enabled ? 'an' : 'aus'}</b></td><td>${esc(SOURCE[g.source])}</td>
-    <td class="row"><button class="${g.enabled ? 'danger' : ''}" type="button" data-game="${esc(g.id)}" data-value="${g.enabled ? 0 : 1}">${g.enabled ? 'Ausschalten' : 'Einschalten'}</button>${g.source === 'admin' ? `<button class="ghost" type="button" data-game="${esc(g.id)}" data-value="reset">Zurücksetzen</button>` : ''}</td></tr>`).join('')}</tbody></table>` : '<p class="muted">Keine Treffer.</p>';
+  const q = $('#feature-filter').value.trim().toLowerCase(), view = $('#feature-view').value;
+  const games = featureState.games.filter((g) => (!q || g.id.includes(q) || (g.name || '').toLowerCase().includes(q)) && (view === 'all' || (view === 'on') === g.enabled));
+  const CAT = { karten: 'Karten', wuerfel: 'Würfel', brett: 'Brett', party: 'Party', einzelspieler: 'Einzelspieler', idle: 'Idle' };
+  const cats = Object.keys(CAT).map((c) => [c, games.filter((g) => g.category === c)]).filter(([, list]) => list.length);
+  $('#feature-games').innerHTML = cats.length ? cats.map(([c, list]) => `<h3>${CAT[c]} <span class="muted">(${list.filter((g) => g.enabled).length}/${list.length} aktiv)</span> <button type="button" class="danger" data-bulk="off" data-cat="${c}">Kategorie ausblenden</button> <button type="button" data-bulk="on" data-cat="${c}">Kategorie einblenden</button></h3><div class="scroll"><table><thead><tr><th>Spiel</th><th>Zustand</th><th>Quelle</th><th></th></tr></thead><tbody>${list.map((g) => `<tr><td><b>${esc(g.name)}</b> <code>${esc(g.id)}</code>${g.variants > 1 ? ` <span class="muted">${g.variants} Varianten</span>` : ''}</td><td><b class="${g.enabled ? 'good' : 'bad'}">${g.enabled ? 'aktiv' : 'ausgeblendet'}</b></td><td>${esc(SOURCE[g.source])}</td><td class="row"><button class="${g.enabled ? 'danger' : ''}" type="button" data-game="${esc(g.id)}" data-value="${g.enabled ? 0 : 1}">${g.enabled ? 'Ausblenden' : 'Einblenden'}</button>${g.source === 'admin' ? `<button class="ghost" type="button" data-game="${esc(g.id)}" data-value="reset">Zurücksetzen</button>` : ''}</td></tr>`).join('')}</tbody></table></div>`).join('') : '<p class="muted">Keine Spiele gefunden.</p>';
 }
 async function loadFeatures() { featureState = await call('/features'); renderFeatures(); }
 $('#feature-filter').addEventListener('input', renderFeatures);
-$('#feature-off-only').addEventListener('change', renderFeatures);
+$('#feature-view').addEventListener('change', renderFeatures);
+$('#mod-features').addEventListener('click', async (e) => {
+  const b = e.target.closest('button[data-bulk]'); if (!b || !featureState) return;
+  const on = b.dataset.bulk === 'on', cat = b.dataset.cat;
+  const ids = featureState.games.filter((g) => !cat || g.category === cat).map((g) => g.id);
+  const label = cat ? `Kategorie „${cat}“` : 'Alle Spiele';
+  if (!await confirmDialog(`${label} ${on ? 'einblenden' : 'ausblenden'}?`, `${ids.length} Spiele werden ${on ? 'wieder sichtbar' : 'aus den Listen genommen. Laufende Tische spielen weiter, neue lassen sich nicht anlegen'}. Daten bleiben erhalten.`, on ? 'Einblenden' : 'Ausblenden')) return;
+  try { featureState = await call('/features/games', 'POST', { ids, value: on }); renderFeatures(); say(`${label}: ${on ? 'eingeblendet' : 'ausgeblendet'}`); load(); } catch (err) { bad(err); }
+});
+async function loadEndpoints() {
+  const data = await call('/catalog');
+  const rows = (items, withMethod) => items.map((e) => `<tr><td>${withMethod ? `<code>${esc(e.method)}</code>` : ''}</td><td>${e.link ? `<a href="${esc(e.path)}" target="_blank" rel="noopener">${esc(e.title)}</a> <code>${esc(e.path)}</code>` : `<code>${esc(e.path)}</code>`}</td><td>${esc(e.protection)}${e.changes ? ' · ändert Daten' : ''}</td></tr>`).join('');
+  const groups = [...new Set([...data.pages, ...data.endpoints].map((e) => e.group))];
+  $('#endpoint-list').innerHTML = groups.map((g) => { const p = data.pages.filter((e) => e.group === g), a = data.endpoints.filter((e) => e.group === g); return `<h3>${esc(g)}</h3><table><thead><tr><th>Methode</th><th>Seite / Pfad</th><th>Zugriffsschutz</th></tr></thead><tbody>${rows(p, false)}${rows(a, true)}</tbody></table>`; }).join('');
+}
 $('#mod-features').addEventListener('click', async (e) => {
   const b = e.target.closest('button[data-flag],button[data-game]'); if (!b) return;
   const value = b.dataset.value === 'reset' ? null : b.dataset.value === '1';
@@ -141,7 +156,7 @@ $('#mod-memes').addEventListener('click', async e => {
     await loadMemePacks();
   } catch (error) { bad(error); }
 });
-async function loadTools() { await Promise.all([loadReviews(), loadBoard(), loadPlayers(), loadTickets(), loadFeatures()].map((p) => p.catch(bad))); }
+async function loadTools() { await Promise.all([loadReviews(), loadBoard(), loadPlayers(), loadTickets(), loadFeatures(), loadEndpoints()].map((p) => p.catch(bad))); }
 async function load() {
   try { const s = await call('/status'); $('#login').hidden = true; $('#app').hidden = false; render(s); }
   catch (e) { if (!$('#app').hidden) say(e.message, true); }

@@ -201,3 +201,53 @@ test('Server: abgeschaltetes Ranked → die Runde eines laufenden Tischs zeigt d
     assert.equal(st.ranked.ranked, false); assert.equal(st.ranked.reason, 'aus');
   } finally { s.close(); }
 });
+
+test('ADMIN-GAMES-01: Spieleverwaltung gruppiert nach Kategorie, A–Z, Sammelaktionen überstehen einen Neustart', () => {
+  const where = dir();
+  const meta = (id) => ({ blackjack: { name: 'Blackjack', category: 'karten' }, poker: { name: 'Poker', category: 'karten' }, maumau: { name: 'Äffchen 10', category: 'karten' }, sudoku: { name: 'Sudoku', category: 'einzelspieler' } }[id]);
+  const f = createFeatures({ dir: where, env: {}, knownGames: known, gameMeta: meta });
+  const d = f.describe();
+  assert.deepEqual(d.games.map((g) => g.id), ['maumau', 'blackjack', 'poker', 'sudoku'], 'Kategorie, darin A–Z (Ä wie A)');
+  assert.throws(() => f.setGames(['poker', 'nixda'], false), (e) => e.status === 404);
+  assert.equal(f.gameEnabled('poker'), true, 'bei einem Fehler ändert sich nichts');
+  assert.throws(() => f.setGames([], false), (e) => e.status === 400);
+  assert.throws(() => f.setGames(['poker'], null), (e) => e.status === 400);
+  assert.deepEqual(f.setGames(['poker', 'blackjack', 'poker'], false), { ids: ['poker', 'blackjack'], changed: ['poker', 'blackjack'] });
+  assert.deepEqual(f.setGames(['poker', 'maumau'], false).changed, ['maumau']);
+  const again = createFeatures({ dir: where, env: {}, knownGames: known, gameMeta: meta });
+  assert.deepEqual(again.disabledGames().sort(), ['blackjack', 'maumau', 'poker']);
+  again.setGames(known, true);
+  assert.deepEqual(again.disabledGames(), []);
+});
+
+test('ADMIN-GAMES-01: Admin-Sammelaktion und Katalog – geschützt, ohne Geheimnisse, sortiert, Idle-Spiele ausblendbar', async () => {
+  const v = await visitor();
+  assert.equal((await v.post('/admin/api/features/games', { ids: ['poker'], value: false })).status, 401);
+  assert.equal((await v.get('/admin/api/catalog')).status, 401);
+  await v.post('/admin/api/login', { password: 'Admin-Feat-2026' });
+  assert.equal((await v.post('/admin/api/features/games', { ids: ['poker'], value: false }, { 'x-requested-with': '' })).status, 403);
+  assert.equal((await v.post('/admin/api/features/games', { ids: ['nixda'], value: false })).status, 404);
+  const state = await (await v.get('/admin/api/features')).json();
+  const cats = ['karten', 'wuerfel', 'brett', 'party', 'einzelspieler', 'idle'];
+  assert.ok(state.games.every((g) => g.name && cats.includes(g.category)));
+  assert.ok(state.games.some((g) => g.category === 'idle') && state.games.some((g) => g.category === 'einzelspieler'));
+  const collator = new Intl.Collator('de', { sensitivity: 'base', numeric: true });
+  for (const c of cats) { const names = state.games.filter((g) => g.category === c).map((g) => g.name); assert.deepEqual(names, [...names].sort(collator.compare), c); }
+  const ids = state.games.filter((g) => g.category === 'wuerfel').map((g) => g.id);
+  const res = await (await v.post('/admin/api/features/games', { ids, value: false })).json();
+  assert.equal(res.ok, true); assert.equal(res.changed.length, ids.length);
+  const guest = await visitor();
+  const me = await (await guest.get('/me')).json();
+  assert.ok(!me.games.some((g) => ids.includes(g.id)));
+  const order = me.games.map((g) => g.category);
+  assert.deepEqual(order, [...order].sort((a, b) => cats.indexOf(a) - cats.indexOf(b)), '/me liefert Kategorien in fester Reihenfolge');
+  await v.post('/admin/api/features/games', { ids, value: true });
+  await v.post('/admin/api/features/games', { ids, value: null }).catch(() => {});
+  for (const id of ids) await v.post(`/admin/api/features/games/${id}`, { value: null });
+  const cat = await (await v.get('/admin/api/catalog')).json();
+  assert.ok(cat.pages.some((p) => p.path === '/admin' && p.link) && cat.pages.some((p) => p.path === '/#planung'));
+  assert.ok(cat.endpoints.some((e) => e.method === 'GET' && e.path === '/api/plans' && /Discord/.test(e.protection)));
+  assert.ok(cat.endpoints.some((e) => e.method === 'POST' && e.path === '/admin/api/features/games' && e.protection === 'Admin-Anmeldung' && e.changes));
+  assert.ok(cat.endpoints.every((e) => !e.link && /^\//.test(e.path)));
+  assert.ok(!JSON.stringify(cat).match(/Admin-Feat-2026|secret|token=/i), 'keine Geheimnisse im Katalog');
+});

@@ -375,7 +375,7 @@ const playersText = (g) => (g.minPlayers === g.maxPlayers ? I18n.html`${g.maxPla
 // Sortierung: Favoriten zuerst, dann zuletzt gespielt, dann alphabetisch; Geplantes ans Ende
 function sortGames(list) {
   const f = favs(), r = recent();
-  return [...list].sort((a, b) => (a.planned ? 1 : 0) - (b.planned ? 1 : 0) || f.has(b.id) - f.has(a.id) || (r[b.id] || 0) - (r[a.id] || 0) || displayName(a).localeCompare(displayName(b), I18n.locale));
+  return [...list].sort((a, b) => (a.planned ? 1 : 0) - (b.planned ? 1 : 0) || f.has(b.id) - f.has(a.id) || (r[b.id] || 0) - (r[a.id] || 0) || GAME_COLLATOR.compare(displayName(a), displayName(b)));
 }
 const visibleGames = () => filterGames(allGames());
 function filterGames(list) {
