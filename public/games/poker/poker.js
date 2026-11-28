@@ -14,6 +14,7 @@ $('#game-root').innerHTML = I18n.html`<div id="game" class="game" hidden>
     </div>
     <div class="meta" id="meta" aria-live="polite"></div>
     <div class="top-right">
+      <button type="button" class="btn btn-sm" id="poker-view3d" aria-pressed="false" hidden>3D</button>
       <button class="btn btn-sm freeze-btn" id="freeze-btn" data-do="freeze" hidden></button>
       <nav class="topnav" aria-label="Seitenleisten">
         <button class="nav-btn" data-panel="log"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>Verlauf</span></button>
@@ -27,6 +28,21 @@ $('#game-root').innerHTML = I18n.html`<div id="game" class="game" hidden>
   <section id="poker-program" hidden></section>
   <section class="table-wrap">
     <button class="help-btn" data-help aria-label="Kurzregeln und Hausregeln" title="Kurzregeln">?</button>
+    <section class="poker-3d" id="poker-three" hidden aria-label="3D">
+      <div class="td-surface" id="poker-3d-stage"></div>
+      <div class="td-controls" id="poker-3d-angles" hidden>
+        <button type="button" class="btn btn-sm" data-poker-angle="home">Gesamter Tisch</button>
+        <button type="button" class="btn btn-sm" data-poker-angle="seat">Mein Platz</button>
+        <button type="button" class="btn btn-sm" data-poker-angle="board">Gemeinschaftskarten</button>
+        <button type="button" class="btn btn-sm" data-poker-angle="pot">Pot</button>
+      </div>
+      <details class="poker-3d-inspect" id="poker-chip-inspect" hidden>
+        <summary>Chipstapel ansehen</summary>
+        <label><span>Stapel auswählen</span> <select class="input" id="poker-chip-select"></select></label>
+        <output id="poker-chip-details"></output>
+      </details>
+    </section>
+    <p class="td-status poker-3d-status" id="poker-3d-status" role="status"></p>
     <div class="table" id="table">
       <div class="rail"></div>
       <div class="felt">
@@ -112,6 +128,123 @@ let raiseValue = null;
 let raiseKey = null;
 let panel = null;
 let actionSeq = 0;
+
+let poker3DView, poker3DFrame, poker3DImport;
+let poker3DStatus = 'idle';
+let chipSelection = [];
+const poker3DActive = () => session?.game === 'poker' && !parked && !$('#game-root').hidden &&
+  !!S?.code && S.code === session.code && store.get('poker:three-d:poker',false) && !motionOff();
+
+function poker3DLayout(value) {
+  poker3DStatus = value;
+  const enabled = value === 'ready';
+  const button = $('#poker-view3d');
+  const supportedGame = session?.game === 'poker';
+  button.hidden = !supportedGame;
+  button.setAttribute('aria-pressed',String(enabled));
+  button.textContent = enabled || value === 'loading' ? '2D' : '3D';
+  button.setAttribute('aria-label', enabled || value === 'loading'
+    ? I18n.content('Zur 2D-Ansicht','Switch to 2D') : I18n.content('3D-Ansicht öffnen','Open 3D view'));
+  $('#game').classList.toggle('poker-3d-live',enabled);
+  $('#poker-three').hidden = !enabled && value !== 'loading';
+  $('#poker-3d-angles').hidden = !enabled;
+  $('#poker-chip-inspect').hidden = !enabled;
+  $('#poker-3d-status').textContent = !supportedGame ? '' :
+    value === 'loading' ? I18n.content('3D-Ansicht lädt','Loading 3D view') :
+    value === 'unavailable' ? I18n.content('3D ist auf diesem Gerät gerade nicht verfügbar. Du kannst in 2D weiterspielen.','3D is unavailable on this device. You can keep playing in 2D.') :
+    value === 'reduced' ? I18n.content('3D ist bei reduzierter Bewegung aus.','3D is off while motion is reduced.') : '';
+}
+function showPokerStack(key, focusCamera = false) {
+  const entry = chipSelection.find(stack => stack.key === key);
+  const output = $('#poker-chip-details');
+  if (!entry) { output.textContent = ''; return; }
+  const numbers = entry.values.map(({count,value}) => count.toLocaleString(I18n.locale) + ' × ' + value.toLocaleString(I18n.locale));
+  output.textContent = numbers.join(' · ') + ' = ' + entry.amount.toLocaleString(I18n.locale);
+  if (focusCamera) poker3DView.action(key);
+}
+function refreshPokerStacks(model, breakdown) {
+  const {view,text} = model;
+  const list = [];
+  function add(key,caption,amount) {
+    if (amount > 0) list.push({key,caption,amount,values:breakdown(amount,view.blind)});
+  }
+  view.seats.forEach((seat,i) => {
+    if (!seat) return;
+    add('stack-' + i,seat.name + ' · ' + text.stack,seat.stack);
+    add('bet-' + i,seat.name + ' · ' + text.bet,seat.bet);
+  });
+  view.pots.forEach((amount,i) => add('pot-' + i,i ? text.side + ' ' + i : text.main,amount));
+  const select = $('#poker-chip-select');
+  const choice = select.value;
+  if (JSON.stringify(list) !== JSON.stringify(chipSelection)) {
+    chipSelection = list;
+    select.replaceChildren(new Option(I18n.content('Stapel auswählen','Choose a stack'),''),
+      ...list.map(item => new Option(item.caption + ' · ' + amt(item.amount),item.key)));
+    if (list.some(item=>item.key===choice))select.value=choice;
+  }
+  showPokerStack(select.value);
+  $('#poker-3d-angles [data-poker-angle="seat"]').disabled = view.mySeat === null;
+}
+function syncPoker3D() {
+  if (!poker3DActive()) {
+    poker3DView?.dispose();
+    poker3DLayout(session?.game === 'poker' && store.get('poker:three-d:poker',false) && motionOff() ? 'reduced' : 'idle');
+    return;
+  }
+  if (poker3DStatus === 'unavailable') return;
+  if (!poker3DFrame) {
+    if (poker3DImport) return;
+    poker3DLayout('loading');
+    poker3DImport = import('/games/poker/table-3d.js').then(({pokerView,frameForPoker,pokerChips})=>{
+      poker3DView = pokerView({
+        active:poker3DActive,onStatus:poker3DLayout,onPick(key) {
+          if (!chipSelection.some(item=>item.key===key)) return;
+          $('#poker-chip-select').value=key;
+          $('#poker-chip-inspect').open=true;
+          showPokerStack(key,true);
+        },
+      });
+      poker3DFrame = {frameForPoker,pokerChips};
+      if (poker3DActive()) syncPoker3D();
+    }).catch(()=>{if(poker3DActive())poker3DLayout('unavailable');}).finally(()=>{poker3DImport=null;});
+    return;
+  }
+  const labels = {
+    home:['Gesamter Tisch','Whole table'],seat:['Mein Platz','My seat'],
+    board:['Gemeinschaftskarten','Community cards'],pot:['Pot','Pot'],
+  };
+  for (const button of $$('#poker-3d-angles [data-poker-angle]')) button.textContent = I18n.content(...labels[button.dataset.pokerAngle]);
+  $('#poker-chip-inspect summary').textContent=I18n.content('Chipstapel ansehen','Inspect chips');
+  $('#poker-chip-inspect label span').textContent=I18n.content('Stapel auswählen','Choose a stack');
+  const text = {
+    main:I18n.content('Hauptpot','Main pot'),side:I18n.content('Nebenpot','Side pot'),
+    stack:I18n.content('Guthaben','Stack'),bet:I18n.content('Einsatz','Bet'),
+  };
+  const model = poker3DFrame.frameForPoker(S,prefs,text);
+  refreshPokerStacks(model,poker3DFrame.pokerChips);
+  poker3DView.sync($('#poker-3d-stage'),model);
+}
+$('#poker-view3d').addEventListener('click',()=>{
+  const enabled = poker3DStatus !== 'ready' && poker3DStatus !== 'loading';
+  if (enabled && poker3DStatus === 'unavailable') { poker3DView?.dispose(); poker3DLayout('idle'); }
+  store.set('poker:three-d:poker',enabled);
+  syncPoker3D();
+});
+$('#poker-3d-angles').addEventListener('click',event=>{
+  const action=event.target.closest('[data-poker-angle]')?.dataset.pokerAngle;
+  if(action)poker3DView?.action(action);
+});
+$('#poker-chip-select').addEventListener('change',event=>showPokerStack(event.target.value,true));
+$('#poker-three').addEventListener('keydown',event=>{
+  const details=$('#poker-chip-inspect');
+  if(event.key!=='Escape'||!details.open)return;
+  event.stopPropagation();
+  details.open=false;
+  poker3DView?.action('home');
+  details.querySelector('summary').focus();
+});
+matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',syncPoker3D);
+
 
 // ---------- Hilfen ----------
 function amt(n) {
@@ -310,6 +443,7 @@ function render() {
   renderSeb();
   checkGifts();
   renderGamePause(S);
+  syncPoker3D();
 }
 
 // Nach dem Showdown: wie die Chancen auf jeder Straße standen (nur gezeigte Hände)
@@ -1378,7 +1512,8 @@ registerGame('poker', {
   onState(st) {
     window.finishWinnerStages?.();
     prevS = S; S = st;
-    animateChips(prevS, S); syncHistory(); render(); cues(prevS, S);
+    if (poker3DStatus !== 'ready') animateChips(prevS, S);
+    syncHistory(); render(); cues(prevS, S);
     if (pokerXp?.enter(S)) pokerXp.motion(prevS, S);
     window.showWinnerStage?.($('#game'), S, { poker: true, fresh: !!prevS?.hand && !prevS.hand.done && !!S.hand?.done });
   },

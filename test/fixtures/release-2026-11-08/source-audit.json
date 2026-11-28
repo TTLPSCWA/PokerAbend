@@ -60,7 +60,7 @@
       "path": "public/games/poker/poker.js",
       "archive": "test/fixtures/release-2026-11-08/baseline/public/games/poker/poker.js",
       "baseline_sha256": "749a043080acb4aedba22ed4d6a8d8f54a1aa799c10c4891ea8bdef68bff34b5",
-      "current_sha256": "b61705f0b21df380fcfc10714b1fe52629bc7e9d366c9199a6cfa170cf38b392"
+      "current_sha256": "95e5c140f76d4b75735aafab2fef8411cb9ff3322ec464f8a771c67fc7f760c5"
     },
     {
       "path": "public/games/card-interaction.css",

@@ -264,6 +264,22 @@ async function joinFromLink(code) {
 }
 
 // ---------- Hosten (Seitenpanel bzw. Leiste von unten) ----------
+function kniffelSetupHTML(game) {
+  if (game.id !== 'kniffel') return '';
+  const text = (de,en)=>I18n.content(de,en);
+  return '<fieldset class="kn-setup"><legend>'+text('Punkteblatt und Hausregeln','Score sheet and house rules')+'</legend>' +
+    '<p class="kn-variant-summary" id="kn-variant-summary">'+kniffelSetupHint('classic')+'</p>'+
+    '<label><input type="checkbox" data-kniffel-rule="extraBonus"><span><b>'+text('Extra-Kniffel-Bonus','Extra five of a kind')+
+    '</b><small>'+text('Ein weiterer Kniffel bringt 50 Zusatzpunkte, wenn das Kniffel-Feld bereits 50 Punkte enthält.','A later five of a kind adds 50 points if its box already contains 50 points.')+'</small></span></label>'+
+    '<label><input type="checkbox" data-kniffel-rule="joker"><span><b>'+text('Joker-Regel','Joker rule')+
+    '</b><small>'+text('Bei einem weiteren Kniffel hat das passende obere Feld Vorrang. Danach kann er unter anderem als Straße zählen.','A later five of a kind uses the matching upper box first. It can then score as a straight, among other choices.')+'</small></span></label></fieldset>';
+}
+function kniffelSetupHint(variant) {
+  return variant === 'triple'
+    ? I18n.content('Drei Spalten mit 39 Einträgen. Die Spalten zählen einfach, doppelt und dreifach.','Three columns with 39 entries. Their scores are weighted once, twice and three times.')
+    : I18n.content('Ein Blatt mit 13 Einträgen.','One sheet with 13 entries.');
+}
+
 function openHost(id) {
   const g = (account.games || []).find((x) => x.id === id);
   if (!g) return;
@@ -276,7 +292,7 @@ function openHost(id) {
       <p class="host-meta">${uiText(catTitle(g.category))} · ${esc(playersText(g))} · ca. ${g.duration} Min.</p></div>
       <p>${uiText(g.description)}</p>
       ${(g.variants || []).length > 1 ? I18n.html`<label class="field"><span>Spielvariante</span><select class="input" id="host-variant">${g.variants.map((v) => I18n.html`<option value="${v.id}">${esc(v.name)} · ${v.minPlayers}–${v.maxPlayers} Spieler</option>`).join('')}</select></label>` : ''}
-      ${unoVariantPreviewsHTML(g.id, g.variants || [])}${createChoicesHTML(g)}
+      ${unoVariantPreviewsHTML(g.id, g.variants || [])}${createChoicesHTML(g)}${kniffelSetupHTML(g)}
       ${(g.createFields || []).length ? `<div class="host-fields">${g.createFields.map((f) => `<label class="field"><span>${uiText(f.label)}</span>
         <input data-cf="${esc(f.key)}" ${f.variants ? `data-cf-variants="${esc(f.variants.join(' '))}"` : ''} type="${f.type === 'number' ? 'number' : 'text'}" ${f.min !== undefined ? `min="${f.min}"` : ''} ${f.step ? `step="${f.step}"` : ''} value="${esc(f.value)}"></label>`).join('')}</div>` : ''}
       <p class="hint">Alles Weitere stellst du am Tisch unter „Host“ ein.</p>
@@ -286,6 +302,7 @@ function openHost(id) {
   d.dataset.game = id;
   d.querySelector('#host-variant')?.addEventListener('change', (e) => {
     const v = g.variants.find((v) => v.id === e.target.value);
+    if (g.id === 'kniffel') d.querySelector('#kn-variant-summary').textContent = kniffelSetupHint(v.id);
     d.querySelector('.host-meta').textContent = I18n.html`${catTitle(g.category)} · ${v.minPlayers === v.maxPlayers ? v.minPlayers : `${v.minPlayers}–${v.maxPlayers}`} Spieler · ca. ${v.duration || g.duration} Min.`;
     d.querySelectorAll('[data-cf]').forEach((input) => {
       const supported = input.dataset.cfVariants?.split(' ');
@@ -308,6 +325,7 @@ $('#host-dlg').addEventListener('submit', (e) => {
   e.preventDefault();
   const d = $('#host-dlg');
   const settings = { ...Object.fromEntries($$('[data-cf]:not(:disabled)', d).map((el) => [el.dataset.cf, el.value])), ...createChoiceSettings(d) };
+  if (d.dataset.game === 'kniffel') for (const input of $$('[data-kniffel-rule]',d)) settings[input.dataset.kniffelRule] = input.checked;
   socket.emit('create', { game: d.dataset.game, name: profile.name, avatar: profile.avatar, settings, variant: $('#host-variant')?.value }, (r) => {
     if (!r?.ok) { $('#host-error').textContent = r?.error || I18n.t('Verbindung fehlgeschlagen'); return; }
     d.close();

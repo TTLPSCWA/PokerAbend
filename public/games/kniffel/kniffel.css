@@ -1,3 +1,4 @@
+@import url('/games/three-d/table.css');
 @import url('/games/world-kit.css');
 /* Kniffel: Würfeltablett und Punkteblatt (alle Spieler nebeneinander, eigene Spalte hervorgehoben) */
 .kg-kniffel .kg-main { background: radial-gradient(120% 90% at 50% 20%, #5B3A6E, #2A1A36); place-items: start center; }
@@ -132,3 +133,26 @@
   }
   #game-root .kg-kniffel .top-right { justify-content: flex-end; }
 }
+
+.kg-kniffel .kg-main { background:radial-gradient(ellipse at 49% 18%,#36524399 1%,transparent 66%),#182521; }
+.kg-kniffel .kn-stage { --wk-bg:linear-gradient(160deg,#294237,#132720); --wk-edge:#d2ac6e66; --wk-accent:#e9cc90; }
+.kn-stage .kn-tray { background:radial-gradient(ellipse at 44% 36%,#275443,#173429 77%); border-color:#8a6039; }
+.kn-stage .kn-sheet-wrap { border:1px solid #bf9c65; box-shadow:0 8px 24px #15160e65; }
+.kn-stage .kn-sheet thead th { background:#ebd6ad; }
+.kn-stage .kn-sheet thead th.me { background:#fff2ce; }
+.kn-stage .kn-sheet .total td { border-top:2px solid #a98141; }
+.kn-stage .kn-sheet .kn-pick:focus-visible { outline:2px solid #714a20; outline-offset:2px; }
+.kn-stage .kn-slot.kept small { color:#f6d78b; }
+.kn-stage .kn-mode { min-height:44px; min-width:44px; }
+.kn-stage .kn-3d-angles { flex-basis:100%; }
+.kn-stage .kn-3d-angles[hidden] { display:none; }
+.kn-stage .kn-3d-angles .kn-hold-note { color:#f0d8ab; font-size:.83rem; }
+.kn-stage #kniffel-3d-stage { flex:0 0 100%; block-size:clamp(10rem,33dvh,22rem); }
+.kn-stage #kniffel-3d-status { flex-basis:100%; font-size:.82rem; }
+.kn-stage .kn-tray-live .kn-dice .die { --d:clamp(44px,4vw,50px); }
+.kg-kniffel .kg-lobby { background:linear-gradient(145deg,#213d33,#15291f); border:1px solid #b3935e80; color:#f9ebd0; }
+.kg-kniffel .kn-lobby-card { margin:1rem auto 0; max-width:30rem; border-top:1px solid #95784d; padding:1rem .5rem .25rem; }
+.kg-kniffel .kn-rule-tags { display:flex; flex-wrap:wrap; justify-content:center; gap:.4rem; }
+.kg-kniffel .kn-rule-tags span { background:#362b21; border:1px solid #a17f50; border-radius:5rem; padding:.3rem .6rem; }
+.kg-kniffel .kg-over-card { background:linear-gradient(145deg,#203a2e,#162a23); border:1px solid #c1a571; }
+@media (max-height:560px) { .kn-stage #kniffel-3d-stage { block-size:clamp(9rem,32dvh,13rem); } }

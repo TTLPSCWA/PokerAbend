@@ -8,6 +8,10 @@ Der Index ist weder die öffentliche Roadmap im Hub (`games/roadmap.js`, ROADMAP
 
 Meme-Duell und Slot Arcade sind im Spielkatalog registriert. Die zugehörigen Designnachweise stehen unter VIS-112 und VIS-113. Das [Responsive-Audit](../design/RESPONSIVE.md) dokumentiert GLOBAL-RESPONSIVE-02 und KNIFFEL-BOARD-UX-02. Die Spielbeschreibungen und Abgrenzungen stehen unter [Meme-Duell](../meme-duell.md) und [Slot Arcade](../slot-arcade.md).
 
+## 3D-Tische für Hold’em und Kniffel
+
+Der gesonderte Auftrag 3D-POKER-KNIFFEL-01 und das Teilpaket ASSET-3D-01 sind in der [3D-Dokumentation](../design/THREE_D_ASSETS.md) belegt. Die bestehenden VIS-, EXP- und ART-Pakete behalten ihren eigenen Abnahmestand.
+
 ## Verwendung
 
 ```bash

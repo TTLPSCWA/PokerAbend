@@ -11,7 +11,7 @@ const { channel, ...use } = base.use;
 const B24 = ['responsive.spec.js', 'b24-a11y.spec.js'];
 const CARDS = ['card-ux-audit.spec.js', 'card-ux-actions.spec.js', 'card-action.spec.js'];
 const DIALOGS = 'b24-responsive-audit.spec.js';
-const NEW_GAMES = ['slot-arcade.spec.js', 'meme-duell.spec.js', 'kniffel-board-ux.spec.js', 'admin-games-02.spec.js', 'admin-games-02-admin.spec.js'];
+const NEW_GAMES = ['slot-arcade.spec.js', 'meme-duell.spec.js', 'kniffel-board-ux.spec.js', 'three-d-table.spec.js', 'admin-games-02.spec.js', 'admin-games-02-admin.spec.js'];
 // Aus der B24-Gesamtprüfung nur „Hub, Navigation und Dialoge“; die Spiel- und Solo-Matrix bleibt in Chromium.
 const SKIP_GAME_MATRIX = /: Lobby und laufende Partie in allen Viewports| in allen Viewports$|Performance: Größenwechsel/;
 // Aus UNO Ultimate nur Flip (Materialatlas mit Kontrastprüfung); die übrigen Varianten bleiben in Chromium.

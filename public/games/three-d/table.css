@@ -1,0 +1,9 @@
+.td-surface { overflow:hidden; border-radius:16px; border:1px solid #c5a86b80; background:#141918; }
+.td-surface:empty { display:none; }
+.td-canvas { display:block; inline-size:100%; block-size:100%; touch-action:none; }
+.td-controls { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:.3rem; }
+.td-controls button { min-height:44px; }
+.td-controls [aria-pressed=true] { border-color:#dab36c; }
+.td-controls :focus-visible { outline:2px solid #f0d69e; outline-offset:2px; }
+.td-status:empty { display:none; }
+.td-status { margin:.25rem 0; text-align:center; color:#f1e8d0; }

@@ -6,3 +6,5 @@ test
 *.md
 !CHANGELOG.md
 .env
+!docs/design/ART_LICENSES.md
+public/assets/3d/generated/

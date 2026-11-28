@@ -38,6 +38,9 @@ jobs:
       - name: Abhängigkeiten installieren
         run: npm ci
 
+      - name: Lokale 3D-Ressourcen bauen
+        run: npm run build:3d
+
       - name: Schnelle Tests (ohne Simulationen und Langläufer)
         run: npm run test:fast
 
@@ -118,6 +121,9 @@ jobs:
       - name: Abhängigkeiten installieren
         run: npm ci
 
+      - name: Lokale 3D-Ressourcen bauen
+        run: npm run build:3d
+
       # Derselbe Befehl wie lokal (`npm run test:all`), hier nur der Node-Teil und ein Viertel der Dateien – mit Coverage.
       - name: Node-Tests mit Coverage (inklusive Simulationen) – ein Viertel der Dateien
         run: npm run test:all -- --only=node --shard=${{ matrix.shard }}/4 --reports=reports/teil-node-${{ matrix.shard }}
@@ -152,6 +158,9 @@ jobs:
 
       - name: Abhängigkeiten installieren
         run: npm ci
+
+      - name: Lokale 3D-Ressourcen bauen
+        run: npm run build:3d
 
       - name: Browser installieren
         run: npx playwright install --with-deps chromium
@@ -200,6 +209,9 @@ jobs:
       - name: Abhängigkeiten installieren
         run: npm ci
 
+      - name: Lokale 3D-Ressourcen bauen
+        run: npm run build:3d
+
       - name: Browser installieren
         run: npx playwright install --with-deps ${{ matrix.browser }}
 
@@ -236,6 +248,9 @@ jobs:
 
       - name: Abhängigkeiten installieren (für den Coverage-Bericht)
         run: npm ci
+
+      - name: Lokale 3D-Ressourcen bauen
+        run: npm run build:3d
 
       - name: Berichte aller Teile laden
         uses: actions/download-artifact@v7

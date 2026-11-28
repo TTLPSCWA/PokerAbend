@@ -7,3 +7,4 @@ artifacts/
 reports/
 /.agent-coordination/
 /server/roadmap-build-proof.json
+/public/assets/3d/generated/

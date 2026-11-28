@@ -1,6 +1,6 @@
 {
   "name": "pokerabend",
-  "version": "3.32.1",
+  "version": "3.33.0",
   "description": "Spieleabend für die Freundesgruppe – Karten-, Würfel-, Brett- und Partyspiele im Browser, dazu lokale Einzelspieler",
   "type": "module",
   "main": "server/index.js",
@@ -18,7 +18,8 @@
     "test:all": "node scripts/test-all.mjs",
     "test:all:docker": "node scripts/test-all-docker.mjs",
     "test:report": "playwright show-report reports/playwright-html",
-    "export:design": "node scripts/export-design.mjs"
+    "export:design": "node scripts/export-design.mjs",
+    "build:3d": "node scripts/build-3d.mjs"
   },
   "engines": {
     "node": ">=20"
@@ -31,8 +32,11 @@
     "socket.io": "^4.8.4"
   },
   "devDependencies": {
+    "@babylonjs/core": "9.38.0",
+    "@babylonjs/havok": "1.3.14",
     "@playwright/test": "^1.64.1",
     "c8": "^10.1.3",
+    "esbuild": "0.28.2",
     "socket.io-client": "^4.8.4"
   }
 }

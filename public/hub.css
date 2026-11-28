@@ -270,3 +270,11 @@ button.roadmap-point:hover { background: rgba(201,154,69,.12); }
 .pubroad-history { margin-top: 24px; }
 .pubroad-filters .chip:focus-visible, .pubroad-history a:focus-visible { outline: 2px solid var(--gold-text); outline-offset: 2px; }
 @media (max-width: 760px) { .pubroad-grid { grid-template-columns: minmax(0, 1fr); } }
+
+.host-dlg[data-game="kniffel"] .host-art { background:radial-gradient(ellipse at 50% 40%,#50604a,#233a2e 70%); border:1px solid #b69a66; }
+.host-dlg[data-game="kniffel"] .kn-setup { min-width:0; margin:0; border:1px solid #9e8257; border-radius:10px; padding:.65rem; }
+.host-dlg[data-game="kniffel"] .kn-setup legend { padding:.25rem; color:#f7dfac; font-weight:700; }
+.host-dlg[data-game="kniffel"] .kn-setup label { display:grid; grid-template-columns:auto minmax(0,1fr); gap:.55rem; margin-top:.4rem; padding:.45rem .2rem; min-height:44px; cursor:pointer; }
+.host-dlg[data-game="kniffel"] .kn-setup input { inline-size:1.2rem; block-size:1.2rem; accent-color:#d1a75f; }
+.host-dlg[data-game="kniffel"] .kn-setup small { display:block; color:#e8ddc9; }
+.game-tile[data-id="kniffel"] .game-art { color:#eed19d; }

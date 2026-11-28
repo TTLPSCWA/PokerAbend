@@ -2,6 +2,12 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.33.0 – 28. November 2026
+
+- **Texas Hold’em** hat eine optionale 3D-Tischansicht mit Karten, Chipstapeln und Kamerapositionen. Einsätze bleiben über die gewohnten Bedienelemente erreichbar.
+- **Kniffel** hat eine optionale 3D-Würfelschale mit Halteablage. 2D, Spielkachel, Hostdialog und Ergebnisansicht verwenden das neue Kniffel-Design. Das Punkteblatt bleibt unter den Würfeln.
+- Beide Spiele können während einer Partie zwischen 2D und 3D wechseln. Für die 3D-Dateien ist kein externer Dienst erforderlich.
+
 ## 3.32.1 – 28. November 2026
 
 - Löschen mehrerer Spieler meldet Fehler einzelner Konten genau und löscht die übrigen weiter; nichts wird verschwiegen. Die Bestenlisten-Bereinigung ist atomar: schlägt das Schreiben fehl, bleibt alles unverändert.

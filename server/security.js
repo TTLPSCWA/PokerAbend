@@ -107,9 +107,9 @@ export function bucket({ capacity, perSecond }) {
   };
 }
 
-export function securityHeaders(res, secure) {
+export function securityHeaders(res, secure, { wasmWorker = false } = {}) {
   res.setHeader('Content-Security-Policy', [
-    "default-src 'self'", "script-src 'self'", "style-src 'self' 'unsafe-inline'",
+    "default-src 'self'", wasmWorker ? "script-src 'self' 'wasm-unsafe-eval'" : "script-src 'self'", "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data:", "font-src 'self'", "connect-src 'self'",
     "frame-ancestors 'none'", "frame-src 'none'", "base-uri 'none'", "form-action 'self'", "object-src 'none'", "manifest-src 'self'", "worker-src 'self'",
     ...(secure ? ['upgrade-insecure-requests'] : []),

@@ -142,3 +142,14 @@ Unverändert aus den Fontsource-Paketen (npm `@fontsource/<name>`, Ausschnitt �
 ## Namensnennung (für CC BY)
 
 Labyrinth-Brett: Icons von **Lorc und Delapouite**, bereitgestellt über [Game-icons.net](https://game-icons.net/), unter [CC BY 3.0 Unported](https://creativecommons.org/licenses/by/3.0/). In der App über **Grafiknachweise / Artwork credits** in Lobby, Brett und Regeln erreichbar: `/games/labyrinth-brett/credits.html`. Die dortige Tabelle nennt für jede der 23 Dateien Titel, Urheber und gepinnte Originalquelle; Hintergrundentfernung/Farbänderung sind angegeben. Ring (ID 11) bleibt ohne Fremdgrafik. Keine Übertragung der übrigen Sammlungsdateien.
+
+## 3D-POKER-KNIFFEL-01
+
+| Paket | Artefakt | Herkunft |
+| --- | --- | --- |
+| ASSET-3D-01 | Poker-Reling, Chip-Geometrie, Kniffel-Würfel und Holzmaserung | Eigenes prozedurales Projektmaterial in graphics/3d/geometry.js. Modellierung, UV-Grundformen und Erzeugung im Projekt. |
+| ASSET-3D-01 | Filzstruktur auf dem 3D-Pokertisch | Vorhandene eigene Textur ART-002, unveränderte Quelle, erneute SHA-256-Prüfung im 3D-Manifest. |
+
+Eigene Inhalte stehen unter den Rechten des Projekts. Das [3D-Manifest](../../public/assets/3d/manifest.json) enthält die Hashes und Generatorangaben. Die npm-Lizenztexte für Babylon.js und Havok liegen separat im Build unter assets/3d/generated/THIRD_PARTY_NOTICES.txt.
+
+Das neue Kniffel-Kachelmotiv ist eine eigene SVG-Zeichnung in `games/kniffel/index.js`.

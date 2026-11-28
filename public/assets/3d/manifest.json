@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "id": "poker-table-felt",
+      "category": "materials",
+      "gameScope": [
+        "poker"
+      ],
+      "kind": "texture",
+      "uri": "/games/poker/art/felt.webp",
+      "format": "webp",
+      "mimeType": "image/webp",
+      "quality": "shared",
+      "license": "LicenseRef-SpieleAbend-Own",
+      "licenseStatus": "approved",
+      "author": "SpieleAbend",
+      "sourceUrl": "https://github.com/TTLPSCWA/PokerAbend/blob/7790b354c73f207d8c444e25526118d379e5a5f8/public/games/poker/art/felt.webp",
+      "sourceVersion": "7790b354c73f207d8c444e25526118d379e5a5f8",
+      "verifiedAt": "2026-11-27",
+      "licenseEvidence": "docs/design/ART_LICENSES.md",
+      "sha256": "e4de0245d72487bc7495d2e330fec6f87c76176b74713ffb74dfb128d1190c95",
+      "bytes": 12718,
+      "triangles": 0,
+      "materials": 0,
+      "texturePixels": 16384,
+      "requiresAttribution": false,
+      "attributionText": ""
+    },
+    {
+      "id": "shared-wood-grain",
+      "category": "materials",
+      "gameScope": [
+        "poker",
+        "kniffel"
+      ],
+      "kind": "procedural",
+      "format": "generator",
+      "quality": "shared",
+      "license": "LicenseRef-SpieleAbend-Own",
+      "licenseStatus": "approved",
+      "author": "SpieleAbend",
+      "sourceUrl": "https://github.com/TTLPSCWA/PokerAbend/blob/main/graphics/3d/geometry.js",
+      "sourceVersion": "1",
+      "verifiedAt": "2026-11-28",
+      "licenseEvidence": "docs/design/ART_LICENSES.md",
+      "generator": {
+        "path": "graphics/3d/geometry.js",
+        "entry": "buildWoodTexture"
+      },
+      "sha256": "aebbc0b352b7375c208adf2a37cb0b84893a85ec1f3476bf14bcb7429e21ddd3",
+      "bytes": 4239,
+      "triangles": 0,
+      "materials": 0,
+      "texturePixels": 65536,
+      "requiresAttribution": false,
+      "attributionText": ""
+    },
+    {
+      "id": "poker-chip-standard",
+      "category": "chips",
+      "gameScope": [
+        "poker"
+      ],
+      "kind": "procedural",
+      "format": "generator",
+      "quality": "shared",
+      "license": "LicenseRef-SpieleAbend-Own",
+      "licenseStatus": "approved",
+      "author": "SpieleAbend",
+      "sourceUrl": "https://github.com/TTLPSCWA/PokerAbend/blob/main/graphics/3d/geometry.js",
+      "sourceVersion": "1",
+      "verifiedAt": "2026-11-28",
+      "licenseEvidence": "docs/design/ART_LICENSES.md",
+      "generator": {
+        "path": "graphics/3d/geometry.js",
+        "entry": "buildPokerChip"
+      },
+      "sha256": "aebbc0b352b7375c208adf2a37cb0b84893a85ec1f3476bf14bcb7429e21ddd3",
+      "bytes": 4239,
+      "triangles": 112,
+      "materials": 1,
+      "texturePixels": 0,
+      "requiresAttribution": false,
+      "attributionText": ""
+    },
+    {
+      "id": "poker-table-oval",
+      "category": "tables",
+      "gameScope": [
+        "poker"
+      ],
+      "kind": "procedural",
+      "format": "generator",
+      "quality": "shared",
+      "license": "LicenseRef-SpieleAbend-Own",
+      "licenseStatus": "approved",
+      "author": "SpieleAbend",
+      "sourceUrl": "https://github.com/TTLPSCWA/PokerAbend/blob/main/graphics/3d/geometry.js",
+      "sourceVersion": "1",
+      "verifiedAt": "2026-11-28",
+      "licenseEvidence": "docs/design/ART_LICENSES.md",
+      "generator": {
+        "path": "graphics/3d/geometry.js",
+        "entry": "buildPokerTable"
+      },
+      "sha256": "aebbc0b352b7375c208adf2a37cb0b84893a85ec1f3476bf14bcb7429e21ddd3",
+      "bytes": 4239,
+      "triangles": 1280,
+      "materials": 4,
+      "texturePixels": 0,
+      "requiresAttribution": false,
+      "attributionText": ""
+    },
+    {
+      "id": "kniffel-ivory-die",
+      "category": "dice",
+      "gameScope": [
+        "kniffel"
+      ],
+      "kind": "procedural",
+      "format": "generator",
+      "quality": "shared",
+      "license": "LicenseRef-SpieleAbend-Own",
+      "licenseStatus": "approved",
+      "author": "SpieleAbend",
+      "sourceUrl": "https://github.com/TTLPSCWA/PokerAbend/blob/main/graphics/3d/geometry.js",
+      "sourceVersion": "1",
+      "verifiedAt": "2026-11-28",
+      "licenseEvidence": "docs/design/ART_LICENSES.md",
+      "generator": {
+        "path": "graphics/3d/geometry.js",
+        "entry": "buildDie"
+      },
+      "sha256": "aebbc0b352b7375c208adf2a37cb0b84893a85ec1f3476bf14bcb7429e21ddd3",
+      "bytes": 4239,
+      "triangles": 552,
+      "materials": 2,
+      "texturePixels": 0,
+      "requiresAttribution": false,
+      "attributionText": ""
+    }
+  ]
+}

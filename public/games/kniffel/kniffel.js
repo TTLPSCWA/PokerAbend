@@ -22,8 +22,74 @@
   let quickScores = false;
   const nameOf = (S, id) => esc(S.players.find((p) => p.id === id)?.name ?? '?');
 
+  let dice3D, dice3DImport, rollPending;
+  let dice3DState = 'idle';
+  const uses3D = () => store.get('poker:three-d:kniffel',false);
+  const trayActive = () => session?.game === 'kniffel' && !parked && !$('#game-root').hidden && uses3D() && !motionOff();
+  const tx3 = (de,en) => I18n.content(de,en);
+  const ttWeighted = () => tx3('Gewichtete Summe','Weighted total');
+  function trayStatus(value) {
+    dice3DState = value;
+    const slot = $('#kniffel-3d-stage');
+    const button = $('#kniffel-view3d');
+    if (!slot || !button) return;
+    const ready = value === 'ready';
+    slot.closest('.kn-tray').classList.toggle('kn-tray-live',ready);
+    $('#kniffel-3d-angles').hidden = !ready;
+    button.textContent = ready || value === 'loading' ? '2D' : '3D';
+    button.setAttribute('aria-pressed',String(ready));
+    button.setAttribute('aria-label',ready || value==='loading' ? tx3('Zur 2D-Ansicht','Switch to 2D') : tx3('3D-Ansicht öffnen','Open 3D view'));
+    $('#kniffel-3d-status').textContent = value === 'loading' ? tx3('3D-Ansicht lädt','Loading 3D view') :
+      value === 'unavailable' ? tx3('3D ist hier gerade nicht verfügbar. Die 2D-Würfel bleiben bedienbar.','3D is unavailable. The 2D dice remain playable.') :
+      value === 'reduced' ? tx3('3D ist bei reduzierter Bewegung aus.','3D is off while motion is reduced.') : '';
+  }
+  function syncDice3D(S) {
+    const slot = $('#kniffel-3d-stage');
+    if (!slot || !S.g || !trayActive()) {
+      dice3D?.dispose();
+      trayStatus(uses3D() && motionOff() ? 'reduced' : 'idle');
+      return;
+    }
+    if (dice3DState === 'unavailable') { trayStatus('unavailable'); return; }
+    if (!dice3D) {
+      trayStatus('loading');
+      if (!dice3DImport) {
+        dice3DImport = import('/games/kniffel/tray-3d.js').then(({kniffelView})=>{
+          dice3D=kniffelView({
+            active:trayActive,onStatus:trayStatus,
+            onPick(value) { document.querySelector('.kn-tray button[data-g="keep"][data-i="' + (value-1) + '"]')?.click(); },
+          });
+          if(trayActive())kit.render();
+        }).catch(()=>{if(trayActive())trayStatus('unavailable');}).finally(()=>{dice3DImport=null;});
+      }
+      return;
+    }
+    const g = S.g;
+    const canKeep = S.turnId === S.you?.id && g.rolls > 0 && g.rolls < 3;
+    dice3D.sync(slot,{
+      room:S.code, round:S.roundNo, turn:S.turnId, rolls:g.rolls,
+      values:g.dice.slice(0,5),
+      held:g.held.map((held,i)=>canKeep ? keep.has(i) : held),
+      paused:!!S.gamePaused || S.phase !== 'playing',
+    });
+    trayStatus(dice3D.state);
+  }
+  function trayExtras() {
+    return '<button class="btn btn-sm kn-mode" type="button" id="kniffel-view3d" data-g="view3d" aria-pressed="false">3D</button>' +
+      '<div class="td-surface" id="kniffel-3d-stage"></div>' +
+      '<div class="td-controls kn-3d-angles" id="kniffel-3d-angles" hidden>' +
+      '<button type="button" class="btn btn-sm" data-g="home3d">'+tx3('Ausgangsposition','Reset view')+'</button>' +
+      '<button type="button" class="btn btn-sm" data-g="near3d">'+tx3('Nahansicht','Close-up')+'</button>' +
+      '<span class="kn-hold-note">'+tx3('Halteablage hinter der Messingleiste','Held dice behind the brass rail')+'</span></div>' +
+      '<small class="td-status" id="kniffel-3d-status" role="status"></small>';
+  }
+  matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',()=>{
+    if(session?.game==='kniffel'&&!parked)kit.render();
+  });
+
   function rollAction(g, myTurn) {
     if (!myTurn || g.rolls >= 3) return '';
+    if (rollPending) return '<button type="button" class="btn kn-roll" data-g="roll" aria-disabled="true">'+tx3('Wurf läuft','Rolling')+'</button>';
     const all = g.rolls && keep.size === 5;
     return `<button type="button" class="btn btn-brass kn-roll" data-g="roll" ${all ? 'disabled title="Alle Würfel liegen – trag ein Feld ein"' : ''}>${g.rolls ? I18n.html`Nochmal würfeln (${g.rolls + 1}. von 3)` : I18n.t('Würfeln')}</button>`;
   }
@@ -56,6 +122,17 @@
     },
     name: 'Kniffel',
     direction: false,
+    afterRender: syncDice3D,
+    lobbyExtra(S) {
+      const triple = S.variant === 'triple';
+      const variant = triple ? tx3('Dreifachblatt','Triple sheet') : tx3('Klassisches Punkteblatt','Classic score sheet');
+      const rounds = triple ? tx3('39 Einträge mit Spaltenfaktoren ×1, ×2 und ×3','39 entries with column weights ×1, ×2 and ×3')
+        : tx3('13 Einträge auf einem Blatt','13 entries on one sheet');
+      return '<div class="kn-lobby-card"><strong>'+variant+'</strong><p>'+rounds+'</p><div class="kn-rule-tags">'+
+        '<span>'+tx3('Extra-Kniffel','Extra five of a kind')+' · '+(S.settings.extraBonus ? tx3('an','on') : tx3('aus','off'))+'</span>'+
+        '<span>'+tx3('Joker','Joker')+' · '+(S.settings.joker ? tx3('an','on') : tx3('aus','off'))+'</span></div></div>';
+    },
+
     // Erste Schritte beim ersten Spiel (3 Schritte, abschaltbar unter „Ich“)
     intro: [
       ['Würfeln', 'Bis zu drei Würfe pro Zug. Tipp Würfel an, die liegen bleiben sollen – die anderen werden neu geworfen.'],
@@ -73,7 +150,8 @@
     playerInfo: (p, S) => { const n = S.variant === 'triple' ? 39 : 13; if (I18n.language === 'en' && p.total !== null && p.total !== undefined) return `${p.total} points · Round ${Math.min(n, (p.filled || 0) + 1)}/${n}`; return p.total === null || p.total === undefined ? '' : I18n.html`${p.total} Punkte · Runde ${Math.min(n, (p.filled || 0) + 1)}/${n}`; },
     onState(S) {
       const g = S.g;
-      const key = g && S.turnId ? `${S.roundNo}:${S.turnId}:${g.rolls}` : '';
+      const key = g && S.turnId ? `${S.code}:${S.roundNo}:${S.turnId}:${g.rolls}` : '';
+      if (rollPending && (key !== rollPending.key || socket.id !== rollPending.connection || S.phase !== 'playing')) rollPending = undefined;
       if (key !== keepKey) { keepKey = key; keep = new Set((g?.held || []).map((h, i) => (h ? i : -1)).filter((i) => i >= 0)); }
     },
     hint(S, myTurn) {
@@ -95,11 +173,11 @@
         const die = canKeep ? dieHTML(v, { tag: 'button', cls: I18n.html`big ${kept ? 'kept' : ''}`, attrs: `type="button" data-g="keep" data-i="${i}" aria-pressed="${kept}"` }) : dieHTML(v, { cls: I18n.html`big ${kept ? 'kept' : ''}` });
         return `<span class="kn-slot ${kept ? 'kept' : ''}">${die}<small>${kept ? (I18n.language === 'en' ? 'kept' : 'bleibt') : ''}</small></span>`;
       }).join('');
-      const tray = `<div class="kn-tray"><small>${nameOf(S, S.turnId)}${g.rolls ? I18n.html` · ${g.rolls}. Wurf von 3` : (I18n.language === 'en' ? ' · not rolled yet' : ' · noch nicht gewürfelt')}</small><div class="kn-dice">${dice}</div>${rollAction(g, myTurn)}</div>`;
+      const tray = `<div class="kn-tray">${trayExtras()}<small>${nameOf(S, S.turnId)}${g.rolls ? I18n.html` · ${g.rolls}. Wurf von 3` : (I18n.language === 'en' ? ' · not rolled yet' : ' · noch nicht gewürfelt')}</small><div class="kn-dice">${dice}</div>${rollAction(g, myTurn)}</div>`;
       // Punkteblatt: alle Spieler nebeneinander, eigene Spalte hervorgehoben
       // Eigene Spalte zuerst (auf dem Handy sonst rechts abgeschnitten), dann die anderen in Sitzreihenfolge
       const ids = Object.keys(g.sheets).sort((x, y) => (y === me) - (x === me));
-      const opts = myTurn ? g.options || {} : {};
+      const opts = myTurn && !rollPending ? g.options || {} : {};
       const scoreButton = (f, short = false) => `<button type="button" class="kn-pick ${opts[f] ? '' : 'zero'}" data-g="score" data-f="${f}" aria-label="${label(f)}: ${opts[f] ? I18n.html`${opts[f]} Punkte eintragen` : I18n.t('Streichen')}">${short ? `${label(f)} · ` : ''}${opts[f]}</button>`;
       const cell = (id, f) => {
         const v = g.sheets[id][f];
@@ -118,6 +196,7 @@
         ${LOWER.map(row).join('')}
         ${S.settings.extraBonus ? sumRow('Extra-Kniffel', (t) => t.extra || '–') : ''}
         ${sumRow(I18n.t('Gesamt'), (t) => `<b>${t.total}</b>`, 'total')}
+        ${triple ? sumRow(ttWeighted(),(_total,id)=>S.players.find(p=>p.id===id)?.total ?? 0,'total') : ''}
         </tbody></table></div>`;
       const W = WorldKit, tt = W.t, free = Object.values(g.sheets[me] || {}).filter((v) => v === null).length;
       const chips = [g.sheets[me] ? W.chip('✎', `${free} ${tt('Felder offen', 'boxes open')}`) : '', triple ? W.chip('×3', `${tt('Dreifachblatt', 'Triple sheet')} · ${tt('Spalte', 'column')} ×${column + 1}`, 'warn') : '', myTurn && g.options && g.rolls ? W.chip('✔', tt('Feld antippen zum Eintragen', 'Tap a box to score'), 'good') : ''].filter(Boolean);
@@ -127,6 +206,14 @@
     },
     async onClick(t, S) {
       const g = t.dataset.g;
+      if (g === 'view3d') {
+        const enable = dice3DState !== 'ready' && dice3DState !== 'loading';
+        if (enable && dice3DState === 'unavailable') {dice3D?.dispose();dice3DState='idle';}
+        store.set('poker:three-d:kniffel',enable);
+        rerenderAt('#kniffel-view3d');
+        return;
+      }
+      if (g === 'home3d' || g === 'near3d') {dice3D?.action(g === 'home3d' ? 'home' : 'near');return;}
       if (g === 'quick') {
         quickScores = !quickScores;
         rerenderAt('[data-g="quick"]');
@@ -134,7 +221,17 @@
       }
       if (g === 'column') { column = Number(t.dataset.column); rerenderAt(`[data-column="${column}"]`); return; }
       if (g === 'keep') { const i = Number(t.dataset.i); if (keep.has(i)) keep.delete(i); else keep.add(i); rerenderAt(`[data-g="keep"][data-i="${i}"]`); }
-      else if (g === 'roll') send('roll', { keep: [...keep] });
+      else if (g === 'roll') {
+        if (rollPending || !socket.connected || S.turnId !== S.you?.id) return;
+        const pending = {key:keepKey, connection:socket.id};
+        rollPending = pending;
+        rerenderAt('[data-g="roll"]');
+        const reply = await send('roll', {keep:[...keep]});
+        if (!reply?.ok && rollPending === pending) {
+          rollPending = undefined;
+          rerenderAt('[data-g="roll"]');
+        }
+      }
       else if (g === 'score') {
         const f = t.dataset.f;
         const v = S.variant === 'triple' ? S.g.optionsByColumn?.[column]?.[f] : S.g.options?.[f];

@@ -1,4 +1,5 @@
 @import url('/games/five-card-draw/poker-chips.css');
+@import url('/games/three-d/table.css');
 @import url('/games/poker/art.css'); /* ART-002: Tisch und Chips nur für Hold'em */
 /* Texas Hold'em: Tisch, Karten, Plätze, Chips, Aktionsleiste. Baut auf /style.css auf (Tokens, Buttons, Leisten, Dialoge). */
 
@@ -597,3 +598,35 @@ body.cards-xl { --cs: 1.5; }
     border-top: 0; border-left: 1px solid var(--gold-line); padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); }
   .mine .strength .odds-bars { display: none; }
 }
+
+/* Retain the original controls in a compact readout below the 3D canvas. */
+#game .poker-3d { width:min(100%,1280px); justify-self:center; min-width:0; display:grid; gap:.4rem; }
+#game .poker-3d[hidden], #game .poker-3d [hidden] { display:none; }
+#game .poker-3d-status { position:absolute; z-index:5; top:0; left:50%; transform:translateX(-50%); padding:.15rem .55rem; border-radius:.4rem; background:#172922; max-inline-size:min(70vw,440px); }
+#game .poker-3d-status:empty { display:none; }
+#game .poker-3d .td-surface { height:clamp(14rem,48dvh,40rem); }
+#game .poker-3d .td-controls { padding:.2rem 0; }
+#game .poker-3d-inspect { max-width:100%; padding:.4rem .65rem; border:1px solid #ab915a80; border-radius:.6rem; background:#142820; color:#f2e7c9; }
+#game .poker-3d-inspect summary { cursor:pointer; width:fit-content; }
+#game .poker-3d-inspect label, #game .poker-3d-inspect output { display:block; margin-block:.35rem; overflow-wrap:anywhere; }
+#game .poker-3d-inspect select { max-width:100%; }
+#game.poker-3d-live .table-wrap { display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:8px clamp(6px,3vw,32px); overflow:auto; gap:8px; }
+#game.poker-3d-live .table { flex:none; width:min(100%,1280px); aspect-ratio:auto; min-width:0; display:grid; gap:8px; }
+#game.poker-3d-live .table::before,
+#game.poker-3d-live .felt::after,
+#game.poker-3d-live :is(.rail,.table .dealer,.table .bet) { display:none; }
+#game.poker-3d-live .felt { position:static; inset:auto; border-radius:10px; min-height:0; display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:6px; background:#11251f; padding:4px; }
+#game.poker-3d-live .table .board { --card-w:clamp(22px,5vw,38px); }
+#game.poker-3d-live .table .pot { min-height:0; margin:0; }
+#game.poker-3d-live .table .pot-box { padding:2px 6px; }
+#game.poker-3d-live .table .pot-box .stack { display:none; }
+#game.poker-3d-live .table .pot-box b { font-size:clamp(14px,1.6vw,20px); }
+#game.poker-3d-live .table .felt-msg { margin:0; max-width:100%; }
+#game.poker-3d-live #seats { position:static; display:flex; justify-content:flex-start; flex-wrap:wrap; gap:6px; min-width:0; }
+#game.poker-3d-live #seats :is(.seat,.empty-seat) { position:relative; inset:auto !important; transform:none !important; width:auto; }
+#game.poker-3d-live #seats .plate { padding:.2rem .4rem; }
+#game.poker-3d-live #seats .empty-seat .sit-btn { position:static; transform:none; min-height:44px; }
+#game.poker-3d-live #seats .empty-seat:has(.empty-dot) { display:none; }
+#game.poker-3d-live #seats .seat-cards { margin:0; height:auto; --card-w:24px; }
+#game.poker-3d-live #seats .seat-cards:empty { display:none; }
+@media (max-width:640px) { #game .poker-3d .td-surface {height:clamp(12rem,34dvh,20rem);} }

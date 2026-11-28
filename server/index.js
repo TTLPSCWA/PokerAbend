@@ -154,7 +154,8 @@ if(privateMonopoly)app.use(privateMonopoly.guard);
 app.disable('x-powered-by');
 const isSecure = (req) => requestSecure(req, TRUST_PROXY);
 app.use((req, res, next) => {
-  securityHeaders(res, isSecure(req));
+  const wasmWorker = (req.method === 'GET' || req.method === 'HEAD') && req.path === '/assets/3d/generated/physics-worker.js';
+  securityHeaders(res, isSecure(req), { wasmWorker });
   next();
 });
 app.get('/health', (_req, res) => res.json({ ok: true, version: VERSION.version, commit: VERSION.short, uptime: Math.round(process.uptime()) }));
