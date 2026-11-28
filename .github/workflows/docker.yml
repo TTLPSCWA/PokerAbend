@@ -216,7 +216,15 @@ jobs:
         run: npx playwright install --with-deps ${{ matrix.browser }}
 
       - name: Gezielte Browser-Prüfungen
-        run: npx playwright test -c playwright.crossbrowser.config.js --project="${{ matrix.browser }}*" --reporter=list,json,github
+        shell: bash
+        run: |
+          args=(-c playwright.crossbrowser.config.js --project="${{ matrix.browser }}*" --reporter=list,json,github)
+          if [[ "${{ matrix.browser }}" == "firefox" ]]; then
+            # Firefox needs a display-backed GL context for the real 3D checks on Linux.
+            LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a -s "-screen 0 1600x1000x24" npx playwright test "${args[@]}" --headed
+          else
+            npx playwright test "${args[@]}"
+          fi
         env:
           CI: 'true'
           PLAYWRIGHT_JSON_OUTPUT_NAME: reports/crossbrowser-${{ matrix.browser }}/crossbrowser.json

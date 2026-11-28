@@ -2,6 +2,12 @@
 
 Hier steht, was sich im Spieleabend geändert hat, verständlich für alle, die ihn nutzen. Die technische Anleitung für den Server steht in [docs/betrieb.md](docs/betrieb.md).
 
+## 3.33.1 – 28. November 2026
+
+- Die 3D-Ansichten für Hold’em und Kniffel melden feste Fehlercodes, falls WebGL, Assets, Physik oder das Rendering ausfallen.
+- Kamerafahrten behalten beim Wechsel des Ziels den vorgesehenen Zoom.
+- Der Linux-CI-Lauf prüft beide Spiele in Firefox mit Mesa-Softwaregrafik sowie den 2D-Rückfall bei fehlendem WebGL2.
+
 ## 3.33.0 – 28. November 2026
 
 - **Texas Hold’em** hat eine optionale 3D-Tischansicht mit Karten, Chipstapeln und Kamerapositionen. Einsätze bleiben über die gewohnten Bedienelemente erreichbar.

@@ -89,7 +89,7 @@ function diceScene({B,scene,canvas,physics,asset,low,fail}) {
       physics('dice',indices).then(reply=>{
         if(stamp!==generation)return;
         pending=false;
-        if(!reply?.transforms||reply.transforms.length!==reply.steps*indices.length*7){fail();return;}
+        if(!reply?.transforms||reply.transforms.length!==reply.steps*indices.length*7){fail(reply?.error || 'physics-output');return;}
         for(const i of indices)dice[i].marks.setEnabled(true);
         animation={reply,indices,start:performance.now(),stamp};
       });

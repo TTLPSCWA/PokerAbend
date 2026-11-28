@@ -9,7 +9,8 @@ async function openRoom(page, app, id, variant) {
   await expect.poll(()=>page.evaluate(()=>lastState?.game)).toBe(id);
 }
 async function stageReady(stage) {
-  await expect(stage).toHaveAttribute('data-scene-state','ready',{timeout:15000});
+  await expect.poll(() => stage.evaluate(el => el.dataset.sceneFailure || el.dataset.sceneState),
+    {timeout:15000,message:'3D startup state or diagnostic reason'}).toBe('ready');
   await expect(stage.locator('canvas')).toBeVisible();
   await expect.poll(()=>stage.getAttribute('data-scene-meshes')).toMatch(/^[1-9][0-9]*$/);
 }
@@ -58,18 +59,20 @@ async function viewports(page, stage, info, prefix) {
 const revision = page => page.evaluate(() => JSON.stringify([
   lastState.hand?.no,lastState.hand?.street,lastState.hand?.toAct,lastState.hand?.currentBet,lastState.hand?.done,
 ]));
-async function actPassively(host, guest) {
-  const previous = await revision(host);
+async function actOnTurn(players, action) {
+  const host=players[0];
+  const previous=await revision(host);
   let actor;
   await expect.poll(async () => {
-    for(const page of [host,guest]){
+    for(const page of players){
       if((await revision(page)) === previous && await page.evaluate(()=>Boolean(lastState.legal))) {
         actor=page;return true;
       }
     }
     return false;
   }).toBe(true);
-  await actor.locator('#dock [data-act=call],#dock [data-act=check]').first().click();
+  if(action) await accepted(actor,'action',action);
+  else await actor.locator('#dock [data-act=call],#dock [data-act=check]').first().click();
   await expect.poll(()=>revision(host)).not.toBe(previous);
 }
 
@@ -108,14 +111,18 @@ test('3D Holdem uses the real server room, accessible controls and a reversible 
     const firstStack=await stacks.locator('option').nth(1).getAttribute('value');
     await stacks.selectOption(firstStack);
     await expect(readout.locator('output')).toContainText('=');
+    await expect.poll(()=>page.evaluate(async ()=>{
+      const {Engine}=await import('/assets/3d/generated/engine.mjs');
+      return Engine.LastCreatedScene.activeCamera.radius;
+    })).toBeCloseTo(3.9,1);
     await page.locator('[data-poker-angle=board]').click();
     await page.locator('[data-poker-angle=home]').click();
-    for (let i=0;i<2;i++) await actPassively(page,guest);
+    for (let i=0;i<2;i++) await actOnTurn([page,guest]);
     await expect.poll(()=>page.evaluate(()=>lastState.hand?.street)).toBe('flop');
     await expect(page.locator('#board .card')).toHaveCount(3);
     await stage.scrollIntoViewIfNeeded();
     await page.screenshot({path:info.outputPath('poker-3d-flop.png')});
-    for (let i=0;i<6;i++) await actPassively(page,guest);
+    for (let i=0;i<6;i++) await actOnTurn([page,guest]);
     await expect.poll(()=>page.evaluate(()=>lastState.hand?.street)).toBe('done');
     await expect(page.locator('#board .card')).toHaveCount(5);
     await expect(stage).toHaveAttribute('data-scene-state','ready');
@@ -128,6 +135,74 @@ test('3D Holdem uses the real server room, accessible controls and a reversible 
     await expect(page.locator('#board .card')).toHaveCount(5);
     await expect.poll(()=>page.evaluate(()=>lastState.code)).toBe(code);
   } finally {await visitor.close();}
+});
+
+async function accepted(page,event,data={}) {
+  const reply=await page.evaluate(({event,data})=>send(event,data),{event,data});
+  expect(reply.ok,reply.error).toBe(true);
+}
+
+test('3D Holdem shows a real side pot to a spectator and resumes the same hand', async ({page,app,browser},info) => {
+  test.setTimeout(95000);
+  await openRoom(page,app,'poker');
+  await accepted(page,'settings',{autoNext:false,turnTime:0});
+  await page.locator('[data-sit]').first().click();
+  const code=await page.evaluate(()=>lastState.code);
+  const contexts=[];
+  async function peer(name, sit) {
+    const context=await browser.newContext();
+    contexts.push(context);
+    const client=await context.newPage();
+    await login(client,app,name);
+    await client.evaluate(code=>joinAndEnter(code,'watch'),code);
+    await expect.poll(()=>client.evaluate(()=>lastState?.code)).toBe(code);
+    if(sit) await client.locator('[data-sit]').first().click();
+    return client;
+  }
+  try {
+    const players=[page,await peer('Ben',true),await peer('Carla',true)];
+    await expect.poll(()=>page.evaluate(()=>lastState.seats.filter(Boolean).length)).toBe(3);
+    const host=await page.evaluate(()=>lastState.seats.find(seat=>seat?.isHost).id);
+    await accepted(page,'adjust',{id:host,amount:1000});
+    await accepted(page,'start');
+    await expect.poll(()=>page.evaluate(()=>lastState.hand?.street)).toBe('preflop');
+    expect(await page.evaluate(()=>lastState.legal?.stack ?? lastState.seats.find(seat=>seat?.isHost).stack)).toBe(1000);
+    await actOnTurn(players,{type:'allin'});
+    for(let i=0;i<2;i++) await actOnTurn(players,{type:'call'});
+    await expect.poll(()=>page.evaluate(()=>lastState.hand.street)).toBe('flop');
+    await actOnTurn(players,{type:'raise',amount:2000});
+    await actOnTurn(players,{type:'call'});
+    await expect.poll(()=>page.evaluate(()=>lastState.hand.pots)).toEqual([3000,4000]);
+
+    const spectator=await peer('Robin',false);
+    await spectator.locator('#poker-view3d').click();
+    const publicStage=spectator.locator('#poker-3d-stage');
+    await stageReady(publicStage);
+    await expect(spectator.locator('[data-poker-angle=seat]')).toBeDisabled();
+    expect(await spectator.evaluate(async ()=>{
+      const {pokerPresentation}=await import('/games/three-d/model.js');
+      return pokerPresentation(lastState).seats.filter(Boolean).map(seat=>seat.cards);
+    })).toEqual([[null,null],[null,null],[null,null]]);
+    await spectator.locator('#poker-chip-inspect summary').click();
+    await spectator.locator('#poker-chip-select').selectOption('pot-1');
+    await expect(spectator.locator('#poker-chip-details')).toContainText(/= 4[.\s,]?000/);
+    await reportStage(publicStage,info);
+    await spectator.screenshot({path:info.outputPath('poker-3d-side-pot-spectator.png')});
+    await spectator.close();
+
+    await page.locator('#poker-view3d').click();
+    const before=await page.evaluate(()=>[lastState.code,lastState.you.seat,lastState.hand.no,lastState.hand.pots]);
+    await page.reload();
+    const stage=page.locator('#poker-3d-stage');
+    await stageReady(stage);
+    await expect.poll(()=>page.evaluate(()=>[lastState.code,lastState.you.seat,lastState.hand.no,lastState.hand.pots])).toEqual(before);
+    for(let i=0;i<4;i++) await actOnTurn(players,{type:'check'});
+    await expect.poll(()=>page.evaluate(()=>lastState.hand?.street)).toBe('done');
+    expect(await page.evaluate(()=>lastState.hand.result.pots.map(pot=>pot.amount))).toEqual([3000,4000]);
+    expect(await page.evaluate(()=>lastState.seats.reduce((sum,seat)=>sum+(seat?.stack||0),0))).toBe(21000);
+  } finally {
+    await Promise.all(contexts.map(context=>context.close()));
+  }
 });
 
 test('only the Havok worker response allows compilation, and simulates five visual dice', async ({page,app}) => {
@@ -148,12 +223,17 @@ test('only the Havok worker response allows compilation, and simulates five visu
       worker.terminate();
       if(data.error){reject(new Error(data.error));return;}
       const { steps,transforms }=data;
-      resolve({steps,start:transforms[1],end:transforms[(steps-1)*5*7+1],length:transforms.length,finite:transforms.every(Number.isFinite)});
+      const levels=Array.from({length:steps},(_,step)=>transforms[step*5*7+1]);
+      const heights=Array.from({length:steps*5},(_,pose)=>transforms[pose*7+1]);
+      resolve({steps,start:levels[0],end:levels.at(-1),floor:Math.min(...heights),length:transforms.length,finite:transforms.every(Number.isFinite)});
     };
     worker.postMessage({id:1,mode:'dice',indices:[0,1,2,3,4]});
   }));
   expect(frames).toMatchObject({steps:76,length:76*5*7,finite:true});
   expect(frames.end).toBeLessThan(frames.start);
+  // With this gravity and run time, unobstructed free fall would travel below the tray.
+  expect(frames.floor).toBeGreaterThan(.25);
+  expect(frames.end).toBeLessThan(.85);
 });
 
 async function startKniffel(page) {
@@ -169,9 +249,22 @@ test('3D Kniffel holds server dice, preserves the sheet on reconnect and complet
   await page.locator('#kniffel-view3d').click();
   const stage=page.locator('#kniffel-3d-stage');
   await stageReady(stage);
+  await page.evaluate(async ()=>{
+    const {Engine}=await import('/assets/3d/generated/engine.mjs');
+    const scene=Engine.LastCreatedScene;
+    const dice=scene.meshes.filter(mesh=>mesh.name==='ivory die');
+    window.observedDiceFlight=false;
+    const observe=scene.onAfterRenderObservable.add(()=>{
+      if(dice.some(die=>die.position.y>.8)){
+        window.observedDiceFlight=true;
+        scene.onAfterRenderObservable.remove(observe);
+      }
+    });
+  });
   const roll=page.locator('.kn-tray [data-g=roll]');
   await roll.evaluate(button=>{button.click();document.querySelector('.kn-roll').click();});
   await expect.poll(()=>page.evaluate(()=>lastState.g.rolls)).toBe(1);
+  await expect.poll(()=>page.evaluate(()=>window.observedDiceFlight)).toBe(true);
   await expect(stage).toHaveAttribute('data-scene-state','ready');
   const firstValue=await page.evaluate(()=>lastState.g.dice[0]);
   const firstDie=page.locator('[data-g=keep][data-i="0"]');
@@ -262,6 +355,7 @@ test('Kniffel Triple keeps weighted scores and remains playable when WebGL2 is u
   await startKniffel(page);
   await page.locator('#kniffel-view3d').click();
   await expect(page.locator('#kniffel-3d-status')).toContainText('2D');
+  await expect(page.locator('#kniffel-3d-stage')).toHaveAttribute('data-scene-failure','webgl2-unavailable');
   await expect(page.locator('#kniffel-3d-stage canvas')).toHaveCount(0);
   await page.locator('.kn-roll').click();
   await expect.poll(()=>page.evaluate(()=>lastState.g.rolls)).toBe(1);
@@ -286,6 +380,7 @@ test('a lost 3D context releases the canvas and leaves the active Kniffel turn p
     return !surface.dispatchEvent(new Event('webglcontextlost',{cancelable:true}));
   });
   expect(dispatched).toBe(true);
+  await expect(stage).toHaveAttribute('data-scene-failure','context-lost');
   await expect(stage.locator('canvas')).toHaveCount(0);
   await expect(page.locator('#kniffel-3d-status')).toContainText('2D');
   await page.locator('.kn-roll').click();
@@ -307,6 +402,7 @@ test('missing Havok WASM falls back after the confirmed Kniffel roll', async ({p
   await stageReady(stage);
   await page.locator('.kn-roll').click();
   await expect.poll(()=>page.evaluate(()=>lastState.g.rolls)).toBe(1);
+  await expect(stage).toHaveAttribute('data-scene-failure','physics-wasm');
   await expect(stage.locator('canvas')).toHaveCount(0);
   await expect(page.locator('#kniffel-3d-status')).toContainText('2D');
   await page.locator('.kn-roll').click();

@@ -1,6 +1,8 @@
 const directory = '/assets/3d/generated/';
 const localAsset = /^\/(?:assets\/3d\/|games\/poker\/art\/)(?:[a-z0-9_-]+\/)*[a-z0-9_-]+\.(?:webp|png)$/;
 
+class SceneFailure extends Error {}
+
 async function assets(game, signal) {
   const response = await fetch('/assets/3d/manifest.json', {signal});
   if (!response.ok) throw new Error('3D manifest unavailable');
@@ -10,42 +12,48 @@ async function assets(game, signal) {
     .map(asset => [asset.id, asset]));
 }
 
-function createPhysics(signal) {
+function createPhysics(signal, reportFailure) {
   let next = 0;
   let worker;
   const waiting = new Map();
-  function close() {
+  function close(reason) {
+    if (reason && !signal.aborted) reportFailure(reason);
     worker?.terminate();
     worker = null;
     for (const request of waiting.values()) {
       clearTimeout(request.timer);
-      request.resolve(null);
+      request.resolve(reason ? { error: reason } : null);
     }
     waiting.clear();
   }
-  signal.addEventListener('abort', close, {once:true});
+  signal.addEventListener('abort', () => close(), {once:true});
   return (mode, indices) => {
     if (signal.aborted) return Promise.resolve(null);
     try {
       if (!worker) {
         worker = new Worker(directory + 'physics-worker.js');
-        worker.onerror = close;
+        worker.onerror = () => close('physics-worker-load');
         worker.onmessage = ({data}) => {
           const request = waiting.get(data.id);
           if (!request) return;
           waiting.delete(data.id);
           clearTimeout(request.timer);
-          request.resolve(data.error ? null : data);
+          if (data.error) {
+            const error = data.error === 'physics-wasm' ? 'physics-wasm' : 'physics-simulation';
+            reportFailure(error);
+            request.resolve({error});
+          } else request.resolve(data);
         };
       }
       const id = ++next;
       return new Promise(resolve => {
-        waiting.set(id,{resolve,timer:setTimeout(close,4500)});
+        waiting.set(id,{resolve,timer:setTimeout(() => close('physics-timeout'),4500)});
         worker.postMessage({id,mode,indices});
       });
     } catch {
-      close();
-      return Promise.resolve(null);
+      const error = 'physics-worker-start';
+      close(error);
+      return Promise.resolve({error});
     }
   };
 }
@@ -55,16 +63,35 @@ export function createTableView({ game, active, sceneFactory, onStatus, onPick, 
   let lowBudgetSince = 0;
   let pointer, surface, presentation;
   let state = 'idle';
+  let failure;
   let frameStarted = 0;
   let stats = {};
   let lastFrame = 0;
+  function syncDiagnostic() {
+    if (!slot) return;
+    slot.dataset.sceneState = state;
+    if (failure) slot.dataset.sceneFailure = failure;
+    else delete slot.dataset.sceneFailure;
+  }
+  function reportFailure(reason) {
+    if (failure === reason) return;
+    failure = reason;
+    syncDiagnostic();
+    // Only fixed reason codes. Never log exception details, URLs, or player state.
+    console.warn('[3D]', game, reason);
+  }
+  function unavailable(reason) {
+    reportFailure(reason);
+    dispose('unavailable');
+  }
   function updateStatus(value) {
     state = value;
-    if (slot) slot.dataset.sceneState = value;
+    syncDiagnostic();
     onStatus(value, slot);
   }
   function dispose(value = 'idle') {
     if (!lifetime && state === value) return;
+    if (value === 'idle') failure = undefined;
     lifetime?.abort();
     lifetime = null;
     lowBudgetSince = 0;
@@ -112,11 +139,11 @@ export function createTableView({ game, active, sceneFactory, onStatus, onPick, 
           if (now - frameStarted > 5000 && fps > 0 && fps < 10) {
             lowBudgetSince ||= now;
             if (engine.getHardwareScalingLevel() < 1.35) { engine.setHardwareScalingLevel(1.35); resizeSurface(); }
-            if (now - lowBudgetSince > 6000 && fps < 7) {dispose('unavailable');return;}
+            if (now - lowBudgetSince > 6000 && fps < 7) {unavailable('frame-rate');return;}
           } else lowBudgetSince = 0;
           lastFrame = now;
         }
-      } catch { dispose('unavailable'); }
+      } catch { unavailable('render-frame'); }
     });
   }
   async function start() {
@@ -125,10 +152,12 @@ export function createTableView({ game, active, sceneFactory, onStatus, onPick, 
     const valid = () => !signal.aborted && active() && slot?.isConnected;
     frameStarted = performance.now();
     updateStatus('loading');
-    const timer = setTimeout(() => { if (lifetime === current) dispose('unavailable'); }, 9500);
+    const timer = setTimeout(() => { if (lifetime === current) unavailable('startup-timeout'); }, 9500);
     signal.addEventListener('abort', () => clearTimeout(timer), {once:true});
+    let phase = 'engine-module';
     try {
-      const [B, catalogue] = await Promise.all([import(directory + 'engine.mjs'), assets(game, signal)]);
+      const catalogueRequest = assets(game, signal).catch(() => { throw new SceneFailure('asset-manifest'); });
+      const [B, catalogue] = await Promise.all([import(directory + 'engine.mjs'), catalogueRequest]);
       if (!valid()) { if (!signal.aborted) dispose(); return; }
       canvas = document.createElement('canvas');
       canvas.className = 'td-canvas';
@@ -136,20 +165,23 @@ export function createTableView({ game, active, sceneFactory, onStatus, onPick, 
       // The scrollable dice tray needs a presentation canvas on WebKit. The same
       // Babylon frame is copied directly, with no readback or separate 2D artwork.
       surface = composite ? document.createElement('canvas') : canvas;
+      phase = 'presentation-context';
       presentation = composite ? canvas.getContext('2d', { alpha:false }) : null;
       if (composite && !presentation) throw new Error('Canvas presentation unavailable');
+      phase = 'webgl2-creation';
       const context = surface.getContext('webgl2', {antialias:true, alpha:false});
-      if (!context) throw new Error('WebGL2 unavailable');
+      if (!context) { unavailable('webgl2-unavailable'); return; }
+      phase = 'engine-init';
       slot.replaceChildren(canvas);
       engine = new B.Engine(context,true,{doNotHandleContextLost:true});
       if (presentation) engine.inputElement = canvas;
       engine.setHardwareScalingLevel(1 / Math.min(devicePixelRatio || 1, matchMedia('(pointer: coarse)').matches ? 1.15 : 1.55));
       gl = new B.Scene(engine);
       instrumentation = new B.SceneInstrumentation(gl);
-      const physics = createPhysics(signal);
+      const physics = createPhysics(signal, reportFailure);
       const image = async id => {
         const asset = catalogue.get(id);
-        if (asset?.kind !== 'texture' || !localAsset.test(asset.uri)) throw new Error('3D texture unavailable');
+        if (asset?.kind !== 'texture' || !localAsset.test(asset.uri)) throw new SceneFailure('texture-reference');
         const image = new Image();
         const cancel = () => image.removeAttribute('src');
         signal.addEventListener('abort',cancel,{once:true});
@@ -157,14 +189,18 @@ export function createTableView({ game, active, sceneFactory, onStatus, onPick, 
           image.src = asset.uri;
           await image.decode();
           return image;
+        } catch {
+          throw new SceneFailure('texture-load');
         } finally { signal.removeEventListener('abort',cancel); }
       };
       const asset = (id, kind) => {
         const entry = catalogue.get(id);
-        if (entry?.kind !== kind) throw new Error('3D asset unavailable');
+        if (entry?.kind !== kind) throw new SceneFailure('asset-reference');
         return entry;
       };
-      const built = await sceneFactory({B, scene:gl, canvas, physics, image, asset, fail:() => { if(lifetime===current) dispose('unavailable'); }, low:matchMedia('(pointer: coarse)').matches});
+      phase = 'scene-init';
+      const built = await sceneFactory({B, scene:gl, canvas, physics, image, asset,
+        fail:reason => { if (lifetime === current) unavailable(reason); }, low:matchMedia('(pointer: coarse)').matches});
       if (!valid()) { built.dispose?.(); if (!signal.aborted) dispose(); return; }
       renderer = built;
       resize = new ResizeObserver(() => { if (slot?.isConnected && engine) resizeSurface(); });
@@ -174,7 +210,7 @@ export function createTableView({ game, active, sceneFactory, onStatus, onPick, 
       const opts = {signal};
       window.addEventListener('pagehide', () => dispose(), opts);
       document.addEventListener('visibilitychange', setLoop, opts);
-      surface.addEventListener('webglcontextlost', event => { event.preventDefault(); dispose('unavailable'); }, opts);
+      surface.addEventListener('webglcontextlost', event => { event.preventDefault(); unavailable('context-lost'); }, opts);
       canvas.addEventListener('pointerdown', event => { pointer = event.isPrimary ? [event.clientX,event.clientY] : null; }, opts);
       canvas.addEventListener('pointercancel', () => { pointer = null; }, opts);
       canvas.addEventListener('pointerup', event => {
@@ -185,6 +221,7 @@ export function createTableView({ game, active, sceneFactory, onStatus, onPick, 
         }
         pointer = null;
       }, opts);
+      phase = 'first-frame';
       renderer.update(model);
       resizeSurface();
       renderFrame();
@@ -192,7 +229,9 @@ export function createTableView({ game, active, sceneFactory, onStatus, onPick, 
       Object.assign(slot.dataset,stats);
       updateStatus('ready');
       setLoop();
-    } catch { if (!signal.aborted) dispose('unavailable'); }
+    } catch (error) {
+      if (!signal.aborted) unavailable(error instanceof SceneFailure ? error.message : phase);
+    }
     finally { clearTimeout(timer); }
   }
   return {
@@ -200,14 +239,14 @@ export function createTableView({ game, active, sceneFactory, onStatus, onPick, 
       if (!currentSlot || !active()) { dispose(); return; }
       slot = currentSlot;
       model = nextModel;
-      slot.dataset.sceneState = state;
+      syncDiagnostic();
       Object.assign(slot.dataset,stats);
       if (canvas && canvas.parentElement !== slot) {
         slot.replaceChildren(canvas);
         if (engine) resizeSurface();
       }
       if (state === 'ready') {
-        try { renderer.update(model); } catch { dispose('unavailable'); }
+        try { renderer.update(model); } catch { unavailable('scene-update'); }
       } else if (state === 'idle') {
         void start();
       }
@@ -244,10 +283,11 @@ export function cameraRig(B, scene, canvas, defaults, bounds) {
         const progress = Math.min(1,(now - start) / 360);
         const step = progress * progress * (3 - 2 * progress);
         const difference = Math.atan2(Math.sin(to.alpha - from[0]),Math.cos(to.alpha - from[0]));
+        // Setting the target rebuilds the orbit, so apply the interpolated angles and radius after it.
+        camera.target = B.Vector3.Lerp(from[3],new B.Vector3(...to.target),step);
         camera.alpha = from[0] + difference * step;
         camera.beta = from[1] + (to.beta - from[1]) * step;
         camera.radius = from[2] + (to.radius - from[2]) * step;
-        camera.target = B.Vector3.Lerp(from[3],new B.Vector3(...to.target),step);
         if (progress === 1) travel = null;
       }
       camera.target.x = Math.max(-bounds.x,Math.min(bounds.x,camera.target.x));

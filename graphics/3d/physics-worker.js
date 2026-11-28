@@ -78,11 +78,18 @@ self.onmessage = async ({ data }) => {
   if (!Number.isSafeInteger(id) || !config || !Array.isArray(indices) ||
       !indices.length || indices.length > config.max || new Set(indices).size !== indices.length ||
       indices.some(index => !Number.isInteger(index) || index < 0 || index >= config.max)) return;
+  let havok;
   try {
     runtime ??= HavokPhysics({locateFile: () => new URL('HavokPhysics.wasm',self.location.href).href});
-    const { steps, transforms } = simulate(await runtime, mode, indices);
+    havok = await runtime;
+  } catch {
+    self.postMessage({ id, error: 'physics-wasm' });
+    return;
+  }
+  try {
+    const { steps, transforms } = simulate(havok, mode, indices);
     self.postMessage({ id, steps, transforms }, [transforms.buffer]);
   } catch {
-    self.postMessage({ id, error: 'physics-unavailable' });
+    self.postMessage({ id, error: 'physics-simulation' });
   }
 };

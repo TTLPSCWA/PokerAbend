@@ -34,6 +34,8 @@ Kniffel zeigt die Schale über dem Punkteblatt und legt gehaltene Würfel auf de
 
 Der Client entlädt Canvas, Beobachter, Texturen und Worker beim Verlassen oder Wechseln. Auf verdeckten Tabs hält der Renderloop an. Geräte mit anhaltend niedriger Bildrate reduzieren zuerst die Auflösung. Bei fehlendem WebGL2, verlorenen Grafik-Kontexten oder fehlender Kniffel-Physik bleibt 2D nutzbar. Die Einstellung „Ruhig“ und die Systemeinstellung für reduzierte Bewegung verwenden 2D. Fremde verdeckte Karten werden als Rückseiten ohne ihren Wert an den Renderer weitergegeben.
 
+Der Renderer setzt bei Fehlern feste lokale Diagnosecodes am Szenenelement und in der Browserkonsole. Die Codes unterscheiden Abruf und Referenz von Assets, WebGL2-Kontext, Babylon-Start, Havok-Start, Rendering, Zeitlimits und Kontextverlust. Sie enthalten keine Spielernamen, URLs, Browserkennung oder Exception-Texte. Der [Firefox-CI-Nachweis](../crossbrowser-qa.md#firefox-3d-im-linux-workflow) erklärt die Linux-Grafikumgebung.
+
 ## Vorlage für einen weiteren 3D-Auftrag
 
 Gegeben sind eine ausdrücklich freigegebene Spiel-ID und ihre bestehende Ansicht. Ermittle die autoritativen Serverfelder und projektiere ausschließlich sichtbare Daten. Verwende den vorhandenen 3D-Adapter, die Worker-Isolation und die freigegebenen Assets. Ergänze spielbezogene Darstellung, Bedienung, persistente 2D-Auswahl und den Nachweis von geheimen Daten, Spielzustand, Canvas-Entfernung und Version. Prüfe reale Spielfolgen, sichtbare Geometrie und Fallbacks in Chromium, Firefox und WebKit. Für neue Inhalte sowie Commit, Push und Deployment gelten die Freigaben des jeweiligen Auftrags.

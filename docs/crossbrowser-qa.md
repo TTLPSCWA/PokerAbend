@@ -65,3 +65,9 @@ Die gesamte Auswahl umfasst 167 Fälle (163 beim ersten Lauf, vor dem Fall aus C
   - Alle vier Node-Teile sind grün, einschließlich `test/card-flow.test.js`.
   - Die Browser-Teile 5 und 8 waren rot. Sie enthalten keine Tests aus `7e73e66`; Codex untersucht die Wackler unter QA-FLAKE-02.
   - Die folgenden Volläufe ab `cf43be3` decken die Tests erneut ab.
+
+## Firefox-3D im Linux-Workflow
+
+Im Trace von GitHub-Lauf [#295](https://github.com/TTLPSCWA/PokerAbend/actions/runs/46111076238) meldete Firefox bei `getContext('webgl2')` `AllowWebgl2:false`. In einem Linux-Container mit Playwright 1.64.1 scheiterte der unveränderte Test ebenfalls headless. Dieselben Szenen lieferten unter Xvfb sichtbare Pixel mit Mesa-Softwaregrafik.
+
+Der Firefox-Job verwendet deshalb `LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a -s "-screen 0 1600x1000x24" npx playwright test -c playwright.crossbrowser.config.js --project="firefox*" --headed`. Der Negativtest prüft weiterhin den 2D-Rückfall, indem er WebGL2 gezielt fehlen lässt. Chromium und WebKit behalten ihre bisherigen Startoptionen.
